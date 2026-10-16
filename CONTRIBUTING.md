@@ -403,6 +403,8 @@ A aprovação deve representar uma avaliação efetiva da alteração, e não ap
 
 A quantidade de aprovações obrigatórias e as permissões de merge serão definidas nas configurações de proteção do repositório.
 
+O arquivo `.github/CODEOWNERS` define os responsáveis por todos os arquivos. O GitHub consulta a versão desse arquivo na branch de destino do Pull Request para solicitar revisão aos responsáveis elegíveis. Portanto, ele precisa estar tanto na `development` quanto na `main` para atender aos dois fluxos de PR. O CODEOWNERS, por si só, não torna aprovações obrigatórias; isso depende das configurações de proteção das branches.
+
 ### 3.4. Integração contínua (CI)
 
 O projeto utilizará verificações automatizadas para auxiliar na manutenção da qualidade e no cumprimento das convenções.
