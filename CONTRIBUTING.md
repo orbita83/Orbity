@@ -202,6 +202,8 @@ A criação de Pull Requests de desenvolvimento deve utilizar o template oficial
 
 O template deve permitir descrever as alterações, registrar as validações realizadas e fornecer informações relevantes para a revisão.
 
+O modelo está em `.github/PULL_REQUEST_TEMPLATE/development.md`. Ao abrir o Pull Request para `development` pela interface do GitHub, acrescente `template=development.md` à URL de comparação (`?template=development.md` ou `&template=development.md`, se já houver outros parâmetros).
+
 ### 1.5. Pull Requests de Publicação
 
 Os Pull Requests de publicação são responsáveis por integrar à branch `main` as alterações acumuladas e validadas na branch `development`, estabelecendo uma nova versão estável do projeto.
@@ -230,6 +232,10 @@ Diferentemente dos Pull Requests de desenvolvimento, os Pull Requests de publica
 **Templates:**
 
 A criação de Pull Requests de publicação deve seguir o modelo específico estabelecido pela equipe, contendo as informações necessárias para a revisão e aprovação da nova versão.
+
+O modelo está em `.github/PULL_REQUEST_TEMPLATE/release.md`. Ao abrir o Pull Request de `development` para `main` pela interface do GitHub, acrescente `template=release.md` à URL de comparação (`?template=release.md` ou `&template=release.md`, se já houver outros parâmetros).
+
+O GitHub não escolhe automaticamente um modelo conforme a branch de destino. Os modelos só ficam disponíveis na interface após integrarem a branch padrão do repositório.
 
 ---
 
