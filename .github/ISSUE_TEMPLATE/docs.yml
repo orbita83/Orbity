@@ -1,0 +1,82 @@
+name: Documentação
+description: Registre a criação, atualização ou correção de uma documentação do projeto.
+title: "[DOCS] "
+labels:
+  - docs
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Utilize este formulário para solicitar uma alteração na documentação do projeto.
+        Preencha os campos obrigatórios de forma clara e objetiva, em português brasileiro (pt-BR).
+
+  - type: checkboxes
+    id: verificacoes
+    attributes:
+      label: Verificações iniciais
+      description: Confirme os itens abaixo antes de registrar a solicitação.
+      options:
+        - label: Verifiquei que não existe outra issue aberta ou encerrada para esta alteração.
+          required: true
+        - label: Confirmei que a solicitação está relacionada à documentação do projeto.
+          required: true
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de alteração
+      description: Selecione a natureza da alteração necessária.
+      options:
+        - Criação de documentação
+        - Atualização de documentação
+        - Correção de documentação
+        - Remoção de documentação obsoleta
+    validations:
+      required: true
+
+  - type: textarea
+    id: descricao
+    attributes:
+      label: Descrição
+      description: Descreva a documentação que deve ser criada, atualizada, corrigida ou removida.
+      placeholder: Explique de forma clara o que precisa ser alterado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: Explique a necessidade da alteração e qual resultado é esperado.
+      placeholder: Descreva como esta alteração ajudará os leitores da documentação.
+    validations:
+      required: true
+
+  - type: textarea
+    id: localizacao
+    attributes:
+      label: Localização da documentação
+      description: Informe os arquivos, páginas ou seções relacionados à solicitação, quando conhecidos.
+      placeholder: |
+        - Arquivo ou página:
+        - Seção:
+        - Link:
+
+  - type: textarea
+    id: alteracoes
+    attributes:
+      label: Alterações necessárias
+      description: Liste as mudanças que devem ser realizadas.
+      placeholder: |
+        - [ ] Primeira alteração
+        - [ ] Segunda alteração
+        - [ ] Terceira alteração
+    validations:
+      required: true
+
+  - type: textarea
+    id: informacoes-adicionais
+    attributes:
+      label: Informações adicionais
+      description: Adicione referências, exemplos, imagens ou outras informações relevantes.
+      placeholder: Inclua materiais que possam auxiliar na atualização da documentação.
