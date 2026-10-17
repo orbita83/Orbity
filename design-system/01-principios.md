@@ -11,7 +11,7 @@
 
 - **Origem:** Adaptado de Honor individuals — MD3, Accessible Design.
 - **O porquê:** Cada estudante possui rotinas, preferências e necessidades diferentes. O Orbity deve permitir que sua experiência de organização acompanhe essas diferenças.
-- **Na prática:** Impor configurações e padrões de organização quando a personalização for necessária para atender diferentes necessidades.
+- **Na prática:** Estabelecer diretrizes para que os agentes preservem a personalização da experiência do estudante ao implementar funcionalidades ou corrigir problemas.
 
 ## Princípio 3: Acessibilidade em cada interação
 
