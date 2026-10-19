@@ -1,22 +1,22 @@
 # Princípios
 
-## Princípio 1: Motivar sem pressionar
+## Princípio 1: Valorizar a trajetória, não apenas os resultados
 
 - **Origem:** Novo
-- **O porquê:** O Orbity deve incentivar os estudantes a desenvolver hábitos de organização e estudo, valorizando seu esforço e progresso sem transformar a produtividade em uma obrigação ou fonte de frustração.
-- **Na prática:** Componentes de conquistas, sequências de estudo e constelações devem valorizar o progresso acumulado e oferecer feedback positivo, mesmo após períodos de inatividade.
-- **Evite:** Utilizar mensagens punitivas ou mecanismos que façam o estudante sentir que perdeu todo o seu progresso por interromper uma sequência de estudos.
+- **O porquê:** O Orbity deve incentivar os estudantes a desenvolver hábitos de estudo, reconhecendo seu esforço e evolução ao longo do tempo, sem transformar a produtividade em uma obrigação ou fonte de frustração.
+- **Na prática:** Utilizar conquistas e constelações para representar os marcos e o progresso acumulado, enquanto as sequências mostram períodos de constância. Oferecer feedbacks positivos que valorizem as realizações do estudante, mesmo após períodos de inatividade.
+- **Evite:** Utilizar mensagens punitivas ou mecanismos que desvalorizem o progresso acumulado, fazendo o estudante sentir que perdeu suas conquistas ao interromper uma sequência de estudos.
 
-## Princípio 2: A organização se adapta ao estudante
+## Princípio 2: O controle pertence ao estudante
 
-- **Origem:** Adaptado de Honor individuals — MD3, Accessible Design.
-- **O porquê:** Cada estudante possui rotinas, preferências e necessidades diferentes. O Orbity deve permitir que sua experiência de organização acompanhe essas diferenças.
-- **Na prática:** Permitir que o estudante organize tarefas e rotinas de estudo de acordo com sua disponibilidade, ajustando prioridades e horários sempre que suas necessidades mudarem.
-- **Evite:** Impor configurações rígidas e padrões únicos de organização quando a personalização for necessária para atender diferentes necessidades.
+- **Origem:** Novo
+- **O porquê:** O Orbity deve apoiar a organização dos estudos sem retirar do estudante o controle sobre suas atividades. Cabe ao usuário decidir como administrar suas tarefas e rotinas, enquanto o aplicativo oferece os recursos necessários para acompanhá-las.
+- **Na prática:** Oferecer controles claros para que o estudante crie, acompanhe e ajuste sua organização dos estudos conforme suas necessidades, incluindo tarefas, rotinas, horários e recorrências.
+- **Evite:** Alterar, concluir ou excluir tarefas e rotinas automaticamente sem a solicitação ou confirmação do estudante.
 
-## Princípio 3: Acessibilidade em cada interação
+## Princípio 3: O essencial deve estar à vista
 
-- **Origem:** Adaptado de Requirements as a starting point — MD3, Accessible Design.
-- **O porquê:** Todos os estudantes devem conseguir perceber, compreender e utilizar as funcionalidades do Orbity, independentemente de suas capacidades e necessidades.
-- **Na prática:** Estados e informações importantes devem ser comunicados por mais de um recurso perceptível, como texto e indicadores visuais. Isso vale para tarefas, sessões de estudo e constelações.
-- **Evite:** Depender exclusivamente de cores, animações ou ícones sem identificação para comunicar informações essenciais.
+- **Origem:** Adaptado das diretrizes de Lists e Typography — Material Design 3.
+- **O porquê:** O Orbity deve facilitar a identificação das atividades e compromissos de estudo, permitindo que o estudante reconheça rapidamente as informações mais relevantes para sua organização.
+- **Na prática:** Priorizar a apresentação de títulos, prazos e estados das tarefas, além dos horários e estados das rotinas, utilizando hierarquia visual e organização consistente para facilitar a consulta das informações.
+- **Evite:** Sobrecarregar as telas com informações secundárias ou ocultar dados essenciais que o estudante precisa consultar frequentemente.
