@@ -1,0 +1,47 @@
+name: Tarefa de Manutenção
+description: Registre configurações, infraestrutura, automações e outras tarefas técnicas do projeto.
+title: "[CHORE] "
+labels:
+  - chore
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Utilize este formulário para registrar tarefas técnicas que não alteram diretamente as funcionalidades do produto, como configuração do projeto, ferramentas, automações e infraestrutura de desenvolvimento.
+        Preencha os campos obrigatórios de forma clara e objetiva, em português brasileiro (pt-BR).
+
+  - type: checkboxes
+    id: verificacoes
+    attributes:
+      label: Verificações iniciais
+      description: Confirme os itens abaixo antes de registrar a tarefa.
+      options:
+        - label: Verifiquei que não existe outra issue aberta ou encerrada para esta tarefa.
+          required: true
+        - label: Confirmei que a tarefa não corresponde a uma funcionalidade, correção ou alteração exclusivamente documental.
+          required: true
+
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto
+      description: Explique a necessidade técnica ou operacional que motivou esta tarefa.
+      placeholder: Descreva o cenário atual e por que esta tarefa é necessária.
+    validations:
+      required: true
+
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: Descreva o resultado esperado após a conclusão da tarefa.
+      placeholder: Informe de forma objetiva o que deverá estar disponível, configurado ou padronizado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: informacoes-adicionais
+    attributes:
+      label: Informações adicionais
+      description: Adicione referências, decisões técnicas ou outras informações relevantes.
+      placeholder: Inclua links, exemplos ou observações que possam ajudar na execução da tarefa.

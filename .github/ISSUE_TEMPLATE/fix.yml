@@ -1,0 +1,79 @@
+name: Correção de Problema
+description: Registre um erro ou comportamento inesperado que precisa ser corrigido.
+title: "[FIX] "
+labels:
+  - fix
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Utilize este formulário para registrar um problema que precisa ser corrigido.
+        Preencha os campos obrigatórios de forma clara e objetiva, em português brasileiro (pt-BR).
+
+  - type: checkboxes
+    id: verificacoes
+    attributes:
+      label: Verificações iniciais
+      description: Confirme os itens abaixo antes de registrar o problema.
+      options:
+        - label: Verifiquei que não existe outra issue aberta ou encerrada para este problema.
+          required: true
+        - label: Confirmei que o comportamento descrito representa um erro ou uma regressão.
+          required: true
+
+  - type: textarea
+    id: descricao
+    attributes:
+      label: Descrição do problema
+      description: Descreva de forma clara e objetiva o erro ou comportamento inesperado.
+      placeholder: Explique o problema identificado e seu impacto.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducao
+    attributes:
+      label: Passos para reproduzir
+      description: Informe os passos necessários para reproduzir o problema.
+      placeholder: |
+        1. Acesse...
+        2. Execute...
+        3. Observe...
+    validations:
+      required: true
+
+  - type: textarea
+    id: comportamento-atual
+    attributes:
+      label: Comportamento atual
+      description: Explique o que acontece ao reproduzir o problema.
+      placeholder: Descreva o resultado obtido atualmente.
+    validations:
+      required: true
+
+  - type: textarea
+    id: comportamento-esperado
+    attributes:
+      label: Comportamento esperado
+      description: Explique o que deveria acontecer caso o sistema funcionasse corretamente.
+      placeholder: Descreva o resultado esperado após a correção.
+    validations:
+      required: true
+
+  - type: textarea
+    id: ambiente
+    attributes:
+      label: Ambiente
+      description: Informe os dados do ambiente em que o problema foi identificado, quando aplicáveis.
+      placeholder: |
+        - Sistema operacional:
+        - Navegador ou cliente:
+        - Versão da aplicação:
+        - Outros detalhes:
+
+  - type: textarea
+    id: informacoes-adicionais
+    attributes:
+      label: Informações adicionais
+      description: Adicione logs, imagens, vídeos, referências ou outras informações relevantes.
+      placeholder: Inclua evidências e detalhes que possam ajudar na investigação.
