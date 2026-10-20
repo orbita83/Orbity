@@ -12,9 +12,11 @@ $$\text{Razão} = \frac{L_1 + 0{,}05}{L_2 + 0{,}05}$$
 
 Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais escura, variando de 1:1 a 21:1.
 
-- **Texto normal (< 18 pt ou < 14 pt em negrito):** Mínimo de **4,5:1** (WCAG 1.4.3 Contraste Mínimo — Nível AA).
-- **Texto grande (≥ 18 pt ou ≥ 14 pt em negrito, como `font.title`):** Mínimo de **3,0:1** (WCAG 1.4.3).
+- **Texto normal (< 24 px em peso normal ou < 18,67 px em negrito):** Mínimo de **4,5:1** (WCAG 1.4.3 Contraste Mínimo — Nível AA).
+- **Texto grande (≥ 24 px em peso normal ou ≥ 18,67 px em negrito, como `font.title`):** Mínimo de **3,0:1** (WCAG 1.4.3).
 - **Elementos de interface gráficos e foco (`color.focus`):** Mínimo de **3,0:1** em relação ao fundo adjacente (WCAG 1.4.11 Contraste de Não-Texto — Nível AA).
+
+> **Equivalência tipográfica (WCAG vs. Orbity):** A especificação original da WCAG adota pontos tipográficos (18 pt para texto normal e 14 pt para negrito). Em telas digitais e ecossistemas web/mobile com escala em pixels CSS ($1\text{ pt} = \frac{4}{3}\text{ px} \approx 1{,}333\text{ px}$), os limiares correspondem a **24 px** para peso normal e **18,67 px** para negrito (peso $\ge 700$). Portanto, o token `font.title` (24 px, peso 700) qualifica-se como texto grande por ambos os parâmetros. Já os tokens `font.label` (14 px, peso 500) e `font.body` (16 px, peso 400) enquadram-se estritamente como texto normal, exigindo razão de contraste mínima de 4,5:1.
 
 ### Tabela de validação de pares semânticos
 
@@ -24,7 +26,7 @@ Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais
 | `color.on-action` sobre `color.action` | Escuro | `neutral-900` (`#1B1B1F`) sobre `purple-400` (`#C084FC`) | **6,50:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.on-surface` sobre `color.surface` | Claro | `neutral-900` (`#1B1B1F`) sobre `neutral-0` (`#FFFFFF`) | **17,17:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.on-surface` sobre `color.surface` | Escuro | `neutral-0` (`#FFFFFF`) sobre `neutral-900` (`#1B1B1F`) | **17,17:1** | 4,5:1 | **Aprovado** | Adaptado |
-| `color.error` sobre `color.surface` | Claro | `error-500` (`#EF4444`) sobre `neutral-0` (`#FFFFFF`) | **3,76:1** | 4,5:1 | **Reprovado para texto comum** *(aprovado para texto ≥ 18 pt e ícones de 3:1)* | Adaptado |
+| `color.error` sobre `color.surface` | Claro | `error-500` (`#EF4444`) sobre `neutral-0` (`#FFFFFF`) | **3,76:1** | 4,5:1 | **Reprovado para texto comum** *(aprovado para texto grande ≥ 24 px ou ≥ 18,67 px em negrito e ícones/elementos ≥ 3,0:1)* | Adaptado |
 | `color.error` sobre `color.surface` | Escuro | `error-500` (`#EF4444`) sobre `neutral-900` (`#1B1B1F`) | **4,56:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.focus` sobre `color.surface` | Claro | `blue-600` (`#4F46E5`) sobre `neutral-0` (`#FFFFFF`) | **6,29:1** | 3,0:1 | **Aprovado** | Adaptado |
 | `color.focus` sobre `color.surface` | Escuro | `purple-400` (`#C084FC`) sobre `neutral-900` (`#1B1B1F`) | **6,50:1** | 3,0:1 | **Aprovado** | Adaptado |
@@ -48,11 +50,22 @@ Para garantir usabilidade por pessoas com deficiências motoras, tremores ou em 
 
 | Componente | Tamanho visual padrão | Área de toque mínima | Implementação / Estratégia |
 | --- | --- | --- | --- |
-| Botão de Ação (`button.bg`) | Altura 48 dp, largura variável | 48 × 48 dp (ou largura total) | Padding vertical de pelo menos 12 dp; altura mínima do container `minHeight: 48`. |
-| Botão de Ícone (fechar, voltar, menu) | Ícone de 24 dp (`space-24`) | 48 × 48 dp | Container de 48 × 48 dp centralizando o ícone de 24 dp. |
-| Campo de texto (Input) | Altura 56 dp | 56 dp de altura | Altura padrão de 56 dp (conforme Material 3), superando o mínimo exigido. |
-| Checkbox / Conclusão de Tarefa | Caixa de 24 × 24 dp | 48 × 48 dp | Padding delimitado ou `hitSlop: { top: 12, bottom: 12, left: 12, right: 12 }`. |
-| Itens de Lista / Cards de Rotina | Variável (geralmente > 64 dp) | Altura mínima de 48 dp | Card clicável com área de toque contínua em todo o container. |
+| Botão de Ação (`button.bg`) | Altura 48 dp (Herdado - Material 3), largura variável | 48 × 48 dp (ou largura total) | `minHeight: 48`, alinhamento vertical centralizado com padding vertical via `space.sm` (8 px) ou `space.md` (16 px) e padding horizontal `space.md`. |
+| Botão de Ícone (fechar, voltar, menu) | Ícone de 24 dp (`space-24`) | 48 × 48 dp (Herdado - Material 3) | Container delimitado de 48 × 48 dp centralizando o ícone de tamanho `space-24`. |
+| Campo de texto (Input) | Altura 56 dp (Herdado - Material 3) | 56 dp de altura | Altura padrão de 56 dp do container de Input herdada do Material 3, superando a meta mínima de 48 dp. |
+| Checkbox / Conclusão de Tarefa | Caixa de 24 × 24 dp (`space-24`) | 48 × 48 dp (Herdado - Material 3) | Caixa delimitada ou expansão via `hitSlop: { top: 12, bottom: 12, left: 12, right: 12 }` (compensação calculada: $(48 - 24) / 2 = 12\text{ dp}$). |
+| Itens de Lista / Cards de Rotina | Variável (conteúdo dinâmico com padding `space.md`) | Altura mínima de 48 dp | Container de card clicável com `minHeight: 48` e área de toque contínua em toda a superfície. |
+
+### Registro de lacunas de tokens de componente (Seção 9 do README)
+
+Conforme estabelecido na Seção 9 do guia do Design System (*"Se faltar um token, componente ou regra, pergunte ou registre a lacuna. Não invente valores"*), registram-se abaixo as dimensões de componentes derivadas das diretrizes de plataforma (Material 3 e WCAG 2.5.5) que ainda não possuem tokens formalizados na camada de tokens de componente em `02-tokens.md`:
+
+| Dimensão / Regra | Medida literal | Origem | Justificativa e proposta de token |
+| --- | --- | --- | --- |
+| **Alvo interativo mínimo** | `48 × 48 dp` | Herdado (Material 3 / WCAG 2.5.5) | Dimensão mínima de toque para elementos clicáveis. Proposta de token: `target.min-size: 48 dp`. |
+| **Altura padrão de Input** | `56 dp` | Herdado (Material 3 Text Field) | Altura de container recomendada para campos de entrada. Proposta de token: `input.height: 56 dp`. |
+| **Altura mínima de Botão** | `48 dp` | Herdado (Material 3 Button) | Altura mínima que assegura conformidade de toque. Proposta de token: `button.min-height: 48 dp`. |
+| **Compensação geométrica (hitSlop)** | `12 dp` | Calculado: $(48 - 24) / 2$ | Folga simétrica necessária para expandir um elemento de 24 dp até o alvo de 48 dp. Não integra a grade de 8 px de espaçamento; mantida como cálculo utilitário de acessibilidade sem token ou proposta como `hit-slop.compact: 12 dp`. |
 
 ---
 
