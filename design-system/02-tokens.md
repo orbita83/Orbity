@@ -66,6 +66,9 @@
 | `radius.md`      | 12 px     | Campos e botões                     | Adaptado |
 | `radius.lg`      | 16 px     | Cards                               | Adaptado |
 | `elevation.card` | 2 dp      | Cards sobre a superfície            | Adaptado |
+| `target.min-size`| 48 dp     | Área mínima de controles interativos| Herdado  |
+| `focus.ring-width` | 2 dp    | Espessura do indicador de foco      | Herdado  |
+| `focus.ring-offset`| 2 dp    | Distância entre foco e componente   | Herdado  |
 
 ### Movimento
 
@@ -82,6 +85,11 @@
 | `button.bg`          | `color.action`                    | Adaptado |
 | `button.label`       | `color.on-action`                 | Adaptado |
 | `button.radius`      | `radius.md`                       | Adaptado |
+| `button.min-height`  | `target.min-size`                 | Herdado  |
+| `button.min-width`   | `target.min-size`                 | Herdado  |
+| `button.focus-color` | `color.focus`                     | Adaptado |
+| `button.focus-width` | `focus.ring-width`                | Herdado  |
+| `button.focus-offset`| `focus.ring-offset`               | Herdado  |
 | `button.bg-hover`    | `color.action` + estado hover     | Adaptado |
 | `button.bg-pressed`  | `color.action` + estado pressed   | Adaptado |
 | `button.bg-disabled` | `color.surface` + estado disabled | Adaptado |
