@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-### Elementos Clicáveis
+### Elementos Clicáveis e Acessibilidade de Toque
 * Usar o componente `<Pressable>` em vez do `<Button>` nativo para botões que exigem estilização customizada (o componente `<Button>` nativo não aceita a propriedade `style`).
 * Utilizar a propriedade `style` em forma de função para dar feedback visual ao toque:
   ```tsx
@@ -149,6 +149,19 @@ const styles = StyleSheet.create({
     <Text style={styles.textoBotao}>Enviar</Text>
   </Pressable>
   ```
-* Usar `hitSlop` para expandir a área de toque visualmente pequena sem alterar a caixa do componente (alvo mínimo acessível de 24x24 dp).
+* **Área Mínima de Toque (Material 3 e WCAG 2.5.5 / 2.5.8):** Todo elemento interativo tocável deve assegurar uma área de contato mínima de **48 × 48 dp** no Android (Material 3) ou **44 × 44 pt** no iOS (Apple HIG).
+* **Expansão com `hitSlop` ou Dimensões Mínimas:**
+  * Em controles com dimensão visual menor que 48 dp (ex.: botões de ícone de 24 dp, caixas de checkbox de 20–24 dp ou chips), utilize container delimitado com `minHeight: 48` / `minWidth: 48` ou expanda a área interativa via propriedade `hitSlop`:
+    ```tsx
+    <Pressable
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+      onPress={handleToggle}
+      accessibilityRole="checkbox"
+      accessibilityLabel="Marcar tarefa como concluída"
+    >
+      <Icon name="check" size={24} />
+    </Pressable>
+    ```
+* **Espaçamento entre Alvos Adjacentes:** Manter separação mínima de pelo menos **8 dp** (`space.sm`) entre áreas de clique adjacentes para evitar acionamentos acidentais.
 
 ---
