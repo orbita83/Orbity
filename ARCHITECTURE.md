@@ -41,7 +41,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 
 ```
 src/
-├── app/                  # Rotas e Telas do Expo Router (_layout.tsx, index.tsx)
+├── app/                  # Módulos de rota do Expo Router (_layout.tsx, index.tsx, login-screen.tsx)
 ├── infra/                # Implementações concretas (Infraestrutura)
 │   ├── repositories/     # Ex: FirestoreUserRepository.ts
 │   └── services/         # Ex: FirebaseAuthService.ts
@@ -53,7 +53,7 @@ src/
 │   ├── IAuthUseCases.ts  # Contrato/Interface do Use Case
 │   └── AuthUseCases.ts   # Implementação do Use Case
 ├── viewmodel/            # Custom Hooks da ViewModel (ex: useLoginViewModel.ts)
-├── view/                 # Componentes genéricos de UI (botões, inputs, cards)
+├── view/                 # Componentes de tela (*-screen.tsx) e componentes reutilizáveis de UI
 └── di/                   # Fábricas de Injeção de Dependência (ex: loginFactory.ts)
 ```
 
@@ -208,8 +208,9 @@ export function makeLoginViewModel() {
 }
 ```
 
-### Step 7: View (`src/app/index.tsx`)
+### Step 7: View (`src/view/login-screen.tsx`) e Módulo de Rota (`src/app/login-screen.tsx`)
 ```typescript
+// 1. Componente de Tela na View (src/view/login-screen.tsx)
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { router } from "expo-router";
@@ -262,6 +263,13 @@ const styles = StyleSheet.create({
   error: { color: "red", marginTop: 8 },
   center: { textAlign: "center", marginTop: 40 }
 });
+```
+
+```typescript
+// 2. Módulo de Rota no App (src/app/login-screen.tsx)
+import LoginScreen from "../view/login-screen";
+
+export default LoginScreen;
 ```
 
 ---

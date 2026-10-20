@@ -13,8 +13,8 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 - **Arquivos:** `kebab-case` com extensão apropriada (ex: `nome-arquivo.ts`, `nome-arquivo.tsx`)
 - **Hooks (ViewModel):** Prefixo `use` seguido do nome da tela em PascalCase com sufixo `ViewModel` (ex: `useTelaViewModel()`)
 - **Telas:**
-  - Identificador/Componente: `PascalCase` com sufixo `Screen` (ex: `HomeScreen`, `LoginScreen`)
-  - Nome do arquivo correspondente: `kebab-case.tsx` (ex: `home-screen.tsx`, `login-screen.tsx`)
+  - Identificador/Componente na View (`src/view/`): `PascalCase` com sufixo `Screen` (ex: `HomeScreen`, `LoginScreen`) em arquivo `kebab-case.tsx` (ex: `src/view/home-screen.tsx`, `src/view/login-screen.tsx`).
+  - Módulo de rota em `src/app/`: arquivo com o mesmo nome em `kebab-case.tsx` (ex: `src/app/home-screen.tsx`, `src/app/login-screen.tsx`) que importa a tela da `view` como `default` e a exporta novamente como `default`.
 
 ---
 
@@ -32,19 +32,27 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
   };
   ```
 
-### Padrão de Exportação
-* **Componentes de Tela (`src/app/`)**:
-  * Devem conter obrigatoriamente um **`export default`** ao final do arquivo.
-  * O nome do arquivo em *kebab-case.tsx* determina a rota no Expo Router.
+### Padrão de Exportação e Roteamento (`src/view/` → `src/app/`)
+* **1. Componente de Tela na View (`src/view/`)**:
+  * O componente de tela é implementado em `src/view/` e deve conter obrigatoriamente um **`export default`** ao final do arquivo:
   ```typescript
-  // src/app/login-screen.tsx
+  // src/view/login-screen.tsx
   const LoginScreen = () => { ... };
+
   export default LoginScreen;
   ```
-* **Componentes Reutilizáveis (`src/components/`)**:
+* **2. Módulo de Rota no App (`src/app/`)**:
+  * Em `src/app/`, cria-se o módulo com o mesmo nome em `kebab-case.tsx` (determinando a rota no Expo Router), **importa-se o componente de tela como `default`** da camada `view` e **exporta-se como `default` novamente**:
+  ```typescript
+  // src/app/login-screen.tsx
+  import LoginScreen from "../view/login-screen";
+
+  export default LoginScreen;
+  ```
+* **3. Componentes Reutilizáveis (`src/view/components/`)**:
   * Utilizar preferencialmente **Export Nomeado** (*Named Export*):
   ```typescript
-  // src/components/user-profile.tsx
+  // src/view/components/user-profile.tsx
   export const UserProfile = ({ nome, tipo }: UserProfileProps) => { ... };
   ```
 

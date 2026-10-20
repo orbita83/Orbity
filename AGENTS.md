@@ -39,7 +39,7 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 - **Bloqueio em Placeholders e `TODO`s:** Se um documento consultado contiver apenas um placeholder (`@ARCHITECTURE`, `@RULES`, `@README`) ou `TODO` na seção necessária para a decisão atual, **não invente padrões ou arquiteturas** — pare e pergunte ao operador.
 - **Fonte de verdade visual:** Nunca utilize valores literais (*hardcoded*) de cor, espaçamento, tipografia ou raio. Utilize exclusivamente os tokens definidos em `design-system/02-tokens.md`.
 - **Princípios de produto:** Preserve a personalização do estudante, garanta acessibilidade (contraste ≥ 4,5:1, múltiplos indicadores perceptíveis além de cor) e nunca introduza mecânicas ou mensagens punitivas (`design-system/01-principios.md`).
-- **Estrutura de diretórios:** Respeite a divisão `src/app/` (rotas Expo Router), `src/view/` (UI), `src/viewmodel/` (lógica de apresentação/estado) e `src/model/` (domínio/dados) conforme `ARCHITECTURE.md` e as convenções em `RULES.md`.
+- **Estrutura de diretórios:** Respeite a divisão `src/app/` (módulos de rota Expo Router em `kebab-case.tsx` que importam e re-exportam como `default` os componentes de tela da `view`), `src/view/` (componentes de tela exportados como `default` e componentes reutilizáveis de UI), `src/viewmodel/` (lógica de apresentação/estado) e `src/model/` (domínio/dados) conforme `ARCHITECTURE.md` e as convenções em `RULES.md`.
 - **Segurança:** Nunca inclua segredos, tokens, chaves de API ou credenciais no código ou nos commits.
 
 ---
