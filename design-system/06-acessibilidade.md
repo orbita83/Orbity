@@ -56,16 +56,18 @@ Para garantir usabilidade por pessoas com deficiências motoras, tremores ou em 
 | Checkbox / Conclusão de Tarefa | Caixa de 24 × 24 dp (`space-24`) | 48 × 48 dp (Herdado - Material 3) | Caixa delimitada ou expansão via `hitSlop: { top: 12, bottom: 12, left: 12, right: 12 }` (compensação calculada: $(48 - 24) / 2 = 12\text{ dp}$). |
 | Itens de Lista / Cards de Rotina | Variável (conteúdo dinâmico com padding `space.md`) | Altura mínima de 48 dp | Container de card clicável com `minHeight: 48` e área de toque contínua em toda a superfície. |
 
-### Registro de lacunas de tokens de componente (Seção 9 do README)
+### Registro de tokens e lacunas de componente (Seção 9 do README)
 
-Conforme estabelecido na Seção 9 do guia do Design System (*"Se faltar um token, componente ou regra, pergunte ou registre a lacuna. Não invente valores"*), registram-se abaixo as dimensões de componentes derivadas das diretrizes de plataforma (Material 3 e WCAG 2.5.5) que ainda não possuem tokens formalizados na camada de tokens de componente em `02-tokens.md`:
+Conforme estabelecido na Seção 9 do guia do Design System (*"Se faltar um token, componente ou regra, pergunte ou registre a lacuna. Não invente valores"*), as dimensões derivadas das diretrizes de plataforma devem indicar se já foram formalizadas em `02-tokens.md`:
 
-| Dimensão / Regra | Medida literal | Origem | Justificativa e proposta de token |
+| Dimensão / Regra | Medida literal | Origem | Situação |
 | --- | --- | --- | --- |
-| **Alvo interativo mínimo** | `48 × 48 dp` | Herdado (Material 3 / WCAG 2.5.5) | Dimensão mínima de toque para elementos clicáveis. Proposta de token: `target.min-size: 48 dp`. |
-| **Altura padrão de Input** | `56 dp` | Herdado (Material 3 Text Field) | Altura de container recomendada para campos de entrada. Proposta de token: `input.height: 56 dp`. |
-| **Altura mínima de Botão** | `48 dp` | Herdado (Material 3 Button) | Altura mínima que assegura conformidade de toque. Proposta de token: `button.min-height: 48 dp`. |
-| **Compensação geométrica (hitSlop)** | `12 dp` | Calculado: $(48 - 24) / 2$ | Folga simétrica necessária para expandir um elemento de 24 dp até o alvo de 48 dp. Não integra a grade de 8 px de espaçamento; mantida como cálculo utilitário de acessibilidade sem token ou proposta como `hit-slop.compact: 12 dp`. |
+| **Alvo interativo mínimo** | `48 × 48 dp` | Herdado (Material 3 / WCAG 2.5.5) | Formalizado como `target.min-size`; botões apontam para ele por `button.min-height` e `button.min-width`. |
+| **Altura padrão de Input** | `56 dp` | Herdado (Material 3 Text Field) | Lacuna: proposta de token `input.height`. |
+| **Altura mínima de Botão** | `48 dp` | Herdado (Material 3 Button) | Formalizado como `button.min-height`. |
+| **Compensação geométrica (hitSlop)** | `12 dp` | Calculado: $(48 - 24) / 2$ | Lacuna: cálculo utilitário sem token; proposta `hit-slop.compact`. |
+
+A geometria do foco também foi formalizada em `02-tokens.md`: `focus.ring-width` e `focus.ring-offset` definem os 2 dp estabelecidos nesta diretriz, enquanto os tokens de componente `button.focus-width` e `button.focus-offset` apontam para esses valores.
 
 ---
 
