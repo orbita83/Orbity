@@ -10,20 +10,20 @@
 
 | Token | Valor | Origem |
 | --- | --- | --- |
-| `blue-600` | `#4F46E5` | Adaptado |
-| `purple-500` | `#8B5CF6` | Adaptado |
-| `purple-600` | `#9333EA` | Adaptado |
-| `purple-400` | `#C084FC` | Adaptado |
-| `purple-200` | `#E9D5FF` | Adaptado |
-| `neutral-0` | `#FFFFFF` | Adaptado |
-| `neutral-100` | `#F3F4F6` | Adaptado |
-| `neutral-200` | `#E5E7EB` | Adaptado |
-| `neutral-500` | `#6B7280` | Adaptado |
-| `neutral-900` | `#1B1B1F` | Adaptado |
-| `success-500` | `#22C55E` | Novo |
-| `warning-500` | `#F59E0B` | Novo |
-| `error-500` | `#EF4444` | Adaptado |
-| `info-500` | `#3B82F6` | Novo |
+| `blue-600` | #4F46E5 | Adaptado |
+| `purple-500` | #8B5CF6 | Adaptado |
+| `purple-600` | #9333EA` | Adaptado |
+| `purple-400` | #C084FC` | Adaptado |
+| `purple-200` | #E9D5FF` | Adaptado |
+| `neutral-0` | #FFFFFF` | Adaptado |
+| `neutral-100` | #F3F4F6` | Adaptado |
+| `neutral-200` | #E5E7EB` | Adaptado |
+| `neutral-500` | #6B7280` | Adaptado |
+| `neutral-900` | #1B1B1F` | Adaptado |
+| `success-500` | #22C55` | Novo |
+| `warning-500` | #F59E0B` | Novo |
+| `error-500` | #EF4444 | Adaptado |
+| `info-500` | #3B82F6 | Novo |
 
 ### Espaço (grade de 8 pontos: múltiplos de 8, ou de 4 para ajustes finos)
 
