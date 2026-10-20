@@ -52,31 +52,31 @@
 - **Passos:**
   1. Toque em "+ Nova tarefa" ou "+ Nova rotina".
   2. Preenche título/nome, datas/dias da semana e adiciona subtarefas se for rotina.
-  3. Toque em "Criar"; valida campos obrigatórios (`color.error`, `font.label`).
+  3. Toque em "Criar"; valida campos obrigatórios com mensagem em `color.on-surface` e ícone em `color.error` (`font.label`, `space.sm`).
   4. Exibe modal de confirmação (2.2) e retorna à lista com o item criado.
 - **Estados:**
 
 | Situação | O que vê | Tokens |
 | :--- | :--- | :--- |
-| **Erro** | Mensagem inline sob o campo inválido com anel de foco | `color.error`, `font.label`, `color.focus` |
+| **Erro** | Mensagem textual em `color.on-surface` com ícone de alerta em `color.error` e anel de foco no campo (WCAG 1.4.1 e 1.4.3) | `color.on-surface`, `color.error`, `font.label`, `color.focus`, `space.sm` |
 | **Vazio** | Campos limpos com textos de exemplo (*placeholder*) | `color.surface`, `color.on-surface`, `font.body` |
 | **Sucesso** | Modal de feedback ("Tarefa criada!") com botão de fechamento | `radius.lg`, `elevation.card`, `color.action`, `font.title` |
 
-- **Faça:** Preserve os dados digitados caso ocorra erro de validação.
-- **Evite:** Limpar formulários por falhas de preenchimento.
+- **Faça:** Preserve os dados digitados caso ocorra erro de validação e garanta identificação por texto e ícone (independência de cor e contraste).
+- **Evite:** Limpar formulários por falhas de preenchimento ou utilizar apenas texto colorido de baixo contraste para sinalizar erros.
 
 ---
 
 ## 4. Gestão de Tarefas e Ações em Lote (F5, F6)
 
 - **Objetivo:** Filtrar, marcar conclusão pontual ou executar ações em massa (fixar, excluir).
-- **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.error`).
+- **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.on-surface`).
 - **Passos:**
   1. Toque no círculo marca/desmarca a tarefa imediatamente.
   2. Abas filtram a visualização da lista.
   3. *Long-press* entra no modo de seleção múltipla (2.3); navbar é substituída por:
      - Topo: "✕ · N selecionados" (`font.label`).
-     - Barra inferior: **Fixar**, **Marcar todas**, **Excluir (n)** com destaque destrutivo (`color.error`).
+     - Barra inferior: **Fixar**, **Marcar todas**, **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`).
   4. "✕" cancela a seleção e restaura a navbar.
 - **Estados:**
 
@@ -86,7 +86,7 @@
 | **Vazio** | Ilustração amigável e texto ("Nenhuma tarefa pendente") | `font.title`, `font.body`, `space.lg` |
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
-- **Faça:** Exija confirmação antes de apagar itens em lote.
+- **Faça:** Exija confirmação antes de apagar itens em lote e garanta que ações destrutivas combinem ícone e texto com contraste acessível.
 - **Evite:** Mensagens ou alertas punitivos ao desmarcar tarefas concluídas.
 
 ---
