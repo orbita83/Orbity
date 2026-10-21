@@ -11,7 +11,7 @@ O **Orbity** é um aplicativo de organização pessoal voltado aos estudantes, q
 O **Orbity Design System (ODS)** estabelece princípios, fundamentos, tokens e componentes para orientar a construção de interfaces consistentes, acessíveis e intuitivas, proporcionando uma experiência de organização acolhedora e motivadora.
 
 - **Público-alvo:** estudantes que desejam organizar atividades e desenvolver hábitos de estudo sem perder o controle sobre a própria rotina.
-- **Plataformas configuradas:** Android, iOS e Web.
+- **Plataforma principal:** Android, com distribuição prevista pela Google Play Store. Uma versão para iOS ainda não foi decidida e não faz parte do foco atual; não há versão Web prevista.
 - **Stack:** React Native 0.86, Expo 57, Expo Router e TypeScript.
 - **Sistema base:** Material Design 3, adaptado à identidade, aos fluxos e às necessidades de acessibilidade do Orbity.
 
@@ -22,7 +22,7 @@ O **Orbity Design System (ODS)** estabelece princípios, fundamentos, tokens e c
 | **Usuários** | O Material Design 3 tem como pilar melhorar a experiência do usuário com fluxos previsíveis e familiares, oferecendo uma base clara para apoiar a organização diária dos estudantes. |
 | **Acessibilidade** | O sistema base já consolida práticas fortes de contraste, alvos mínimos de toque, foco e leitura de tela, que o Orbity aproveita diretamente e complementa com critérios da WCAG. |
 | **Marca e componentes** | A simplicidade e a estrutura dos componentes do MD3 (botões, cards, listas e painéis) são muito próximas das necessidades do aplicativo, facilitando a adaptação à identidade visual do Orbity. |
-| **Plataforma** | Fornece convenções consolidadas para dispositivos móveis (especialmente Android) que se adaptam com consistência às versões iOS e Web previstas no projeto. |
+| **Plataforma** | Fornece convenções consolidadas para Android, plataforma principal do Orbity, cuja distribuição está prevista pela Google Play Store. Uma versão para iOS ainda não foi decidida e não faz parte do foco atual; o projeto não prevê versão Web. |
 | **Tecnologia** | Sua arquitetura baseada em tokens (primitivos, semânticos e de componente) e estados bem definidos mapeia de forma simples e direta para componentes em React Native, Expo e TypeScript. |
 
 ## 3. Inventário: telas × componentes
