@@ -17,13 +17,13 @@ O **Orbity Design System (ODS)** estabelece princípios, fundamentos, tokens e c
 
 ## 2. As 5 forças que definem o sistema base (MD3)
 
-| Força     | Justificativa |
-| --------- | ------------- |
-| A definir | TODO          |
-| A definir | TODO          |
-| A definir | TODO          |
-| A definir | TODO          |
-| A definir | TODO          |
+| Força | Justificativa |
+| --- | --- |
+| **Usuários** | O Material Design 3 tem como pilar melhorar a experiência do usuário com fluxos previsíveis e familiares, oferecendo uma base clara para apoiar a organização diária dos estudantes. |
+| **Acessibilidade** | O sistema base já consolida práticas fortes de contraste, alvos mínimos de toque, foco e leitura de tela, que o Orbity aproveita diretamente e complementa com critérios da WCAG. |
+| **Marca e componentes** | A simplicidade e a estrutura dos componentes do MD3 (botões, cards, listas e painéis) são muito próximas das necessidades do aplicativo, facilitando a adaptação à identidade visual do Orbity. |
+| **Plataforma** | Fornece convenções consolidadas para dispositivos móveis (especialmente Android) que se adaptam com consistência às versões iOS e Web previstas no projeto. |
+| **Tecnologia** | Sua arquitetura baseada em tokens (primitivos, semânticos e de componente) e estados bem definidos mapeia de forma simples e direta para componentes em React Native, Expo e TypeScript. |
 
 ## 3. Inventário: telas × componentes
 
