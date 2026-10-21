@@ -14,9 +14,11 @@ export const primitives = {
 
 export type ThemeMode = "light" | "dark";
 
-const accessibility = {
+const sharedTokens = {
   target: { minSize: 48 },
   focus: { ringWidth: 2, ringOffset: 2 },
+  radius: { md: 12, lg: 16 },
+  elevation: { card: 2 },
 } as const;
 
 function createTheme(mode: ThemeMode) {
@@ -36,8 +38,18 @@ function createTheme(mode: ThemeMode) {
       md: primitives["space-16"],
       lg: primitives["space-24"],
     },
+    target: sharedTokens.target,
+    focus: sharedTokens.focus,
+    radius: sharedTokens.radius,
+    elevation: sharedTokens.elevation,
     primitive: primitives,
     font: {
+      body: {
+        fontFamily: "Roboto",
+        fontSize: 16,
+        fontWeight: "400",
+        lineHeight: 24,
+      } satisfies TextStyle,
       label: {
         fontFamily: "Roboto",
         fontSize: 14,
@@ -48,12 +60,12 @@ function createTheme(mode: ThemeMode) {
     button: {
       bg: color.action,
       label: color["on-action"],
-      radius: 12,
-      minHeight: accessibility.target.minSize,
-      minWidth: accessibility.target.minSize,
+      radius: sharedTokens.radius.md,
+      minHeight: sharedTokens.target.minSize,
+      minWidth: sharedTokens.target.minSize,
       focusColor: color.focus,
-      focusWidth: accessibility.focus.ringWidth,
-      focusOffset: accessibility.focus.ringOffset,
+      focusWidth: sharedTokens.focus.ringWidth,
+      focusOffset: sharedTokens.focus.ringOffset,
     },
   };
 }
