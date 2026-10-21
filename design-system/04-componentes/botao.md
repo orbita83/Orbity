@@ -2,7 +2,7 @@
 
 Origem no sistema base: Material 3, Filled button. Situação: Adaptado. Motivo da adaptação: aplicar as cores de ação, a forma e as regras oficiais de acessibilidade do Orbity à ação principal da tela.
 
-Referências locais: [protótipo da lista de tarefas](<Captura de tela 2026-10-20 071113.png>) e [análise de componentes](atomic-design.png). O componente corresponde à ação “+ Nova tarefa”, identificada como botão primário na camada de moléculas. O contorno do esboço indica a área do botão; a aparência final segue os tokens.
+Aplicação no Orbity: o componente corresponde à ação “+ Nova tarefa” do fluxo de criação descrito em [05-padroes.md](../05-padroes.md) e representa a ação principal da tela. A aparência e o comportamento seguem os [tokens do ODS](../02-tokens.md), os estados e os critérios de acessibilidade documentados abaixo.
 
 ## Quando usar
 
@@ -32,7 +32,7 @@ No React Native, os números de dimensão representam unidades lógicas independ
 | Variante | Uso | Tokens |
 | --- | --- | --- |
 | Primário com texto | Ação principal cujo rótulo é suficiente | `button.bg`, `button.label`, `button.radius`, `button.min-height`, `button.min-width`, `font.label`, `space.sm`, `space.md` |
-| Primário com ícone e texto | “Nova tarefa”, conforme o protótipo; o ícone reforça a ação | Os mesmos tokens, com `space.sm` entre ícone e texto; token de tamanho do ícone pendente |
+| Primário com ícone e texto | “Nova tarefa”; o ícone reforça a ação | Os mesmos tokens, com `space.sm` entre ícone e texto; token de tamanho do ícone pendente |
 
 A variante somente com ícone não faz parte deste componente. Os temas claro e escuro usam os mesmos nomes de tokens.
 
@@ -70,7 +70,7 @@ Os cálculos e as regras completas estão em [06-acessibilidade.md](../06-acessi
 - **Evite:** usar apenas “+” como rótulo ou anunciar o ícone e o texto separadamente.
 - **Evite:** fixar a altura do botão ou truncar seu rótulo.
 - **Evite:** reutilizar este botão como filtro selecionável ou checkbox.
-- **Evite:** tratar o esboço preto e branco como definição de cores, bordas e medidas.
+- **Evite:** inferir cores, bordas ou medidas a partir de referências visuais; siga os tokens documentados.
 
 ## Código
 
