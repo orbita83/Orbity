@@ -2,19 +2,32 @@ import type { TextStyle } from "react-native";
 
 // Valores definidos em design-system/02-tokens.md.
 export const primitives = {
+  // Cores primitivas
   "blue-600": "#4F46E5",
+  "purple-500": "#8B5CF6",
+  "purple-600": "#9333EA",
   "purple-400": "#C084FC",
+  "purple-200": "#E9D5FF",
   "neutral-0": "#FFFFFF",
+  "neutral-100": "#F3F4F6",
+  "neutral-200": "#E5E7EB",
+  "neutral-500": "#6B7280",
   "neutral-900": "#1B1B1F",
+  "success-500": "#22C55E",
+  "warning-500": "#F59E0B",
+  "error-500": "#EF4444",
+  "info-500": "#3B82F6",
+  // Espaçamentos primitivos
   "space-4": 4,
   "space-8": 8,
   "space-16": 16,
   "space-24": 24,
+  "space-32": 32,
 } as const;
 
 export type ThemeMode = "light" | "dark";
 
-const accessibility = {
+export const accessibilityTokens = {
   target: { minSize: 48 },
   focus: { ringWidth: 2, ringOffset: 2 },
 } as const;
@@ -26,6 +39,7 @@ function createTheme(mode: ThemeMode) {
     "on-action": dark ? primitives["neutral-900"] : primitives["neutral-0"],
     surface: dark ? primitives["neutral-900"] : primitives["neutral-0"],
     "on-surface": dark ? primitives["neutral-0"] : primitives["neutral-900"],
+    error: primitives["error-500"],
     focus: dark ? primitives["purple-400"] : primitives["blue-600"],
   };
 
@@ -36,8 +50,34 @@ function createTheme(mode: ThemeMode) {
       md: primitives["space-16"],
       lg: primitives["space-24"],
     },
+    radius: {
+      md: 12,
+      lg: 16,
+    },
+    elevation: {
+      card: 2,
+    },
+    target: {
+      minSize: accessibilityTokens.target.minSize,
+    },
+    focus: {
+      ringWidth: accessibilityTokens.focus.ringWidth,
+      ringOffset: accessibilityTokens.focus.ringOffset,
+    },
     primitive: primitives,
     font: {
+      title: {
+        fontFamily: "Roboto",
+        fontSize: 24,
+        fontWeight: "700",
+        lineHeight: 32,
+      } satisfies TextStyle,
+      body: {
+        fontFamily: "Roboto",
+        fontSize: 16,
+        fontWeight: "400",
+        lineHeight: 24,
+      } satisfies TextStyle,
       label: {
         fontFamily: "Roboto",
         fontSize: 14,
@@ -49,11 +89,23 @@ function createTheme(mode: ThemeMode) {
       bg: color.action,
       label: color["on-action"],
       radius: 12,
-      minHeight: accessibility.target.minSize,
-      minWidth: accessibility.target.minSize,
+      minHeight: accessibilityTokens.target.minSize,
+      minWidth: accessibilityTokens.target.minSize,
       focusColor: color.focus,
-      focusWidth: accessibility.focus.ringWidth,
-      focusOffset: accessibility.focus.ringOffset,
+      focusWidth: accessibilityTokens.focus.ringWidth,
+      focusOffset: accessibilityTokens.focus.ringOffset,
+    },
+    navbar: {
+      bg: color.surface,
+      itemActive: color.action,
+      itemInactive: color["on-surface"],
+      indicatorBg: dark ? primitives["purple-600"] : primitives["purple-200"],
+      minHeight: accessibilityTokens.target.minSize,
+      elevation: 2,
+      focusColor: color.focus,
+      focusWidth: accessibilityTokens.focus.ringWidth,
+      focusOffset: accessibilityTokens.focus.ringOffset,
+      iconSize: 24,
     },
   };
 }

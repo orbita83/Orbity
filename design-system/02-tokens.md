@@ -93,6 +93,15 @@
 | `button.bg-hover`    | `color.action` + estado hover     | Adaptado |
 | `button.bg-pressed`  | `color.action` + estado pressed   | Adaptado |
 | `button.bg-disabled` | `color.surface` + estado disabled | Adaptado |
+| `navbar.bg`          | `color.surface`                   | Adaptado |
+| `navbar.item-active` | `color.action`                    | Adaptado |
+| `navbar.item-inactive` | `color.on-surface`              | Adaptado |
+| `navbar.indicator-bg`| `purple-200` (claro) / `purple-600` (escuro) | Adaptado |
+| `navbar.min-height`  | `target.min-size`                 | Herdado  |
+| `navbar.elevation`   | `elevation.card`                  | Adaptado |
+| `navbar.focus-color` | `color.focus`                     | Adaptado |
+| `navbar.focus-width` | `focus.ring-width`                | Herdado  |
+| `navbar.focus-offset`| `focus.ring-offset`               | Herdado  |
 
 ## 4. Modo escuro
 
