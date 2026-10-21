@@ -32,6 +32,13 @@ export const accessibilityTokens = {
   focus: { ringWidth: 2, ringOffset: 2 },
 } as const;
 
+export const sharedTokens = {
+  target: accessibilityTokens.target,
+  focus: accessibilityTokens.focus,
+  radius: { md: 12, lg: 16 },
+  elevation: { card: 2 },
+} as const;
+
 function createTheme(mode: ThemeMode) {
   const dark = mode === "dark";
   const color = {
@@ -50,20 +57,10 @@ function createTheme(mode: ThemeMode) {
       md: primitives["space-16"],
       lg: primitives["space-24"],
     },
-    radius: {
-      md: 12,
-      lg: 16,
-    },
-    elevation: {
-      card: 2,
-    },
-    target: {
-      minSize: accessibilityTokens.target.minSize,
-    },
-    focus: {
-      ringWidth: accessibilityTokens.focus.ringWidth,
-      ringOffset: accessibilityTokens.focus.ringOffset,
-    },
+    target: sharedTokens.target,
+    focus: sharedTokens.focus,
+    radius: sharedTokens.radius,
+    elevation: sharedTokens.elevation,
     primitive: primitives,
     font: {
       title: {
@@ -88,23 +85,23 @@ function createTheme(mode: ThemeMode) {
     button: {
       bg: color.action,
       label: color["on-action"],
-      radius: 12,
-      minHeight: accessibilityTokens.target.minSize,
-      minWidth: accessibilityTokens.target.minSize,
+      radius: sharedTokens.radius.md,
+      minHeight: sharedTokens.target.minSize,
+      minWidth: sharedTokens.target.minSize,
       focusColor: color.focus,
-      focusWidth: accessibilityTokens.focus.ringWidth,
-      focusOffset: accessibilityTokens.focus.ringOffset,
+      focusWidth: sharedTokens.focus.ringWidth,
+      focusOffset: sharedTokens.focus.ringOffset,
     },
     navbar: {
       bg: color.surface,
       itemActive: color.action,
       itemInactive: color["on-surface"],
       indicatorBg: dark ? primitives["purple-600"] : primitives["purple-200"],
-      minHeight: accessibilityTokens.target.minSize,
-      elevation: 2,
+      minHeight: sharedTokens.target.minSize,
+      elevation: sharedTokens.elevation.card,
       focusColor: color.focus,
-      focusWidth: accessibilityTokens.focus.ringWidth,
-      focusOffset: accessibilityTokens.focus.ringOffset,
+      focusWidth: sharedTokens.focus.ringWidth,
+      focusOffset: sharedTokens.focus.ringOffset,
       iconSize: 24,
     },
   };
