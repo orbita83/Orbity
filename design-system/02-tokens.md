@@ -80,19 +80,21 @@
 
 ## 3. Tokens de componente (onde é usado)
 
-| Token                | Aponta para                       | Origem   |
-| ---                  | ---                               | ---      |
-| `button.bg`          | `color.action`                    | Adaptado |
-| `button.label`       | `color.on-action`                 | Adaptado |
-| `button.radius`      | `radius.md`                       | Adaptado |
-| `button.min-height`  | `target.min-size`                 | Herdado  |
-| `button.min-width`   | `target.min-size`                 | Herdado  |
-| `button.focus-color` | `color.focus`                     | Adaptado |
-| `button.focus-width` | `focus.ring-width`                | Herdado  |
-| `button.focus-offset`| `focus.ring-offset`               | Herdado  |
-| `button.bg-hover`    | `color.action` + estado hover     | Adaptado |
-| `button.bg-pressed`  | `color.action` + estado pressed   | Adaptado |
-| `button.bg-disabled` | `color.surface` + estado disabled | Adaptado |
+| Token                      | Aponta para                       | Origem   |
+| ---                        | ---                               | ---      |
+| `button.bg`                | `color.action`                    | Adaptado |
+| `button.label`             | `color.on-action`                 | Adaptado |
+| `button.radius`            | `radius.md`                       | Adaptado |
+| `button.min-height`        | `target.min-size`                 | Herdado  |
+| `button.min-width`         | `target.min-size`                 | Herdado  |
+| `button.focus-color`       | `color.focus`                     | Adaptado |
+| `button.focus-width`       | `focus.ring-width`                | Herdado  |
+| `button.focus-offset`      | `focus.ring-offset`               | Herdado  |
+| `button.bg-hover`          | `color.action` + estado hover     | Adaptado |
+| `button.bg-pressed`        | `color.action` + estado pressed   | Adaptado |
+| `button.bg-disabled`       | `color.surface` + estado disabled | Adaptado |
+| `button.label-disabled`    | `color.on-surface`                | Adaptado |
+| `button.opacity-disabled`  | `0.6`                             | Novo     |
 
 ## 4. Modo escuro
 
