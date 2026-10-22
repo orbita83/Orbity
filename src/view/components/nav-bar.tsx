@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
-import { themes, type OrbityTheme } from "../theme/tokens";
+import { cosmicTokens as t, themes, type OrbityTheme } from "../theme/tokens";
+import { CosmicIcon, type CosmicIconName } from "./cosmic-icon";
 
 export type NavTabId = "inicio" | "tarefas" | "rotinas" | "cosmos" | "perfil";
 
@@ -51,6 +52,8 @@ export type NavBarProps = {
   visible?: boolean;
   theme?: OrbityTheme;
   tabs?: readonly NavTabItem[];
+  appearance?: "default" | "cosmic";
+  bottomInset?: number;
 };
 
 export const NavBar = ({
@@ -59,6 +62,8 @@ export const NavBar = ({
   visible = true,
   theme = themes.light,
   tabs = DEFAULT_NAV_TABS,
+  appearance = "default",
+  bottomInset = 0,
 }: NavBarProps) => {
   const [focusedTabId, setFocusedTabId] = useState<NavTabId | null>(null);
 
@@ -68,6 +73,23 @@ export const NavBar = ({
   }
 
   const styles = createStyles(theme);
+
+  if (appearance === "cosmic") {
+    return (
+      <View accessibilityRole="tablist" style={[cosmicStyles.container, { paddingBottom: bottomInset, minHeight: t.layout.navHeight + bottomInset }]}>
+        {tabs.map((tab, index) => {
+          const active = activeTab === tab.id;
+          const icons: Record<NavTabId, CosmicIconName> = { inicio: "home", tarefas: "tasks", rotinas: "target", cosmos: "star", perfil: "person" };
+          return (
+            <Pressable key={tab.id} accessibilityRole="tab" accessibilityLabel={`${tab.label}, ${index + 1} de ${tabs.length}`} accessibilityState={{ selected: active }} onPress={() => onSelectTab(tab.id)} onFocus={() => setFocusedTabId(tab.id)} onBlur={() => setFocusedTabId(null)} style={({ pressed }) => [cosmicStyles.tab, focusedTabId === tab.id && cosmicStyles.focused, pressed && cosmicStyles.pressed]}>
+              <CosmicIcon name={icons[tab.id]} filled={active && tab.id === "inicio"} color={active ? t.color.active : t.color.inactive} size={25} />
+              <Text allowFontScaling style={[cosmicStyles.label, active && cosmicStyles.activeLabel]}>{tab.label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  }
 
   return (
     <View accessibilityRole="tablist" style={styles.container}>
@@ -207,3 +229,12 @@ const createStyles = (theme: OrbityTheme) =>
       fontWeight: "500",
     },
   });
+
+const cosmicStyles = StyleSheet.create({
+  container: { flexDirection: "row", alignItems: "center", backgroundColor: t.color.background, borderTopWidth: t.border.subtle, borderTopColor: t.color.cardBorder, minHeight: t.layout.navHeight, paddingHorizontal: t.space.sm },
+  tab: { flex: 1, minHeight: 64, justifyContent: "center", alignItems: "center", gap: t.space.sm, borderWidth: t.border.focus, borderColor: t.color.transparent, borderRadius: t.radius.button, paddingVertical: t.space.sm },
+  focused: { borderColor: t.color.focus },
+  pressed: { opacity: t.motion.pressedOpacity },
+  label: { ...t.font.tab, color: t.color.muted },
+  activeLabel: { color: t.color.focus },
+});
