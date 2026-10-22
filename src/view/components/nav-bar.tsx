@@ -22,7 +22,7 @@ export const DEFAULT_NAV_TABS: readonly NavTabItem[] = [
   {
     id: "tarefas",
     label: "Tarefas",
-    iconSymbol: "check_circle",
+    iconSymbol: "description",
     accessibilityHint: "Acessa a lista e acompanhamento de tarefas",
   },
   {
