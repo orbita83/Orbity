@@ -1,5 +1,7 @@
 # Tokens
 
+> A variante da Tela Inicial aprovada em 22/10/2026 possui tokens próprios em `cosmicTokens`, documentados em [07-home-cosmica.md](07-home-cosmica.md). As tabelas abaixo continuam válidas para os temas anteriores dos componentes.
+
 <!-- Camada 2 da aula: decisões com nome. Três níveis: primitivo → semântico → componente.
      Formato do nome: categoria.papel.variação (ex.: color.action, space.md, radius.lg, font.title).
      Escreva sempre valor + unidade (px, dp ou pt). Em toda tabela, a coluna "Origem" usa: Herdado | Adaptado | Novo. -->
