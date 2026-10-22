@@ -161,7 +161,7 @@
 ## 8. Perfil (F10)
 
 - **Objetivo:** Consultar histórico consolidado de hábitos, total de horas dedicadas, gerenciar categorias e acessar preferências gerais do aplicativo.
-- **Componentes:** Cabeçalho de identificação do estudante (`font.title`, `font.body`, `space.md`), Cards de métricas com sequência, horas e conquistas (`radius.lg`, `elevation.card`, `space.sm`, `font.title`, `color.action`), Atalhos navegáveis de Conquistas, Categorias e Ajustes (`radius.md`, `space.md`, `font.body`, `color.on-surface`).
+- **Componentes:** Cabeçalho de identificação do estudante com selo circular baseado em `target.min-size` (48 × 48 dp com raio de 24 dp, `font.title` para inicial e nome, `font.body` para subtítulo), Cards de métricas com sequência, horas e conquistas (`radius.lg`, `elevation.card`, `space.sm`, `font.title` para valor numérico, `font.label` para legenda, `color.action`), Atalhos navegáveis de Conquistas, Categorias e Ajustes com altura mínima `target.min-size` (48 dp), `radius.md`, `space.md`, `font.body` para título, `font.label` para descrição de apoio e `color.on-surface`.
 - **Passos:**
   1. Estudante seleciona a aba **Perfil** na navbar fixa.
   2. Visualiza o cabeçalho e os cards com métricas acumuladas (sequência de dias, horas e conquistas obtidas).
@@ -177,6 +177,8 @@
 | **Sucesso** | Métricas consolidadas com destaque visual positivo e atalhos rápidos disponíveis | `color.action`, `radius.lg`, `elevation.card`, `font.title` |
 
 - **Faça:** Enfatize o esforço total acumulado (horas totais e conquistas), mantendo tom encorajador e construtivo.
+- **Faça:** Utilize exclusivamente os tokens formais para títulos e subtítulos (`font.title` para títulos principais e `font.body` com peso enfático para subtítulos/cards), sem inventar tamanhos intermediários.
+- **Faça:** Dimensione barras de skeleton com larguras percentuais e alturas correspondentes aos `lineHeight` dos tokens tipográficos (32 px para títulos, 24 px para corpo e 20 px para rótulos).
 - **Evite:** Destaques alarmantes em vermelho ou penalizações visuais caso a sequência de dias seja interrompida.
 
 ---

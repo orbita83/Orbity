@@ -21,6 +21,7 @@
 
 - Use `font.title` para títulos de tela e `font.body` para texto corrido. (Adaptado)
 - Use `font.label` para rótulos de botões e campos. (Adaptado)
+- Nunca invente tamanhos tipográficos intermediários (ex.: 18 px ou 20 px). Para subtítulos e cabeçalhos de cards, utilize `font.title` ou `font.body` com peso enfático (700 ou 600). (Novo)
 - Respeite o tamanho de fonte escolhido pelo usuário no sistema, utilizando os recursos de escala de fonte da plataforma. (Herdado)
 - Não transmita informações importantes apenas por meio do tamanho ou peso da fonte. (Adaptado)
 
@@ -29,6 +30,8 @@
 - Use múltiplos de 8 px para margens e espaços; utilize múltiplos de 4 px para ajustes finos. (Herdado)
 - Use `space.md` como Margem interna padrão das telas. (Adaptado)
 - Use `space.sm` entre elementos relacionados e `space.lg` para separar grupos. (Adaptado)
+- Controles e atalhos interativos em lista devem utilizar obrigatoriamente altura mínima de `target.min-size` (48 dp) e `radius.md`. (Herdado)
+- Para elementos de carregamento (esqueleto/skeleton), utilize larguras percentuais (ex.: 60%, 80%, 100%) e alturas alinhadas às alturas de linha tipográficas (`lineHeight`: 32 px para títulos, 24 px para corpo e 20 px para rótulos) com `radius.md`. (Novo)
 - Mantenha espaçamentos consistentes entre elementos com a mesma função. (Adaptado)
 
 ## Ícones
@@ -49,5 +52,6 @@
 
 - Use animações curtas para fornecer feedback às interações e transições quando houver mudança de contexto. (Adaptado)
 - Evite animações decorativas que distraiam ou atrasem tarefas. (Adaptado)
+- Para feedback tátil de toque em cards e listas (`pressed`), utilize redução de opacidade padronizada para 0.8 (ou variação de superfície no modo claro acompanhada de indicador com contraste perceptível no modo escuro). (Novo)
 - Respeite a preferência do sistema por movimento reduzido. (Herdado)
 - Não dependa de animações para transmitir informações essenciais. (Adaptado)
