@@ -27,6 +27,7 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
+      if (context.parameters.cosmicHome) return <Story />;
       const theme = themes[context.globals.theme === "dark" ? "dark" : "light"];
       return (
         <View
