@@ -33,7 +33,7 @@ const meta = {
       description: {
         component:
           "Barra de navegação primária inferior (NavBar) do Orbity. Possui 5 destinos fixos com " +
-          "glifos oficiais do Material Symbols (home, check_circle, autorenew, auto_awesome, person), " +
+          "glifos oficiais do Material Symbols (home, description, autorenew, auto_awesome, person), " +
           "rótulos sempre visíveis, alvos de toque mínimos de 48 × 48 dp, anel de foco externo de 2 dp " +
           "para teclado (Tab) e suporte completo aos modos claro e escuro.",
       },

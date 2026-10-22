@@ -25,7 +25,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Fluxos F1 de Navegação
 3. **Indicador de aba ativa (Pill):** cápsula visual que delimita o ícone selecionado com fundo `navbar.indicator-bg` (`purple-200` no modo claro; `purple-600` no modo escuro) e cantos arredondados com `radius.lg`.
 4. **Ícones Material Symbols (24 dp):** dimensão `navbar.icon-size` (lacuna de token primitivo formalizada como 24 dp conforme [03-fundamentos.md](../03-fundamentos.md)). Variação preenchida (`FILL 1`) para o item ativo e contorno (`FILL 0`) para os itens inativos:
    - Início: glifo `home`
-   - Tarefas: glifo `check_circle`
+   - Tarefas: glifo `description` (folha de caderno / notas de estudo)
    - Rotinas: glifo `autorenew`
    - Cosmos: glifo `auto_awesome`
    - Perfil: glifo `person`
@@ -73,7 +73,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Fluxos F1 de Navegação
 ## Faça e evite
 
 - **Faça:** Exiba simultaneamente ícone e rótulo de texto em todas as cinco abas para reforçar o reconhecimento cognitivo.
-- **Faça:** Respeite o mapeamento padronizado de glifos do Material Symbols (`home`, `check_circle`, `autorenew`, `auto_awesome`, `person`).
+- **Faça:** Respeite o mapeamento padronizado de glifos do Material Symbols (`home`, `description`, `autorenew`, `auto_awesome`, `person`).
 - **Faça:** Oculte ou substitua a barra inferior quando o estudante estiver em Modo Foco (F2) ou Seleção Múltipla de tarefas (F6).
 - **Faça:** Preserve o foco acessível de 2 dp com offset de 2 dp e cores do tema ativo.
 - **Evite:** Ocultar rótulos das abas inativas (padrão de ícone isolado que compromete a usabilidade e a acessibilidade).

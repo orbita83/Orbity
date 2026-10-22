@@ -3,6 +3,8 @@ import { Platform, StyleSheet, View } from "react-native";
 export type MaterialSymbolName =
   | "home"
   | "check_circle"
+  | "description"
+  | "assignment"
   | "autorenew"
   | "auto_awesome"
   | "person"
@@ -24,6 +26,18 @@ const SYMBOL_PATHS: Record<
     outlined:
       "M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z",
     filled: "M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z",
+  },
+  description: {
+    outlined:
+      "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 16h8v2H8v-2zm0-4h8v2H8v-2z",
+    filled:
+      "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z",
+  },
+  assignment: {
+    outlined:
+      "M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 16H5V5h2v3h10V5h2v14zm-5-3H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z",
+    filled:
+      "M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z",
   },
   check_circle: {
     outlined:
