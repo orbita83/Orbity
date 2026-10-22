@@ -52,6 +52,6 @@
 
 - Use animações curtas para fornecer feedback às interações e transições quando houver mudança de contexto. (Adaptado)
 - Evite animações decorativas que distraiam ou atrasem tarefas. (Adaptado)
-- Para feedback tátil de toque em cards e listas (`pressed`), utilize variação de superfície (`color.surface-variant`) ou redução sutil de opacidade padronizada para 0.8. (Novo)
+- Para feedback tátil de toque em cards e listas (`pressed`), utilize redução de opacidade padronizada para 0.8 (ou variação de superfície no modo claro acompanhada de indicador com contraste perceptível no modo escuro). (Novo)
 - Respeite a preferência do sistema por movimento reduzido. (Herdado)
 - Não dependa de animações para transmitir informações essenciais. (Adaptado)
