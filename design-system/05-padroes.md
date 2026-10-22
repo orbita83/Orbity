@@ -25,6 +25,8 @@
 
 ## 2. Navegação e Modo Foco (F1, F2)
 
+> **Variante cósmica do protótipo (Tela Inicial):** Conforme documentado em [07-home-cosmica.md](07-home-cosmica.md), o protótipo da Tela Inicial mantém a navbar inferior visível enquanto o painel está ancorado nos estágios recolhido, intermediário e expandido, ocultando-se apenas durante uma sessão de foco em andamento.
+
 - **Objetivo:** Alternar entre abas e iniciar sessões de foco via painel deslizante.
 - **Componentes:** Navbar fixa de 5 abas (`color.surface`, `elevation.card`, `font.label`, `color.action`, `color.on-surface`), Bottom Sheet com alça (`color.surface`, `radius.lg`, `elevation.card`, `space.md`), Botão "Iniciar" (`button.bg`, `button.label`, `button.radius`), Barra de progresso (`color.surface`, `color.action`, `radius.md`).
 - **Passos:**

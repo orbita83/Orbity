@@ -1,5 +1,7 @@
 # Painel deslizante de foco (FocusBottomSheet)
 
+> **Implementação atual do protótipo:** O painel de atividade e foco da Tela Inicial adota a especificação documentada em [07-home-cosmica.md](../07-home-cosmica.md). No protótipo vigente, o painel ancorado coexiste com a navbar visível nos estágios recolhido, intermediário e expandido, ocultando a barra de navegação exclusivamente durante uma sessão ativa de foco. As restrições descritas abaixo representam a especificação base anterior.
+
 Origem no sistema base: Material 3, Standard e Modal Bottom Sheets. Situação: Adaptado. Motivo da adaptação: organizar o fluxo da Tela Inicial em dois estágios progressivos de abertura (1.1 Modo Foco e Progresso e 1.2 Progresso completo com atalho para Conquistas), garantindo acionamento equivalente por gesto de swipe e por toque na alça, além da ocultação coordenada da barra de navegação inferior.
 
 Referências locais: [05-padroes.md](../05-padroes.md) (Seção 2 — Navegação e Modo Foco, fluxos F1 e F2) e [botao.md](botao.md) (`PrimaryButton` utilizado para a ação “Iniciar”). Na Tela Inicial, o componente posiciona-se na base da tela e complementa o componente de visualização de sequência ([visualizacao-sequencia.md](visualizacao-sequencia.md)).
