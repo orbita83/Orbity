@@ -41,12 +41,19 @@
 
 | Token             | Claro        | Escuro       | Uso                               | Origem   |
 | ---               | ---          | ---          | ---                               | ---      |
-| `color.action`    | `blue-600`   | `purple-400` | Ações principais                  | Adaptado |
+| `color.action`            | `blue-600`    | `purple-400`  | Ações principais, botões primários e estados ativos        | Adaptado |
+| `color.action-subtle`     | `purple-200`  | `purple-600`  | Fundo de pílulas ativas, indicadores e tags suaves         | Adaptado |
 | `color.on-action` | `neutral-0`  | `neutral-900`| Texto e ícone sobre `color.action`| Adaptado |
-| `color.surface`   | `neutral-0`  | `neutral-900`| Fundo das telas                   | Adaptado |
-| `color.on-surface`| `neutral-900`| `neutral-0`  | Texto sobre `color.surface`       | Adaptado |
-| `color.error`     | `error-500`  | `error-500`  | Erros e ações destrutivas         | Adaptado |
-| `color.focus`     | `blue-600`   | `purple-400` | Anel de foco                      | Adaptado |
+| `color.surface`           | `neutral-0`   | `neutral-900` | Fundo principal das telas e superfícies base               | Adaptado |
+| `color.surface-variant`   | `neutral-100` | `neutral-900` | Fundo secundário, containers de cards e campos             | Adaptado |
+| `color.on-surface`        | `neutral-900` | `neutral-0`   | Texto principal, títulos e ícones sobre superfícies        | Adaptado |
+| `color.on-surface-variant`| `neutral-500` | `neutral-200` | Textos secundários, prazos, legendas e rótulos auxiliares  | Adaptado |
+| `color.border`            | `neutral-200` | `neutral-500` | Bordas divisórias, separadores e contornos sutis           | Adaptado |
+| `color.focus`             | `blue-600`    | `purple-400`  | Anel indicador de foco de acessibilidade                   | Adaptado |
+| `color.error`             | `error-500`   | `error-500`   | Alertas de erro, campos inválidos e ações destrutivas      | Adaptado |
+| `color.success`           | `success-500` | `success-500` | Confirmação de metas, conclusão de rotinas e conquistas    | Novo     |
+| `color.warning`           | `warning-500` | `warning-500` | Avisos de pendência, prazo próximo e atenção               | Novo     |
+| `color.info`              | `info-500`    | `info-500`    | Dicas de estudo, notas contextuais e informativos          | Novo     |
 
 ### Tipografia
 
@@ -96,7 +103,7 @@
 | `navbar.bg`               | `color.surface`                              | Adaptado |
 | `navbar.item-active`      | `color.action`                               | Adaptado |
 | `navbar.item-inactive`    | `color.on-surface`                           | Adaptado |
-| `navbar.indicator-bg`     | `purple-200` (claro) / `purple-600` (escuro) | Adaptado |
+| `navbar.indicator-bg`     | `color.action-subtle`                        | Adaptado |
 | `navbar.min-height`       | `target.min-size`                            | Herdado  |
 | `navbar.elevation`        | `elevation.card`                             | Adaptado |
 | `navbar.focus-color`      | `color.focus`                                | Adaptado |
@@ -105,17 +112,31 @@
 
 ## 4. Modo escuro
 
-O Orbity possui os modos claro e escuro, mantendo os mesmos nomes de tokens semânticos nos dois temas. A mudança ocorre nos valores associados aos tokens, sem exigir componentes diferentes para cada modo.
+O Orbity possui suporte integral aos modos claro e escuro, mantendo os mesmos nomes de tokens semânticos nos dois temas. A alternância de tema altera previsivelmente os valores primitivos vinculados aos papéis semânticos, preservando a hierarquia da informação, a identidade da marca e o contraste acessível em todas as telas.
 
-Os seguintes tokens semânticos mudam de valor:
+### Matriz semântica de cores por modo
 
-- `color.action`: de `blue-600` para `purple-400`.
-- `color.on-action`: de `neutral-0` para `neutral-900`.
-- `color.surface`: de `neutral-0` para `neutral-900`.
-- `color.on-surface`: de `neutral-900` para `neutral-0`.
-- `color.focus`: de `blue-600` para `purple-400`.
+| Papel semântico | Modo Claro | Modo Escuro | Razão de contraste mínima e justificativa |
+| :--- | :--- | :--- | :--- |
+| `color.action` | `blue-600` (`#4F46E5`) | `purple-400` (`#C084FC`) | **6,29:1** no claro e **6,50:1** no escuro sobre superfície base. Transiciona do anil profundo para o lavanda luminoso, garantindo destaque sem ofuscamento no escuro. |
+| `color.on-action` | `neutral-0` (`#FFFFFF`) | `neutral-900` (`#1B1B1F`) | **6,29:1** no claro e **6,50:1** no escuro sobre `color.action`. Garante legibilidade máxima em rótulos de botões primários. |
+| `color.action-subtle` | `purple-200` (`#E9D5FF`) | `purple-600` (`#9333EA`) | Utilizado em indicadores de repouso/ativos (ex.: pílula da navbar) e chips de categoria. Fornece distinção suave sem conflitar com a ação principal. |
+| `color.surface` | `neutral-0` (`#FFFFFF`) | `neutral-900` (`#1B1B1F`) | Superfície principal de fundo. Proporciona descanso visual no tema escuro e alta clareza no tema claro. |
+| `color.surface-variant` | `neutral-100` (`#F3F4F6`) | `neutral-900` (`#1B1B1F`) | Superfície secundária para agrupamentos visuais e cards. No tema escuro, a diferenciação é reforçada pela elevação (`elevation.card`) ou borda sutil. |
+| `color.on-surface` | `neutral-900` (`#1B1B1F`) | `neutral-0` (`#FFFFFF`) | **17,17:1** em ambos os modos sobre `color.surface`. Destinado a títulos de tela (`font.title`), textos corridos (`font.body`) e ícones principais. |
+| `color.on-surface-variant` | `neutral-500` (`#6B7280`) | `neutral-200` (`#E5E7EB`) | **4,79:1** no claro (sobre `#FFFFFF`) e **13,46:1** no escuro (sobre `#1B1B1F`). Atende ao critério WCAG 1.4.3 (≥ 4,5:1 para texto normal) para prazos, legendas e textos de apoio. |
+| `color.border` | `neutral-200` (`#E5E7EB`) | `neutral-500` (`#6B7280`) | Bordas divisórias de cards e separadores de listas. Delimita áreas sem criar ruído visual. |
+| `color.focus` | `blue-600` (`#4F46E5`) | `purple-400` (`#C084FC`) | **6,29:1** no claro e **6,50:1** no escuro sobre o fundo adjacente. Supera o mínimo de 3,0:1 exigido pela WCAG 2.4.11 para anéis de foco visíveis. |
+| `color.error` | `error-500` (`#EF4444`) | `error-500` (`#EF4444`) | Sinalização de falhas e erros de validação. No modo claro (3,76:1), deve sempre acompanhar ícone de alerta e mensagem textual em `color.on-surface`. No modo escuro (4,56:1), atinge conformidade total. |
+| `color.success` | `success-500` (`#22C55E`) | `success-500` (`#22C55E`) | Celebração de metas, conclusão de hábitos e feedback positivo. Aplicado a ícones e badges, sempre acompanhado de texto em `color.on-surface`. |
+| `color.warning` | `warning-500` (`#F59E0B`) | `warning-500` (`#F59E0B`) | Avisos de pendência e prazos próximos. Sempre associado a ícones semânticos de alerta. |
+| `color.info` | `info-500` (`#3B82F6`) | `info-500` (`#3B82F6`) | Dicas de estudo e mensagens informativas da jornada. |
 
-O token `color.error` mantém `error-500` nos dois temas. Todas as combinações devem ser verificadas quanto ao contraste, com mínimo de 4,5:1 para texto comum.
+### Regras de transição e aplicação de tema
+
+1. **Uso de primitivos de status:** Os tokens de status (`error`, `success`, `warning`, `info`) mantêm o mesmo tom vibrante (`-500`) em ambos os temas para preservar o reconhecimento universal. Como no fundo claro o contraste direto de texto colorido pode ser inferior a 4,5:1, é **obrigatório** aplicar o Princípio de Independência de Cor (WCAG 1.4.1), associando texto em `color.on-surface` e ícone semântico representativo.
+2. **Superfícies e elevações no escuro:** No modo escuro, a diferenciação entre `color.surface` e `color.surface-variant` é mediada pela elevação (`elevation.card`) ou por borda delimitadora em `color.border`, evitando contrastes abruptos que gerem cansaço visual.
+3. **Equivalência semântica:** Nenhum componente deve realizar checagens manuais como `isDark ? "#FFFFFF" : "#000000"`. A estilização deve consumir estritamente os nomes de tokens semânticos (`theme.color.*`), garantindo consistência total caso novos temas ou ajustes finos de contraste sejam introduzidos.
 
 ## 5. (Bônus) Versão legível por máquina
 
