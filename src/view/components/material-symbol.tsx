@@ -1,4 +1,5 @@
 import { Platform, StyleSheet, View } from "react-native";
+import Svg, { Path } from "react-native-svg";
 
 export type MaterialSymbolName =
   | "home"
@@ -101,12 +102,16 @@ export const MaterialSymbol = ({
     );
   }
 
-  // Fallback para ambiente nativo sem react-native-svg
+  // Renderização nativa no Android e iOS via react-native-svg
   return (
     <View
       accessible={false}
       style={[styles.container, { width: size, height: size }]}
-    />
+    >
+      <Svg width={size} height={size} viewBox="0 0 24 24">
+        <Path d={pathData} fill={color} />
+      </Svg>
+    </View>
   );
 };
 
