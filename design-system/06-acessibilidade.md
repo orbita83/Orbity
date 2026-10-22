@@ -26,6 +26,8 @@ Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais
 | `color.on-action` sobre `color.action` | Escuro | `neutral-900` (`#1B1B1F`) sobre `purple-400` (`#C084FC`) | **6,50:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.on-surface` sobre `color.surface` | Claro | `neutral-900` (`#1B1B1F`) sobre `neutral-0` (`#FFFFFF`) | **17,17:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.on-surface` sobre `color.surface` | Escuro | `neutral-0` (`#FFFFFF`) sobre `neutral-900` (`#1B1B1F`) | **17,17:1** | 4,5:1 | **Aprovado** | Adaptado |
+| `color.on-surface-variant` sobre `color.surface` | Claro | `neutral-500` (`#6B7280`) sobre `neutral-0` (`#FFFFFF`) | **4,79:1** | 4,5:1 | **Aprovado** | Adaptado |
+| `color.on-surface-variant` sobre `color.surface` | Escuro | `neutral-200` (`#E5E7EB`) sobre `neutral-900` (`#1B1B1F`) | **13,46:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.error` sobre `color.surface` | Claro | `error-500` (`#EF4444`) sobre `neutral-0` (`#FFFFFF`) | **3,76:1** | 4,5:1 | **Reprovado para texto comum** *(aprovado para texto grande ≥ 24 px ou ≥ 18,67 px em negrito e ícones/elementos ≥ 3,0:1)* | Adaptado |
 | `color.error` sobre `color.surface` | Escuro | `error-500` (`#EF4444`) sobre `neutral-900` (`#1B1B1F`) | **4,56:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.focus` sobre `color.surface` | Claro | `blue-600` (`#4F46E5`) sobre `neutral-0` (`#FFFFFF`) | **6,29:1** | 3,0:1 | **Aprovado** | Adaptado |

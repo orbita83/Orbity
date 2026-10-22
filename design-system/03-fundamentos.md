@@ -5,12 +5,17 @@
 
 ## Cor
 
-- Use `color.action` somente para a ação principal da tela. (Adaptado)
+- Use `color.action` somente para a ação principal da tela e estados ativos destacados. (Adaptado)
+- Use `color.action-subtle` para indicadores de estado, pílulas de navegação e cápsulas visuais suaves. (Adaptado)
 - Nunca use cor como única forma de comunicar um estado; acrescente ícone ou texto. (Herdado)
 - Use `color.on-action` para textos e ícones sobre `color.action`. (Adaptado)
-- Use `color.on-surface` para textos sobre `color.surface`. (Adaptado)
+- Use `color.surface` para o fundo principal da tela e `color.surface-variant` para fundos secundários e agrupamentos. (Adaptado)
+- Use `color.on-surface` para títulos e textos principais sobre `color.surface`. (Adaptado)
+- Use `color.on-surface-variant` para prazos, legendas e textos de apoio secundários. (Adaptado)
+- Use `color.border` para bordas delimitadoras e divisores sem gerar ruído visual. (Adaptado)
+- Sempre associe ícone semântico e texto explicativo ao utilizar `color.error`, `color.success`, `color.warning` ou `color.info`. (Herdado)
 - Verifique o contraste entre texto e fundo, garantindo pelo menos 4,5:1 para texto comum. (Herdado)
-- Use os mesmos tokens semânticos nos modos claro e escuro. (Herdado)
+- Use os mesmos nomes de tokens semânticos nos modos claro e escuro, alternando apenas os valores vinculados. (Herdado)
 
 ## Tipografia
 

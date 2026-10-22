@@ -44,9 +44,16 @@ function createTheme(mode: ThemeMode) {
   const color = {
     action: dark ? primitives["purple-400"] : primitives["blue-600"],
     "on-action": dark ? primitives["neutral-900"] : primitives["neutral-0"],
+    "action-subtle": dark ? primitives["purple-600"] : primitives["purple-200"],
     surface: dark ? primitives["neutral-900"] : primitives["neutral-0"],
+    "surface-variant": dark ? primitives["neutral-900"] : primitives["neutral-100"],
     "on-surface": dark ? primitives["neutral-0"] : primitives["neutral-900"],
+    "on-surface-variant": dark ? primitives["neutral-200"] : primitives["neutral-500"],
+    border: dark ? primitives["neutral-500"] : primitives["neutral-200"],
     error: primitives["error-500"],
+    success: primitives["success-500"],
+    warning: primitives["warning-500"],
+    info: primitives["info-500"],
     focus: dark ? primitives["purple-400"] : primitives["blue-600"],
   };
 
@@ -96,7 +103,7 @@ function createTheme(mode: ThemeMode) {
       bg: color.surface,
       itemActive: color.action,
       itemInactive: color["on-surface"],
-      indicatorBg: dark ? primitives["purple-600"] : primitives["purple-200"],
+      indicatorBg: color["action-subtle"],
       minHeight: sharedTokens.target.minSize,
       elevation: sharedTokens.elevation.card,
       focusColor: color.focus,
