@@ -1,0 +1,45 @@
+name: Solicitação de Funcionalidade
+description: Proponha uma nova funcionalidade ou melhoria para o projeto.
+title: "[FEATURE] "
+labels:
+  - feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Utilize este formulário para propor uma nova funcionalidade para o projeto.
+        Preencha os campos obrigatórios de forma clara e objetiva, em português brasileiro (pt-BR).
+
+  - type: checkboxes
+    id: verificacoes
+    attributes:
+      label: Verificações iniciais
+      description: Confirme o item abaixo antes de registrar a solicitação.
+      options:
+        - label: Verifiquei que não existe outra issue aberta ou encerrada para esta funcionalidade.
+          required: true
+
+  - type: textarea
+    id: descricao
+    attributes:
+      label: Descrição
+      description: Descreva de forma clara e objetiva a funcionalidade proposta e a necessidade que ela pretende atender.
+      placeholder: Apresente a funcionalidade e explique por que ela é necessária.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solucao
+    attributes:
+      label: Solução
+      description: Explique como a funcionalidade deverá funcionar e qual resultado é esperado.
+      placeholder: Descreva o funcionamento proposto e o resultado esperado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: informacoes-adicionais
+    attributes:
+      label: Informações adicionais
+      description: Adicione referências, imagens, exemplos ou outras informações relevantes para a implementação.
+      placeholder: Inclua links, imagens, exemplos ou observações relevantes.
