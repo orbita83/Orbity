@@ -27,13 +27,13 @@ O **Orbity Design System (ODS)** estabelece princípios, fundamentos, tokens e c
 
 ## 3. Inventário: telas × componentes
 
-O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroes.md](05-padroes.md) e do código versionado. Neste documento, **planejada** significa que a tela ou o fluxo está especificado, mas ainda não existe como tela de produto em `src/app/`; **parcial** indica que há ao menos um componente implementado, ainda sem integração na respectiva tela. A rota `src/app/index.tsx` contém somente a tela inicial técnica do projeto Expo e não representa uma tela concluída do Orbity.
+O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroes.md](05-padroes.md) e do código. Neste documento, **planejada** significa que a tela ou o fluxo está especificado, mas ainda não existe como tela de produto em `src/app/`; **parcial** indica que há ao menos um componente implementado, ainda sem integração na respectiva tela. A Tela Inicial está descrita no [padrão F1/F2](05-padroes.md#2-navegação-e-modo-foco-f1-f2), com base no protótipo de referência; os componentes específicos da tela e sua integração na rota inicial ainda não estão presentes nesta branch documental.
 
 | Tela                          | Componentes necessários                                                                                            | Situação e evidência                                                                                                                            |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Splash e onboarding           | Logo e slogan, carrossel de quatro etapas, indicadores de etapa, botão Próximo e botão Pular                       | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
-| Tela inicial                  | Cabeçalho, resumo da jornada, acesso ao modo foco, barra de navegação com cinco abas e indicadores de progresso    | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
-| Modo foco e progresso         | Painel inferior, alça de expansão, botão Iniciar, barra de progresso e atalho para Conquistas                      | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
+| Tela inicial                  | Cabeçalho, visualizador vetorial do planeta e sequência, painel de atividade e navbar de cinco abas | Parcial: `NavBar` implementada; composição da tela e visualizador especificados no padrão F1/F2, ainda sem integração nesta branch. |
+| Modo foco e progresso         | Painel arrastável, alça, botão Iniciar, progresso, conquistas e ajuda | Parcial: `PrimaryButton` implementado; painel, cronômetro e sessões especificados no padrão F1/F2, ainda sem implementação nesta branch. |
 | Lista de tarefas              | Filtros Todos/Pendentes/Concluídas, botão Nova tarefa, cards, controles de conclusão e menu de opções              | Parcial: o botão primário está documentado e implementado como `PrimaryButton`; tela, filtros, cards e demais controles ainda estão planejados. |
 | Nova tarefa e confirmação     | Modal de formulário, campos de texto, seletores, botão Criar, mensagens de validação e modal de sucesso            | Parcial: pode reutilizar `PrimaryButton`; os demais componentes e a tela ainda estão planejados.                                                |
 | Seleção múltipla de tarefas   | Barra contextual, contador de seleção e ações Fixar, Marcar todas, Excluir e Cancelar                              | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
@@ -117,6 +117,8 @@ As decisões de produto, design e implementação permaneceram sob responsabilid
 A validação humana foi realizada por meio da revisão das tarefas e de seus respectivos resultados. Em cada revisão, os integrantes verificaram se a entrega atendia ao objetivo esperado e definido para a atividade. A IA não substituiu esse processo de avaliação nem a decisão da equipe sobre a aceitação do conteúdo produzido.
 
 ## 9. Instruções para assistentes de IA
+
+A composição, os estados, as interações e as decisões visuais da Tela Inicial estão incorporados à [Seção 2 — Navegação e Modo Foco (F1, F2)](05-padroes.md#2-navegação-e-modo-foco-f1-f2). Consulte esse padrão junto às especificações dos componentes envolvidos.
 
 > [!WARNING]
 > Ao gerar, revisar ou alterar uma interface do Orbity:

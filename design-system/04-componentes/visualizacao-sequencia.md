@@ -1,5 +1,7 @@
 # Visualização de sequência (PlanetStreakView)
 
+> **Referência do padrão F1/F2:** O visualizador vetorial `PlanetIllustration` e o contador central de `PlanetStreakView`, alimentado por `streakDays` da ViewModel, estão especificados na [Seção 2 — Navegação e Modo Foco](../05-padroes.md#2-navegação-e-modo-foco-f1-f2). A seção concentra a direção visual, os tokens, os limites funcionais e a revisão por Storybook do protótipo de referência; esses componentes específicos ainda não estão presentes nesta branch documental. A rotação axial e a evolução por ponto descritas abaixo permanecem especificações futuras.
+
 Origem no sistema base: sem equivalente direto no Material 3. Situação: Novo. Motivo da criação: representar a constância de estudos por meio de um planeta 2D dinâmico que evolui a cada ponto de continuação na sequência e rotaciona sobre o próprio eixo durante o modo foco, materializando o princípio de valorizar a trajetória sem mecânicas punitivas.
 
 Referências locais: [01-principios.md](../01-principios.md) (Princípio 1) e [05-padroes.md](../05-padroes.md) (Seção 2 — Navegação e Modo Foco, fluxo F2, e Seção 8 — Perfil, fluxo F10). Na Tela Inicial, o componente ocupa a região central da tela, acima do painel deslizante de foco e progresso.
