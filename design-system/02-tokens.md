@@ -1,6 +1,6 @@
 # Tokens
 
-> A variante da Tela Inicial aprovada em 22/10/2026 possui tokens próprios em `cosmicTokens`, documentados em [07-home-cosmica.md](07-home-cosmica.md). As tabelas abaixo continuam válidas para os temas anteriores dos componentes.
+> O contrato `cosmicTokens` da Tela Inicial está especificado na [Seção 2 — Navegação e Modo Foco (F1, F2)](05-padroes.md#2-navegação-e-modo-foco-f1-f2), com base no protótipo de referência. Esse contrato ainda não é exportado pelo código nesta branch documental. As tabelas abaixo continuam válidas para os temas base dos componentes.
 
 <!-- Camada 2 da aula: decisões com nome. Três níveis: primitivo → semântico → componente.
      Formato do nome: categoria.papel.variação (ex.: color.action, space.md, radius.lg, font.title).

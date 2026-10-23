@@ -27,13 +27,13 @@ O **Orbity Design System (ODS)** estabelece princípios, fundamentos, tokens e c
 
 ## 3. Inventário: telas × componentes
 
-O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroes.md](05-padroes.md) e do código. Neste documento, **planejada** significa que a tela ou o fluxo está especificado, mas ainda não existe como tela de produto em `src/app/`; **parcial** indica que há ao menos um componente implementado, ainda sem integração na respectiva tela. A rota `src/app/index.tsx` apresenta o protótipo `HomeScreen`, com visualizador vetorial e dados em memória, conforme [07-home-cosmica.md](07-home-cosmica.md).
+O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroes.md](05-padroes.md) e do código. Neste documento, **planejada** significa que a tela ou o fluxo está especificado, mas ainda não existe como tela de produto em `src/app/`; **parcial** indica que há ao menos um componente implementado, ainda sem integração na respectiva tela. A Tela Inicial está descrita no [padrão F1/F2](05-padroes.md#2-navegação-e-modo-foco-f1-f2), com base no protótipo de referência; os componentes específicos da tela e sua integração na rota inicial ainda não estão presentes nesta branch documental.
 
 | Tela                          | Componentes necessários                                                                                            | Situação e evidência                                                                                                                            |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Splash e onboarding           | Logo e slogan, carrossel de quatro etapas, indicadores de etapa, botão Próximo e botão Pular                       | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
-| Tela inicial                  | Cabeçalho, visualizador vetorial do planeta e sequência, painel de atividade e navbar de cinco abas | Protótipo em `src/view/home-screen.tsx`, acessível na rota inicial; dados em memória. |
-| Modo foco e progresso         | Painel arrastável, alça, botão Iniciar, progresso, conquistas e ajuda | Protótipo em `FocusBottomSheet` e `useActivitySheetMotion`; cronômetro e sessões em memória. |
+| Tela inicial                  | Cabeçalho, visualizador vetorial do planeta e sequência, painel de atividade e navbar de cinco abas | Parcial: `NavBar` implementada; composição da tela e visualizador especificados no padrão F1/F2, ainda sem integração nesta branch. |
+| Modo foco e progresso         | Painel arrastável, alça, botão Iniciar, progresso, conquistas e ajuda | Parcial: `PrimaryButton` implementado; painel, cronômetro e sessões especificados no padrão F1/F2, ainda sem implementação nesta branch. |
 | Lista de tarefas              | Filtros Todos/Pendentes/Concluídas, botão Nova tarefa, cards, controles de conclusão e menu de opções              | Parcial: o botão primário está documentado e implementado como `PrimaryButton`; tela, filtros, cards e demais controles ainda estão planejados. |
 | Nova tarefa e confirmação     | Modal de formulário, campos de texto, seletores, botão Criar, mensagens de validação e modal de sucesso            | Parcial: pode reutilizar `PrimaryButton`; os demais componentes e a tela ainda estão planejados.                                                |
 | Seleção múltipla de tarefas   | Barra contextual, contador de seleção e ações Fixar, Marcar todas, Excluir e Cancelar                              | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
@@ -54,7 +54,6 @@ O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroe
 | [05-padroes.md](05-padroes.md)               | Documenta fluxos de interação, composição de telas, estados e lacunas funcionais conhecidas.                                               |
 | [06-acessibilidade.md](06-acessibilidade.md) | Centraliza requisitos e verificações de contraste, alvos de toque, foco, leitores de tela, texto ampliado e redução de movimento.          |
 | [07-teste-com-ia.md](07-teste-com-ia.md)     | Reserva o registro das rodadas de validação do ODS com assistentes de IA e das correções decorrentes.                                      |
-| [07-home-cosmica.md](07-home-cosmica.md)     | Documenta a direção visual e decisões da variante cósmica da Tela Inicial para alinhamento fiel do protótipo. |
 | [CHANGELOG.md](CHANGELOG.md)                 | Mantém o histórico de versões, responsáveis e mudanças do ODS.                                                                             |
 
 ## 5. Etiquetas de origem
@@ -119,7 +118,7 @@ A validação humana foi realizada por meio da revisão das tarefas e de seus re
 
 ## 9. Instruções para assistentes de IA
 
-A direção visual vigente do protótipo da Tela Inicial está em [07-home-cosmica.md](07-home-cosmica.md). Ela registra a revisão autorizada pelo operador para reproduzir a referência cósmica e prevalece sobre definições anteriores conflitantes nesta tela.
+A composição, os estados, as interações e as decisões visuais da Tela Inicial estão incorporados à [Seção 2 — Navegação e Modo Foco (F1, F2)](05-padroes.md#2-navegação-e-modo-foco-f1-f2). Consulte esse padrão junto às especificações dos componentes envolvidos.
 
 > [!WARNING]
 > Ao gerar, revisar ou alterar uma interface do Orbity:

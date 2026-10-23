@@ -1,6 +1,6 @@
 # Visualização de sequência (PlanetStreakView)
 
-> **Implementação atual do protótipo:** `src/view/components/planet-streak-view.tsx` compõe o visualizador vetorial `PlanetIllustration` e o contador central, recebendo `streakDays` da ViewModel. A direção vigente, os tokens, os limites funcionais e a revisão por Storybook estão em [07-home-cosmica.md](../07-home-cosmica.md). A rotação axial e a evolução por ponto descritas abaixo permanecem especificações futuras, não funcionalidades entregues.
+> **Referência do padrão F1/F2:** O visualizador vetorial `PlanetIllustration` e o contador central de `PlanetStreakView`, alimentado por `streakDays` da ViewModel, estão especificados na [Seção 2 — Navegação e Modo Foco](../05-padroes.md#2-navegação-e-modo-foco-f1-f2). A seção concentra a direção visual, os tokens, os limites funcionais e a revisão por Storybook do protótipo de referência; esses componentes específicos ainda não estão presentes nesta branch documental. A rotação axial e a evolução por ponto descritas abaixo permanecem especificações futuras.
 
 Origem no sistema base: sem equivalente direto no Material 3. Situação: Novo. Motivo da criação: representar a constância de estudos por meio de um planeta 2D dinâmico que evolui a cada ponto de continuação na sequência e rotaciona sobre o próprio eixo durante o modo foco, materializando o princípio de valorizar a trajetória sem mecânicas punitivas.
 
