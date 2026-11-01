@@ -74,3 +74,4 @@ A ERS deve ser atualizada sempre que houver inclusão, alteração ou descontinu
 As alterações devem preservar a identificação dos requisitos existentes e manter a correspondência entre o catálogo e suas especificações individuais.
 
 Requisitos descontinuados não devem ter seus identificadores reutilizados.
+| RF-0014 | Registrar atividade di?ria | Registrar os dias em que o estudante concluiu pelo menos uma tarefa ou ocorr?ncia de rotina. | [RF-0014](./functional/RF-0014.md) |
