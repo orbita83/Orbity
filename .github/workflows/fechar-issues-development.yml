@@ -1,0 +1,85 @@
+name: Fechar issues após merge na development
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - development
+
+permissions:
+  issues: write
+
+jobs:
+  close-referenced-issues:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'development'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fechar issues referenciadas
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const issueReferences = new Set();
+            const closingKeywords = /\b(?:close(?:s|d)?|fix(?:es|ed)?|resolve(?:s|d)?)\s+#(\d+)\b/gi;
+
+            const bodyWithoutCode = body
+              .replace(/```[\s\S]*?```/g, '')
+              .replace(/`[^`\r\n]*`/g, '');
+
+            for (const match of bodyWithoutCode.matchAll(closingKeywords)) {
+              const prefix = bodyWithoutCode.slice(0, match.index).toLowerCase();
+              if (/(?:\bdo not|\bdon't|\bnot)\s*$/.test(prefix)) {
+                continue;
+              }
+
+              issueReferences.add(Number(match[1]));
+            }
+
+            if (issueReferences.size === 0) {
+              core.info('Nenhuma issue local com keyword de fechamento foi encontrada.');
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const failures = [];
+
+            for (const issueNumber of issueReferences) {
+              try {
+                const { data: issue } = await github.rest.issues.get({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                });
+
+                if (issue.pull_request) {
+                  core.info(`#${issueNumber} ignorada: a referência aponta para um Pull Request.`);
+                  continue;
+                }
+
+                if (issue.state === 'closed') {
+                  core.info(`#${issueNumber} já estava fechada.`);
+                  continue;
+                }
+
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  state: 'closed',
+                });
+                core.info(`#${issueNumber} fechada pelo merge do PR #${context.payload.pull_request.number}.`);
+              } catch (error) {
+                if (error.status === 404) {
+                  core.warning(`#${issueNumber} não encontrada; nenhuma alteração foi realizada.`);
+                  continue;
+                }
+
+                failures.push(`#${issueNumber}: ${error.message}`);
+                core.error(`Falha ao processar #${issueNumber}: ${error.message}`);
+              }
+            }
+
+            if (failures.length > 0) {
+              core.setFailed(`Não foi possível processar todas as issues: ${failures.join('; ')}`);
+            }
