@@ -339,6 +339,10 @@ Caso novas alterações sejam enviadas ao Pull Request, as verificações e revi
 
 Após a integração, a alteração passa a fazer parte da `development`, mas isso não significa que já tenha sido publicada como uma versão estável.
 
+Quando um Pull Request é integrado à `development`, a automação em `.github/workflows/fechar-issues-development.yml` analisa a descrição do PR e fecha as issues locais referenciadas pelas keywords `close`, `closes`, `closed`, `fix`, `fixes`, `fixed`, `resolve`, `resolves` ou `resolved`, seguidas de `#numero`. A automação não atua em PRs fechados sem merge, em merges para outras branches, em referências `Refs`, em referências externas ou em Pull Requests; issues inexistentes e falhas de processamento são registradas nos logs.
+
+O workflow possui somente a permissão `issues: write`, não executa código do PR e remove blocos e trechos de código da análise para evitar fechamentos acidentais. Issues já fechadas são ignoradas, e referências repetidas são processadas uma única vez.
+
 ---
 
 ## 3. Qualidade e Validação
