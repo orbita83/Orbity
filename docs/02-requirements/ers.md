@@ -66,6 +66,8 @@ Esta seção reúne os requisitos funcionais do Orbity.
 | RF-0011 | Concluir ocorrência de rotina | Permitir que o estudante marque como concluída a execução de uma rotina em um dia específico. | [RF-0011](./functional/RF-0011.md) |
 | RF-0012 | Selecionar dias ativos da rotina | Permitir que o estudante defina em quais dias da semana uma rotina deve ficar ativa. | [RF-0012](./functional/RF-0012.md) |
 | RF-0013 | Agendar tarefa | Permitir que o estudante defina data e horário de início e fim para uma tarefa, quando necessário. | [RF-0013](./functional/RF-0013.md) |
+| RF-0014 | Registrar atividade diária | Registrar os dias em que o estudante concluiu pelo menos uma tarefa ou ocorrência de rotina. | [RF-0014](./functional/RF-0014.md) |
+| RF-0015 | Gerenciar sequência diária | Gerenciar a sequência de dias consecutivos com atividade registrada, considerando o horário local do estudante. | [RF-0015](./functional/RF-0015.md) |
 
 ## 4. Manutenção e evolução
 
@@ -74,4 +76,3 @@ A ERS deve ser atualizada sempre que houver inclusão, alteração ou descontinu
 As alterações devem preservar a identificação dos requisitos existentes e manter a correspondência entre o catálogo e suas especificações individuais.
 
 Requisitos descontinuados não devem ter seus identificadores reutilizados.
-| RF-0014 | Registrar atividade di?ria | Registrar os dias em que o estudante concluiu pelo menos uma tarefa ou ocorr?ncia de rotina. | [RF-0014](./functional/RF-0014.md) |
