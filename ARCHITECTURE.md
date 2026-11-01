@@ -1,4 +1,4 @@
-@ARCHITECTURE
+##@ARCHITECTURE
 
 # Guia Completo: MVVM Sofisticado (Capítulo 10)
 
@@ -18,8 +18,8 @@ O **MVVM Sofisticado** evolui o padrão simplificado (vista no Capítulo 8) inco
 | **ViewModel** | Concentra estado da tela + chamadas diretas a serviços. | Gerencia **apenas o estado da tela**; delega toda lógica aos *Use Cases*. |
 | **Regras de Negócio** | Misturadas na ViewModel ou no Serviço. | Isoladas exclusivamente na camada de **Use Cases**. |
 | **Model** | Continha entidades e serviços concretos. | Contém **apenas entidades puras e interfaces (contratos)**. |
-| **Acesso a Dados** | Direto nos serviços/repositórios dentro do Model. | Isolado na camada de **Infraestrutura** (*Firebase, SQLite, REST*). |
-| **Dependências** | Classes concretas importadas diretamente. | **Inversão de Dependência (DIP)** via interfaces e Fábricas (*Factories*). |
+| **Acesso a Dados** | Direto nos serviços/repositórios dentro do Model. | Isolado na camada de **Infraestrutura** (*Firebase, SQLite, REST, Memory*). |
+| **Dependências** | Classes concretas importadas diretamente. | **Inversão de Dependência (DIP)** via interfaces e Container de Injeção (*DI*). |
 
 ---
 
@@ -33,35 +33,48 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 2. **ViewModel (Apresentação):** Custom Hooks que gerenciam estado de interface (`loading`, `error`, `data`) e expõem funções de ação. Depende **apenas de abstrações** (interfaces de Use Cases).
 3. **Use Cases (Casos de Uso / Orquestração):** Regras de negócio puras e validações do sistema (ex: `AuthUseCases`). Orquestram repositórios e serviços através de interfaces.
 4. **Domínio / Model (Core do Negócio):** Entidades puras (`User.ts`), interfaces de serviços (`IAuthService.ts`), interfaces de repositórios (`IUserRepository.ts`) e interfaces de Use Cases. **Zero dependência de bibliotecas externas** (React, Expo, Firebase).
-5. **Infraestrutura (Tecnologia Externa):** Implementações concretas de acesso a dados (ex: `FirebaseAuthService`, `FirestoreUserRepository`). Converte exceções externas em erros puros do domínio.
+5. **Infraestrutura:**
+   Implementa:
+   - **Services concretos** (ex.: `MemoryAuthService` e `FirebaseAuthService`);
+   - **DataSources concretos** (ex.: `MemoryUserDataSource` e `FirestoreUserDataSource`);
+   - **Mapeamentos** para converter dados externos em entidades do domínio.
+
+   > **Regra de Ouro da Infraestrutura:** A Infra nunca propaga erros específicos. Sempre converte para erros puros definidos no domínio.
+
+   > **Nota — DataSource, Service e Use Case:**
+   > - **DataSource / Repository (Infra):** Lida com persistência e busca de dados brutos (memória, banco local, Firestore, API) e os mapeia para entidades do domínio.
+   > - **Service (Infra):** Lida com integrações e capacidades externas (autenticação, notificações, sensores, câmera).
+   > - **Use Case:** Coordena e aplica as regras de negócio sobre as interfaces de `Service` e `Repository`/`DataSource`, sem saber qual tecnologia concreta está por baixo.
 
 ---
 
 ## 3. Estrutura de Pastas Recomendada
 
 ```
-src/
-├── app/                  # Módulos de rota do Expo Router (_layout.tsx, index.tsx, login-screen.tsx)
-├── infra/                # Implementações concretas (Infraestrutura)
-│   ├── repositories/     # Ex: FirestoreUserRepository.ts
-│   └── services/         # Ex: FirebaseAuthService.ts
-├── model/ (ou domain/)   # Camada de Domínio Puro (Model)
-│   ├── entities/         # Ex: User.ts
-│   ├── repositories/     # Ex: IUserRepository.ts (Interface)
-│   └── services/         # Ex: IAuthService.ts (Interface)
-├── usecase/              # Casos de Uso
-│   ├── IAuthUseCases.ts  # Contrato/Interface do Use Case
-│   └── AuthUseCases.ts   # Implementação do Use Case
-├── viewmodel/            # Custom Hooks da ViewModel (ex: useLoginViewModel.ts)
-├── view/                 # Componentes de tela (*-screen.tsx) e componentes reutilizáveis de UI
-└── di/                   # Fábricas de Injeção de Dependência (ex: loginFactory.ts)
+└── src/
+    ├── app/                  # Módulos de rota do Expo Router
+    │   ├── _layout.tsx
+    │   └── index.tsx
+    ├── infra/                # Implementações concretas (Infraestrutura)
+    │   ├── repositories/     # (ou dataSource/) Ex: MemoryUserDataSource.ts, FirestoreUserDataSource.ts
+    │   └── services/         # Ex: MemoryAuthService.ts, FirebaseAuthService.ts
+    ├── model/                # Camada de Domínio Puro (Model)
+    │   ├── entities/         # Ex: User.ts
+    │   ├── repositories/     # Ex: IUserRepository.ts (Interface)
+    │   └── services/         # Ex: IAuthService.ts (Interface)
+    ├── usecase/              # (ou usecases/) Casos de Uso
+    │   ├── IAuthUseCases.ts  # Contrato/Interface do Use Case
+    │   └── AuthUseCases.ts   # Implementação do Use Case
+    ├── view/                 # Componentes de tela (*-screen.tsx / *View.tsx) e UI
+    ├── viewmodel/            # Custom Hooks da ViewModel (ex: useLoginViewModel.ts)
+    └── DI/                   # Container de Injeção de Dependências (container.ts)
 ```
 
 ---
 
 ## 4. Código do Fluxo Completo de Autenticação
 
-### Step 1: Domínio / Model — Entidade Pure (`src/model/entities/User.ts`)
+### Step 1: Domínio / Model — Entidade Pura (`src/model/entities/User.ts`)
 ```typescript
 export default interface User {
   uID: string;
@@ -142,6 +155,7 @@ export class FirebaseAuthService implements IAuthService {
       }
       return { uID: "123", userName: "user123" };
     } catch (err) {
+      // A Infra nunca propaga erros específicos: converte para erro puro do domínio
       throw new Error("Credenciais inválidas.");
     }
   }
@@ -156,9 +170,23 @@ export class FirebaseAuthService implements IAuthService {
 }
 ```
 
-### Step 5: ViewModel (`src/viewmodel/useLoginViewModel.ts`)
+### Step 5: Container de Injeção de Dependências (`src/DI/container.ts`)
+```typescript
+import { FirebaseAuthService } from "../infra/services/FirebaseAuthService";
+import { AuthUseCases } from "../usecase/AuthUseCases";
+import { IAuthUseCases } from "../usecase/IAuthUseCases";
+
+// 1. Instanciação dos Services / DataSources concretos da Infra
+export const authService = new FirebaseAuthService();
+
+// 2. Instanciação dos Use Cases injetando as dependências
+export const authUseCases: IAuthUseCases = new AuthUseCases(authService);
+```
+
+### Step 6: ViewModel (`src/viewmodel/useLoginViewModel.ts`)
 ```typescript
 import { useState } from "react";
+import { authUseCases as defaultAuthUseCases } from "../DI/container";
 import { IAuthUseCases } from "../usecase/IAuthUseCases";
 
 export type LoginState = {
@@ -172,7 +200,7 @@ export type LoginActions = {
 };
 
 export function useLoginViewModel(
-  authUseCases: IAuthUseCases
+  authUseCases: IAuthUseCases = defaultAuthUseCases
 ): LoginState & LoginActions {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -195,29 +223,16 @@ export function useLoginViewModel(
 }
 ```
 
-### Step 6: Injeção de Dependências / Fábrica (`src/di/loginFactory.ts`)
-```typescript
-import { FirebaseAuthService } from "../infra/services/FirebaseAuthService";
-import { AuthUseCases } from "../usecase/AuthUseCases";
-import { useLoginViewModel } from "../viewmodel/useLoginViewModel";
-
-export function makeLoginViewModel() {
-  const authService = new FirebaseAuthService();
-  const authUseCases = new AuthUseCases(authService);
-  return useLoginViewModel(authUseCases);
-}
-```
-
 ### Step 7: View (`src/view/login-screen.tsx`) e Módulo de Rota (`src/app/login-screen.tsx`)
 ```typescript
 // 1. Componente de Tela na View (src/view/login-screen.tsx)
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import { makeLoginViewModel } from "../di/loginFactory";
+import { useLoginViewModel } from "../viewmodel/useLoginViewModel";
 
 const LoginScreen = () => {
-  const vm = makeLoginViewModel();
+  const vm = useLoginViewModel();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -277,7 +292,7 @@ export default LoginScreen;
 ## 5. Tratamento de Erros e Testabilidade
 
 1. **Tratamento de Erros em Camadas:**
-   - **Infra:** Captura erros de bibliotecas/APIs e os re-lança como erros genéricos/limpos do domínio.
+   - **Infra:** Captura erros de bibliotecas/APIs e os re-lança como erros puros definidos no domínio. **A Infra nunca propaga erros específicos.**
    - **Use Case:** Aplica validações de regra de negócio (`ValidationError`).
    - **ViewModel:** Mapeia exceções recebidas em mensagens amigáveis de estado (`error`).
    - **View:** Apenas lê a string `vm.error` e exibe na tela. **A View nunca faz `try/catch`.**
