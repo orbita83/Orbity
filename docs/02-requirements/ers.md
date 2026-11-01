@@ -57,6 +57,15 @@ Esta seção reúne os requisitos funcionais do Orbity.
 | RF-0002 | Consultar tarefas | Permitir que o estudante consulte suas tarefas cadastradas e acompanhe suas atividades. | [RF-0002](./functional/RF-0002.md) |
 | RF-0003 | Editar tarefa | Permitir que o estudante edite tarefas cadastradas e atualize suas informações. | [RF-0003](./functional/RF-0003.md) |
 | RF-0004 | Excluir tarefa | Permitir que o estudante exclua tarefas cadastradas que não deseja mais manter. | [RF-0004](./functional/RF-0004.md) |
+| RF-0005 | Concluir tarefa | Permitir que o estudante conclua uma tarefa pendente e registre o avanço em sua organização. | [RF-0005](./functional/RF-0005.md) |
+| RF-0006 | Reabrir tarefa | Permitir que o estudante reabra uma tarefa concluída e retorne a sua condição de pendente. | [RF-0006](./functional/RF-0006.md) |
+| RF-0007 | Criar rotina | Permitir que o estudante crie rotinas recorrentes para organizar atividades do dia a dia e seus ciclos de estudo. | [RF-0007](./functional/RF-0007.md) |
+| RF-0008 | Consultar rotinas | Permitir que o estudante consulte suas rotinas cadastradas e acompanhe as atividades programadas. | [RF-0008](./functional/RF-0008.md) |
+| RF-0009 | Editar rotina | Permitir que o estudante edite informações e composição de uma rotina previamente cadastrada. | [RF-0009](./functional/RF-0009.md) |
+| RF-0010 | Excluir rotina | Permitir que o estudante exclua rotinas que não deseja mais manter em sua organização. | [RF-0010](./functional/RF-0010.md) |
+| RF-0011 | Concluir ocorrência de rotina | Permitir que o estudante marque como concluída a execução de uma rotina em um dia específico. | [RF-0011](./functional/RF-0011.md) |
+| RF-0012 | Selecionar dias ativos da rotina | Permitir que o estudante defina em quais dias da semana uma rotina deve ficar ativa. | [RF-0012](./functional/RF-0012.md) |
+| RF-0013 | Agendar tarefa | Permitir que o estudante defina data e horário de início e fim para uma tarefa, quando necessário. | [RF-0013](./functional/RF-0013.md) |
 
 ## 4. Manutenção e evolução
 
