@@ -200,9 +200,9 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 - **Componentes:** Mapa interativo da constelação (`color.surface`, `space.lg`, `motion.duration.medium`), Pontos de estrela bloqueadas/desbloqueadas (`color.action`, `color.on-surface`, `motion.duration.short`), Modal [Detalhe da Estrela] (`radius.lg`, `elevation.card`, `space.lg`, `font.title`, `font.body`), Botão "✕" (Fechar) (`color.on-surface`, `font.label`).
 - **Passos:**
   1. Estudante navega para a aba **Cosmos** na navbar fixa.
-  2. Visualiza a constelação com estrelas acesas (conquistadas) e estrelas em contorno neutro (a desbloquear conforme horas/hábitos cumpridos).
+  2. Visualiza a constelação com estrelas acesas (conquistadas) e estrelas em contorno neutro (a desbloquear conforme tarefas/rotinas cumpridas).
   3. Toque em uma estrela desbloqueada abre o modal [Detalhe da Estrela], apresentando seu nome, curiosidade astronômica associada e data de desbloqueio.
-  4. Toque em uma estrela bloqueada indica o marco de estudo necessário para acendê-la.
+  4. Toque em uma estrela bloqueada indica o marco de sequência necessário para acendê-la.
   5. Botão "✕" ou toque fora fecha o modal e devolve a interação ao mapa.
 - **Estados:**
 
