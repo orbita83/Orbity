@@ -34,6 +34,7 @@ Os requisitos funcionais seguem o modelo definido em [`RF.template.md`](../07-te
 | [RF-0014](./functional/RF-0014.md) | Registrar atividade diária | Registrar os dias com conclusão de tarefas ou ocorrências de rotinas. |
 | [RF-0015](./functional/RF-0015.md) | Gerenciar sequência diária | Gerenciar a sequência de dias consecutivos com atividade registrada. |
 | [RF-0016](./functional/RF-0016.md) | Visualizar sequência diária | Permitir consultar a quantidade atual de dias consecutivos com atividade registrada. |
+| [RF-0017](./functional/RF-0017.md) | Desbloquear estrelas | Conceder e acumular estrelas pelo aumento da sequência diária ou desbloqueio de conquistas. |
 
 ## 3. Rastreabilidade
 
