@@ -2,10 +2,24 @@
 
 Este catálogo reúne os casos de uso (`UC`) do Orbity, que descrevem as interações entre atores e o sistema: quem participa, o objetivo buscado, as condições necessárias e os resultados esperados. Os passos de interação não são descritos nos casos de uso; eles são especificados nos fluxos (`FL`) relacionados, consultados por links relativos.
 
-O catálogo está vazio: ainda não há casos de uso cadastrados.
-
 | ID | Título do caso de uso | Requisitos funcionais relacionados | Especificação |
 | -- | --------------------- | ---------------------------------- | ------------- |
+| UC-0001 | Criar tarefa | [RF-0001](../../02-requirements/functional/RF-0001.md), [RF-0013](../../02-requirements/functional/RF-0013.md) | [UC-0001-criar-tarefa.md](UC-0001-criar-tarefa.md) |
+| UC-0002 | Consultar tarefas | [RF-0002](../../02-requirements/functional/RF-0002.md) | [UC-0002-consultar-tarefas.md](UC-0002-consultar-tarefas.md) |
+| UC-0003 | Editar tarefa | [RF-0003](../../02-requirements/functional/RF-0003.md), [RF-0013](../../02-requirements/functional/RF-0013.md) | [UC-0003-editar-tarefa.md](UC-0003-editar-tarefa.md) |
+| UC-0004 | Excluir tarefa | [RF-0004](../../02-requirements/functional/RF-0004.md) | [UC-0004-excluir-tarefa.md](UC-0004-excluir-tarefa.md) |
+| UC-0005 | Concluir tarefa | [RF-0005](../../02-requirements/functional/RF-0005.md), [RF-0014](../../02-requirements/functional/RF-0014.md), [RF-0015](../../02-requirements/functional/RF-0015.md) | [UC-0005-concluir-tarefa.md](UC-0005-concluir-tarefa.md) |
+| UC-0006 | Reabrir tarefa | [RF-0006](../../02-requirements/functional/RF-0006.md), [RF-0014](../../02-requirements/functional/RF-0014.md) | [UC-0006-reabrir-tarefa.md](UC-0006-reabrir-tarefa.md) |
+| UC-0007 | Criar rotina | [RF-0007](../../02-requirements/functional/RF-0007.md), [RF-0012](../../02-requirements/functional/RF-0012.md) | [UC-0007-criar-rotina.md](UC-0007-criar-rotina.md) |
+| UC-0008 | Consultar rotinas | [RF-0008](../../02-requirements/functional/RF-0008.md) | [UC-0008-consultar-rotinas.md](UC-0008-consultar-rotinas.md) |
+| UC-0009 | Editar rotina | [RF-0009](../../02-requirements/functional/RF-0009.md), [RF-0012](../../02-requirements/functional/RF-0012.md) | [UC-0009-editar-rotina.md](UC-0009-editar-rotina.md) |
+| UC-0010 | Excluir rotina | [RF-0010](../../02-requirements/functional/RF-0010.md) | [UC-0010-excluir-rotina.md](UC-0010-excluir-rotina.md) |
+| UC-0011 | Concluir ocorrência de rotina | [RF-0011](../../02-requirements/functional/RF-0011.md), [RF-0014](../../02-requirements/functional/RF-0014.md), [RF-0015](../../02-requirements/functional/RF-0015.md) | [UC-0011-concluir-ocorrencia-rotina.md](UC-0011-concluir-ocorrencia-rotina.md) |
+| UC-0012 | Realizar sessão de foco | [RF-0001](../../02-requirements/functional/RF-0001.md), [RF-0007](../../02-requirements/functional/RF-0007.md) | [UC-0012-realizar-sessao-foco.md](UC-0012-realizar-sessao-foco.md) |
+| UC-0013 | Gerenciar sequência de estudos | [RF-0014](../../02-requirements/functional/RF-0014.md), [RF-0015](../../02-requirements/functional/RF-0015.md) | [UC-0013-gerenciar-sequencia-estudos.md](UC-0013-gerenciar-sequencia-estudos.md) |
+| UC-0014 | Explorar constelação | [RF-0015](../../02-requirements/functional/RF-0015.md) | [UC-0014-explorar-constelacao.md](UC-0014-explorar-constelacao.md) |
+| UC-0015 | Consultar conquistas | [RF-0015](../../02-requirements/functional/RF-0015.md) | [UC-0015-consultar-conquistas.md](UC-0015-consultar-conquistas.md) |
+| UC-0016 | Consultar perfil e métricas | [RF-0015](../../02-requirements/functional/RF-0015.md) | [UC-0016-consultar-perfil-metricas.md](UC-0016-consultar-perfil-metricas.md) |
 
 ## Como adicionar um caso de uso
 
