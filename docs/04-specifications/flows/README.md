@@ -2,10 +2,22 @@
 
 Este catálogo reúne os fluxos do Orbity e relaciona cada fluxo aos requisitos correspondentes. Cada funcionalidade deve ser documentada em um único arquivo FL, com seus fluxos principal, alternativos e de exceção.
 
-O catálogo está vazio: não existem fluxos cadastrados inicialmente.
-
 | ID | Título | Requisito relacionado | Arquivo FL |
 | -- | ------ | --------------------- | ---------- |
+| FL-0001 | Criação de tarefa | — | [FL-0001](FL-0001.md) |
+| FL-0002 | Consulta e filtragem de tarefas | — | [FL-0002](FL-0002.md) |
+| FL-0003 | Conclusão e desmarcação de tarefa | — | [FL-0003](FL-0003.md) |
+| FL-0004 | Seleção múltipla e ações contextuais de tarefas | — | [FL-0004](FL-0004.md) |
+| FL-0005 | Criação de rotina | — | [FL-0005](FL-0005.md) |
+| FL-0006 | Consulta e detalhamento de rotinas | — | [FL-0006](FL-0006.md) |
+| FL-0007 | Edição de rotina | — | [FL-0007](FL-0007.md) |
+| FL-0008 | Conclusão de rotina | — | [FL-0008](FL-0008.md) |
+| FL-0009 | Consulta da tela inicial e painel deslizante | — | [FL-0009](FL-0009.md) |
+| FL-0010 | Início de sessão do modo foco | — | [FL-0010](FL-0010.md) |
+| FL-0011 | Atualização automática da sequência | — | [FL-0011](FL-0011.md) |
+| FL-0012 | Exploração da constelação | — | [FL-0012](FL-0012.md) |
+| FL-0013 | Consulta e compartilhamento de conquistas | — | [FL-0013](FL-0013.md) |
+| FL-0014 | Consulta do perfil | — | [FL-0014](FL-0014.md) |
 
 ## Como adicionar um fluxo
 
