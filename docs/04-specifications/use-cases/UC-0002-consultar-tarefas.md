@@ -7,20 +7,19 @@
 | **ID** | UC-0002 |
 | **Nome** | Consultar tarefas |
 | **Ator principal** | Estudante |
-| **Objetivo** | Visualizar a listagem de tarefas cadastradas, filtrar por estado e consultar seus detalhes |
+| **Objetivo** | Visualizar as tarefas cadastradas e filtrá-las por estado |
 
 ## 2. Contexto
 
-Possibilita ao estudante acompanhar suas atividades cadastradas, distinguindo tarefas pendentes e concluídas por meio de abas ou filtros de visualização. Permite também inspecionar os detalhes individuais de cada tarefa e visualizar um estado informativo acolhedor quando não houver tarefas cadastradas.
+Possibilita ao estudante acompanhar suas práticas do dia na tela de tarefas, que exibe o título e as informações de término de cada tarefa e oferece os filtros **Todos**, **Pendentes** e **Concluídas**.
 
 ## 3. Pré-condições
 
-- O aplicativo deve estar em execução com a aba de tarefas disponível para navegação.
+- A tela de tarefas deve estar acessível pela barra de navegação.
 
 ## 4. Pós-condições
 
-- As tarefas cadastradas devem ser apresentadas de acordo com o filtro selecionado (pendentes ou concluídas).
-- Na ausência de tarefas, um estado vazio informativo deve ser apresentado com incentivo ao cadastro inicial.
+- As tarefas devem ser apresentadas de acordo com o filtro selecionado.
 
 ## 5. Fluxos relacionados
 

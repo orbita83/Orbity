@@ -7,20 +7,20 @@
 | **ID** | UC-0001 |
 | **Nome** | Criar tarefa |
 | **Ator principal** | Estudante |
-| **Objetivo** | Cadastrar uma nova atividade acadêmica ou pessoal no aplicativo |
+| **Objetivo** | Cadastrar uma nova tarefa na lista de tarefas |
 
 ## 2. Contexto
 
-Permite ao estudante registrar tarefas informando título, descrição, prioridade e agendamento opcional de início e término. A criação de tarefas viabiliza a organização de afazeres individuais e possibilita sua vinculação posterior a sessões de foco ou rotinas de estudo.
+Permite ao estudante registrar uma tarefa a partir da ação **+ Nova tarefa** da tela de tarefas. O cadastro reúne título, descrição opcional, data e hora de início, data e hora de término e categoria opcional, e é confirmado por uma mensagem de sucesso. As tarefas criadas podem ser concluídas e contribuem para a sequência de estudos.
 
 ## 3. Pré-condições
 
-- O aplicativo deve estar em execução e a tela de listagem de tarefas ou o atalho de criação acessível.
+- A tela de tarefas deve estar acessível pela barra de navegação.
 
 ## 4. Pós-condições
 
-- A nova tarefa deve estar persistida e visível na listagem de tarefas pendentes.
-- Caso fornecidas, as informações de agendamento (data e horários de início e término) devem permanecer registradas e disponíveis para consulta.
+- A nova tarefa deve estar registrada e visível na lista de tarefas.
+- O estudante deve ser informado de que a tarefa foi adicionada à lista de tarefas.
 
 ## 5. Fluxos relacionados
 
