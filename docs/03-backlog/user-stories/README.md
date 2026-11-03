@@ -2,10 +2,14 @@
 
 Este catálogo reúne as histórias de usuário do Orbity e permite consultar cada história individualmente, sem precisar ler todas as histórias do backlog.
 
-O catálogo está vazio: ainda não há histórias de usuário cadastradas.
+O catálogo contém quatro histórias de usuário cadastradas.
 
 | ID | Título | RFs relacionados | Arquivo US |
 | -- | ------ | ---------------- | ---------- |
+| US-0001 | Criar tarefas | — | [US-0001](US-0001.md) |
+| US-0002 | Visualizar tarefas | — | [US-0002](US-0002.md) |
+| US-0003 | Editar tarefa | — | [US-0003](US-0003.md) |
+| US-0004 | Excluir tarefas | — | [US-0004](US-0004.md) |
 
 ## Como adicionar uma história de usuário
 
