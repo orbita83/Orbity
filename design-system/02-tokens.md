@@ -103,10 +103,10 @@ Este contrato documenta a paleta do protótipo F1/F2, adaptada ao Orbity a parti
 | `cosmicTokens.color.muted` | `#BBB6E3` | Texto secundário | Adaptado |
 | `cosmicTokens.color.inactive` | `#9990CB` | Navegação inativa e chevrons | Adaptado |
 | `cosmicTokens.color.action`, `actionEnd` | `#7137F5` → `#703BF6` | Gradiente da ação principal | Adaptado |
-| `cosmicTokens.color.actionHover` | `#8252FC` | Realce da ação no hover | Adaptado |
+| `cosmicTokens.color.actionHover` | `#8648FA` | Realce da ação no hover | Adaptado |
 | `cosmicTokens.color.focus` | `#D4A3FF` | Indicador de foco | Adaptado |
 | `cosmicTokens.color.track` | `#232052` | Trilha do progresso | Adaptado |
-| `cosmicTokens.color.progress`, `progressEnd` | `#8A42FA` → `#713BF5` | Preenchimento do progresso | Adaptado |
+| `cosmicTokens.color.progress`, `progressEnd` | `#8A42FA` → `#8648FA` | Preenchimento do progresso | Adaptado |
 | `cosmicTokens.color.unlocked` | `#C47EFF` | Aro de conquista ativa | Adaptado |
 | `cosmicTokens.color.achievementPendingIcon` | `#8C7BCB` | Ícone de conquista pendente | Adaptado |
 | `cosmicTokens.color.achievementPendingBorder` | `#2B2654` | Contorno de conquista pendente | Adaptado |
