@@ -8,21 +8,21 @@ Cada requisito possui um identificador único e uma especificação individual e
 
 Os requisitos são organizados por categoria conforme a norma de qualidade de software ISO/IEC 25010, com seus respectivos arquivos de especificação.
 
-| Categoria | Diretório | Identificação |
-| --- | --- | --- |
-| Requisitos Não Funcionais (RNF) | [`docs/02-requirements/non-functional/`](./) | `RNF-XXXX` |
+| Categoria                       | Diretório                                    | Identificação |
+| ------------------------------- | -------------------------------------------- | ------------- |
+| Requisitos Não Funcionais (RNF) | [`docs/02-requirements/non-functional/`](./) | `RNF-XXXX`    |
 
 ## 2. Catálogo de Requisitos Não Funcionais
 
-| ID | Requisito | Atributo de Qualidade | Descrição | Especificação |
-| --- | --- | --- | --- | --- |
-| RNF-0001 | Desempenho e eficiência de recursos | Eficiência de Desempenho | Garantir respostas visuais imediatas (< 200 ms) e transições fluidas sem sobrecarga de bateria ou memória. | [`docs/02-requirements/non-functional/RNF-0001.md`](./RNF-0001.md) |
-| RNF-0002 | Usabilidade e experiência do estudante | Usabilidade | Proporcionar interface clara, estados vazios orientadores e comunicação acolhedora sem mensagens punitivas. | [`docs/02-requirements/non-functional/RNF-0002.md`](./RNF-0002.md) |
-| RNF-0003 | Acessibilidade | Acessibilidade | Cumprir critérios da WCAG 2.1 AA (contraste ≥ 4,5:1, áreas de toque ≥ 48 dp e suporte a leitores de tela). | [`docs/02-requirements/non-functional/RNF-0003.md`](./RNF-0003.md) |
-| RNF-0004 | Persistência local e disponibilidade | Confiabilidade / Disponibilidade | Garantir funcionamento offline-first e persistência íntegra de tarefas, rotinas e progresso no dispositivo. | [`docs/02-requirements/non-functional/RNF-0004.md`](./RNF-0004.md) |
-| RNF-0005 | Confiabilidade e integridade de dados | Integridade / Tolerância a Falhas | Assegurar atomicidade em operações de escrita, preservação de dados em formulários e contenção de falhas. | [`docs/02-requirements/non-functional/RNF-0005.md`](./RNF-0005.md) |
-| RNF-0006 | Compatibilidade e responsividade | Portabilidade / Compatibilidade | Assegurar execução consistente em Android 8.0+, iOS 14+ e navegadores web com layout adaptável. | [`docs/02-requirements/non-functional/RNF-0006.md`](./RNF-0006.md) |
-| RNF-0007 | Segurança e privacidade dos dados | Segurança / Privacidade | Proteger dados locais do estudante na sandbox do dispositivo e impor comunicação criptografada (HTTPS/TLS). | [`docs/02-requirements/non-functional/RNF-0007.md`](./RNF-0007.md) |
+| ID       | Requisito                              | Atributo de Qualidade             | Descrição                                                                                                   | Especificação                                                      |
+| -------- | -------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| RNF-0001 | Desempenho e eficiência de recursos    | Eficiência de Desempenho          | Garantir respostas visuais imediatas (< 200 ms) e transições fluidas sem sobrecarga de bateria ou memória.  | [`docs/02-requirements/non-functional/RNF-0001.md`](./RNF-0001.md) |
+| RNF-0002 | Usabilidade e experiência do estudante | Usabilidade                       | Proporcionar interface clara, estados vazios orientadores e comunicação acolhedora sem mensagens punitivas. | [`docs/02-requirements/non-functional/RNF-0002.md`](./RNF-0002.md) |
+| RNF-0003 | Acessibilidade                         | Acessibilidade                    | Cumprir critérios da WCAG 2.1 AA (contraste ≥ 4,5:1, áreas de toque ≥ 48 dp e suporte a leitores de tela).  | [`docs/02-requirements/non-functional/RNF-0003.md`](./RNF-0003.md) |
+| RNF-0004 | Persistência local e disponibilidade   | Confiabilidade / Disponibilidade  | Garantir funcionamento offline-first e persistência íntegra de tarefas, rotinas e progresso no dispositivo. | [`docs/02-requirements/non-functional/RNF-0004.md`](./RNF-0004.md) |
+| RNF-0005 | Confiabilidade e integridade de dados  | Integridade / Tolerância a Falhas | Assegurar atomicidade em operações de escrita, preservação de dados em formulários e contenção de falhas.   | [`docs/02-requirements/non-functional/RNF-0005.md`](./RNF-0005.md) |
+| RNF-0006 | Compatibilidade e responsividade       | Portabilidade / Compatibilidade   | Assegurar execução consistente em Android 8.0+, iOS 14+ e navegadores web com layout adaptável.             | [`docs/02-requirements/non-functional/RNF-0006.md`](./RNF-0006.md) |
+| RNF-0007 | Segurança e privacidade dos dados      | Segurança / Privacidade           | Proteger dados locais do estudante na sandbox do dispositivo e impor comunicação criptografada (HTTPS/TLS). | [`docs/02-requirements/non-functional/RNF-0007.md`](./RNF-0007.md) |
 
 ## 3. Rastreabilidade
 
