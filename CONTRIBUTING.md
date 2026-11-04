@@ -109,7 +109,7 @@ As branches de trabalho devem seguir o formato:
 - Utilizar uma branch própria para cada atividade independente.
 - Não realizar alterações diretamente nas branches protegidas `main` e `development`.
 - Evitar reutilizar branches que já tiveram suas atividades concluídas.
-- Após a integração e conclusão da atividade, a branch de trabalho poderá ser removida.
+- Após o merge do Pull Request, a branch de trabalho remota é removida automaticamente pelo GitHub; `main` e `development` são protegidas contra exclusão.
 
 **Branches permanentes:**
 
@@ -342,6 +342,17 @@ Após a integração, a alteração passa a fazer parte da `development`, mas is
 Quando um Pull Request é integrado à `development`, a automação em `.github/workflows/fechar-issues-development.yml` analisa a descrição do PR e fecha as issues locais referenciadas pelas keywords `close`, `closes`, `closed`, `fix`, `fixes`, `fixed`, `resolve`, `resolves` ou `resolved`, seguidas de `#numero`. A automação não atua em PRs fechados sem merge, em merges para outras branches, em referências `Refs`, em referências externas ou em Pull Requests; issues inexistentes e falhas de processamento são registradas nos logs.
 
 O workflow possui somente a permissão `issues: write`, não executa código do PR e remove blocos e trechos de código da análise para evitar fechamentos acidentais. Issues já fechadas são ignoradas, e referências repetidas são processadas uma única vez.
+
+Após o merge, o GitHub remove automaticamente a branch de trabalho remota. Para manter o repositório local sincronizado, atualize a `development` e remova a referência local da branch integrada:
+
+```bash
+git switch development
+git pull --ff-only origin development
+git fetch --prune
+git branch -d nome-da-branch
+```
+
+Utilize `git branch -d`, que recusa a remoção de branches com commits não integrados; não utilize `-D`. Caso uma branch remota seja removida por engano, ela pode ser restaurada pelo botão **Restore branch** na página do Pull Request.
 
 ---
 
