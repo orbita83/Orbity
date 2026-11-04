@@ -1,6 +1,6 @@
 # Tokens
 
-> O contrato `cosmicTokens` da Tela Inicial está especificado na [Seção 2 — Navegação e Modo Foco (F1, F2)](05-padroes.md#2-navegação-e-modo-foco-f1-f2), com base no protótipo de referência. Esse contrato ainda não é exportado pelo código nesta branch documental. As tabelas abaixo continuam válidas para os temas base dos componentes.
+> A [variante cósmica](#variante-cósmica) é especificada para a Tela Inicial no padrão [F1/F2](05-padroes.md#2-navegação-e-modo-foco-f1-f2). O contrato ainda não é exportado pelo código nesta branch documental. As tabelas dos temas base continuam válidas.
 
 <!-- Camada 2 da aula: decisões com nome. Três níveis: primitivo → semântico → componente.
      Formato do nome: categoria.papel.variação (ex.: color.action, space.md, radius.lg, font.title).
@@ -86,6 +86,44 @@
 | `motion.duration.short`  | 100 ms                       | Feedback de toque       | Adaptado |
 | `motion.duration.medium` | 300 ms                       | Transições entre telas  | Adaptado |
 | `motion.easing.standard` | `cubic-bezier(0.2, 0, 0, 1)` | Curva padrão            | Adaptado |
+
+### Variante cósmica
+
+Este contrato documenta a paleta do protótipo F1/F2, adaptada ao Orbity a partir da direção visual cósmica. Ele é adicional aos temas base claro e escuro; não altera os valores nem os significados das tabelas anteriores. Os nomes abaixo são contratos documentais, ainda não exportados por `src/view/theme/tokens.ts` nesta branch.
+
+| Papel | Valor | Uso | Origem |
+| --- | --- | --- | --- |
+| `cosmicTokens.color.background` | `#030417` | Fundo da Tela Inicial | Adaptado |
+| `cosmicTokens.color.desktop` | `#07081F` | Área externa da prévia | Adaptado |
+| `cosmicTokens.color.sheet`, `sheetEnd` | `#0D0D29` → `#08091D` | Gradiente do painel | Adaptado |
+| `cosmicTokens.color.sheetBorder` | `#373064` | Contorno do painel | Adaptado |
+| `cosmicTokens.color.card`, `cardEnd` | `#141332` → `#0D0E26` | Gradiente dos cards | Adaptado |
+| `cosmicTokens.color.cardBorder` | `#232044` | Contorno dos cards | Adaptado |
+| `cosmicTokens.color.text` | `#FAF9FF` | Texto principal e texto claro da ação | Adaptado |
+| `cosmicTokens.color.muted` | `#BBB6E3` | Texto secundário | Adaptado |
+| `cosmicTokens.color.inactive` | `#9990CB` | Navegação inativa e chevrons | Adaptado |
+| `cosmicTokens.color.action`, `actionEnd` | `#7137F5` → `#703BF6` | Gradiente da ação principal | Adaptado |
+| `cosmicTokens.color.actionHover` | `#8252FC` | Realce da ação no hover | Adaptado |
+| `cosmicTokens.color.focus` | `#D4A3FF` | Indicador de foco | Adaptado |
+| `cosmicTokens.color.track` | `#232052` | Trilha do progresso | Adaptado |
+| `cosmicTokens.color.progress`, `progressEnd` | `#8A42FA` → `#713BF5` | Preenchimento do progresso | Adaptado |
+| `cosmicTokens.color.unlocked` | `#C47EFF` | Aro de conquista ativa | Adaptado |
+| `cosmicTokens.color.achievementPendingIcon` | `#8C7BCB` | Ícone de conquista pendente | Adaptado |
+| `cosmicTokens.color.achievementPendingBorder` | `#2B2654` | Contorno de conquista pendente | Adaptado |
+| `cosmicTokens.planet.highlight` | `#EBACFF` | Realce do planeta | Adaptado |
+| `cosmicTokens.planet.light` | `#BD6AFF` | Luz do planeta | Adaptado |
+| `cosmicTokens.planet.surface` | `#8840E9` | Superfície do planeta | Adaptado |
+| `cosmicTokens.planet.relief` | `#5320B2` | Relevo do planeta | Adaptado |
+| `cosmicTokens.planet.shadow` | `#39149A` | Sombra do planeta | Adaptado |
+| `cosmicTokens.planet.night` | `#17075B` | Face noturna do planeta | Adaptado |
+| `cosmicTokens.planet.border` | `#D08BFF` | Borda do planeta | Adaptado |
+| `cosmicTokens.planet.ring` | `#A95BFA` | Anel orbital | Adaptado |
+| `cosmicTokens.planet.ringHighlight` | `#E8B5FF` | Realce do anel | Adaptado |
+| `cosmicTokens.planet.glow` | `#8236D9` | Brilho decorativo | Adaptado |
+
+Nas linhas com dois nomes, ambos pertencem ao mesmo grupo `cosmicTokens.color`. Os nomes para hover, conquistas pendentes e camadas do planeta formalizam papéis descritos no protótipo, sem afirmar sua implementação.
+
+**Lacunas:** cores de fundo e indicador ativo da navbar, além das cores dos estados pressionado e desabilitado da ação, não têm valores definidos para esta variante. Não infira valores dos temas base; registre as definições na revisão dos componentes. A matriz completa de contraste e estados permanece na issue #86.
 
 ## 3. Tokens de componente (onde é usado)
 
