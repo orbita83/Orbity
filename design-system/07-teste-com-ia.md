@@ -2,7 +2,9 @@
 
 ## Prévia exploratória de Tarefas — ODS 1.1 em preparação
 
-Em 04/11/2026, uma prévia local foi composta usando `FilterChips`, `PrimaryButton`, `CardTarefa` e `NavBar` reais, com `themes.cosmic`. Foram observadas a alternância de uma tarefa e a filtragem das concluídas no navegador. A estrutura foi orientada pelo wireframe fornecido e a prévia usa estado temporário; não é tela de produto nem teste cego. Não houve isolamento da IA, validação em aparelho ou aprovação visual final. A Tela Inicial completa não está disponível neste checkout para comparação equivalente. Os pares sólidos verificados estão em [06-acessibilidade.md](06-acessibilidade.md).
+Em 04/11/2026, uma prévia local foi composta usando `FilterChips`, `PrimaryButton`, `CardTarefa` e `NavBar` reais, com `themes.cosmic`. Foram observadas a alternância de uma tarefa e a filtragem das concluídas no navegador. A estrutura foi orientada pelo wireframe fornecido e a prévia usa estado temporário; não é tela de produto nem teste cego. Não houve isolamento da IA, validação em aparelho ou aprovação visual final. A Tela Inicial completa não está disponível neste checkout para comparação equivalente. O protótipo histórico na branch `feat/tela-principal-prototipo` usa seu próprio `cosmicTokens`, inclusive valores anteriores da #86; não se deve afirmar que ele já consome `themes.cosmic`. Os pares sólidos e modelos amostrados estão em [06-acessibilidade.md](06-acessibilidade.md).
+
+Na história **Design System → Tema global → Interação no tema cósmico**, foram executados no navegador sete passos automatizados: selecionar filtro e conferir exclusividade acessível, marcar tarefa e conferir `aria-checked`, e selecionar aba e conferir `aria-selected`. O teste revelou inicialmente que os estados não chegavam à árvore acessível web; os controles foram corrigidos e os sete passos passaram. Isso não comprova TalkBack ou VoiceOver.
 
 Este documento registra o processo experimental de validação do **Orbity Design System (ODS)** conduzido com assistente de inteligência artificial em ambiente isolado, conforme os critérios de avaliação da atividade prática de IHC + PDM.
 
