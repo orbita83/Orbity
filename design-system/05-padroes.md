@@ -61,23 +61,18 @@
 
 ### Tokens da variante
 
-O contrato da variante é identificado por `cosmicTokens`. Os valores abaixo preservam as decisões do protótipo de referência, não aliases implícitos dos temas anteriores. Sua exportação em `src/view/theme/tokens.ts` deve ser conferida na branch de implementação; ela não está presente nesta branch documental.
+O contrato da variante é identificado por `cosmicTokens`. Suas [cores e lacunas](02-tokens.md#variante-cósmica) ficam em `02-tokens.md`, sem aliases implícitos dos temas base. Sua exportação em `src/view/theme/tokens.ts` deve ser conferida na branch de implementação; ela não está presente nesta branch documental.
 
 | Grupo | Decisão |
 | --- | --- |
-| Fundo | `background #030417`; área externa de preview `desktop #07081F` |
-| Painel | Gradiente `sheet #0D0D29` → `sheetEnd #08091D`; contorno `sheetBorder #373064` |
-| Cards | Gradiente `card #141332` → `cardEnd #0D0E26`; contorno `cardBorder #232044` |
-| Texto | `text #FAF9FF`; secundário `muted #BBB6E3`; navegação/chevrons `inactive #9990CB` |
-| Ação | Gradiente `action #7137F5` → `actionEnd #703BF6`; texto claro; hover `#8252FC` e feedback pressionado |
-| Acessibilidade | Foco `#D4A3FF`; texto escalável; nomes de controles e estados de seleção; modal nativo para detalhes |
-| Progresso | Trilha `#232052`; gradiente `#8A42FA` → `#713BF5`; altura 17 dp; preenchimento proporcional exato |
-| Conquistas | Aro ativo `#C47EFF`, ícones pendentes `#8C7BCB`, contorno pendente `#2B2654`; cadeado e descrição acessível |
+| Cores | Fundo, painel, cards, texto, ação, foco, progresso, conquistas e planeta: [variante cósmica](02-tokens.md#variante-cósmica) |
+| Acessibilidade | Texto escalável; nomes de controles e estados de seleção; modal nativo para detalhes |
+| Progresso | Altura 17 dp; preenchimento proporcional exato |
+| Conquistas | Cadeado e descrição acessível |
 | Tipografia | Marca 28/36; sequência 56/64; título 15/20; corpo 13/18; botão 16/24; legenda 12/16; navbar 11/16 |
 | Forma | Botão 15 dp; card 18 dp; painel 32 dp; preview 38 dp; medalhas circulares de 56 dp |
 | Movimento | Painel 380 ms; curva suave; atualização instantânea com movimento reduzido |
 | Visualizador | `planet.aspectRatio 0.85`; esfera e anéis em SVG; estrelas determinísticas; sequência como texto real |
-| Paleta do planeta | Realce `#EBACFF`, luz `#BD6AFF`, superfície `#8840E9`, relevo `#5320B2`, sombra `#39149A`, noite `#17075B`, borda `#D08BFF`, anel `#A95BFA`, realce do anel `#E8B5FF` e brilho `#8236D9` |
 | Swipe | Ativação após 10 dp; movimento intencional de 48 dp ou velocidade de 0,55 dp/ms; projeção de 160 ms; limites nos três pontos de ancoragem |
 
 No navegador, a tela é centralizada com largura máxima de 430 dp. No mobile, ocupa a largura disponível e respeita as áreas seguras. A barra de status ilustrativa “9:41” aparece apenas no preview web; Android/iOS usam a barra real do sistema.
