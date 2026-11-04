@@ -38,6 +38,8 @@ export const InteracaoCosmica: Story = {
     await userEvent.click(canvas.getByRole("radio", { name: "Filtrar por Pendentes" }));
     await expect(canvas.getByRole("radio", { name: "Filtrar por Pendentes" })).toHaveAttribute("aria-checked", "true");
     await expect(canvas.getByRole("radio", { name: "Filtrar por Todos" })).toHaveAttribute("aria-checked", "false");
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(canvas.getByRole("radio", { name: "Filtrar por Concluídas" })).toHaveAttribute("aria-checked", "true");
     await userEvent.click(canvas.getByRole("checkbox", { name: "Concluir tarefa: Estudar para prova" }));
     await expect(canvas.getByRole("checkbox", { name: "Desmarcar tarefa: Estudar para prova" })).toHaveAttribute("aria-checked", "true");
     await userEvent.click(canvas.getByRole("tab", { name: /Aba Início/ }));
