@@ -178,7 +178,7 @@ Todos os Pull Requests de desenvolvimento devem seguir o padrão de título:
 
 **Requisitos:**
 
-- A criação do Pull Request deve ser realizada manualmente pelo contribuidor.
+- A criação do Pull Request deve ser realizada manualmente ou de forma automatica pelo agente, seguindo o template descrito no workflow da pasta .github.
 - A branch de destino deve ser `development`.
 - O prefixo deve corresponder ao tipo principal da alteração.
 - O escopo deve indicar objetivamente a área afetada.
