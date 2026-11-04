@@ -69,6 +69,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     │   └── theme/            # Tokens visuais e temas do Design System
     ├── viewmodel/            # Custom Hooks de estado e apresentação (use*ViewModel.ts)
     └── DI/                   # Ponto de composição e Injeção de Dependências
+        └── container.ts      # Composition Root mínimo e fábricas de composição
 ```
 
 ### Convenções de Organização e Direção de Dependências
@@ -323,3 +324,122 @@ const mockAuthService: IAuthService = {
 const useCaseTest = new AuthUseCases(mockAuthService);
 // Pode ser testado diretamente via Jest ou Bun/Node!
 ```
+
+---
+
+## 6. Composition Root e Convenções de Injeção de Dependências (`src/DI/container.ts`)
+
+O arquivo `src/DI/container.ts` materializa o **Composition Root** mínimo do Orbity sem depender de frameworks externos de injeção de dependências.
+
+### 6.1. Responsabilidades e Regras de Composição
+
+1. **Ponto Único de Acoplamento Concreto (`src/DI/container.ts`):**
+   - É o único módulo da aplicação autorizado a importar simultaneamente implementações concretas de `src/infra/` (`repositories/` e `services/`) e classes concretas de `src/usecase/`.
+   - Expõe objetos imutáveis (`Object.freeze`) organizados em `repositories`, `services` e `useCases`, além dos utilitários `composeUseCase`, `resolveUseCase`, `createContainer`, `createAppContainer` e a instância padrão `container`.
+2. **Contratos de Domínio → Use Cases (`composeUseCase`):**
+   - Os Use Cases em `src/usecase/` declaram suas dependências exclusivamente por meio de interfaces de `src/model/repositories/` e `src/model/services/`.
+   - Nunca importam classes concretas de `src/infra/` nem o próprio `src/DI/container.ts`.
+3. **Abstrações de Use Cases → ViewModels (`resolveUseCase` / parâmetro padrão):**
+   - As ViewModels em `src/viewmodel/` dependem exclusivamente de interfaces `I*UseCases` definidas em `src/usecase/`.
+   - Recebem a abstração por parâmetro opcional (com valor padrão vindo do container ou resolvido via `resolveUseCase`), sem instanciar repositórios ou serviços diretamente.
+4. **Isolamento da View (`src/view/`):**
+   - Componentes e telas invocam os hooks da ViewModel sem conhecer `src/DI/`, `src/usecase/` ou `src/infra/`.
+
+### 6.2. Estratégias de Substituição por Test Doubles
+
+A arquitetura suporta três níveis complementares de substituição de dependências em testes, sem modificar os consumidores:
+
+- **Substituição direta no Use Case:** passar um *test double* (mock, stub, fake ou in-memory) do contrato de `src/model/` diretamente ao construtor do Use Case ou a `composeUseCase`.
+- **Substituição na composição (`createContainer` / `createAppContainer`):** fornecer `overrides.repositories` ou `overrides.services` ao criar um container isolado; os Use Cases são automaticamente recompostos com os *test doubles* fornecidos.
+- **Substituição direta na ViewModel:** passar um *test double* de `I*UseCases` como argumento da ViewModel (ou via `overrides.useCases`).
+
+### 6.3. Exemplo Técnico Mínimo de Composição e Substituição
+
+```typescript
+import {
+  composeUseCase,
+  createContainer,
+  resolveUseCase,
+  type ContainerDefinition,
+} from "@/DI/container";
+
+// 1. Contrato no Domínio (src/model/services/)
+interface IClockService {
+  nowIso(): string;
+}
+
+// 2. Contrato e Implementação do Use Case (src/usecase/)
+interface ITimestampUseCase {
+  formatCurrentLabel(): string;
+}
+
+class TimestampUseCase implements ITimestampUseCase {
+  constructor(private readonly clockService: IClockService) {}
+
+  formatCurrentLabel(): string {
+    return ` timestamp:${this.clockService.nowIso()}`.trim();
+  }
+}
+
+// 3. Implementação Concreta na Infraestrutura (src/infra/services/)
+class SystemClockService implements IClockService {
+  nowIso(): string {
+    return "2026-01-01T00:00:00.000Z";
+  }
+}
+
+// 4. Definição da Composição no Composition Root (src/DI/)
+type ExampleRepositories = Record<string, never>;
+interface ExampleServices {
+  clock: IClockService;
+}
+interface ExampleUseCases {
+  timestamp: ITimestampUseCase;
+}
+
+const definition: ContainerDefinition<
+  ExampleRepositories,
+  ExampleServices,
+  ExampleUseCases
+> = {
+  repositories: () => ({}),
+  services: () => ({
+    clock: new SystemClockService(),
+  }),
+  useCases: ({ services }) => ({
+    timestamp: composeUseCase(
+      (clock) => new TimestampUseCase(clock),
+      services.clock,
+    ),
+  }),
+};
+
+// Composição padrão de produção
+const defaultContainer = createContainer(definition);
+
+// Consumidor (ViewModel) dependendo apenas da abstração ITimestampUseCase
+function createViewModelConsumer(overrideUseCase?: ITimestampUseCase) {
+  const useCase = resolveUseCase(
+    overrideUseCase,
+    defaultContainer.useCases.timestamp,
+  );
+  return { label: useCase.formatCurrentLabel() };
+}
+
+// Cenário A — Substituição da Infra por Test Double via Container Overrides
+const fakeClockService: IClockService = {
+  nowIso: () => "2026-11-04T12:00:00.000Z",
+};
+const testContainer = createContainer(definition, {
+  services: { clock: fakeClockService },
+});
+// testContainer.useCases.timestamp.formatCurrentLabel() === "timestamp:2026-11-04T12:00:00.000Z"
+
+// Cenário B — Substituição do Use Case por Test Double diretamente no Consumidor (ViewModel)
+const stubTimestampUseCase: ITimestampUseCase = {
+  formatCurrentLabel: () => "timestamp:stubbed",
+};
+const vmState = createViewModelConsumer(stubTimestampUseCase);
+// vmState.label === "timestamp:stubbed"
+```
+
