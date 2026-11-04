@@ -120,6 +120,8 @@ A validação humana foi realizada por meio da revisão das tarefas e de seus re
 
 A composição, os estados, as interações e as decisões visuais da Tela Inicial estão incorporados à [Seção 2 — Navegação e Modo Foco (F1, F2)](05-padroes.md#2-navegação-e-modo-foco-f1-f2). Consulte esse padrão junto às especificações dos componentes envolvidos.
 
+Para escolher as cores, consulte primeiro o padrão da tela e aplique a aparência que ele especifica; depois consulte os papéis correspondentes em [02-tokens.md](02-tokens.md). F1/F2 especifica a variante cósmica; os demais padrões usam o tema base selecionado até que definam outra aparência. O contrato `cosmicTokens` é documentação e ainda não é exportado por `src/view/theme/tokens.ts` nesta branch.
+
 > [!WARNING]
 > Ao gerar, revisar ou alterar uma interface do Orbity:
 

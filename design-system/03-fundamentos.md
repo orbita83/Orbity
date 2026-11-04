@@ -5,6 +5,13 @@
 
 ## Cor
 
+- No padrão F1/F2, aplique explicitamente a [variante cósmica](02-tokens.md#variante-cósmica). Em outros padrões, use o tema base selecionado até que o padrão especifique uma variante. A aparência cósmica não altera por si só a preferência de tema do estudante nem elimina o tema claro. (Adaptado)
+- Para F1/F2, associe fundo a `cosmicTokens.color.background`; painel a `sheet` e `sheetEnd`; card a `card` e `cardEnd`; texto a `text` e `muted`; ação a `action` e `actionEnd`; foco a `focus`; progresso a `track`, `progress` e `progressEnd`. Os nomes abreviados pertencem a `cosmicTokens.color`. Para a ilustração, use os papéis `cosmicTokens.planet` documentados; cores decorativas não substituem texto. (Adaptado)
+- Para fundo e indicador ativo da navbar e estados pressionado e desabilitado da ação cósmica, registre as lacunas para a revisão dos componentes na issue #85; não deduza cores de outro tema. (Novo)
+- Em qualquer aparência, associe texto ou ícone aos estados e verifique o contraste dos pares utilizados. (Herdado)
+
+Para componentes que usam os temas base:
+
 - Use `color.action` somente para a ação principal da tela e estados ativos destacados. (Adaptado)
 - Use `color.action-subtle` para indicadores de estado, pílulas de navegação e cápsulas visuais suaves. (Adaptado)
 - Nunca use cor como única forma de comunicar um estado; acrescente ícone ou texto. (Herdado)
