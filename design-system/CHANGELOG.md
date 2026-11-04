@@ -2,6 +2,11 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
+## 1.1.0 — em preparação
+
+- **Issue #84:** Centralização documental dos papéis cromáticos cósmicos e orientação para seleção da variante em F1/F2. Os contratos dos temas base claro e escuro da versão 1.0.0 foram preservados; os novos nomes documentais não alteram seus valores.
+- **Pendências:** Implementação TypeScript na #73, alinhamento de componentes na #85 e matriz completa de contraste na #86. Esta entrada não representa uma versão publicada.
+
 ## 1.0.0 · 2026-10-21
 
 - **Responsáveis:** Mailson Sousa, Cássio Sampaio, Mateus de Araújo, Vitor Lopes e Alisson Ramires.
