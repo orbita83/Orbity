@@ -139,7 +139,7 @@ const createStyles = (theme: OrbityTheme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.navbar.bg,
-      borderTopColor: theme.primitive["neutral-200"],
+      borderTopColor: theme.componentOverrides?.navbarBorder ?? theme.primitive["neutral-200"],
       borderTopWidth: 1,
       elevation: theme.navbar.elevation,
       paddingHorizontal: theme.space.sm,
