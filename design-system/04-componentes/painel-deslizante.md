@@ -30,8 +30,11 @@ Os estágios são posições do mesmo painel. A navbar é ocultada durante foco 
 - Ofereça abertura e recolhimento por toque e teclado, além de swipe; exponha nome, papel e estado da alça.
 - Distinga arrastar o painel de rolar o conteúdo e preserve uma saída clara. Não confine foco em painel não modal enquanto a navbar estiver disponível; diálogos modais seguem [06-acessibilidade.md](../06-acessibilidade.md).
 - Exponha valor textual do progresso, permita texto ampliado e rolagem, respeite redução de movimento e não use cor como único indicador de estado.
+- Anuncie `expanded` na alça, `busy` durante carregamento e papel de barra de progresso com valor textual; restaure o foco ao controle de origem quando apropriado.
+- Mantenha escala de texto até 200%, com crescimento vertical e rolagem; reduza a transição a atualização instantânea ou curta quando o sistema solicitar movimento reduzido.
+- Formulários de criação e confirmações de exclusão usam seus próprios padrões, não este painel.
 - Calcule contraste no fundo efetivo, incluindo extremidades dos gradientes; a matriz completa permanece na #86.
 
 ## Implementação e lacunas
 
-O painel cósmico e seu contrato ainda não estão implementados nesta branch. A cor e dimensões da alça, estados visuais ausentes e regras de ancoragem não especificadas em F1/F2 exigem definição; não introduza valores arbitrários. O botão e a navbar base existentes não comprovam suas variantes cósmicas.
+O painel ainda não está implementado nesta branch. A cor e dimensões da alça, estados visuais ausentes e regras de ancoragem não especificadas em F1/F2 exigem definição; não introduza valores arbitrários. O botão e a navbar aceitam o tema global sólido, mas isso não implementa o painel nem seus gradientes.

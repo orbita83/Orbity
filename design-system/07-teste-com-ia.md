@@ -1,5 +1,9 @@
 # Teste com IA
 
+## Prévia exploratória de Tarefas — ODS 1.1 em preparação
+
+Em 04/11/2026, uma prévia local foi composta usando `FilterChips`, `PrimaryButton`, `CardTarefa` e `NavBar` reais, com `themes.cosmic`. Foram observadas a alternância de uma tarefa e a filtragem das concluídas no navegador. A estrutura foi orientada pelo wireframe fornecido e a prévia usa estado temporário; não é tela de produto nem teste cego. Não houve isolamento da IA, validação em aparelho ou aprovação visual final. A Tela Inicial completa não está disponível neste checkout para comparação equivalente. Os pares sólidos verificados estão em [06-acessibilidade.md](06-acessibilidade.md).
+
 Este documento registra o processo experimental de validação do **Orbity Design System (ODS)** conduzido com assistente de inteligência artificial em ambiente isolado, conforme os critérios de avaliação da atividade prática de IHC + PDM.
 
 ---

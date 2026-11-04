@@ -38,7 +38,9 @@ Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais
 - **Independência de cor (WCAG 1.4.1):** Nunca utilize a cor como o único meio para comunicar status, conclusão de tarefa, rotina pendente ou erro de validação. Sempre associe um ícone semântico (ex.: `error` ou `check_circle`) e uma mensagem textual explicativa. (Herdado)
 - **Adequação do `color.error` no tema claro:** Como o par `error-500` sobre `neutral-0` atinge 3,76:1 (insuficiente para texto comum de 14–16 px), mensagens de erro de formulário no tema claro devem utilizar o texto padrão em `color.on-surface` acompanhado de um ícone indicador em `color.error`, ou utilizar peso e tamanho que assegurem legibilidade. (Adaptado)
 
-### Verificação dos pares cósmicos de F1/F2
+### Verificação dos pares cósmicos globais
+
+Os seguintes pares sólidos também se aplicam à composição de Tarefas: texto de ação `#FAF9FF` em `#7137F5` = **5,62:1**; texto secundário `#BBB6E3` em card `#141332` = **9,34:1**; contorno de checkbox `#7137F5` em card `#141332` = **3,05:1**; item inativo `#9990CB` em navbar `#0D0D29` = **6,51:1**; foco `#D4A3FF` em card `#141332` = **8,97:1**. Opacidade em pressionado, foco sobre fundos diferentes, gradientes inteiros e tecnologias assistivas ainda exigem verificação específica.
 
 Os valores vêm da [variante cósmica](02-tokens.md#variante-cósmica). A tabela verifica pares sólidos e as paradas documentadas, usando luminância relativa sRGB e a fórmula acima. As razões são exibidas com duas casas decimais; a comparação com os limiares usa a precisão integral, sem aprovar valores que arredondem para o mínimo. Paradas aprovadas não comprovam todo o gradiente.
 

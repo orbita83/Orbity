@@ -19,8 +19,8 @@
 | Hover e pressionado | Cores ainda não especificadas; não infira valores. |
 | Movimento reduzido | Preserve a informação em texto sem depender de movimento decorativo. |
 
-Oculte camadas decorativas do leitor de tela e exponha contagem e ação por nome acessível. Verifique contraste do texto sobre todas as áreas da ilustração que possam ficar atrás dele; a matriz completa pertence à #86.
+Oculte camadas decorativas do leitor de tela e exponha contagem e ação por nome acessível. Permita quebra de linha e crescimento vertical do texto sem truncamento. Não use efeitos que pisquem mais de três vezes por segundo. Verifique contraste do texto sobre todas as áreas da ilustração que possam ficar atrás dele; a matriz completa pertence à #86.
 
 ## Especificações futuras e implementação
 
-A evolução visual por ponto e a rotação axial durante o foco são propostas futuras: faltam limiares, mapeamento de cada estágio e duração do ciclo. Não as apresente como comportamento existente. A variante cósmica e o visualizador não estão implementados nesta branch; a paleta base continua disponível para padrões que não especifiquem a aparência cósmica.
+A evolução visual por ponto e a rotação axial durante o foco são propostas futuras: faltam limiares, mapeamento de cada estágio e duração do ciclo. Quando definidas, devem preservar conquistas após pausas e desativar rotação com movimento reduzido. Não as apresente como comportamento existente. O visualizador não está implementado nesta branch; as cores globais cósmicas estão disponíveis no tema compartilhado.

@@ -27,7 +27,7 @@
 
 - **Objetivo:** Apresentar a sequência de estudos em um planeta centralizado, permitir a navegação entre as cinco abas e reunir foco, progresso diário e conquistas em um painel de atividade deslizante.
 - **Origem:** Composição cósmica consolidada em 22/10/2026 a partir da referência visual de três estados do protótipo. As decisões de composição e interação desta tela ficam neste padrão; os componentes reutilizáveis continuam documentados em [04-componentes/](04-componentes/).
-- **Componentes:** Cabeçalho com marca e acesso a Configurações; visualizador vetorial `PlanetStreakView`, composto por `PlanetIllustration` e contador de sequência; campo de estrelas `CosmicStarfield`; painel `FocusBottomSheet` com alça; cards de Modo Foco, Progresso de hoje, Conquistas, Última sessão e Como funciona?; `PrimaryButton` para iniciar ou encerrar foco; navbar `NavBar` com cinco abas; ícones `CosmicIcon` e modais de detalhes. A variante usa o contrato `cosmicTokens`, com `appearance="cosmic"` no botão e na navbar, preservando os temas claro e escuro dos componentes base.
+- **Componentes:** Cabeçalho com marca e acesso a Configurações; visualizador vetorial `PlanetStreakView`, composto por `PlanetIllustration` e contador de sequência; campo de estrelas `CosmicStarfield`; painel `FocusBottomSheet` com alça; cards de Modo Foco, Progresso de hoje, Conquistas, Última sessão e Como funciona?; `PrimaryButton` para iniciar ou encerrar foco; navbar `NavBar` com cinco abas; ícones `CosmicIcon` e modais de detalhes. Os componentes compartilhados usam `themes.cosmic`, o mesmo tema global de Tarefas e das demais telas.
 - **Passos:**
 
   1. Estudante acessa a Tela Inicial e visualiza o campo de estrelas, o planeta centralizado com a contagem textual de dias de sequência e o convite **Deslize para explorar**. O painel começa completamente recolhido.
@@ -61,7 +61,7 @@
 
 ### Tokens da variante
 
-O contrato da variante é identificado por `cosmicTokens`. Suas [cores e lacunas](02-tokens.md#variante-cósmica) ficam em `02-tokens.md`, sem aliases implícitos dos temas base. Sua exportação em `src/view/theme/tokens.ts` deve ser conferida na branch de implementação; ela não está presente nesta branch documental.
+As cores e lacunas estão em [02-tokens.md](02-tokens.md#variante-cósmica). `themes.cosmic` exporta os papéis semânticos implementados; referências a `cosmicTokens` nesta seção descrevem também recursos ainda não implementados.
 
 | Grupo | Decisão |
 | --- | --- |

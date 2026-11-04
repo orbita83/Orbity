@@ -1,5 +1,7 @@
 # Chips de filtro de tarefas (FilterChips)
 
+> As tabelas de cores e razões numéricas deste documento descrevem os temas legados 1.0. Para o tema global `themes.cosmic`, os mesmos papéis são resolvidos conforme [02-tokens.md](../02-tokens.md#variante-cósmica), com contrastes em [06-acessibilidade.md](../06-acessibilidade.md).
+
 Origem no sistema base: Material Design 3, Filter Chip. Situação: Adaptado. Motivo da adaptação: aplicar a paleta semântica e os tokens de tema do Orbity (modo claro com `color.action` azul e modo escuro com `color.action` roxo `purple-400`), incorporar requisitos estritos de acessibilidade (WCAG 2.1/2.2 AA) com alvo de toque mínimo de 48 × 48 dp (`target.min-size`), anel visível de foco de 2 dp (`focus.ring-width`) e garantia de indicadores perceptíveis além da cor.
 
 Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Tarefas e Ações em Lote, fluxos F5 e F6), [01-principios.md](../01-principios.md) (Princípios 1, 2 e 3), [02-tokens.md](../02-tokens.md) e [06-acessibilidade.md](../06-acessibilidade.md). O componente viabiliza a filtragem imediata das tarefas do estudante entre todas, pendentes e concluídas.
