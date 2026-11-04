@@ -38,6 +38,30 @@ Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais
 - **Independência de cor (WCAG 1.4.1):** Nunca utilize a cor como o único meio para comunicar status, conclusão de tarefa, rotina pendente ou erro de validação. Sempre associe um ícone semântico (ex.: `error` ou `check_circle`) e uma mensagem textual explicativa. (Herdado)
 - **Adequação do `color.error` no tema claro:** Como o par `error-500` sobre `neutral-0` atinge 3,76:1 (insuficiente para texto comum de 14–16 px), mensagens de erro de formulário no tema claro devem utilizar o texto padrão em `color.on-surface` acompanhado de um ícone indicador em `color.error`, ou utilizar peso e tamanho que assegurem legibilidade. (Adaptado)
 
+### Verificação dos pares cósmicos de F1/F2
+
+Os valores vêm da [variante cósmica](02-tokens.md#variante-cósmica). A tabela verifica pares sólidos e as paradas documentadas, usando luminância relativa sRGB e a fórmula acima. As razões são exibidas com duas casas decimais; a comparação com os limiares usa a precisão integral, sem aprovar valores que arredondem para o mínimo. Paradas aprovadas não comprovam todo o gradiente.
+
+| Uso e tokens | Primeiro plano | Fundo ou paradas | Razão pontual | Mínimo | Resultado |
+| --- | --- | --- | --- | --- | --- |
+| Texto principal `text` / `background` | `#FAF9FF` | `#030417` | 19,41:1 | 4,5:1 | Aprovado para o par sólido |
+| Texto principal `text` / painel `sheet`, `sheetEnd` | `#FAF9FF` | `#0D0D29`, `#08091D` | 18,13:1; 18,80:1 | 4,5:1 | Paradas aprovadas; gradiente pendente |
+| Texto principal `text` / card `card`, `cardEnd` | `#FAF9FF` | `#141332`, `#0D0E26` | 17,16:1; 18,11:1 | 4,5:1 | Paradas aprovadas; gradiente pendente |
+| Texto secundário `muted` / painel `sheet`, `sheetEnd` | `#BBB6E3` | `#0D0D29`, `#08091D` | 9,86:1; 10,23:1 | 4,5:1 | Paradas aprovadas; gradiente pendente |
+| Texto secundário `muted` / card `card`, `cardEnd` | `#BBB6E3` | `#141332`, `#0D0E26` | 9,34:1; 9,85:1 | 4,5:1 | Paradas aprovadas; gradiente pendente |
+| Rótulo `text` / ação `action`, `actionEnd` | `#FAF9FF` | `#7137F5`, `#703BF6` | 5,62:1; 5,50:1 | 4,5:1 | Paradas aprovadas; gradiente pendente |
+| Rótulo `text` / hover `actionHover` | `#FAF9FF` | `#8648FA` | 4,64:1 | 4,5:1 | Aprovado para o par sólido |
+| Preenchimento `progress`, `progressEnd` / trilha `track` | `#8A42FA`, `#8648FA` | `#232052` | 3,03:1; 3,09:1 | 3:1 quando a distinção gráfica é necessária | Paradas aprovadas; gradiente e necessidade funcional pendentes |
+| Foco `focus` / fundo `background` | `#D4A3FF` | `#030417` | 10,14:1 | 3:1 | Aprovado para o par sólido |
+| Foco `focus` / painel `sheet`, `sheetEnd` | `#D4A3FF` | `#0D0D29`, `#08091D` | 9,47:1; 9,82:1 | 3:1 | Paradas aprovadas; adjacência e gradiente pendentes |
+| Foco `focus` / card `card`, `cardEnd` | `#D4A3FF` | `#141332`, `#0D0E26` | 8,97:1; 9,46:1 | 3:1 | Paradas aprovadas; adjacência e gradiente pendentes |
+
+**Correções em preparação para 1.1.0:** o hover anterior `#8252FC` resultava em 4,40:1 com `text`, abaixo de 4,5:1 para texto comum. A parada final anterior `#713BF5` resultava em 2,60:1 sobre `track`, abaixo de 3:1 quando o indicador gráfico precisa ser distinguido. A nova cor `#8648FA` foi escolhida para ambos os papéis; os resultados acima não comprovam os gradientes inteiros.
+
+**Pendências:** a interpolação, composição e região efetiva dos gradientes ainda não estão especificadas; não se pode concluir o mínimo em toda a área. Texto sobre o planeta, brilho, imagem ou transparência exige avaliar a composição real. Fundos e estados não definidos da navbar, alça e ação pressionada ou desabilitada não possuem pares calculáveis; não infira cores. Valide a cor do item inativo `inactive` sobre o fundo real quando este for definido. O estado desabilitado tem exceção aos critérios WCAG de contraste aplicáveis a componentes inativos, mas sua legibilidade deve ser considerada; não marque estados sem valores como aprovados. Mantenha texto ou outro indicador perceptível para progresso e seleção, além da cor.
+
+Os limiares e exceções são descritos em [WCAG 1.4.3 — Contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) e [WCAG 1.4.11 — Contraste de conteúdo não textual](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html). A verificação de cores sólidas não substitui os testes visuais e de acessibilidade em uma implementação real.
+
 ---
 
 ## Alvos de toque
