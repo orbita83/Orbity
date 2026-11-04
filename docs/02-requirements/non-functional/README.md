@@ -10,7 +10,7 @@ Os requisitos são organizados por categoria conforme a norma de qualidade de so
 
 | Categoria | Diretório | Identificação |
 | --- | --- | --- |
-| Requisitos Não Funcionais (RNF) | [`non-functional/`](./) | `RNF-XXXX` |
+| Requisitos Não Funcionais (RNF) | [`docs/02-requirements/non-functional/`](./) | `RNF-XXXX` |
 
 ## 2. Catálogo de Requisitos Não Funcionais
 
@@ -30,11 +30,11 @@ A rastreabilidade dos requisitos não funcionais é estabelecida por meio de seu
 
 Os identificadores podem ser utilizados em:
 
-- Requisitos funcionais ([`functional/`](../functional/));
-- Regras de negócio ([`business-rules/`](../business-rules/));
-- Casos de uso e especificações técnicas ([`04-specifications/`](../../04-specifications/));
-- Decisões arquiteturais ([`05-architecture/`](../../05-architecture/));
-- Casos de teste ([`06-quality/`](../../06-quality/));
+- Requisitos funcionais ([`docs/02-requirements/functional/`](../functional/));
+- Regras de negócio ([`docs/02-requirements/business-rules/`](../business-rules/));
+- Casos de uso e especificações técnicas ([`docs/04-specifications/`](../../04-specifications/));
+- Decisões arquiteturais ([`docs/05-architecture/`](../../05-architecture/));
+- Casos de teste ([`docs/06-quality/`](../../06-quality/));
 - Issues e Pull Requests.
 
 ## 4. Manutenção
