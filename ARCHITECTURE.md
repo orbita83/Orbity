@@ -48,27 +48,38 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 
 ---
 
-## 3. Estrutura de Pastas Recomendada
+## 3. Estrutura de Pastas Materializada
 
 ```
 └── src/
-    ├── app/                  # Módulos de rota do Expo Router
+    ├── app/                  # Módulos de rota do Expo Router (kebab-case.tsx)
     │   ├── _layout.tsx
     │   └── index.tsx
     ├── infra/                # Implementações concretas (Infraestrutura)
-    │   ├── repositories/     # (ou dataSource/) Ex: MemoryUserDataSource.ts, FirestoreUserDataSource.ts
-    │   └── services/         # Ex: MemoryAuthService.ts, FirebaseAuthService.ts
-    ├── model/                # Camada de Domínio Puro (Model)
-    │   ├── entities/         # Ex: User.ts
-    │   ├── repositories/     # Ex: IUserRepository.ts (Interface)
-    │   └── services/         # Ex: IAuthService.ts (Interface)
-    ├── usecase/              # (ou usecases/) Casos de Uso
-    │   ├── IAuthUseCases.ts  # Contrato/Interface do Use Case
-    │   └── AuthUseCases.ts   # Implementação do Use Case
-    ├── view/                 # Componentes de tela (*-screen.tsx / *View.tsx) e UI
-    ├── viewmodel/            # Custom Hooks da ViewModel (ex: useLoginViewModel.ts)
-    └── DI/                   # Container de Injeção de Dependências (container.ts)
+    │   ├── repositories/     # Repositórios / DataSources concretos (ex.: Memory, SQLite, Firestore)
+    │   └── services/         # Serviços concretos de integração externa
+    ├── model/                # Camada de Domínio Puro (zero dependências externas)
+    │   ├── entities/         # Entidades e tipos puros de domínio
+    │   ├── errors/           # Erros puros de domínio (ex.: ValidationError)
+    │   ├── repositories/     # Contratos (interfaces) de repositórios / DataSources
+    │   └── services/         # Contratos (interfaces) de serviços externos
+    ├── usecase/              # Casos de Uso (contratos I*UseCases e implementações)
+    ├── view/                 # Componentes de tela (*-screen.tsx) e UI
+    │   ├── components/       # Componentes reutilizáveis de interface
+    │   └── theme/            # Tokens visuais e temas do Design System
+    ├── viewmodel/            # Custom Hooks de estado e apresentação (use*ViewModel.ts)
+    └── DI/                   # Ponto de composição e Injeção de Dependências
 ```
+
+### Convenções de Organização e Direção de Dependências
+
+- **`src/app/` → `src/view/`:** Módulos de rota do Expo Router em `src/app/` apenas importam e re-exportam como `default` os componentes de tela definidos em `src/view/`.
+- **`src/view/` → `src/viewmodel/`:** Telas e componentes consomem estado e ações expostos pelas ViewModels e tokens de `src/view/theme/`, sem acessar `usecase`, `model` (regras) ou `infra` diretamente.
+- **`src/viewmodel/` → `src/usecase/` (e `src/DI/`):** ViewModels dependem de abstrações (contratos de Use Cases), recebendo a instância padrão composta em `src/DI/` para permitir injeção de *test doubles*.
+- **`src/usecase/` → `src/model/`:** Casos de uso orquestram regras de negócio exclusivamente sobre entidades, erros e interfaces (`repositories/`, `services/`) do domínio.
+- **`src/infra/` → `src/model/`:** Implementações concretas em `src/infra/repositories/` e `src/infra/services/` implementam os contratos de `src/model/` e convertem falhas externas para erros puros de `src/model/errors/`.
+- **`src/model/` (Domínio Puro):** Não importa nada de `view`, `viewmodel`, `usecase`, `infra`, `DI`, React Native, Expo ou bibliotecas externas de infraestrutura.
+- **Aliases de Importação:** O alias `@/*` aponta para `./src/*` (configurado em `tsconfig.json`), podendo ser utilizado para imports entre camadas (ex.: `@/model/...`, `@/usecase/...`, `@/view/...`).
 
 ---
 
