@@ -2,6 +2,10 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
+## 1.1.0 — em preparação
+
+- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA antes da conclusão da versão. As entregas e seus resultados serão registrados conforme forem integrados.
+
 ## 1.0.0 · 2026-10-21
 
 - **Responsáveis:** Mailson Sousa, Cássio Sampaio, Mateus de Araújo, Vitor Lopes e Alisson Ramires.
