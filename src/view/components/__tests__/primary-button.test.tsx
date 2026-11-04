@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
-import { PrimaryButton } from "../primary-button";
+import { PrimaryButton } from "@/view/components/primary-button";
 
 describe("PrimaryButton", () => {
   it("renderiza o rótulo do botão corretamente", async () => {
