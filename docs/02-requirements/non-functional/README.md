@@ -14,15 +14,15 @@ Os requisitos são organizados por categoria conforme a norma de qualidade de so
 
 ## 2. Catálogo de Requisitos Não Funcionais
 
-| ID | Requisito | Atributo de Qualidade | Descrição |
-| --- | --- | --- | --- |
-| [RNF-0001](./RNF-0001.md) | Desempenho e eficiência de recursos | Eficiência de Desempenho | Garantir respostas visuais imediatas (< 200 ms) e transições fluidas sem sobrecarga de bateria ou memória. |
-| [RNF-0002](./RNF-0002.md) | Usabilidade e experiência do estudante | Usabilidade | Proporcionar interface clara, estados vazios orientadores e comunicação acolhedora sem mensagens punitivas. |
-| [RNF-0003](./RNF-0003.md) | Acessibilidade | Acessibilidade | Cumprir critérios da WCAG 2.1 AA (contraste ≥ 4,5:1, áreas de toque ≥ 48 dp e suporte a leitores de tela). |
-| [RNF-0004](./RNF-0004.md) | Persistência local e disponibilidade | Confiabilidade / Disponibilidade | Garantir funcionamento offline-first e persistência íntegra de tarefas, rotinas e progresso no dispositivo. |
-| [RNF-0005](./RNF-0005.md) | Confiabilidade e integridade de dados | Integridade / Tolerância a Falhas | Assegurar atomicidade em operações de escrita, preservação de dados em formulários e contenção de falhas. |
-| [RNF-0006](./RNF-0006.md) | Compatibilidade e responsividade | Portabilidade / Compatibilidade | Assegurar execução consistente em Android 8.0+, iOS 14+ e navegadores web com layout adaptável. |
-| [RNF-0007](./RNF-0007.md) | Segurança e privacidade dos dados | Segurança / Privacidade | Proteger dados locais do estudante na sandbox do dispositivo e impor comunicação criptografada (HTTPS/TLS). |
+| ID | Requisito | Atributo de Qualidade | Descrição | Especificação |
+| --- | --- | --- | --- | --- |
+| RNF-0001 | Desempenho e eficiência de recursos | Eficiência de Desempenho | Garantir respostas visuais imediatas (< 200 ms) e transições fluidas sem sobrecarga de bateria ou memória. | [`docs/02-requirements/non-functional/RNF-0001.md`](./RNF-0001.md) |
+| RNF-0002 | Usabilidade e experiência do estudante | Usabilidade | Proporcionar interface clara, estados vazios orientadores e comunicação acolhedora sem mensagens punitivas. | [`docs/02-requirements/non-functional/RNF-0002.md`](./RNF-0002.md) |
+| RNF-0003 | Acessibilidade | Acessibilidade | Cumprir critérios da WCAG 2.1 AA (contraste ≥ 4,5:1, áreas de toque ≥ 48 dp e suporte a leitores de tela). | [`docs/02-requirements/non-functional/RNF-0003.md`](./RNF-0003.md) |
+| RNF-0004 | Persistência local e disponibilidade | Confiabilidade / Disponibilidade | Garantir funcionamento offline-first e persistência íntegra de tarefas, rotinas e progresso no dispositivo. | [`docs/02-requirements/non-functional/RNF-0004.md`](./RNF-0004.md) |
+| RNF-0005 | Confiabilidade e integridade de dados | Integridade / Tolerância a Falhas | Assegurar atomicidade em operações de escrita, preservação de dados em formulários e contenção de falhas. | [`docs/02-requirements/non-functional/RNF-0005.md`](./RNF-0005.md) |
+| RNF-0006 | Compatibilidade e responsividade | Portabilidade / Compatibilidade | Assegurar execução consistente em Android 8.0+, iOS 14+ e navegadores web com layout adaptável. | [`docs/02-requirements/non-functional/RNF-0006.md`](./RNF-0006.md) |
+| RNF-0007 | Segurança e privacidade dos dados | Segurança / Privacidade | Proteger dados locais do estudante na sandbox do dispositivo e impor comunicação criptografada (HTTPS/TLS). | [`docs/02-requirements/non-functional/RNF-0007.md`](./RNF-0007.md) |
 
 ## 3. Rastreabilidade
 
@@ -39,7 +39,7 @@ Os identificadores podem ser utilizados em:
 
 ## 4. Manutenção
 
-- Cada requisito possui um arquivo Markdown individual (`RNF-XXXX.md`).
+- Cada requisito possui um arquivo Markdown individual (`docs/02-requirements/non-functional/RNF-XXXX.md`).
 - Os identificadores existentes são preservados durante as manutenções e nunca reutilizados para outros propósitos.
 - Novos requisitos não funcionais devem ser adicionados ao catálogo com seus respectivos links e categorias.
 - Alterações nos requisitos devem manter consistência entre contexto, detalhamento e critérios de aceite mensuráveis.
