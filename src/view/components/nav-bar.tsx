@@ -88,6 +88,7 @@ export const NavBar = ({
                 accessibilityRole="tab"
                 accessibilityLabel={`Aba ${tab.label}, ${index + 1} de ${tabs.length}`}
                 accessibilityState={{ selected: isActive }}
+                aria-selected={isActive}
                 accessibilityHint={tab.accessibilityHint}
                 onPress={() => onSelectTab(tab.id)}
                 onFocus={() => setFocusedTabId(tab.id)}

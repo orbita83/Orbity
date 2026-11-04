@@ -36,9 +36,10 @@ export const FilterChipItem = ({
   return (
     <View style={styles.focusContainer}>
       <Pressable
-        accessibilityRole="button"
+        accessibilityRole="radio"
         accessibilityLabel={`Filtrar por ${label}`}
-        accessibilityState={{ selected, disabled }}
+        accessibilityState={{ checked: selected, disabled }}
+        aria-checked={selected}
         disabled={disabled}
         onPress={onPress}
         onFocus={() => setIsFocused(true)}

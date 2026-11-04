@@ -26,6 +26,7 @@ export const CardTarefa = ({
         accessibilityRole="checkbox"
         accessibilityLabel={`${completed ? "Desmarcar" : "Concluir"} tarefa: ${title}`}
         accessibilityState={{ checked: completed }}
+        aria-checked={completed}
         onPress={onToggleCompleted}
         style={styles.checkbox}
       >
