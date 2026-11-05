@@ -1,5 +1,25 @@
 # Teste com IA
 
+## Validação cromática de Conquistas — ODS 1.1.0 em preparação
+
+Em 05/11/2026, foi feita uma rodada para verificar a direção de cores em uma tela diferente da Inicial. A documentação fornecida estava no commit `a8f6effff7fb5ac53b321fd09a7c599449fdbd5e` da branch `feat/identidade-global-ods`, sem alterações locais em `design-system/`. A tarefa orientou uma sessão de IA sem histórico da conversa a consultar somente `design-system/`, escolher uma tela de `05-padroes.md` que não fosse a Inicial e criar uma prévia local com os tokens e regras documentados, registrando lacunas. Não foram fornecidas imagens de referência ou instruções sobre qual paleta usar.
+
+A sessão escolheu **Conquistas (F3)** e produziu HTML, CSS e JavaScript locais com dados fictícios. O CSS copiou os valores documentados dos papéis do tema cósmico: superfície `#030417`, superfície secundária `#141332`, textos `#FAF9FF` e `#BBB6E3`, ação `#7137F5` e foco `#D4A3FF`. Busca, abertura e fechamento do diálogo foram observados no navegador. Os arquivos são uma prévia independente e não usam os componentes React Native do produto.
+
+**Resultado:** após examinar a prévia, o operador aprovou a direção cromática para a 1.1.0. Esta aprovação é visual e relativa às cores; não comprova implementação da tela de produto, acessibilidade completa ou a suficiência do ODS para todos os componentes. A IA foi instruída a usar somente os documentos e não recebeu histórico, mas o acesso a arquivos não foi tecnicamente limitado por sandbox: não se afirma isolamento completo. Não houve comparação controlada antes/depois com o mesmo prompt nem teste da Tela Inicial nesta rodada.
+
+**Lacunas observadas:** o padrão não detalha suficientemente a anatomia de medalhas, composição dos cards e indicador de progresso; o estado de carregamento não foi demonstrado. A prévia usou a cor de foco como contorno permanente do campo de busca, uma escolha que requer especificação própria. Sombra e fonte dependem da plataforma ou de disponibilização de recursos. Essas lacunas de componentes e composição não foram consideradas aprovadas pelo teste cromático e permanecem para evolução posterior. Contraste de pares, gradientes e limitações de verificação continuam em [06-acessibilidade.md](06-acessibilidade.md).
+
+Por decisão do operador, a validação desta rodada cobre a identidade cromática da versão 1.1.0. O escopo anterior da issue #87 previa comparação antes/depois e a Tela Inicial; esses procedimentos não foram executados e não são apresentados como concluídos.
+
+## Prévia exploratória de Tarefas — ODS 1.1 em preparação
+
+Em 04/11/2026, uma prévia local foi composta usando `FilterChips`, `PrimaryButton`, `CardTarefa` e `NavBar` reais, com `themes.cosmic`. Foram observadas a alternância de uma tarefa e a filtragem das concluídas no navegador. A estrutura foi orientada pelo wireframe fornecido e a prévia usa estado temporário; não é tela de produto nem teste cego. Não houve isolamento da IA, validação em aparelho ou aprovação visual final. A Tela Inicial completa não está disponível neste checkout para comparação equivalente. O protótipo histórico na branch `feat/tela-principal-prototipo` usa seu próprio `cosmicTokens`, inclusive valores anteriores da #86; não se deve afirmar que ele já consome `themes.cosmic`. Os pares sólidos e modelos amostrados estão em [06-acessibilidade.md](06-acessibilidade.md).
+
+Na história **Design System → Tema global → Interação no tema cósmico**, foram executados no navegador nove passos automatizados: selecionar filtro, conferir exclusividade acessível e testar seta; marcar tarefa e conferir `aria-checked`; selecionar aba e conferir `aria-selected`. A inspeção também confirmou o retorno com a seta esquerda. Os testes revelaram inicialmente que estados não chegavam à árvore acessível web e que as setas não funcionavam; os controles foram corrigidos e os passos passaram. Isso não comprova TalkBack ou VoiceOver.
+
+Uma segunda prévia local usou uma cópia da branch histórica `feat/tela-principal-prototipo`, fora do repositório: as cores principais foram conectadas a `themes.cosmic` e o botão e a navbar foram substituídos por adaptadores para os componentes compartilhados atuais. A prévia de Tarefas usa o mesmo tema e componentes. Foi observado o início da sessão de foco na Tela Inicial e as cores principais nas duas composições. A arte, painel, gradientes, dimensões e demais itens da Tela Inicial vieram do protótipo histórico, com adaptadores web; portanto, esta comparação não é teste cego nem demonstra que o ODS, sozinho, seja suficiente para gerar a tela. A integração desse protótipo e a validação de suas diferenças permanecem pendentes.
+
 Este documento registra o processo experimental de validação do **Orbity Design System (ODS)** conduzido com assistente de inteligência artificial em ambiente isolado, conforme os critérios de avaliação da atividade prática de IHC + PDM.
 
 ---

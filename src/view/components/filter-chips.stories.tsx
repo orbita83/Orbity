@@ -258,7 +258,7 @@ export const Interativa: Story = {
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const pendentesBtn = canvas.getByRole("button", {
+    const pendentesBtn = canvas.getByRole("radio", {
       name: "Filtrar por Pendentes",
     });
 

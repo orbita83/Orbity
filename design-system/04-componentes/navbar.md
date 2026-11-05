@@ -20,7 +20,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Fluxos F1 de Navegação
 
 ## Anatomia
 
-Os tokens desta anatomia descrevem a variante base. Para F1/F2, aplique a variante cósmica descrita após a tabela de variantes.
+Os papéis desta anatomia são compartilhados entre telas; consulte também o tema cósmico abaixo.
 
 1. **Container da barra:** largura total (100%), fundo `navbar.bg` (`color.surface`), elevação `navbar.elevation` (`elevation.card`), borda superior sutil em `neutral-200` (modo claro) ou `neutral-900` (modo escuro), preenchimento horizontal `space.md` e preenchimento vertical ajustado para manter alvos ergonômicos.
 2. **Destino de navegação (Tab Item):** largura flexível (`flex: 1`), centralizado, área interativa com altura mínima `navbar.min-height` (`target.min-size` de 48 dp) e largura mínima de 48 dp, assegurando alvo de toque contínuo de pelo menos 48 × 48 dp.
@@ -42,11 +42,11 @@ Os tokens desta anatomia descrevem a variante base. Para F1/F2, aplique a varian
 | **Fixa padrão (5 abas)** | Navegação padrão no rodapé de todas as telas primárias | `navbar.bg`, `navbar.item-active`, `navbar.item-inactive`, `navbar.indicator-bg`, `navbar.min-height`, `navbar.elevation`, `font.label`, `space.sm`, `space.md`, `radius.md`, `radius.lg` |
 | **Oculta / Suspensa** | Ocultação durante o Modo Foco ativo (F2) ou substituída pela barra contextual CAB (F6) | Comportamento condicional de renderização / animação via `motion.duration.short` |
 
-### Variante cósmica em F1/F2
+### Tema cósmico global
 
-A navbar permanece visível com o painel recolhido, intermediário e expandido; fica oculta durante a sessão de foco ativa. Os itens inativos usam `cosmicTokens.color.inactive` e o foco usa `cosmicTokens.color.focus`. O fundo, o indicador ativo e as cores dos estados ativo, hover e pressionado ainda não estão definidos para a navbar cósmica; não substitua por tokens base implicitamente. A seleção mantém rótulo, ícone preenchido e indicador de forma, além da cor. As abas não são desabilitadas silenciosamente.
+A navbar usa os papéis `navbar.*` do mesmo tema em todas as telas. No cósmico, fundo é `sheet`, indicador é `track`, item ativo é `text`, item inativo é `inactive` e foco é `focus`. A seleção mantém rótulo, ícone preenchido e indicador de forma. Em F1/F2, permanece visível nos três estágios do painel e é ocultada durante foco ativo.
 
-As especificações de anatomia, cores, estados e razões de contraste da variante base abaixo não são evidência de contraste da variante cósmica. A variante `appearance="cosmic"` está planejada e não está implementada nesta branch; sua validação completa depende da #86.
+As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica está em [06-acessibilidade.md](../06-acessibilidade.md).
 
 ## Estados
 
