@@ -11,6 +11,7 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 - **Identidade global:** `themes.cosmic` disponibiliza papéis escuros reutilizáveis para todas as telas e componentes. Os temas `light` e `dark` anteriores são preservados; a migração é explícita. Os componentes existentes aceitam o novo tema, sem implicar a implementação da Tela Inicial ou da Tela de Tarefas.
 - **Acessibilidade dos controles:** filtros exclusivos passam a expor papel de opção de rádio e estado marcado; checkbox de tarefa e abas também expõem seu estado na Web. A alteração muda o papel acessível dos filtros, mantendo suas propriedades e callbacks de código; consumidores que consultam o papel anterior devem atualizar suas consultas.
 - **Filtros por teclado:** na Web, as setas navegam entre opções exclusivas, atualizando seleção e foco; o comportamento foi verificado na prévia e no Storybook.
+- **Issue #87:** teste cromático de Conquistas com IA sem histórico da conversa e aprovação visual do operador; o registro identifica limitações do isolamento e lacunas de componentes, sem afirmar comparação antes/depois ou validação completa de acessibilidade.
 - **Pendências:** Implementação TypeScript na #73, alinhamento de componentes na #85 e matriz completa de contraste na #86. Esta entrada não representa uma versão publicada.
 
 ## 1.0.0 · 2026-10-21
