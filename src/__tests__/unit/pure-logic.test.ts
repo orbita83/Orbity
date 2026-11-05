@@ -7,7 +7,7 @@ describe('Pure Logic Unit Test', () => {
   };
 
   it('deve calcular soma corretamente com tipos TypeScript', () => {
-    expect(sum(2, 3)).toBe(5);
+    expect(sum(2, 3)).toBe(999);
   });
 
   it('deve avaliar predicados lógicos corretamente', () => {
