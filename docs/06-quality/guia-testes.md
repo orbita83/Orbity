@@ -63,7 +63,35 @@ src/
 
 ---
 
-## 5. Próximos Passos (Evolução da Qualidade)
+## 5. Execução no CI e Diagnóstico de Falhas
 
-- **T0005:** Integração da execução do comando `npm test` no fluxo de Integração Contínua (CI) do GitHub Actions.
+### 5.1. Verificações Automáticas nos Pull Requests
+O workflow [`CI development`](../../.github/workflows/ci.yml) executa automaticamente o job `validate` em todos os Pull Requests direcionados à branch `development`, realizando em sequência:
+1. Instalação limpa e reproduzível de dependências (`npm ci`).
+2. Verificação estática de lint (`npm run lint`).
+3. Verificação estrita de tipos TypeScript (`npx --no-install tsc --noEmit`).
+4. Execução da suíte de testes automatizados em modo não interativo (`npm test`).
+
+Qualquer falha de asserção, erro de execução ou problema de configuração retorna código de saída diferente de zero e interrompe imediatamente o job `validate`.
+
+### 5.2. Reprodução Local das Validações do CI
+Antes de abrir ou atualizar um Pull Request, execute localmente os mesmos comandos de verificação do workflow:
+
+```bash
+npm run lint
+npx --no-install tsc --noEmit
+npm test
+```
+
+### 5.3. Como Consultar Falhas nos Logs do GitHub Actions
+Quando o status check `validate` falhar em um Pull Request:
+1. Acesse a aba **Checks** no Pull Request (ou clique em **Details** ao lado da verificação `CI development / validate`).
+2. Selecione o job **validate** no menu lateral e expanda a etapa **Executar testes**.
+3. Analise o resumo do Jest indicando a suíte (`FAIL src/...`), o teste específico que falhou, a diferença entre o valor esperado (`Expected`) e o recebido (`Received`) e o *stack trace* com arquivo e linha.
+4. Reproduza o erro localmente com `npx jest caminho/do/arquivo.test.ts`, aplique a correção e valide novamente com `npm test`.
+
+---
+
+## 6. Próximos Passos (Evolução da Qualidade)
+
 - **T0006:** Padronização detalhada de mocks, fixtures e dados simulados para repositórios em memória, Use Cases e ViewModels.
