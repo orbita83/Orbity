@@ -50,4 +50,5 @@ Sempre que modificar código, tipos ou configurações, execute:
 
 1. `npm run lint` — verificação do ESLint.
 2. `npx --no-install tsc --noEmit` — verificação estrita de tipos TypeScript.
-3. `node scripts/verify-local-hooks.mjs` — obrigatório caso altere `.husky/`, `scripts/` ou `commitlint.config.cjs`.
+3. `npm test` — execução não interativa dos testes automatizados (Jest).
+4. `node scripts/verify-local-hooks.mjs` — obrigatório caso altere `.husky/`, `scripts/` ou `commitlint.config.cjs`.

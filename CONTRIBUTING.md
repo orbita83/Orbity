@@ -446,6 +446,17 @@ O CI poderá contemplar:
 
 As ferramentas, comandos e jobs específicos serão definidos na configuração técnica do projeto.
 
+Nos Pull Requests direcionados à branch `development`, o workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) (`CI development` / job `validate`) executa automaticamente:
+
+1. Instalação reproduzível de dependências (`npm ci`).
+2. Verificação de lint (`npm run lint`).
+3. Verificação estrita de tipos (`npx --no-install tsc --noEmit`).
+4. Execução não interativa dos testes automatizados (`npm test`).
+
+Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npx --no-install tsc --noEmit` e `npm test`. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
+
+Na configuração de proteção da branch `development` (Ruleset **Branch Protection (Development)**), o status check `validate` deve permanecer configurado como obrigatório (*Require status checks to pass*) junto às regras existentes de revisão e aprovação de Pull Requests.
+
 ---
 
 ## 4. Processo de Publicação
