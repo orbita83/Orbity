@@ -2,6 +2,18 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
+## 1.1.0 — em preparação
+
+- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA antes da conclusão da versão. As entregas e seus resultados serão registrados conforme forem integrados.
+- **Issue #84:** Centralização documental dos papéis cromáticos cósmicos e orientação para seleção da variante em F1/F2. Os contratos dos temas base claro e escuro da versão 1.0.0 foram preservados; os novos nomes documentais não alteram seus valores.
+- **Issue #85:** Alinhamento documental das variantes cósmicas do painel, planeta, botão e navbar com F1/F2, incluindo a visibilidade da navbar e lacunas dos estados. Os componentes base existentes permanecem inalterados; a migração das variantes depende da implementação futura.
+- **Issue #86:** Registro de contraste dos pares cósmicos conhecidos e ajuste de `actionHover` e `progressEnd` para `#8648FA` após revisão de contraste. A validação de gradientes, sobreposições, estados sem valor e renderização real permanece pendente; consumidores da proposta cósmica anterior devem atualizar esses dois papéis ao implementá-la.
+- **Identidade global:** `themes.cosmic` disponibiliza papéis escuros reutilizáveis para todas as telas e componentes. Os temas `light` e `dark` anteriores são preservados; a migração é explícita. Os componentes existentes aceitam o novo tema, sem implicar a implementação da Tela Inicial ou da Tela de Tarefas.
+- **Acessibilidade dos controles:** filtros exclusivos passam a expor papel de opção de rádio e estado marcado; checkbox de tarefa e abas também expõem seu estado na Web. A alteração muda o papel acessível dos filtros, mantendo suas propriedades e callbacks de código; consumidores que consultam o papel anterior devem atualizar suas consultas.
+- **Filtros por teclado:** na Web, as setas navegam entre opções exclusivas, atualizando seleção e foco; o comportamento foi verificado na prévia e no Storybook.
+- **Issue #87:** teste cromático de Conquistas com IA sem histórico da conversa e aprovação visual do operador; o registro identifica limitações do isolamento e lacunas de componentes, sem afirmar comparação antes/depois ou validação completa de acessibilidade.
+- **Pendências:** Implementação TypeScript na #73, alinhamento de componentes na #85 e matriz completa de contraste na #86. Esta entrada não representa uma versão publicada.
+
 ## 1.0.0 · 2026-10-21
 
 - **Responsáveis:** Mailson Sousa, Cássio Sampaio, Mateus de Araújo, Vitor Lopes e Alisson Ramires.

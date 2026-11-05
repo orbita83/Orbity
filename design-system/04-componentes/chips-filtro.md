@@ -1,5 +1,7 @@
 # Chips de filtro de tarefas (FilterChips)
 
+> As tabelas de cores e razões numéricas deste documento descrevem os temas legados 1.0. Para o tema global `themes.cosmic`, os mesmos papéis são resolvidos conforme [02-tokens.md](../02-tokens.md#variante-cósmica), com contrastes em [06-acessibilidade.md](../06-acessibilidade.md).
+
 Origem no sistema base: Material Design 3, Filter Chip. Situação: Adaptado. Motivo da adaptação: aplicar a paleta semântica e os tokens de tema do Orbity (modo claro com `color.action` azul e modo escuro com `color.action` roxo `purple-400`), incorporar requisitos estritos de acessibilidade (WCAG 2.1/2.2 AA) com alvo de toque mínimo de 48 × 48 dp (`target.min-size`), anel visível de foco de 2 dp (`focus.ring-width`) e garantia de indicadores perceptíveis além da cor.
 
 Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Tarefas e Ações em Lote, fluxos F5 e F6), [01-principios.md](../01-principios.md) (Princípios 1, 2 e 3), [02-tokens.md](../02-tokens.md) e [06-acessibilidade.md](../06-acessibilidade.md). O componente viabiliza a filtragem imediata das tarefas do estudante entre todas, pendentes e concluídas.
@@ -32,8 +34,8 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 
 | Estado | Tema Claro | Tema Escuro | Comportamento | Acessibilidade |
 | :--- | :--- | :--- | :--- | :--- |
-| **Não selecionado (Padrão)** | Fundo `color.surface` (`neutral-0` / branco), contorno `color.action` (`blue-600`), texto `color.on-surface` (`neutral-900`) | Fundo `color.surface` (`neutral-900` / escuro), contorno `color.action` (`purple-400` / roxo), texto `color.on-surface` (`neutral-0` / branco) | Seleciona o filtro ao toque/clique e atualiza a lista de tarefas | Papel `button`, `{ selected: false }`, contraste 17,17:1 |
-| **Selecionado** | Fundo preenchido em `color.action` (`blue-600`), contorno `color.action`, texto `color.on-action` (`neutral-0` / branco), peso negrito (700) | Fundo preenchido em `color.action` (`purple-400` / roxo), contorno `color.action`, texto `color.on-action` (`neutral-900` / escuro), peso negrito (700) | Indica o filtro ativo; foco e toque repetido mantêm o estado selecionado | Papel `button`, `{ selected: true }`, contraste 6,50:1 no escuro e 6,29:1 no claro |
+| **Não selecionado (Padrão)** | Fundo `color.surface` (`neutral-0` / branco), contorno `color.action` (`blue-600`), texto `color.on-surface` (`neutral-900`) | Fundo `color.surface` (`neutral-900` / escuro), contorno `color.action` (`purple-400` / roxo), texto `color.on-surface` (`neutral-0` / branco) | Seleciona o filtro ao toque/clique e atualiza a lista de tarefas | Papel `radio`, `{ checked: false }`, contraste 17,17:1 |
+| **Selecionado** | Fundo preenchido em `color.action` (`blue-600`), contorno `color.action`, texto `color.on-action` (`neutral-0` / branco), peso negrito (700) | Fundo preenchido em `color.action` (`purple-400` / roxo), contorno `color.action`, texto `color.on-action` (`neutral-900` / escuro), peso negrito (700) | Indica o filtro ativo; foco e toque repetido mantêm o estado selecionado | Papel `radio`, `{ checked: true }`, contraste 6,50:1 no escuro e 6,29:1 no claro |
 | **Pressionado** | Redução sutil de opacidade (0.85) para feedback tátil | Redução sutil de opacidade (0.85) para feedback tátil | Feedback visual imediato ao toque | Preserva legibilidade e área de toque |
 | **Foco (Teclado)** | Anel externo de 2 dp em `color.focus` com 2 dp de afastamento | Anel externo de 2 dp em `color.focus` com 2 dp de afastamento | Destaca o chip ativo durante a navegação por teclado (Tab) | Atende WCAG 2.4.7 e 2.4.11 |
 | **Desabilitado** | Opacidade reduzida, bloqueio de interação | Opacidade reduzida, bloqueio de interação | Bloqueia seleção | Anuncia `{ disabled: true }` |
@@ -46,7 +48,8 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
   - Selecionado no tema escuro: texto `color.on-action` (`#1B1B1F`) sobre fundo roxo `color.action` (`#C084FC`) alcança razão de **6,50:1** (superior ao mínimo de 4,5:1 para texto normal).
   - Tema claro: atinge contrastes documentados de 17,17:1 (não selecionado) e 6,29:1 (selecionado).
 - **Independência de cor (WCAG 1.4.1):** O chip selecionado combina mudança de cor de fundo com alteração no peso da fonte (negrito `700` vs médio `500`) e anúncio semântico de seleção.
-- **Leitor de tela:** O grupo declara `accessibilityRole="radiogroup"` com rótulo "Filtros de tarefas". Cada chip declara `accessibilityRole="button"`, `accessibilityLabel="Filtrar por [Rótulo]"` e estado dinâmico `accessibilityState={{ selected }}`.
+- **Leitor de tela:** O grupo declara `accessibilityRole="radiogroup"` com rótulo "Filtros de tarefas". Cada chip declara `accessibilityRole="radio"`, `accessibilityLabel="Filtrar por [Rótulo]"` e estado dinâmico `accessibilityState={{ checked: selected }}`.
+- **Teclado na Web:** Com o foco em uma opção, setas para a direita/baixo selecionam a próxima e setas para a esquerda/cima selecionam a anterior, com retorno circular entre as extremidades. A opção selecionada recebe foco. Validação em leitores de tela e dispositivos nativos continua necessária.
 - **Texto ampliado:** Utiliza `allowFontScaling={true}`, sem truncamento fixo e com `flexWrap: "wrap"` no contêiner para suportar escalas de fonte até 200%.
 - **Listas vazias:** Quando um filtro selecionado não retorna tarefas (ex.: "Concluídas" sem itens finalizados), a interface apresenta mensagem acolhedora em `color.on-surface` e `font.body` ("Nenhuma tarefa concluída"), sem mensagens punitivas.
 

@@ -1,6 +1,6 @@
 # Tokens
 
-> O contrato `cosmicTokens` da Tela Inicial está especificado na [Seção 2 — Navegação e Modo Foco (F1, F2)](05-padroes.md#2-navegação-e-modo-foco-f1-f2), com base no protótipo de referência. Esse contrato ainda não é exportado pelo código nesta branch documental. As tabelas abaixo continuam válidas para os temas base dos componentes.
+> A identidade cósmica é um tema global para todas as telas e componentes. `themes.cosmic` implementa os papéis semânticos indicados abaixo. `themes.light` e `themes.dark` preservam os contratos anteriores para migração explícita.
 
 <!-- Camada 2 da aula: decisões com nome. Três níveis: primitivo → semântico → componente.
      Formato do nome: categoria.papel.variação (ex.: color.action, space.md, radius.lg, font.title).
@@ -87,6 +87,58 @@
 | `motion.duration.medium` | 300 ms                       | Transições entre telas  | Adaptado |
 | `motion.easing.standard` | `cubic-bezier(0.2, 0, 0, 1)` | Curva padrão            | Adaptado |
 
+### Variante cósmica
+
+Esta paleta é a direção global escura do Orbity, aplicável a qualquer tela. Os nomes `cosmicTokens` abaixo são referências documentais; `cosmicColors` exporta os valores implementados, e telas e componentes consomem os papéis semânticos de `themes.cosmic`. As tabelas base anteriores continuam representando os contratos legados 1.0.
+
+| Papel global | Tema cósmico | Uso |
+| --- | --- | --- |
+| `color.surface` | `#030417` | Fundo de qualquer tela |
+| `color.surface-variant` | `#141332` | Superfície sólida de cards |
+| `color.on-surface` | `#FAF9FF` | Conteúdo principal |
+| `color.on-surface-variant` | `#BBB6E3` | Conteúdo secundário |
+| `color.action` / `color.on-action` | `#7137F5` / `#FAF9FF` | Ação sólida e seu conteúdo |
+| `color.action-subtle` | `#232052` | Fundo do indicador ativo |
+| `color.focus` / `color.border` | `#D4A3FF` | Foco e contorno de controle |
+
+`button.bg` usa uma cor sólida; o gradiente `#7137F5` → `#703BF6` é uma especificação separada e não é implementado pelo `PrimaryButton`. A navbar usa fundo `#0D0D29`, indicador `#232052`, texto ativo `#FAF9FF` e inativo `#9990CB`. Cards de tarefa usam `color.surface-variant`. Os gradientes e a ilustração permanecem especificações, não implementação presumida.
+
+**Migração 1.1:** selecione e propague `themes.cosmic` para cada tela e componente que adote a identidade escura global. `themes.dark` mantém o escuro 1.0 (`#1B1B1F`); `themes.light` permanece igual. Não há troca automática da preferência do estudante. Novos consumidores devem usar papéis semânticos em vez de cores literais; o modo claro cósmico ainda não foi definido.
+
+| Papel | Valor | Uso | Origem |
+| --- | --- | --- | --- |
+| `cosmicTokens.color.background` | `#030417` | Fundo global de telas | Adaptado |
+| `cosmicTokens.color.desktop` | `#07081F` | Área externa da prévia | Adaptado |
+| `cosmicTokens.color.sheet`, `sheetEnd` | `#0D0D29` → `#08091D` | Gradiente do painel | Adaptado |
+| `cosmicTokens.color.sheetBorder` | `#373064` | Contorno do painel | Adaptado |
+| `cosmicTokens.color.card`, `cardEnd` | `#141332` → `#0D0E26` | Gradiente dos cards | Adaptado |
+| `cosmicTokens.color.cardBorder` | `#232044` | Contorno dos cards | Adaptado |
+| `cosmicTokens.color.text` | `#FAF9FF` | Texto principal e texto claro da ação | Adaptado |
+| `cosmicTokens.color.muted` | `#BBB6E3` | Texto secundário | Adaptado |
+| `cosmicTokens.color.inactive` | `#9990CB` | Navegação inativa e chevrons | Adaptado |
+| `cosmicTokens.color.action`, `actionEnd` | `#7137F5` → `#703BF6` | Gradiente da ação principal | Adaptado |
+| `cosmicTokens.color.actionHover` | `#8648FA` | Realce da ação no hover | Adaptado |
+| `cosmicTokens.color.focus` | `#D4A3FF` | Indicador de foco | Adaptado |
+| `cosmicTokens.color.track` | `#232052` | Trilha do progresso | Adaptado |
+| `cosmicTokens.color.progress`, `progressEnd` | `#8A42FA` → `#8648FA` | Preenchimento do progresso | Adaptado |
+| `cosmicTokens.color.unlocked` | `#C47EFF` | Aro de conquista ativa | Adaptado |
+| `cosmicTokens.color.achievementPendingIcon` | `#8C7BCB` | Ícone de conquista pendente | Adaptado |
+| `cosmicTokens.color.achievementPendingBorder` | `#2B2654` | Contorno de conquista pendente | Adaptado |
+| `cosmicTokens.planet.highlight` | `#EBACFF` | Realce do planeta | Adaptado |
+| `cosmicTokens.planet.light` | `#BD6AFF` | Luz do planeta | Adaptado |
+| `cosmicTokens.planet.surface` | `#8840E9` | Superfície do planeta | Adaptado |
+| `cosmicTokens.planet.relief` | `#5320B2` | Relevo do planeta | Adaptado |
+| `cosmicTokens.planet.shadow` | `#39149A` | Sombra do planeta | Adaptado |
+| `cosmicTokens.planet.night` | `#17075B` | Face noturna do planeta | Adaptado |
+| `cosmicTokens.planet.border` | `#D08BFF` | Borda do planeta | Adaptado |
+| `cosmicTokens.planet.ring` | `#A95BFA` | Anel orbital | Adaptado |
+| `cosmicTokens.planet.ringHighlight` | `#E8B5FF` | Realce do anel | Adaptado |
+| `cosmicTokens.planet.glow` | `#8236D9` | Brilho decorativo | Adaptado |
+
+Nas linhas com dois nomes, ambos pertencem ao mesmo grupo `cosmicTokens.color`. Os nomes para hover, conquistas pendentes e camadas do planeta formalizam papéis descritos no protótipo, sem afirmar sua implementação.
+
+**Lacunas:** estados pressionado e desabilitado da ação cósmica e gradientes completos ainda precisam de validação visual e de contraste. A matriz da issue #86 não comprova todos os pixels de um gradiente.
+
 ## 3. Tokens de componente (onde é usado)
 
 | `button.bg`               | `color.action`                               | Adaptado |
@@ -117,6 +169,8 @@
 O Orbity possui suporte integral aos modos claro e escuro, mantendo os mesmos nomes de tokens semânticos nos dois temas. A alternância de tema altera previsivelmente os valores primitivos vinculados aos papéis semânticos, preservando a hierarquia da informação, a identidade da marca e o contraste acessível em todas as telas.
 
 ### Matriz semântica de cores por modo
+
+Esta matriz registra os temas legados `themes.light` e `themes.dark` de 1.0. Para a identidade global escura de 1.1, consulte a tabela de `themes.cosmic` na seção Variante cósmica acima.
 
 | Papel semântico | Modo Claro | Modo Escuro | Razão de contraste mínima e justificativa |
 | :--- | :--- | :--- | :--- |

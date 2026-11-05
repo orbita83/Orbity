@@ -14,11 +14,13 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Fluxos F1 de Navegação
 ## Quando não usar
 
 - Não use em fluxos lineares, telas de onboarding (F0), formulários modais ou telas de detalhes profundos.
-- Não use durante o Modo Foco (F2) nem durante o modo de seleção múltipla de tarefas (F6): nesses estados a barra deve ser ocultada ou ceder espaço para a Barra de Ações Contextuais (CAB).
+- Não use durante uma sessão de foco ativa (F2) nem durante seleção múltipla de tarefas (F6): nesses estados a barra deve ser ocultada ou ceder espaço para a Barra de Ações Contextuais (CAB). Abrir o painel não inicia uma sessão de foco.
 - Não use como barra de filtros internos ou seleção de abas secundárias dentro de uma mesma tela (ex.: "Todos", "Pendentes", "Concluídas").
 - Não use com menos de três ou mais de cinco destinos, preservando o modelo mental e a ergonomia de toque do estudante.
 
 ## Anatomia
+
+Os papéis desta anatomia são compartilhados entre telas; consulte também o tema cósmico abaixo.
 
 1. **Container da barra:** largura total (100%), fundo `navbar.bg` (`color.surface`), elevação `navbar.elevation` (`elevation.card`), borda superior sutil em `neutral-200` (modo claro) ou `neutral-900` (modo escuro), preenchimento horizontal `space.md` e preenchimento vertical ajustado para manter alvos ergonômicos.
 2. **Destino de navegação (Tab Item):** largura flexível (`flex: 1`), centralizado, área interativa com altura mínima `navbar.min-height` (`target.min-size` de 48 dp) e largura mínima de 48 dp, assegurando alvo de toque contínuo de pelo menos 48 × 48 dp.
@@ -39,6 +41,12 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Fluxos F1 de Navegação
 | :--- | :--- | :--- |
 | **Fixa padrão (5 abas)** | Navegação padrão no rodapé de todas as telas primárias | `navbar.bg`, `navbar.item-active`, `navbar.item-inactive`, `navbar.indicator-bg`, `navbar.min-height`, `navbar.elevation`, `font.label`, `space.sm`, `space.md`, `radius.md`, `radius.lg` |
 | **Oculta / Suspensa** | Ocultação durante o Modo Foco ativo (F2) ou substituída pela barra contextual CAB (F6) | Comportamento condicional de renderização / animação via `motion.duration.short` |
+
+### Tema cósmico global
+
+A navbar usa os papéis `navbar.*` do mesmo tema em todas as telas. No cósmico, fundo é `sheet`, indicador é `track`, item ativo é `text`, item inativo é `inactive` e foco é `focus`. A seleção mantém rótulo, ícone preenchido e indicador de forma. Em F1/F2, permanece visível nos três estágios do painel e é ocultada durante foco ativo.
+
+As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica está em [06-acessibilidade.md](../06-acessibilidade.md).
 
 ## Estados
 
@@ -74,7 +82,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Fluxos F1 de Navegação
 
 - **Faça:** Exiba simultaneamente ícone e rótulo de texto em todas as cinco abas para reforçar o reconhecimento cognitivo.
 - **Faça:** Respeite o mapeamento padronizado de glifos do Material Symbols (`home`, `description`, `autorenew`, `auto_awesome`, `person`).
-- **Faça:** Oculte ou substitua a barra inferior quando o estudante estiver em Modo Foco (F2) ou Seleção Múltipla de tarefas (F6).
+- **Faça:** Oculte ou substitua a barra inferior durante uma sessão de foco ativa (F2) ou seleção múltipla de tarefas (F6); mantenha-a visível nos três estágios do painel.
 - **Faça:** Preserve o foco acessível de 2 dp com offset de 2 dp e cores do tema ativo.
 - **Evite:** Ocultar rótulos das abas inativas (padrão de ícone isolado que compromete a usabilidade e a acessibilidade).
 - **Evite:** Usar valores numéricos literais (*hardcoded*) de cor, padding ou raio na estilização da barra.

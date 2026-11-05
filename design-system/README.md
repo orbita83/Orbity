@@ -120,6 +120,8 @@ A validação humana foi realizada por meio da revisão das tarefas e de seus re
 
 A composição, os estados, as interações e as decisões visuais da Tela Inicial estão incorporados à [Seção 2 — Navegação e Modo Foco (F1, F2)](05-padroes.md#2-navegação-e-modo-foco-f1-f2). Consulte esse padrão junto às especificações dos componentes envolvidos.
 
+Para escolher as cores, aplique o mesmo tema selecionado pelo estudante em todas as telas e componentes, por meio dos papéis de [02-tokens.md](02-tokens.md). `themes.cosmic` é a identidade escura global; `themes.dark` preserva o tema legado e `themes.light` preserva o claro. A escolha é explícita até haver integração da preferência de tema no aplicativo.
+
 > [!WARNING]
 > Ao gerar, revisar ou alterar uma interface do Orbity:
 

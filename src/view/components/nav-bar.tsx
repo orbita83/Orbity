@@ -88,6 +88,7 @@ export const NavBar = ({
                 accessibilityRole="tab"
                 accessibilityLabel={`Aba ${tab.label}, ${index + 1} de ${tabs.length}`}
                 accessibilityState={{ selected: isActive }}
+                aria-selected={isActive}
                 accessibilityHint={tab.accessibilityHint}
                 onPress={() => onSelectTab(tab.id)}
                 onFocus={() => setFocusedTabId(tab.id)}
@@ -139,7 +140,7 @@ const createStyles = (theme: OrbityTheme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.navbar.bg,
-      borderTopColor: theme.primitive["neutral-200"],
+      borderTopColor: theme.componentOverrides?.navbarBorder ?? theme.primitive["neutral-200"],
       borderTopWidth: 1,
       elevation: theme.navbar.elevation,
       paddingHorizontal: theme.space.sm,

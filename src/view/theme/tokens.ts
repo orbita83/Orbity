@@ -27,6 +27,23 @@ export const primitives = {
 
 export type ThemeMode = "light" | "dark";
 
+// Paleta global opt-in da versão 1.1; os temas 1.0 permanecem compatíveis.
+export const cosmicColors = {
+  background: "#030417",
+  card: "#141332",
+  sheet: "#0D0D29",
+  text: "#FAF9FF",
+  muted: "#BBB6E3",
+  inactive: "#9990CB",
+  action: "#7137F5",
+  actionEnd: "#703BF6",
+  actionHover: "#8648FA",
+  focus: "#D4A3FF",
+  track: "#232052",
+  progress: "#8A42FA",
+  progressEnd: "#8648FA",
+} as const;
+
 export const accessibilityTokens = {
   target: { minSize: 48 },
   focus: { ringWidth: 2, ringOffset: 2 },
@@ -39,22 +56,22 @@ export const sharedTokens = {
   elevation: { card: 2 },
 } as const;
 
-function createTheme(mode: ThemeMode) {
+function createTheme(mode: ThemeMode, cosmic = false) {
   const dark = mode === "dark";
   const color = {
-    action: dark ? primitives["purple-400"] : primitives["blue-600"],
-    "on-action": dark ? primitives["neutral-900"] : primitives["neutral-0"],
-    "action-subtle": dark ? primitives["purple-600"] : primitives["purple-200"],
-    surface: dark ? primitives["neutral-900"] : primitives["neutral-0"],
-    "surface-variant": dark ? primitives["neutral-900"] : primitives["neutral-100"],
-    "on-surface": dark ? primitives["neutral-0"] : primitives["neutral-900"],
-    "on-surface-variant": dark ? primitives["neutral-200"] : primitives["neutral-500"],
-    border: dark ? primitives["neutral-500"] : primitives["neutral-200"],
+    action: cosmic ? cosmicColors.action : dark ? primitives["purple-400"] : primitives["blue-600"],
+    "on-action": cosmic ? cosmicColors.text : dark ? primitives["neutral-900"] : primitives["neutral-0"],
+    "action-subtle": cosmic ? cosmicColors.track : dark ? primitives["purple-600"] : primitives["purple-200"],
+    surface: cosmic ? cosmicColors.background : dark ? primitives["neutral-900"] : primitives["neutral-0"],
+    "surface-variant": cosmic ? cosmicColors.card : dark ? primitives["neutral-900"] : primitives["neutral-100"],
+    "on-surface": cosmic ? cosmicColors.text : dark ? primitives["neutral-0"] : primitives["neutral-900"],
+    "on-surface-variant": cosmic ? cosmicColors.muted : dark ? primitives["neutral-200"] : primitives["neutral-500"],
+    border: cosmic ? cosmicColors.focus : dark ? primitives["neutral-500"] : primitives["neutral-200"],
     error: primitives["error-500"],
     success: primitives["success-500"],
     warning: primitives["warning-500"],
     info: primitives["info-500"],
-    focus: dark ? primitives["purple-400"] : primitives["blue-600"],
+    focus: cosmic ? cosmicColors.focus : dark ? primitives["purple-400"] : primitives["blue-600"],
   };
 
   return {
@@ -100,9 +117,9 @@ function createTheme(mode: ThemeMode) {
       focusOffset: sharedTokens.focus.ringOffset,
     },
     navbar: {
-      bg: color.surface,
-      itemActive: color.action,
-      itemInactive: color["on-surface"],
+      bg: cosmic ? cosmicColors.sheet : color.surface,
+      itemActive: cosmic ? color["on-surface"] : color.action,
+      itemInactive: cosmic ? cosmicColors.inactive : color["on-surface"],
       indicatorBg: color["action-subtle"],
       minHeight: sharedTokens.target.minSize,
       elevation: sharedTokens.elevation.card,
@@ -114,9 +131,19 @@ function createTheme(mode: ThemeMode) {
   };
 }
 
-export const themes = {
-  light: createTheme("light"),
-  dark: createTheme("dark"),
+export type OrbityTheme = ReturnType<typeof createTheme> & {
+  componentOverrides?: { cardSurface?: string; checkboxMark?: string; navbarBorder?: string };
 };
 
-export type OrbityTheme = ReturnType<typeof createTheme>;
+export const themes: Record<"light" | "dark" | "cosmic", OrbityTheme> = {
+  light: createTheme("light"),
+  dark: createTheme("dark"),
+  cosmic: {
+    ...createTheme("dark", true),
+    componentOverrides: {
+      cardSurface: cosmicColors.card,
+      checkboxMark: cosmicColors.text,
+      navbarBorder: cosmicColors.focus,
+    },
+  },
+};

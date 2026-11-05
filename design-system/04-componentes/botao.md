@@ -19,6 +19,8 @@ Aplicação no Orbity: o componente corresponde à ação “+ Nova tarefa” do
 
 ## Anatomia
 
+Os mesmos papéis desta anatomia se aplicam em qualquer tema, inclusive `themes.cosmic`.
+
 1. Área interativa: fundo `button.bg`, cantos `button.radius`, altura mínima `button.min-height`, largura mínima `button.min-width`, `space.md` na horizontal e `space.sm` na vertical.
 2. Rótulo: `button.label` e `font.label`, centralizado, escalável e sem truncamento.
 3. Ícone opcional: Material Symbols `add`, antes do rótulo, separado por `space.sm`, na mesma cor do texto. O token de tamanho do ícone ainda é uma lacuna.
@@ -33,6 +35,12 @@ No React Native, os números de dimensão representam unidades lógicas independ
 | --- | --- | --- |
 | Primário com texto | Ação principal cujo rótulo é suficiente | `button.bg`, `button.label`, `button.radius`, `button.min-height`, `button.min-width`, `font.label`, `space.sm`, `space.md` |
 | Primário com ícone e texto | “Nova tarefa”; o ícone reforça a ação | Os mesmos tokens, com `space.sm` entre ícone e texto; token de tamanho do ícone pendente |
+
+### Tema cósmico global
+
+Em qualquer tela, `PrimaryButton` usa `button.bg` sólido, `button.label` e `button.focus-color` resolvidos pelo tema. O gradiente `cosmicTokens.color.action` → `actionEnd` é uma proposta separada ainda não implementada. No hover proposto, use `actionHover`; aparência pressionada e desabilitada permanece pendente. Mantenha nome, papel, estado e alvo mínimo de 48 × 48 dp.
+
+As tabelas base abaixo descrevem os temas legados. Consulte a matriz cósmica em [06-acessibilidade.md](../06-acessibilidade.md); paradas de gradiente não comprovam sua extensão completa.
 
 A variante somente com ícone não faz parte deste componente. Os temas claro e escuro usam os mesmos nomes de tokens.
 
