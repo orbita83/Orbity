@@ -56,7 +56,9 @@
     "web": "expo start --web",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test": "jest --watchAll=false",
+    "test:watch": "jest --watch"
   },
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,tsx}": "eslint"

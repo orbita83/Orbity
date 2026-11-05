@@ -305,9 +305,9 @@ Antes de abrir um Pull Request, o contribuidor deve verificar se sua alteração
 A validação local deve incluir, quando aplicável:
 
 - Verificação de formatação e padrões de código.
-- Execução dos linters configurados.
-- Execução dos testes relacionados à alteração.
-- Verificação de compilação ou análise estática.
+- Execução dos linters configurados (`npm run lint`).
+- Execução dos testes automatizados (`npm test`).
+- Verificação de compilação ou análise estática (`npx --no-install tsc --noEmit`).
 - Testes manuais dos comportamentos afetados.
 - Revisão das alterações realizadas.
 - Verificação de arquivos sensíveis ou informações que não devem ser versionadas.
@@ -379,7 +379,7 @@ Quando necessário, as decisões técnicas devem ser registradas na documentaç�
 
 ### 3.2. Testes
 
-As alterações devem ser acompanhadas de verificações proporcionais ao seu impacto.
+As alterações devem ser acompanhadas de verificações proporcionais ao seu impacto. O guia de estruturação e execução dos testes automatizados com Jest e React Native Testing Library encontra-se em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md).
 
 **Diretrizes:**
 
