@@ -6,10 +6,10 @@ O catálogo contém quatro histórias de usuário cadastradas.
 
 | ID | Título | RFs relacionados | Arquivo US |
 | -- | ------ | ---------------- | ---------- |
-| US-0001 | Criar tarefas | — | [US-0001](US-0001.md) |
-| US-0002 | Visualizar tarefas | — | [US-0002](US-0002.md) |
-| US-0003 | Editar tarefa | — | [US-0003](US-0003.md) |
-| US-0004 | Excluir tarefas | — | [US-0004](US-0004.md) |
+| US-0001 | Criar tarefas | [RF-0001](../../02-requirements/functional/RF-0001.md) | [US-0001](US-0001.md) |
+| US-0002 | Visualizar tarefas | [RF-0002](../../02-requirements/functional/RF-0002.md) | [US-0002](US-0002.md) |
+| US-0003 | Editar tarefa | [RF-0003](../../02-requirements/functional/RF-0003.md) | [US-0003](US-0003.md) |
+| US-0004 | Excluir tarefas | [RF-0004](../../02-requirements/functional/RF-0004.md) | [US-0004](US-0004.md) |
 
 ## Como adicionar uma história de usuário
 
