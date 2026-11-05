@@ -23,14 +23,7 @@ Cada tela usa `PlaceholderScreen` para apresentar título e mensagem provisória
 
 Os testes automatizados cobrem título e mensagem provisória, seleção da aba conforme a rota, acionamento de outro destino, toque na aba atual e cancelamento do evento `tabPress`.
 
-Em 05/11/2026, o shell foi executado com Expo Go no emulador `Medium_Phone_API_36.1`, Android 16, resolução 1080 × 2400 px e densidade 420 dpi, na branch `chore/shell-navegacao-inicial` criada de `8b40c14`. A inspeção pelo Android UI Automator confirmou o título e a mensagem de cada tela após o toque nas abas e o retorno a Início. O botão Voltar do Android, acionado em Perfil, retornou a Início. As capturas mostram a seleção de cada destino e a barra acima dos controles do sistema:
-
-- [Início](evidence/orbity-inicio-android.png)
-- [Tarefas](evidence/orbity-tarefas-android.png)
-- [Rotinas](evidence/orbity-rotinas-android.png)
-- [Cosmos](evidence/orbity-cosmos-android.png)
-- [Perfil](evidence/orbity-perfil-android.png)
-- [Texto ampliado a 200%](evidence/orbity-large-text-android.png)
+Em 05/11/2026, o shell foi executado com Expo Go no emulador `Medium_Phone_API_36.1`, Android 16, resolução 1080 × 2400 px e densidade 420 dpi, na branch `chore/shell-navegacao-inicial` criada de `8b40c14`. A inspeção pelo Android UI Automator confirmou o título e a mensagem de cada tela após o toque nas abas e o retorno a Início. O botão Voltar do Android, acionado em Perfil, retornou a Início. A verificação visual confirmou que a barra ficou acima dos controles do sistema.
 
 Com escala de fonte a 200%, títulos, mensagens e rótulos continuaram visíveis e acionáveis. Os rótulos da barra quebram em duas linhas na largura de 360 dp do emulador; uma composição específica para essa escala pode ser refinada sem mudar o roteamento.
 
