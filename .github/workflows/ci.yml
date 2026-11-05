@@ -31,3 +31,6 @@ jobs:
 
       - name: Verificar tipos
         run: npx --no-install tsc --noEmit
+
+      - name: Executar testes
+        run: npm test
