@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react-native";
-import { PlaceholderScreen } from "../PlaceholderScreen";
+import { PlaceholderScreen } from "./PlaceholderScreen";
 
 describe("PlaceholderScreen", () => {
   it("apresenta um cabeçalho e uma mensagem provisória legível", async () => {

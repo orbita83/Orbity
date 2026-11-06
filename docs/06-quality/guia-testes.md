@@ -28,23 +28,23 @@ A configuração central fica no arquivo [`jest.config.js`](../../jest.config.js
 
 ## 3. Estrutura de Pastas e Convenções
 
-Os arquivos de teste devem seguir o padrão `*.test.ts` (para lógica pura) ou `*.test.tsx` (para componentes React Native) e ser alocados em subdiretórios `__tests__/`:
+Os arquivos de teste devem seguir o padrão `*.test.ts` (para lógica pura) ou `*.test.tsx` (para componentes React Native) e ficar no mesmo diretório do módulo testado, sem subdiretórios `__tests__/`.
 
-```
+```text
 src/
-├── __tests__/
-│   └── unit/
-│       └── pure-logic.test.ts            # Testes unitários puros sem dependência de UI
 ├── view/
 │   └── components/
+│       ├── MainTabBar.tsx
+│       ├── MainTabBar.test.tsx
+│       ├── PlaceholderScreen.tsx
+│       ├── PlaceholderScreen.test.tsx
 │       ├── primary-button.tsx
-│       └── __tests__/
-│           └── primary-button.test.tsx   # Smoke tests e testes de acessibilidade de UI
-├── usecase/
-│   └── __tests__/                        # (Futuro T0006) Testes de regras de negócio
-└── viewmodel/
-    └── __tests__/                        # (Futuro T0006) Testes de hooks de apresentação
+│       └── primary-button.test.tsx
+tests/
+└── pure-logic.test.ts                    # Exemplo de infraestrutura sem módulo de produção associado
 ```
+
+A mesma convenção se aplica aos testes de casos de uso e ViewModels: mantenha cada arquivo `*.test.ts` ao lado da implementação correspondente. Testes de telas ficam na camada `view/`, fora de `src/app/`, para não serem interpretados como rotas pelo Expo Router.
 
 ---
 

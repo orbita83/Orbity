@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { MainTabBar, type MainTabBarProps } from "../MainTabBar";
+import { MainTabBar, type MainTabBarProps } from "./MainTabBar";
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 24, left: 0 }),
