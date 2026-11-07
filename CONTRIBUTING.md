@@ -29,11 +29,15 @@ As regras descritas neste documento aplicam-se a todos os integrantes da equipe.
     - [3.2. Testes](#32-testes)
     - [3.3. Revisão de código](#33-revisão-de-código)
     - [3.4. Integração contínua (CI)](#34-integração-contínua-ci)
-  - [4. Processo de Publicação](#4-processo-de-publicação)
-    - [4.1. Preparação da publicação](#41-preparação-da-publicação)
-    - [4.2. Aprovação e integração na main](#42-aprovação-e-integração-na-main)
-    - [4.3. Política de Versionamento](#43-política-de-versionamento)
-    - [4.4. Registro de publicações](#44-registro-de-publicações)
+  - [4. Processo de Publicação e Governança de Releases](#4-processo-de-publicação-e-governança-de-releases)
+    - [4.1. Papel dos elementos no fluxo de publicação](#41-papel-dos-elementos-no-fluxo-de-publicação)
+    - [4.2. Planejamento de versões e escopo](#42-planejamento-de-versões-e-escopo)
+    - [4.3. Critérios para a primeira versão estável (v0.1.0)](#43-critérios-para-a-primeira-versão-estável-v010)
+    - [4.4. Fluxo development → main e congelamento](#44-fluxo-development--main-e-congelamento)
+    - [4.5. Critérios de aprovação de releases](#45-critérios-de-aprovação-de-releases)
+    - [4.6. Política de versionamento e alinhamento com Android](#46-política-de-versionamento-e-alinhamento-com-android)
+    - [4.7. Convenções de Git tags e GitHub Releases](#47-convenções-de-git-tags-e-github-releases)
+    - [4.8. Correções urgentes e sincronização de branches](#48-correções-urgentes-e-sincronização-de-branches)
   - [5. Responsabilidades e Exceções](#5-responsabilidades-e-exceções)
     - [5.1. Responsabilidades dos contribuidores](#51-responsabilidades-dos-contribuidores)
     - [5.2. Tratamento de exceções](#52-tratamento-de-exceções)
@@ -161,6 +165,15 @@ Alterações pequenas e pontuais poderão ser realizadas sem Issue, desde que es
 A criação de Issues deve utilizar obrigatoriamente os templates oficiais disponíveis em `.github/ISSUE_TEMPLATE/`.
 
 Cada template estabelece os campos e requisitos específicos de seu respectivo tipo de Issue.
+
+**Relação entre Épicos, Issues e Milestones:**
+
+No planejamento e rastreabilidade das entregas do Orbity, os seguintes elementos possuem papéis complementares e não intercambiáveis:
+
+- **Épico:** Agrupa um objetivo maior de produto ou infraestrutura técnica (ex.: `EP-0000 — Fundação do Orbity`). Define as metas globais, as frentes de trabalho e a cadeia de precedência entre atividades.
+- **Issue:** Representa a menor unidade de trabalho rastreável (funcionalidade, correção, tarefa técnica ou documentação). Sempre que originada de um épico, deve referenciar o identificador correspondente no corpo (ex.: `> Origem: T0014 — issue #80 do EP-0000`).
+- **Milestone:** Representa um marco temporal de entrega ou o agrupador de uma versão planejada (ex.: `v0.1.0`). É adotada de forma deliberada pela equipe para acompanhar o progresso de um conjunto de issues. A associação de issues a uma milestone é flexível: não existe obrigatoriedade de que cada issue pertença a uma milestone, nem que cada épico corresponda a uma única versão.
+- **Desacoplamento de conclusão e publicação:** A conclusão de uma issue ou o encerramento de um épico **não implica a publicação automática** de uma versão estável. O encerramento de atividades apenas integra código à branch `development`. A publicação exige um processo formal e controlado de release (detalhado na [Seção 4](#4-processo-de-publicação-e-governança-de-releases)).
 
 ### 1.4. Pull Requests de Desenvolvimento
 
@@ -462,134 +475,162 @@ Na configuração de proteção da branch `development` (Ruleset **Branch Protec
 
 ---
 
-## 4. Processo de Publicação
+## 4. Processo de Publicação e Governança de Releases
 
-### 4.1. Preparação da publicação
+Esta seção estabelece a política oficial de versões, releases e aprovação do Orbity, conectando o planejamento das atividades ao ciclo de vida de publicação estável.
 
-A branch `development` reúne as alterações integradas durante o desenvolvimento.
+### 4.1. Papel dos elementos no fluxo de publicação
 
-A existência de novas alterações nessa branch não implica a necessidade de publicação imediata.
+Para assegurar rastreabilidade e integridade no ciclo de vida do projeto, cada elemento desempenha uma responsabilidade específica no fluxo:
 
-A equipe deve decidir quando o conjunto de funcionalidades, correções e melhorias está suficientemente validado para compor uma nova versão estável.
+| Elemento | Responsabilidade no fluxo de entrega | Escopo de atuação |
+|---|---|---|
+| **Épico** | Agrupar um objetivo maior de arquitetura ou produto | Planejamento estratégico e arquitetural |
+| **Issue** | Descrever uma atividade técnica rastreável e verificável | Execução de tarefas individuais |
+| **Milestone** | Representar um marco de entrega ou conjunto planejado para uma versão | Acompanhamento do progresso da release |
+| **Branch de trabalho** | Isolar o desenvolvimento da atividade (`feat/`, `fix/`, etc.) | Espaço de trabalho temporário |
+| **Pull Request de desenvolvimento** | Integrar e validar alterações na base de integração | Validação contínua (`development`) |
+| **Branch `development`** | Centralizar a integração contínua do desenvolvimento | Base de integração ativa |
+| **Pull Request de publicação** | Propor, revisar e homologar a transição de versão estável | Governança de release (`development` → `main`) |
+| **Branch `main`** | Manter o histórico consolidado das versões estáveis publicadas | Referência estável do produto |
+| **Git tag (`vX.Y.Z`)** | Marcar o commit exato da publicação na `main` | Rastreabilidade imutável de código |
+| **GitHub Release** | Registrar notas de lançamento, changelog e artefatos de entrega | Comunicação oficial da versão |
 
-Antes de iniciar a publicação, devem ser considerados:
+**Princípio de desacoplamento:**
+A existência de alterações concluídas na `development`, o fechamento de uma issue ou o término de um épico não deflagram publicação automática. A criação de uma release é um ato planejado, deliberado e controlado pela equipe.
 
-- A conclusão das atividades previstas para a versão.
-- O funcionamento das funcionalidades integradas.
-- A resolução de defeitos que impeçam a publicação.
-- A execução das verificações necessárias.
-- A atualização da documentação afetada.
-- A identificação das alterações incluídas na versão.
+### 4.2. Planejamento de versões e escopo
 
-A publicação deve ser iniciada manualmente por meio de um Pull Request específico.
+O planejamento de uma versão estável determina quais funcionalidades, correções e melhorias comporão a próxima publicação.
 
-Durante sua revisão, a equipe deve controlar a inclusão de novas alterações na `development`, evitando que mudanças inesperadas sejam incorporadas à publicação sem validação.
+**Diretrizes de escopo:**
+- **Seleção de escopo:** O escopo de uma versão é definido previamente pela equipe com base nas entregas concluídas e integradas na branch `development`.
+- **Classificação dos estados de uma versão:**
+  1. *Versão Planejada:* Representa o escopo previsto no backlog ou agrupado em uma milestone no GitHub.
+  2. *Versão Candidata:* Conjunto de alterações congelado na `development`, submetido a validações finais e documentado em um Pull Request de publicação aberto para a `main`.
+  3. *Versão Publicada:* Estado estável consolidado na `main`, referenciado por Git tag anotada e registrado em uma GitHub Release.
+- **Tratamento de escopo pendente ou com instabilidades:** Caso uma issue vinculada ao escopo planejado de uma versão não atinja a maturidade exigida, apresente defeitos impeditivos ou não seja concluída a tempo, a equipe poderá **desassociá-la da versão** sem interromper o ciclo de publicação das demais entregas concluídas. A funcionalidade postergada permanece na `development` para consolidação em ciclo futuro.
+- **Alterações não versionáveis:** Atividades exclusivamente documentais, tarefas internas de manutenção de repositório e ajustes de governança não provocam incremento de versão do aplicativo por si mesmas. Nessas situações, a equipe avalia se há necessidade de consolidação na `main` ou se tais mudanças aguardarão a próxima versão com impacto observável.
 
-### 4.2. Aprovação e integração na main
+### 4.3. Critérios para a primeira versão estável (v0.1.0)
 
-O Pull Request de publicação deve seguir as regras estabelecidas na Seção 1.5.
+A primeira versão pública e estável do Orbity marca o encerramento da fase de fundação técnica e arquitetural do produto.
 
-Antes do merge, a equipe deverá verificar:
+**Desmistificação da versão inicial:**
+O valor `1.0.0` presente inicialmente em `app.json` e `package.json` é decorrente do scaffold padrão gerado pelo template Expo e **não comprova a existência de uma versão estável já publicada**. A equipe adota formalmente **`v0.1.0`** como o identificador da primeira release estável do aplicativo. O ajuste técnico dos manifestos para `0.1.0` é de responsabilidade da tarefa técnica de versionamento ([T0010 — #76](https://github.com/orbita83/Orbity/issues/76)).
 
-- Se a versão proposta está corretamente identificada.
-- Se o conjunto de alterações corresponde ao que se pretende publicar.
-- Se as verificações obrigatórias foram concluídas.
-- Se os testes e as revisões necessários foram realizados.
-- Se não existem impedimentos conhecidos para a publicação.
-- Se os requisitos de aprovação foram atendidos.
+**Critérios mínimos para autorização da `v0.1.0`:**
+Para que o primeiro Pull Request de publicação (`release: publicar versão 0.1.0`) seja autorizado e integrado à `main`, todos os seguintes critérios devem ser atendidos:
+1. **Conclusão do ÉPICO 0:** Todas as entregas fundamentais de governança, arquitetura e qualidade do [EP-0000](docs/03-backlog/epics/EP-0000.md) devem estar integradas à `development` com seus critérios de aceitação cumpridos.
+2. **Shell navegável validado:** O shell inicial de navegação com as cinco abas funcionais (Hoje, Tarefas, Foco, Rotinas, Perfil) implementado na [T0017](https://github.com/orbita83/Orbity/issues/83) deve renderizar perfeitamente e navegar sem falhas em ambiente Android.
+3. **Qualidade e testes automatizados:** Suíte de testes unitários, testes de componentes e verificações estáticas (ESLint, TypeScript estrito) executando com 100% de sucesso no CI (`npm run lint`, `npx --no-install tsc --noEmit`, `npm test`).
+4. **Build Android gerado:** Build Android gerado e assinado via EAS Build (APK de preview e AAB de produção) conforme os perfis e credenciais estabelecidos nas tarefas [T0011](https://github.com/orbita83/Orbity/issues/77) e [T0012](https://github.com/orbita83/Orbity/issues/78).
+5. **Ausência de defeitos bloqueadores:** Inexistência de defeitos críticos (prioridade P0) que causem encerramento inesperado do aplicativo, falhas de renderização de telas ou quebra de acessibilidade fundamental.
+6. **Evidências de validação manual:** Relatório de testes exploratórios em aparelho físico ou emulador Android registrado na descrição do Pull Request de publicação.
 
-Somente após essas verificações o Pull Request poderá ser integrado à `main`.
+**Distinção entre release estável no GitHub e distribuição na Google Play:**
+A geração da tag e release `v0.1.0` no repositório GitHub comprova a estabilidade do código-fonte. A disponibilização pública para usuários finais na Google Play Store seguirá etapas graduais (Closed Testing / Faixa de Teste Fechado) coordenadas com a auditoria de requisitos de loja ([T0013](https://github.com/orbita83/Orbity/issues/79)), sem obrigar publicação imediata em produção aberta.
 
-A branch `main` deve representar o estado estável do projeto.
+### 4.4. Fluxo development → main e congelamento
 
-O merge de publicação é uma decisão controlada pela equipe e não deve ser iniciado automaticamente apenas pela existência de novas alterações na `development`.
+A transição entre a base de desenvolvimento e a branch de produção estável é realizada por meio de um processo estrito de Pull Request:
 
-### 4.3. Política de Versionamento
+1. **Abertura do Pull Request de publicação:**
+   - Origem: `development`.
+   - Destino: `main`.
+   - Título obrigatório: `release: publicar versão X.Y.Z` (ex.: `release: publicar versão 0.1.0`).
+   - Template: Utilização obrigatória de [`.github/PULL_REQUEST_TEMPLATE/release.md`](.github/PULL_REQUEST_TEMPLATE/release.md).
+2. **Política de congelamento (Release Freeze):**
+   - Durante o período em que o Pull Request de publicação estiver em revisão e homologação, a integração de novas funcionalidades (`feat/`) na branch `development` deve ser suspensa ou postergada pela equipe.
+   - Apenas correções de defeitos bloqueadores identificados durante a validação da própria release podem ser integradas à `development` nesse intervalo.
+3. **Tratamento de alterações tardias na development:**
+   - Caso qualquer alteração seja integrada à branch `development` após a abertura do Pull Request de publicação, o PR de release deve ser obrigatoriamente atualizado com o novo commit de integração (`git merge development` ou rebase correspondente).
+   - Todo o checklist de escopo e validação automatizada deve ser reexecutado e documentado antes do merge final.
+4. **Proibição de alterações diretas:**
+   - Permanece terminantemente proibido qualquer commit ou push direto nas branches protegidas `development` e `main`.
+   - O merge para a `main` deve ser realizado exclusivamente pela interface do GitHub após o cumprimento de todas as aprovações e status checks.
 
-O projeto utiliza um sistema de versionamento composto por três números, permitindo identificar a evolução do software e distinguir versões estáveis.
+### 4.5. Critérios de aprovação de releases
 
-As versões seguem o formato:
+O merge de uma release na branch `main` exige uma avaliação colegiada e rigorosa de conformidade:
+
+- **Papéis e responsabilidades:**
+  - *Autor do Release (Preparador):* Integrante responsável por abrir o PR de publicação, consolidar o changelog, preencher o template oficial e anexar as evidências de validação.
+  - *Revisores Formais:* Integrantes designados (conforme `.github/CODEOWNERS` e regras de proteção de branch) responsáveis por auditar o escopo, conferir o changelog e validar a ausência de regressões.
+- **Aprovações humanas obrigatórias:** Ao menos 1 aprovação formal de revisor qualificado é necessária antes que o merge seja autorizado.
+- **Verificações automatizadas (CI):** O status check `validate` (lint, checagem estrita de tipos TypeScript e suíte completa de testes Jest) deve ser concluído com sucesso de forma 100% verde no GitHub Actions.
+- **Validação de build e integridade:** Confirmação de que os identificadores de versão estão perfeitamente sincronizados com as configurações técnicas do aplicativo.
+- **Tolerância zero a bloqueadores:** Nenhum defeito de severidade P0 ou que cause quebra de contrato arquitetural pode ser aceito na release. Riscos ou limitações conhecidas não bloqueadoras devem ser expressamente catalogados na seção de informações adicionais do template.
+- **Inviolabilidade das checagens:** É expressamente vedado contornar verificações obrigatórias de qualidade por meio de flags como `--no-verify`, variáveis `HUSKY=0` ou permissões administrativas de bypass de regras de proteção.
+
+### 4.6. Política de versionamento e alinhamento com Android
+
+O Orbity adota o padrão de Versionamento Semântico (**SemVer**), estruturado no formato:
 
 `X.Y.Z`
 
-**Exemplo:** `1.3.2`
+| Componente | Identificador | Classificação | Critério de aplicação |
+|---|---|---|---|
+| `X` | `MAJOR` | Versão principal | Mudanças arquiteturais profundas, reestruturações de banco de dados locais incompatíveis ou quebras estruturais de contratos existentes. |
+| `Y` | `MINOR` | Novas funcionalidades | Inclusão de novas telas, fluxos de estudo, componentes do Design System ou regras de negócio mantendo compatibilidade retroativa. |
+| `Z` | `PATCH` | Correções | Ajustes finos de layout, correções de defeitos e bugs, refatorações internas sem impacto funcional perceptível. |
 
-Cada número representa uma categoria de alteração:
+Quando um componente de nível superior é incrementado, os componentes subordinados são reiniciados em zero (ex.: após `0.1.4`, uma nova funcionalidade resulta em `0.2.0`).
 
-| Componente | Identificador | Classificação         | Descrição                                                                |
-| ---------- | ------------- | --------------------- | ------------------------------------------------------------------------ |
-| `X`        | `MAJOR`       | Versão principal      | Alterações que introduzem incompatibilidades com versões anteriores.     |
-| `Y`        | `MINOR`       | Novas funcionalidades | Funcionalidades adicionadas sem comprometer a compatibilidade existente. |
-| `Z`        | `PATCH`       | Correções             | Correções de defeitos que preservam a compatibilidade existente.         |
+**Alinhamento com versionamento Android:**
+A versão SemVer aprovada na governança reflete-se diretamente nos identificadores técnicos gerenciados pelo Expo e pelo ecossistema Android, conforme documentado em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md):
+- **`versionName` (`app.json` → `expo.version` e `package.json` → `version`):** Corresponde fielmente à versão pública `X.Y.Z` apresentada aos usuários e ao Google Play Console.
+- **`versionCode` (`app.json` → `expo.android.versionCode`):** Número inteiro estritamente incremental e monotônico crescente (ex.: `1`, `2`, `3`...), exigido pela Google Play para cada novo pacote gerado (AAB). O `versionCode` nunca retrocede, mesmo entre versões com mesmo SemVer ou correções de build.
+- **Consistência obrigatória:** Os manifestos técnicos do aplicativo somente são atualizados pela equipe no contexto da preparação da release, mantendo sincronia absoluta com a tag Git a ser gerada. Contribuidores em tarefas de desenvolvimento comuns não devem alterar os campos de versão em seus PRs individuais.
 
-**Exemplos de evolução:**
+### 4.7. Convenções de Git tags e GitHub Releases
 
-Considerando a versão atual `1.2.0`:
+A rastreabilidade histórica de cada versão publicada é assegurada pela marcação de tags e publicação de releases no GitHub:
 
-- Uma correção compatível poderá resultar na versão `1.2.1`.
-- Uma nova funcionalidade compatível poderá resultar na versão `1.3.0`.
-- Uma alteração incompatível poderá resultar na versão `2.0.0`.
+1. **Formato da Git tag:**
+   As tags devem seguir rigorosamente o padrão:
+   `vX.Y.Z` (ex.: `v0.1.0`, `v0.2.0`, `v1.0.0`).
+2. **Criação da tag:**
+   - A tag deve ser criada **imediatamente após o merge** do Pull Request de publicação na branch `main`.
+   - A tag deve apontar com precisão para o commit de merge resultante na `main`.
+   - Deve ser utilizada obrigatoriamente uma **tag anotada** contendo mensagem explicativa:
+     ```bash
+     git tag -a vX.Y.Z -m "release: publicar versão X.Y.Z"
+     ```
+3. **Publicação da GitHub Release:**
+   - Uma GitHub Release oficial deve ser publicada na interface do repositório vinculada à tag `vX.Y.Z`.
+   - **Título da Release:** `Orbity vX.Y.Z`.
+   - **Conteúdo da Release (Notas de Versão / Changelog):** O corpo da release deve ser estruturado em seções padronizadas:
+     - 🚀 *Novidades (Features)* — principais funcionalidades adicionadas.
+     - 🐛 *Correções (Bug Fixes)* — defeitos corrigidos desde a versão anterior.
+     - 🧹 *Melhorias e Manutenção (Chores/Refactors)* — aprimoramentos técnicos e de arquitetura.
+     - 📚 *Documentação (Docs)* — alterações relevantes de documentação e governança.
+     - 🔗 *Rastreabilidade* — links para os Pull Requests integrados e referências às issues fechadas.
+4. **Imutabilidade e integridade das tags:**
+   - Uma tag publicada na `main` é **imutável**.
+   - É expressamente proibido deletar, mover ou sobrescrever uma tag existente para reaproveitá-la após alterações no código.
+   - Qualquer correção identificada após a geração de uma release deve ser tratada por meio do processo de correção urgente (*hotfix*), resultando em um novo incremento de versão `PATCH` (`vX.Y.(Z+1)`).
 
-Quando um componente anterior é incrementado, os componentes seguintes são reiniciados em zero.
+### 4.8. Correções urgentes e sincronização de branches
 
-**Definição da próxima versão:**
+Quando um defeito crítico ou impeditivo é identificado em ambiente de produção após a publicação de uma versão na branch `main`, deve ser acionado o fluxo de **correção urgente (Hotfix)**:
 
-A definição da próxima versão estável é realizada durante a preparação do Pull Request de publicação, considerando as alterações integradas à `development` desde a última publicação.
-
-A equipe deve avaliar o impacto do conjunto de alterações: incompatibilidades exigem incremento principal (`major`), novas funcionalidades compatíveis exigem incremento secundário (`minor`) e correções compatíveis exigem incremento de correção (`patch`). Quando houver impactos diferentes, prevalece o de maior nível.
-
-Alterações exclusivamente documentais, ajustes internos e tarefas de manutenção sem impacto no aplicativo não provocam incremento de versão por si mesmas. Se o conjunto a publicar contiver apenas essas alterações, a equipe deverá decidir se há necessidade de uma nova versão estável.
-
-**Regras:**
-
-- O número da versão proposta no Pull Request de publicação deve ser validado antes da integração na `main`.
-- Os contribuidores não devem modificar manualmente os identificadores de versão controlados pelo processo de publicação em Pull Requests comuns de desenvolvimento.
-- Alterações excepcionais nesses identificadores exigem aprovação da equipe.
-
-**Versionamento do aplicativo Android:**
-
-O aplicativo utiliza identificadores internos de versão, incluindo `versionName` e `versionCode`.
-
-O `versionName` representa a versão apresentada ao usuário, enquanto o `versionCode` identifica internamente a evolução dos pacotes Android.
-
-O identificador do pacote Android, a propriedade das contas Expo/EAS e Google Play Console e os responsáveis por builds, credenciais e publicação estão registrados em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md).
-
-O gerenciamento desses identificadores deverá respeitar o processo de geração e distribuição de builds definido pela equipe.
-
-O processo automatizado de publicação deverá manter a consistência entre as versões registradas no GitHub e os identificadores internos que estiverem sob sua responsabilidade, sem interferir indevidamente no controle dos builds destinados à distribuição.
-
-### 4.4. Registro de publicações
-
-Após a integração de um Pull Request de publicação à `main`, a versão estável deverá ser registrada no GitHub.
-
-O registro poderá envolver:
-
-- Criação de uma Git tag correspondente à versão.
-- Criação de uma GitHub Release.
-- Registro das principais alterações incluídas.
-- Associação da versão ao commit publicado na `main`.
-
-As Git tags devem seguir o formato:
-
-`vX.Y.Z`
-
-**Exemplos:**
-
-- `v1.0.0`
-- `v1.1.0`
-- `v1.1.1`
-
-**Regras:**
-
-- As tags estáveis devem identificar commits pertencentes ao histórico da `main`.
-- Não devem existir duas publicações distintas utilizando a mesma tag.
-- Uma versão publicada não deve ter sua tag alterada arbitrariamente.
-- Correções posteriores devem ser registradas em novas versões.
-- A criação das tags e das GitHub Releases poderá ser automatizada após a integração do Pull Request de publicação.
-
-O registro de uma GitHub Release não implica, por si só, a geração de builds Android ou a distribuição do aplicativo.
-
-Essas atividades pertencem ao processo de build e distribuição definido separadamente pela equipe.
+1. **Criação da branch de hotfix:**
+   - A branch de trabalho deve partir diretamente da tag da versão afetada ou do topo da branch `main`:
+     `fix/<descricao-curta-do-problema>`
+2. **Implementação e escopo mínimo:**
+   - A alteração deve restringir-se estritamente à resolução do defeito impeditivo, evitando refatorações secundárias ou inclusão de novas funcionalidades.
+   - Testes automatizados que reproduzam o defeito e comprovem a correção devem ser incluídos.
+3. **Pull Request de publicação de hotfix:**
+   - O Pull Request deve ser direcionado para a branch `main`.
+   - Título obrigatório: `release: publicar versão X.Y.(Z+1)` (incrementando o dígito `PATCH`).
+   - A descrição deve registrar detalhadamente o incidente, o impacto na versão anterior e a comprovação dos testes realizados.
+4. **Merge, tag e publicação:**
+   - Após aprovação formal e sucesso em todas as verificações do CI, o PR é integrado à `main`.
+   - A tag anotada correspondente (`vX.Y.(Z+1)`) e a nova GitHub Release são publicadas imediatamente.
+5. **Sincronização obrigatória com a development:**
+   - Para evitar divergência entre as branches permanentes e garantir que a correção não seja perdida em futuras releases, o autor do hotfix deve **imediatamente abrir um Pull Request de sincronização** da `main` para a `development` (ou criar uma branch `chore/sync-main-to-development` para validação prévia).
+   - Somente após a integração da correção à `development` o ciclo de hotfix é considerado concluído.
 
 ---
 
