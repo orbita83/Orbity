@@ -4,11 +4,13 @@
 
 ## 1. Status e escopo
 
-**Status:** Proposta — aguardando aprovação da equipe.
+**Status:** Aprovado em 07/11/2026 — decisões registradas na [Seção 10](#10-registro-de-decisões).
 
 Este documento é a referência central das decisões de identidade de distribuição e de propriedade administrativa do Orbity. Ele **registra decisões**; não altera configurações do aplicativo nem cria, paga, verifica ou transfere contas de serviços externos.
 
-Enquanto um campo estiver marcado como `Pendente` ou `Proposto` na [Seção 10](#10-registro-de-decisões), ele **não** deve ser aplicado em configurações técnicas nem utilizado em cadastros externos.
+A aprovação de uma decisão **não** significa que a conta correspondente já foi criada, verificada ou configurada. Essas etapas são executadas pelas tarefas indicadas abaixo e confirmadas nas plataformas oficiais.
+
+Somente os campos marcados como `Aprovado` na [Seção 10](#10-registro-de-decisões) podem ser aplicados em configurações técnicas ou utilizados em cadastros externos.
 
 **Fora do escopo** (tratado em outras tarefas do EP-0000):
 
@@ -74,18 +76,19 @@ Por convenção, utiliza-se o domínio reverso de um espaço de nomes controlado
 
 | Candidato | Justificativa | Observação |
 | --------- | ------------- | ---------- |
-| `io.github.orbita83.orbity` | Deriva da organização GitHub `orbita83`, um espaço de nomes já controlado pela equipe e verificável publicamente. | **Recomendado** para avaliação. |
-| `com.orbita83.orbity` | Formato mais curto e comum. | A equipe não possui o domínio `orbita83.com`; o espaço de nomes não é verificável. |
+| `io.github.orbita83.orbity` | Deriva da organização GitHub `orbita83`, um espaço de nomes já controlado pela equipe e verificável publicamente. | **Aprovado** em 07/11/2026. |
+| `com.orbita83.orbity` | Formato mais curto e comum. | Descartado: a equipe não possui o domínio `orbita83.com`; o espaço de nomes não é verificável. |
 
-Em 05/11/2026, nenhum dos candidatos possuía página publicada na Google Play (resposta HTTP 404 em `https://play.google.com/store/apps/details?id=<pacote>`).
+### 3.3. Validação do pacote aprovado
 
-Nenhum candidato está aprovado. Antes da aprovação, o responsável deve:
+O identificador aprovado `io.github.orbita83.orbity`:
 
-1. Confirmar que o candidato atende aos requisitos da [Seção 3.1](#31-requisitos-de-formato-do-pacote-android).
-2. Verificar a inexistência de aplicativo publicado com o mesmo identificador, acessando `https://play.google.com/store/apps/details?id=<pacote>`. A ausência de página publicada não garante disponibilidade, pois aplicativos não publicados ou removidos podem reservar o identificador; a confirmação definitiva ocorre na criação do aplicativo no Google Play Console.
-3. Registrar a data da verificação e a aprovação na [Seção 10](#10-registro-de-decisões).
+1. Atende aos requisitos da [Seção 3.1](#31-requisitos-de-formato-do-pacote-android): quatro segmentos, todos iniciados por letra, compostos apenas por letras minúsculas e dígitos e sem palavras reservadas do Java.
+2. Não possuía página publicada na Google Play em 05/11/2026 nem em 07/11/2026 (resposta HTTP 404 em `https://play.google.com/store/apps/details?id=io.github.orbita83.orbity`).
 
-O identificador deve ser aprovado **antes** do cadastro definitivo do aplicativo na Google Play e antes de sua aplicação no `app.json` pela T0010.
+A ausência de página publicada não garante disponibilidade, pois aplicativos não publicados ou removidos podem reservar o identificador. A confirmação definitiva ocorre na criação do aplicativo no Google Play Console, que deve ser feita **antes** de qualquer envio de build. Se o identificador estiver indisponível nessa etapa, a escolha de um substituto deve ser aprovada por Pull Request que atualize este documento.
+
+O identificador será aplicado no `app.json` pela T0010.
 
 ## 4. Propriedade do projeto Expo/EAS
 
@@ -96,16 +99,27 @@ O identificador deve ser aprovado **antes** do cadastro definitivo do aplicativo
 | Conta individual de um integrante | Configuração imediata. | O projeto fica vinculado a uma pessoa; a saída do integrante exige transferência e pode interromper builds. |
 | **Organização Expo** | Projeto pertence à organização; permite vários administradores com papéis definidos; sobrevive à saída de integrantes. | Exige que um integrante crie a organização e convide os demais. |
 
-**Proposta:** utilizar uma organização Expo como proprietária do projeto, evitando dependência exclusiva de uma conta pessoal. A decisão permanece pendente de aprovação.
+### 4.2. Decisão
 
-### 4.2. Regras propostas
+**Aprovado em 07/11/2026:** o projeto Expo/EAS será de propriedade da **conta individual** de [@MailsonSousa88](https://github.com/MailsonSousa88), que também é responsável pela configuração dos builds Android e pelas credenciais de assinatura ([Seção 7](#7-responsabilidades-e-governança)).
 
-- A organização deve possuir **ao menos dois** integrantes com papel administrativo (`Owner` ou `Admin`).
-- Os demais integrantes recebem o menor papel necessário para suas atividades (por exemplo, `Developer` para executar builds ou `Viewer` para consulta).
-- Convites, alterações de papel e remoções são realizados exclusivamente pelo painel oficial da organização Expo, por um administrador.
-- O vínculo do repositório com o projeto EAS (`extra.eas.projectId` e `owner`) somente será configurado pela T0011, após a aprovação desta seção.
+### 4.3. Riscos aceitos e regras
 
-As denominações e permissões de cada papel devem ser confirmadas na documentação oficial da Expo na data da configuração.
+A [documentação oficial da Expo](https://docs.expo.dev/accounts/account-types/) descreve os convites de membros e os papéis de acesso apenas para organizações. Uma conta pessoal é indicada para trabalho individual. Por isso:
+
+- **Risco aceito:** somente o proprietário da conta acessa o projeto no painel da Expo e executa builds na nuvem. Os demais integrantes não recebem acesso por convite enquanto o projeto for de uma conta pessoal.
+- As credenciais da conta Expo **não** podem ser compartilhadas com outros integrantes ([Seção 8](#8-segurança-e-controle-de-acesso)).
+- O vínculo do repositório com o projeto EAS (`owner` e `extra.eas.projectId`) será configurado pela T0011, com a conta definida nesta seção.
+
+### 4.4. Gatilhos de migração para organização
+
+A equipe deve aprovar a migração do projeto para uma organização Expo, por Pull Request que atualize este documento, quando ocorrer qualquer uma das situações abaixo:
+
+- Outro integrante precisar executar builds ou acessar o projeto no painel da Expo.
+- O proprietário deixar a equipe ou não puder mais manter a conta.
+- A equipe decidir ter mais de um administrador do projeto.
+
+A documentação oficial da Expo prevê a conversão de uma conta pessoal em organização e a transferência de projetos entre contas, com o usuário como `Owner` ou `Admin` das contas de origem e destino. Os procedimentos e as permissões devem ser confirmados na documentação oficial na data da migração.
 
 ## 5. Propriedade da publicação na Google Play
 
@@ -118,6 +132,10 @@ As denominações e permissões de cada papel devem ser confirmadas na documenta
 
 Os requisitos de cadastro, taxa de registro, verificação, elegibilidade e acesso à produção **devem ser confirmados na [Ajuda oficial do Google Play Console](https://support.google.com/googleplay/android-developer/) na data da decisão**. Nenhum desses requisitos está considerado cumprido por este documento. A auditoria completa é responsabilidade da T0013.
 
+**Aprovado em 07/11/2026:** a publicação será feita por uma **conta pessoal** do Google Play Console, com titularidade de [@MateusARJ](https://github.com/MateusARJ), que também é responsável pela aprovação de releases e submissões ([Seção 7](#7-responsabilidades-e-governança)).
+
+A aprovação define o tipo de conta e o titular. Ela **não** confirma que a conta foi criada nem que os requisitos de cadastro e verificação foram cumpridos ([Seção 5.3](#53-pendências)).
+
 ### 5.2. Titular e colaboradores
 
 - **Titular da conta:** pessoa física ou jurídica responsável legal pela conta e pelos aplicativos publicados. Apenas o titular pode transferir aplicativos ou encerrar a conta.
@@ -127,9 +145,9 @@ O titular deve convidar os demais responsáveis pelo mecanismo oficial de usuár
 
 ### 5.3. Pendências
 
-- [ ] Definir o tipo de conta (pessoal ou organização).
-- [ ] Definir o titular da conta.
-- [ ] Confirmar requisitos vigentes de cadastro, verificação e acesso à produção.
+- [x] Definir o tipo de conta: pessoal (07/11/2026).
+- [x] Definir o titular da conta: @MateusARJ (07/11/2026).
+- [ ] Confirmar requisitos vigentes de cadastro, verificação e acesso à produção para contas pessoais (T0013).
 - [ ] Confirmar a viabilidade administrativa e financeira da conta escolhida.
 - [ ] Definir os integrantes convidados e suas permissões.
 
@@ -138,8 +156,8 @@ O titular deve convidar os demais responsáveis pelo mecanismo oficial de usuár
 | Serviço | O que controla | Quem administra |
 | ------- | -------------- | --------------- |
 | GitHub (`orbita83/Orbity`) | Código-fonte, documentação, Issues, Pull Requests e CI. | Administradores da organização `orbita83` |
-| Expo/EAS | Projeto Expo, builds na nuvem e credenciais de assinatura gerenciadas pelo EAS. | Proprietário do projeto Expo (Seção 4) — **pendente** |
-| Google Play Console | Cadastro do aplicativo, versões publicadas, faixas de teste, ficha da loja e políticas. | Titular da conta Google Play (Seção 5) — **pendente** |
+| Expo/EAS | Projeto Expo, builds na nuvem e credenciais de assinatura gerenciadas pelo EAS. | Conta individual de @MailsonSousa88 ([Seção 4](#4-propriedade-do-projeto-expoeas)) |
+| Google Play Console | Cadastro do aplicativo, versões publicadas, faixas de teste, ficha da loja e políticas. | Conta pessoal de @MateusARJ ([Seção 5](#5-propriedade-da-publicação-na-google-play)) |
 
 Administrar o repositório GitHub **não** confere, automaticamente, propriedade ou acesso às contas Expo/EAS ou Google Play Console. Cada serviço possui titularidade e controle de acesso independentes, que devem ser definidos e registrados separadamente.
 
@@ -147,11 +165,11 @@ Administrar o repositório GitHub **não** confere, automaticamente, propriedade
 
 | Papel | Atribuições | Responsável |
 | ----- | ----------- | ----------- |
-| Titular da conta Google Play | Responsabilidade legal pela conta; convites e permissões no Google Play Console. | Pendente |
-| Administradores Expo/EAS | Administração da organização e do projeto Expo; convites e remoções. | Pendente |
-| Responsável técnico pelos builds | Configuração e manutenção dos perfis de build Android. | Pendente |
-| Responsável pelas credenciais de assinatura | Guarda, backup e recuperação das credenciais de assinatura, sem documentar seus valores. | Pendente |
-| Aprovação de releases e submissões | Aprovação das versões enviadas à Google Play. | Pendente |
+| Titular da conta Google Play | Responsabilidade legal pela conta; convites e permissões no Google Play Console. | @MateusARJ |
+| Proprietário Expo/EAS | Administração da conta e do projeto Expo; avaliação dos gatilhos de migração da [Seção 4.4](#44-gatilhos-de-migração-para-organização). | @MailsonSousa88 |
+| Responsável técnico pelos builds | Configuração e manutenção dos perfis de build Android. | @MailsonSousa88 |
+| Responsável pelas credenciais de assinatura | Guarda, backup e recuperação das credenciais de assinatura, sem documentar seus valores. | @MailsonSousa88 |
+| Aprovação de releases e submissões | Aprovação das versões enviadas à Google Play. | @MateusARJ |
 
 **Alteração destas definições:** qualquer mudança de proprietário, responsável ou identificador deve ser proposta por Pull Request que atualize este documento, aprovada conforme o fluxo de revisão do [`CONTRIBUTING.md`](../../CONTRIBUTING.md) e registrada na [Seção 10](#10-registro-de-decisões).
 
@@ -181,32 +199,42 @@ Quando um responsável deixar a equipe ou suas atribuições mudarem:
 4. Revogar os acessos do responsável anterior em todos os serviços.
 5. Revisar os meios de recuperação das contas administrativas (verificação em duas etapas e contatos de recuperação), sem registrá-los no repositório.
 
-Para reduzir o risco de perda de acesso, cada serviço deve manter ao menos dois integrantes com acesso administrativo, quando a plataforma permitir.
+Para reduzir o risco de perda de acesso, cada serviço deve manter ao menos dois integrantes com acesso administrativo, quando a plataforma e o tipo de conta permitirem.
+
+### 9.1. Concentração de responsabilidades
+
+Com as decisões de 07/11/2026, cada serviço externo depende de um único integrante: a conta Expo/EAS depende de @MailsonSousa88, e a conta Google Play Console depende de @MateusARJ. Para mitigar esse risco:
+
+- Os dois responsáveis devem manter a verificação em duas etapas e meios de recuperação atualizados nas próprias contas, sem registrá-los no repositório.
+- A saída ou indisponibilidade prolongada de um deles dispara o procedimento acima e, no caso da Expo, os gatilhos de migração da [Seção 4.4](#44-gatilhos-de-migração-para-organização).
+- As credenciais de assinatura devem ter backup seguro e recuperável, conforme a estratégia definida pela T0012, para que a perda de acesso a uma conta não impeça futuras atualizações do aplicativo.
 
 ## 10. Registro de decisões
 
-Legenda de status: `Confirmado` (verificado no código), `Proposto` (recomendação aguardando aprovação) e `Pendente` (sem proposta definida).
+Legenda de status: `Aprovado` (decisão aprovada pela equipe), `Proposto` (recomendação aguardando aprovação) e `Pendente` (sem proposta definida).
+
+As decisões abaixo foram informadas pela equipe em 07/11/2026 e formalizadas pela revisão do Pull Request que as registrou.
 
 | Decisão | Valor | Status | Responsável | Data |
 | ------- | ----- | ------ | ----------- | ---- |
-| Nome oficial | `Orbity` | Confirmado no código; aprovação para distribuição pendente | Pendente | — |
-| Slug Expo | `orbity` | Confirmado no código; aprovação para distribuição pendente | Pendente | — |
-| Pacote Android | `io.github.orbita83.orbity` (Seção 3.2) | Proposto | Pendente | — |
-| Proprietário Expo/EAS | Organização Expo (Seção 4) | Proposto | Pendente | — |
-| Proprietário Google Play | Tipo de conta e titular (Seção 5) | Pendente | Pendente | — |
-| Administração técnica | Responsáveis pelos builds e configurações (Seção 7) | Pendente | Pendente | — |
-| Administração de publicação | Responsáveis pela submissão e manutenção (Seção 7) | Pendente | Pendente | — |
-| Controle de acesso | Procedimento da Seção 8.1 | Proposto | Pendente | — |
-| Continuidade | Procedimento da Seção 9 | Proposto | Pendente | — |
-| Aprovação | Aprovação da equipe | Pendente | Pendente | — |
+| Nome oficial | `Orbity` | Aprovado | Equipe Orbity | 07/11/2026 |
+| Slug Expo | `orbity` | Aprovado | Equipe Orbity | 07/11/2026 |
+| Pacote Android | `io.github.orbita83.orbity` ([Seção 3.3](#33-validação-do-pacote-aprovado)) | Aprovado | Equipe Orbity | 07/11/2026 |
+| Proprietário Expo/EAS | Conta individual de @MailsonSousa88 ([Seção 4](#4-propriedade-do-projeto-expoeas)) | Aprovado | @MailsonSousa88 | 07/11/2026 |
+| Proprietário Google Play | Conta pessoal, titular @MateusARJ ([Seção 5](#5-propriedade-da-publicação-na-google-play)) | Aprovado | @MateusARJ | 07/11/2026 |
+| Administração técnica | Builds e credenciais de assinatura ([Seção 7](#7-responsabilidades-e-governança)) | Aprovado | @MailsonSousa88 | 07/11/2026 |
+| Administração de publicação | Aprovação de releases e submissões ([Seção 7](#7-responsabilidades-e-governança)) | Aprovado | @MateusARJ | 07/11/2026 |
+| Controle de acesso | Procedimento da [Seção 8.1](#81-solicitação-e-revogação-de-acesso) | Aprovado | Equipe Orbity | 07/11/2026 |
+| Continuidade | Procedimento da [Seção 9](#9-continuidade-e-recuperação-administrativa) | Aprovado | Equipe Orbity | 07/11/2026 |
+| Aprovação | Revisão do Pull Request que registrou estas decisões | Aprovado | Equipe Orbity | 07/11/2026 |
 
 ## 11. Pendências para desbloquear as próximas tarefas
 
-| Tarefa | Depende de |
-| ------ | ---------- |
-| T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) | Pacote Android aprovado; nome e slug aprovados. |
-| T0011 — [#77](https://github.com/orbita83/Orbity/issues/77) | Proprietário Expo/EAS aprovado e criado; administradores definidos; T0010 integrada. |
-| T0013 — [#79](https://github.com/orbita83/Orbity/issues/79) | Tipo e titular da conta Google Play definidos; responsáveis pela publicação definidos. |
+| Tarefa | Situação em relação à T0009 | Pendências restantes |
+| ------ | --------------------------- | -------------------- |
+| T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) | Liberada: pacote Android, nome e slug aprovados. | — |
+| T0011 — [#77](https://github.com/orbita83/Orbity/issues/77) | Proprietário Expo/EAS aprovado. | Conta Expo de @MailsonSousa88 disponível para o projeto; T0010 integrada. |
+| T0013 — [#79](https://github.com/orbita83/Orbity/issues/79) | Tipo e titular da conta Google Play e responsáveis pela publicação definidos. | Predecessora T0012 — [#78](https://github.com/orbita83/Orbity/issues/78). |
 
 ## 12. Referências
 
