@@ -25,7 +25,7 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 
 ## 2. Regras Rápidas de Git e Contribuição (Resumo Operacional)
 
-- **Branch base:** Toda branch de trabalho deve partir de `development` atualizada (`git switch development && git pull --ff-only origin development`). Nunca parta de `main` ou de outra branch de trabalho, e nunca faça alterações diretas em `main` ou `development`.
+- **Branch base:** Toda branch de trabalho deve partir de `development` atualizada (`git switch development && git pull --ff-only origin development`), com exceção de correções urgentes pós-release (hotfixes), que partem da `main` conforme `CONTRIBUTING.md` (Seção 4.8). Nunca faça alterações diretas em `main` ou `development`.
 - **Formato de branch:** `<prefixo>/<descricao-curta>` com letras minúsculas, números e hífens, sem acentos (`^(feat|fix|docs|refactor|test|chore)/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$`).
 - **Formato de commit:** `<prefixo>(<escopo>): <descricao curta em pt-br>` — escopo obrigatório, inicial da descrição minúscula, sem ponto final.
 - **Proteção de hooks:** Nunca utilize `--no-verify` em commits ou pushes, nem defina `HUSKY=0` localmente para contornar falhas de lint, commitlint ou validação de branch.

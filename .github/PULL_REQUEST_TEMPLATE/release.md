@@ -29,7 +29,7 @@
 
 <!-- Descreva comandos executados, evidências de testes manuais e checagens automáticas (CONTRIBUTING.md Seção 4.5). -->
 
-- [ ] Verificações obrigatórias do CI (`validate`: lint, `tsc --noEmit` e testes Jest) aprovadas com 100% de sucesso
+- [ ] Alterações validadas previamente pelo CI na `development` e verificações locais (`lint`, `tsc --noEmit` e testes Jest) aprovadas com 100% de sucesso
 - [ ] Testes manuais/exploratórios executados e validados em ambiente Android (dispositivo físico ou emulador)
 - [ ] Ausência de defeitos críticos ou bloqueadores conhecidos (severidade P0)
 - [ ] Versão proposta (`versionName`) e identificadores de build (`versionCode`) conferidos e consistentes nos manifestos
@@ -38,7 +38,7 @@
 
 <!-- Diretrizes a serem executadas imediatamente após o merge na main (CONTRIBUTING.md Seções 4.7 e 4.8). -->
 
-- [ ] Criação da Git tag anotada no commit de merge na `main`: `git tag -a vX.Y.Z -m "release: publicar versão X.Y.Z"`
+- [ ] Criação e envio da Git tag anotada no commit de merge na `main`: `git tag -a vX.Y.Z -m "release: publicar versão X.Y.Z"` e `git push origin vX.Y.Z`
 - [ ] Publicação da GitHub Release correspondente com changelog e notas de lançamento
 - [ ] Caso seja um hotfix emergencial, abertura imediata de PR de sincronização de retorno para a `development`
 
