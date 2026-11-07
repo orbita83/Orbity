@@ -108,7 +108,7 @@ As branches de trabalho devem seguir o formato:
 - Separar palavras com hífen.
 - Não utilizar espaços, acentos ou caracteres especiais.
 - Utilizar prefixos coerentes com a natureza da atividade.
-- Criar branches de trabalho a partir da versão atualizada da `development`.
+- Criar branches de trabalho a partir da versão atualizada da `development` (com exceção das branches de correção urgente pós-release/hotfix, que partem da `main` ou da tag correspondente, conforme a [Seção 4.8](#48-correções-urgentes-e-sincronização-de-branches)).
 - Não iniciar uma nova atividade a partir de uma branch de trabalho antiga.
 - Utilizar uma branch própria para cada atividade independente.
 - Não realizar alterações diretamente nas branches protegidas `main` e `development`.
@@ -232,7 +232,7 @@ Diferentemente dos Pull Requests de desenvolvimento, os Pull Requests de publica
 **Requisitos:**
 
 - A criação do Pull Request de publicação deve ser realizada manualmente por um integrante da equipe.
-- O Pull Request deve ter como origem a branch `development` e como destino a branch `main`.
+- O Pull Request deve ter como origem a branch `development` e como destino a branch `main` (com exceção dos Pull Requests de correção urgente pós-release/hotfix, cuja origem é a branch `fix/<descricao-curta>` e o destino é a `main`, conforme a [Seção 4.8](#48-correções-urgentes-e-sincronização-de-branches)).
 - A publicação deve ocorrer somente após a equipe considerar as alterações integradas à `development` prontas para uma nova versão estável.
 - O título deve identificar claramente a versão proposta para publicação.
 - A descrição deve apresentar um resumo das principais alterações incluídas na versão.
@@ -517,7 +517,7 @@ O planejamento de uma versão estável determina quais funcionalidades, correç�
 A primeira versão pública e estável do Orbity marca o encerramento da fase de fundação técnica e arquitetural do produto.
 
 **Desmistificação da versão inicial:**
-O valor `1.0.0` presente inicialmente em `app.json` e `package.json` é decorrente do scaffold padrão gerado pelo template Expo e **não comprova a existência de uma versão estável já publicada**. A equipe adota formalmente **`v0.1.0`** como o identificador da primeira release estável do aplicativo. O ajuste técnico dos manifestos para `0.1.0` é de responsabilidade da tarefa técnica de versionamento ([T0010 — #76](https://github.com/orbita83/Orbity/issues/76)).
+O valor `1.0.0` presente no início do projeto em `app.json` e `package.json` era decorrente do scaffold padrão gerado pelo template Expo e **não comprovava a existência de uma versão estável já publicada**. A equipe adota formalmente **`v0.1.0`** como o identificador da primeira release estável do aplicativo. Os manifestos técnicos do aplicativo já foram configurados em `0.1.0` pela tarefa técnica de versionamento ([T0010 — #76](https://github.com/orbita83/Orbity/issues/76)), em conformidade com [`docs/08-distribution/versionamento-do-app.md`](docs/08-distribution/versionamento-do-app.md).
 
 **Critérios mínimos para autorização da `v0.1.0`:**
 Para que o primeiro Pull Request de publicação (`release: publicar versão 0.1.0`) seja autorizado e integrado à `main`, todos os seguintes critérios devem ser atendidos:
@@ -544,7 +544,7 @@ A transição entre a base de desenvolvimento e a branch de produção estável 
    - Durante o período em que o Pull Request de publicação estiver em revisão e homologação, a integração de novas funcionalidades (`feat/`) na branch `development` deve ser suspensa ou postergada pela equipe.
    - Apenas correções de defeitos bloqueadores identificados durante a validação da própria release podem ser integradas à `development` nesse intervalo.
 3. **Tratamento de alterações tardias na development:**
-   - Caso qualquer alteração seja integrada à branch `development` após a abertura do Pull Request de publicação, o PR de release deve ser obrigatoriamente atualizado com o novo commit de integração (`git merge development` ou rebase correspondente).
+   - Caso qualquer alteração seja integrada à branch `development` após a abertura do Pull Request de publicação, o PR de release deve ser obrigatoriamente atualizado com a versão integrada da `development` (executando `git merge origin/development` na branch de trabalho da release).
    - Todo o checklist de escopo e validação automatizada deve ser reexecutado e documentado antes do merge final.
 4. **Proibição de alterações diretas:**
    - Permanece terminantemente proibido qualquer commit ou push direto nas branches protegidas `development` e `main`.
@@ -557,8 +557,8 @@ O merge de uma release na branch `main` exige uma avaliação colegiada e rigoro
 - **Papéis e responsabilidades:**
   - *Autor do Release (Preparador):* Integrante responsável por abrir o PR de publicação, consolidar o changelog, preencher o template oficial e anexar as evidências de validação.
   - *Revisores Formais:* Integrantes designados (conforme `.github/CODEOWNERS` e regras de proteção de branch) responsáveis por auditar o escopo, conferir o changelog e validar a ausência de regressões.
-- **Aprovações humanas obrigatórias:** Ao menos 1 aprovação formal de revisor qualificado é necessária antes que o merge seja autorizado.
-- **Verificações automatizadas (CI):** O status check `validate` (lint, checagem estrita de tipos TypeScript e suíte completa de testes Jest) deve ser concluído com sucesso de forma 100% verde no GitHub Actions.
+- **Aprovações humanas obrigatórias:** Ao menos 2 aprovações formais de revisores qualificados são necessárias antes que o merge seja autorizado, em conformidade com as regras de proteção da branch `main`.
+- **Verificações de qualidade:** O conjunto de alterações a ser publicado deve ter sido previamente validado com sucesso pelo status check `validate` do CI na branch `development`. Adicionalmente, as validações locais obrigatórias (`npm run lint`, `npx --no-install tsc --noEmit` e `npm test`) devem ser executadas e registradas com 100% de sucesso no Pull Request de publicação. (Nota: o workflow automatizado de CI atualmente roda apenas em PRs direcionados à `development`; a extensão para PRs direcionados à `main` constitui uma melhoria futura a ser tratada em issue separada).
 - **Validação de build e integridade:** Confirmação de que os identificadores de versão estão perfeitamente sincronizados com as configurações técnicas do aplicativo.
 - **Tolerância zero a bloqueadores:** Nenhum defeito de severidade P0 ou que cause quebra de contrato arquitetural pode ser aceito na release. Riscos ou limitações conhecidas não bloqueadoras devem ser expressamente catalogados na seção de informações adicionais do template.
 - **Inviolabilidade das checagens:** É expressamente vedado contornar verificações obrigatórias de qualidade por meio de flags como `--no-verify`, variáveis `HUSKY=0` ou permissões administrativas de bypass de regras de proteção.
@@ -582,6 +582,7 @@ A versão SemVer aprovada na governança reflete-se diretamente nos identificado
 - **`versionName` (`app.json` → `expo.version` e `package.json` → `version`):** Corresponde fielmente à versão pública `X.Y.Z` apresentada aos usuários e ao Google Play Console.
 - **`versionCode` (`app.json` → `expo.android.versionCode`):** Número inteiro estritamente incremental e monotônico crescente (ex.: `1`, `2`, `3`...), exigido pela Google Play para cada novo pacote gerado (AAB). O `versionCode` nunca retrocede, mesmo entre versões com mesmo SemVer ou correções de build.
 - **Consistência obrigatória:** Os manifestos técnicos do aplicativo somente são atualizados pela equipe no contexto da preparação da release, mantendo sincronia absoluta com a tag Git a ser gerada. Contribuidores em tarefas de desenvolvimento comuns não devem alterar os campos de versão em seus PRs individuais.
+- **Tratamento de exceções:** Alterações excepcionais nesses identificadores exigem justificativa fundamentada e aprovação da equipe.
 
 ### 4.7. Convenções de Git tags e GitHub Releases
 
@@ -596,6 +597,7 @@ A rastreabilidade histórica de cada versão publicada é assegurada pela marca�
    - Deve ser utilizada obrigatoriamente uma **tag anotada** contendo mensagem explicativa:
      ```bash
      git tag -a vX.Y.Z -m "release: publicar versão X.Y.Z"
+     git push origin vX.Y.Z
      ```
 3. **Publicação da GitHub Release:**
    - Uma GitHub Release oficial deve ser publicada na interface do repositório vinculada à tag `vX.Y.Z`.
