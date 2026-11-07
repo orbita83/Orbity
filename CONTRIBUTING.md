@@ -601,11 +601,11 @@ A rastreabilidade histórica de cada versão publicada é assegurada pela marca�
    - Uma GitHub Release oficial deve ser publicada na interface do repositório vinculada à tag `vX.Y.Z`.
    - **Título da Release:** `Orbity vX.Y.Z`.
    - **Conteúdo da Release (Notas de Versão / Changelog):** O corpo da release deve ser estruturado em seções padronizadas:
-     - 🚀 *Novidades (Features)* — principais funcionalidades adicionadas.
-     - 🐛 *Correções (Bug Fixes)* — defeitos corrigidos desde a versão anterior.
-     - 🧹 *Melhorias e Manutenção (Chores/Refactors)* — aprimoramentos técnicos e de arquitetura.
-     - 📚 *Documentação (Docs)* — alterações relevantes de documentação e governança.
-     - 🔗 *Rastreabilidade* — links para os Pull Requests integrados e referências às issues fechadas.
+     - *Novidades (Features)* — principais funcionalidades adicionadas.
+     - *Correções (Bug Fixes)* — defeitos corrigidos desde a versão anterior.
+     - *Melhorias e Manutenção (Chores/Refactors)* — aprimoramentos técnicos e de arquitetura.
+     - *Documentação (Docs)* — alterações relevantes de documentação e governança.
+     - *Rastreabilidade* — links para os Pull Requests integrados e referências às issues fechadas.
 4. **Imutabilidade e integridade das tags:**
    - Uma tag publicada na `main` é **imutável**.
    - É expressamente proibido deletar, mover ou sobrescrever uma tag existente para reaproveitá-la após alterações no código.

@@ -10,10 +10,10 @@
 
 <!-- Descreva as principais entregas agrupadas por categoria, referenciando os PRs integrados na development. -->
 
-- 🚀 **Novidades (Features):**
-- 🐛 **Correções (Bug Fixes):**
-- 🧹 **Melhorias e Manutenção (Chores/Refactors):**
-- 📚 **Documentação (Docs):**
+- **Novidades (Features):**
+- **Correções (Bug Fixes):**
+- **Melhorias e Manutenção (Chores/Refactors):**
+- **Documentação (Docs):**
 
 ## Escopo revisado
 
