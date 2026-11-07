@@ -58,7 +58,7 @@ A identidade de distribuição é composta por identificadores com finalidades d
 | `versionCode` (`expo.android.versionCode`) | Número interno e crescente de cada build Android | Sim, sempre crescente |
 | Versão do pacote npm (`package.json` → `version`) | Versão do projeto JavaScript/Node.js | Sim |
 
-A estratégia de relação entre essas versões é responsabilidade da T0010 e da T0014, conforme a [Seção 4.3 do `CONTRIBUTING.md`](../../CONTRIBUTING.md#43-política-de-versionamento).
+A estratégia de relação entre essas versões é responsabilidade da T0010 e da T0014, conforme a [Seção 4.6 do `CONTRIBUTING.md`](../../CONTRIBUTING.md#46-política-de-versionamento-e-alinhamento-com-android).
 
 ### 3.1. Requisitos de formato do pacote Android
 
