@@ -379,17 +379,20 @@ Quando necessário, as decisões técnicas devem ser registradas na documentaç�
 
 ### 3.2. Testes
 
-As alterações devem ser acompanhadas de verificações proporcionais ao seu impacto. O guia de estruturação e execução dos testes automatizados com Jest e React Native Testing Library encontra-se em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md).
+As alterações devem ser acompanhadas de verificações proporcionais ao seu impacto. O guia consolidado de testes automatizados, taxonomia de test doubles, criação de fixtures e testabilidade no MVVM Sofisticado encontra-se em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md).
 
-**Diretrizes:**
+**Diretrizes gerais:**
 
-- Novas funcionalidades devem ser testadas quanto ao comportamento esperado.
-- Correções de defeitos devem verificar o problema corrigido e, quando viável, prevenir sua recorrência por meio de testes.
-- Refatorações devem preservar os comportamentos existentes.
-- Alterações em componentes compartilhados devem considerar os possíveis impactos em outras partes do sistema.
-- Testes existentes não devem ser removidos ou desabilitados apenas para permitir a aprovação de uma alteração.
+- **Novas funcionalidades:** Devem incluir testes proporcionais ao seu escopo (regras de negócio em Use Cases, reatividade em ViewModels e acessibilidade na View).
+- **Correções de defeitos:** Devem verificar o problema corrigido e, quando viável, prevenir sua recorrência por meio de testes automatizados.
+- **Refatorações:** Devem preservar integralmente os comportamentos observáveis existentes.
+- **Componentes compartilhados:** Devem considerar impactos em outras telas e assegurar conformidade de acessibilidade (WCAG 2.5.5 / 2.5.8 e Material 3).
+- **Integridade da suíte:** Testes existentes não devem ser removidos ou desabilitados apenas para permitir a aprovação de uma alteração.
+- **Test Doubles e Mocks:** Utilizar Stubs e Fakes in-memory para prover dados e estados previsíveis; reservar Mocks (`jest.fn()`) e Spies (`jest.spyOn()`) para verificar efeitos colaterais estritamente necessários, evitando testes frágeis acoplados a detalhes de implementação interna.
+- **Fixtures:** Utilizar funções geradoras (*factory functions*) que retornam novos objetos imutáveis com dados mínimos suficientes para o cenário, sem compartilhar estado mutável global entre testes.
+- **Respeito às Camadas (MVVM Sofisticado):** Use Cases devem ser testados isoladamente sem dependência de UI ou React; ViewModels devem ser testadas com `renderHook`; e componentes devem ser testados de forma assíncrona com React Native Testing Library (`await render(...)`).
 
-Quando a criação de testes automatizados não for viável, o contribuidor deverá descrever as verificações manuais realizadas.
+Quando a criação de testes automatizados não for viável, o contribuidor deverá descrever detalhadamente as verificações manuais realizadas no Pull Request.
 
 A equipe poderá estabelecer verificações adicionais conforme a evolução do projeto.
 
@@ -548,6 +551,8 @@ Alterações exclusivamente documentais, ajustes internos e tarefas de manutenç
 O aplicativo utiliza identificadores internos de versão, incluindo `versionName` e `versionCode`.
 
 O `versionName` representa a versão apresentada ao usuário, enquanto o `versionCode` identifica internamente a evolução dos pacotes Android.
+
+O identificador do pacote Android, a propriedade das contas Expo/EAS e Google Play Console e os responsáveis por builds, credenciais e publicação estão registrados em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md).
 
 O gerenciamento desses identificadores deverá respeitar o processo de geração e distribuição de builds definido pela equipe.
 
