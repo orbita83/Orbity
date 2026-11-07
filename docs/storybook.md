@@ -25,6 +25,8 @@ npm run build-storybook
 ```
 
 A saída fica em `storybook-static/` e não deve ser versionada.
+O workflow de CI também executa esse comando em Pull Requests destinados à
+`development`; uma falha no catálogo bloqueia a verificação.
 
 ## Adicionar um componente
 
