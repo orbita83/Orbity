@@ -30,37 +30,38 @@ A configuração central encontra-se no arquivo [`jest.config.js`](../../jest.co
 
 ## 3. Estrutura de Diretórios e Nomenclatura
 
-Os testes automatizados no Orbity acompanham a divisão em camadas da arquitetura MVVM Sofisticado descrita em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), utilizando a pasta especial `__tests__/` próxima ao código sob teste ou na raiz de testes:
+Os testes automatizados acompanham a divisão em camadas da arquitetura MVVM Sofisticado descrita em [`ARCHITECTURE.md`](../../ARCHITECTURE.md). Os arquivos `*.test.ts` e `*.test.tsx` ficam no mesmo diretório do módulo testado, sem subdiretórios `__tests__/`.
 
-```
+```text
 src/
-├── __tests__/
-│   ├── fixtures/                             # Fixtures compartilhadas entre diferentes camadas
-│   └── unit/
-│       └── pure-logic.test.ts                # Testes unitários puros sem dependência de plataforma
 ├── infra/
-│   ├── repositories/
-│   │   └── __tests__/                        # Testes de adapters concretos (ex.: in-memory)
-│   └── services/
-│       └── __tests__/                        # Testes de serviços concretos (ex.: system clock)
+│   ├── repositories/                         # Testes *.test.ts junto dos adapters
+│   └── services/                             # Testes *.test.ts junto dos serviços
 ├── model/
 │   └── __fixtures__/                         # Fixtures de entidades puras do domínio
-├── usecase/
-│   └── __tests__/                            # Testes unitários puros de Use Cases
+├── usecase/                                  # Testes *.test.ts junto dos casos de uso
 ├── view/
 │   ├── components/
-│   │   └── __tests__/
-│   │       └── primary-button.test.tsx       # Testes de componentes visuais reutilizáveis
-│   └── __tests__/                            # Testes de telas (*Screen.test.tsx)
-└── viewmodel/
-    └── __tests__/                            # Testes de apresentação e hooks (*ViewModel.test.ts)
+│   │   ├── MainTabBar.tsx
+│   │   ├── MainTabBar.test.tsx
+│   │   ├── PlaceholderScreen.tsx
+│   │   ├── PlaceholderScreen.test.tsx
+│   │   ├── primary-button.tsx
+│   │   └── primary-button.test.tsx
+│   └── ...                                   # Testes *Screen.test.tsx junto das telas
+└── viewmodel/                                # Testes *ViewModel.test.ts junto dos hooks
+tests/
+├── fixtures/                                 # Quando necessárias, fixtures compartilhadas
+└── pure-logic.test.ts                         # Exemplo sem módulo de produção associado
 ```
+
+A árvore indica a organização dos testes e dos arquivos de apoio quando necessários; não exige criar fixtures ou módulos de funcionalidades futuras. Testes de telas ficam na camada `view/`, fora de `src/app/`, para não serem interpretados como rotas pelo Expo Router.
 
 ### Convenções de Nomenclatura de Arquivos
 - **Lógica Pura, Use Cases e Infraestrutura:** Arquivos TypeScript em `kebab-case` sob a extensão `*.test.ts` (ex.: `timestamp-use-case.test.ts`, `system-clock-service.test.ts`).
 - **ViewModels (Hooks de Apresentação):** Arquivos TypeScript em `PascalCase` sob a extensão `*ViewModel.test.ts`, espelhando o módulo `*ViewModel.ts` (ex.: `TimestampViewModel.test.ts` para testar o hook `useTimestampViewModel`).
 - **Componentes e Telas React Native:** Arquivos TSX sob a extensão `*.test.tsx` (ex.: `TimestampScreen.test.tsx`, `primary-button.test.tsx`).
-- **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestamp-record.fixture.ts`).
+- **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestamp-record.fixture.ts`); fixtures compartilhadas entre camadas podem ficar em `tests/fixtures/`.
 
 ### Estrutura Interna das Suítes (Padrão AAA)
 Toda suíte deve ser organizada através dos blocos `describe`, `it` (ou `test`) com títulos expressivos em **Português Brasileiro (`pt-BR`)**, seguindo o ciclo **AAA (Arrange, Act, Assert)**:
@@ -276,7 +277,7 @@ Os exemplos a seguir utilizam as abstrações didáticas de carimbo de data/hora
 ### 8.1. Exemplo: Teste Unitário de Use Case com Stub de Serviço
 
 ```typescript
-// src/usecase/__tests__/timestamp-use-case.test.ts
+// src/usecase/timestamp-use-case.test.ts
 import { ValidationError } from "@/model/errors/domain-error";
 import type { IClockService } from "@/model/services/clock-service";
 import { TimestampUseCase } from "@/usecase/timestamp-use-case";
@@ -310,7 +311,7 @@ describe("TimestampUseCase", () => {
 ### 8.2. Exemplo: Teste de Hook de ViewModel com Dublê de Use Case
 
 ```typescript
-// src/viewmodel/__tests__/TimestampViewModel.test.ts
+// src/viewmodel/TimestampViewModel.test.ts
 import { renderHook, act } from "@testing-library/react-native";
 import { ValidationError } from "@/model/errors/domain-error";
 import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
@@ -368,7 +369,7 @@ describe("useTimestampViewModel", () => {
 ### 8.3. Exemplo: Teste de Componente Visual com Testing Library
 
 ```typescript
-// src/view/components/__tests__/primary-button.test.tsx
+// src/view/components/primary-button.test.tsx
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
 import { PrimaryButton } from "@/view/components/primary-button";

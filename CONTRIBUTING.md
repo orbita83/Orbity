@@ -578,7 +578,7 @@ O Orbity adota o padrão de Versionamento Semântico (**SemVer**), estruturado n
 Quando um componente de nível superior é incrementado, os componentes subordinados são reiniciados em zero (ex.: após `0.1.4`, uma nova funcionalidade resulta em `0.2.0`).
 
 **Alinhamento com versionamento Android:**
-A versão SemVer aprovada na governança reflete-se diretamente nos identificadores técnicos gerenciados pelo Expo e pelo ecossistema Android, conforme documentado em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md):
+A versão SemVer aprovada na governança reflete-se diretamente nos identificadores técnicos gerenciados pelo Expo e pelo ecossistema Android, conforme documentado em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md) e [`docs/08-distribution/versionamento-do-app.md`](docs/08-distribution/versionamento-do-app.md):
 - **`versionName` (`app.json` → `expo.version` e `package.json` → `version`):** Corresponde fielmente à versão pública `X.Y.Z` apresentada aos usuários e ao Google Play Console.
 - **`versionCode` (`app.json` → `expo.android.versionCode`):** Número inteiro estritamente incremental e monotônico crescente (ex.: `1`, `2`, `3`...), exigido pela Google Play para cada novo pacote gerado (AAB). O `versionCode` nunca retrocede, mesmo entre versões com mesmo SemVer ou correções de build.
 - **Consistência obrigatória:** Os manifestos técnicos do aplicativo somente são atualizados pela equipe no contexto da preparação da release, mantendo sincronia absoluta com a tag Git a ser gerada. Contribuidores em tarefas de desenvolvimento comuns não devem alterar os campos de versão em seus PRs individuais.

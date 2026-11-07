@@ -19,7 +19,7 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 | **Escrever ou refatorar código TS/React Native** | `RULES.md` |
 | **Criar/editar telas, UI, estilos ou componentes** | `design-system/README.md` (Seção 9), `01-principios.md`, `02-tokens.md`, `03-fundamentos.md`, `04-componentes/`, `05-padroes.md` e `06-acessibilidade.md` |
 | **Criar testes ou validar qualidade/CI/hooks** | `CONTRIBUTING.md` (Seções 2.4 e 3), `docs/06-quality/guia-testes.md`, `.github/workflows/ci.yml` e `scripts/verify-local-hooks.mjs` |
-| **Configurar identidade, build, assinatura ou distribuição Android** | `CONTRIBUTING.md` (Seção 4), `docs/08-distribution/README.md` e `docs/08-distribution/identidade-e-propriedade.md` |
+| **Configurar identidade, build, assinatura ou distribuição Android** | `CONTRIBUTING.md` (Seção 4), `docs/08-distribution/README.md`, `docs/08-distribution/identidade-e-propriedade.md` e `docs/08-distribution/versionamento-do-app.md` |
 
 ---
 

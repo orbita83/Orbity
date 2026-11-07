@@ -5,6 +5,7 @@ Esta pasta reúne a documentação de build, assinatura e distribuição Android
 | Documento | Conteúdo | Origem |
 | --------- | -------- | ------ |
 | [`identidade-e-propriedade.md`](./identidade-e-propriedade.md) | Identidade de distribuição do aplicativo, propriedade das contas Expo/EAS e Google Play Console, responsáveis, controle de acesso e continuidade administrativa. | T0009 — [#75](https://github.com/orbita83/Orbity/issues/75) |
+| [`versionamento-do-app.md`](./versionamento-do-app.md) | Identidade técnica configurada no `app.json`, finalidade dos campos de versão, estratégia do `versionCode` e como atualizar as versões. | T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) |
 | [`CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases`](../../CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases) | Política de governança de versões, releases, critérios de corte para `v0.1.0`, tags Git anotadas, aprovação e hotfixes. | T0014 — [#80](https://github.com/orbita83/Orbity/issues/80) |
 
 ## Orientações

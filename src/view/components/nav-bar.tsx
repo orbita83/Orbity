@@ -152,8 +152,8 @@ const createStyles = (theme: OrbityTheme) =>
     },
     tabRow: {
       flexDirection: "row",
-      justifyContent: "space-around",
       alignItems: "center",
+      gap: theme.space.sm,
       minHeight: theme.navbar.minHeight,
       paddingVertical: theme.space.sm,
     },
@@ -165,7 +165,6 @@ const createStyles = (theme: OrbityTheme) =>
       borderWidth: theme.navbar.focusWidth,
       borderColor: "transparent",
       flex: 1,
-      marginHorizontal: 2,
     },
     focusContainerActive: {
       borderColor: theme.navbar.focusColor,
@@ -175,8 +174,9 @@ const createStyles = (theme: OrbityTheme) =>
       borderRadius: theme.radius.md,
       justifyContent: "center",
       minHeight: theme.navbar.minHeight,
-      paddingHorizontal: 2,
-      paddingVertical: 4,
+      minWidth: theme.target.minSize,
+      paddingHorizontal: theme.primitive["space-4"],
+      paddingVertical: theme.primitive["space-4"],
     },
     tabItemPressed: {
       opacity: 0.7,
@@ -184,9 +184,9 @@ const createStyles = (theme: OrbityTheme) =>
     iconIndicator: {
       alignItems: "center",
       borderRadius: theme.radius.lg,
-      height: 32,
+      height: theme.primitive["space-32"],
       justifyContent: "center",
-      minWidth: 56,
+      minWidth: theme.target.minSize,
       paddingHorizontal: theme.space.sm,
     },
     iconIndicatorActive: {
@@ -194,17 +194,15 @@ const createStyles = (theme: OrbityTheme) =>
     },
     label: {
       ...theme.font.label,
-      fontSize: 12,
-      lineHeight: 16,
-      marginTop: 2,
+      marginTop: theme.primitive["space-4"],
       textAlign: "center",
     },
     labelActive: {
       color: theme.navbar.itemActive,
-      fontWeight: "700",
+      fontWeight: theme.font.title.fontWeight,
     },
     labelInactive: {
       color: theme.navbar.itemInactive,
-      fontWeight: "500",
+      fontWeight: theme.font.label.fontWeight,
     },
   });
