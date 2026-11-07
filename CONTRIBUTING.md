@@ -552,7 +552,7 @@ O aplicativo utiliza identificadores internos de versão, incluindo `versionName
 
 O `versionName` representa a versão apresentada ao usuário, enquanto o `versionCode` identifica internamente a evolução dos pacotes Android.
 
-O identificador do pacote Android, a propriedade das contas Expo/EAS e Google Play Console e os responsáveis por builds, credenciais e publicação estão registrados em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md).
+O identificador do pacote Android, a propriedade das contas Expo/EAS e Google Play Console e os responsáveis por builds, credenciais e publicação estão registrados em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md). A finalidade de cada campo de versão, a estratégia do `versionCode` e o procedimento de atualização estão em [`docs/08-distribution/versionamento-do-app.md`](docs/08-distribution/versionamento-do-app.md).
 
 O gerenciamento desses identificadores deverá respeitar o processo de geração e distribuição de builds definido pela equipe.
 

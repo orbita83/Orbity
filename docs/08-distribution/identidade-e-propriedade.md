@@ -232,7 +232,7 @@ As decisões abaixo foram informadas pela equipe em 07/11/2026 e formalizadas pe
 
 | Tarefa | Situação em relação à T0009 | Pendências restantes |
 | ------ | --------------------------- | -------------------- |
-| T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) | Liberada: pacote Android, nome e slug aprovados. | — |
+| T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) | Liberada: pacote Android, nome e slug aprovados. Configuração descrita em [`versionamento-do-app.md`](./versionamento-do-app.md). | — |
 | T0011 — [#77](https://github.com/orbita83/Orbity/issues/77) | Proprietário Expo/EAS aprovado. | Conta Expo de @MailsonSousa88 disponível para o projeto; T0010 integrada. |
 | T0013 — [#79](https://github.com/orbita83/Orbity/issues/79) | Tipo e titular da conta Google Play e responsáveis pela publicação definidos. | Predecessora T0012 — [#78](https://github.com/orbita83/Orbity/issues/78). |
 
