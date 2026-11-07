@@ -7,7 +7,7 @@
 Este documento descreve como a identidade técnica e os campos de versão do Orbity estão configurados e como devem ser atualizados.
 
 - As decisões de identidade e propriedade (pacote Android, contas e responsáveis) estão registradas **somente** em [`identidade-e-propriedade.md`](./identidade-e-propriedade.md). Este documento aplica essas decisões e não as redefine.
-- A política geral de versões, releases e aprovação é responsabilidade da T0014 — [#80](https://github.com/orbita83/Orbity/issues/80). As regras de SemVer vigentes estão na [Seção 4.3 do `CONTRIBUTING.md`](../../CONTRIBUTING.md#43-política-de-versionamento).
+- A política geral de versões, releases e aprovação é responsabilidade da T0014 — [#80](https://github.com/orbita83/Orbity/issues/80). As regras de SemVer vigentes estão na [Seção 4.6 do `CONTRIBUTING.md`](../../CONTRIBUTING.md#46-política-de-versionamento-e-alinhamento-com-android).
 - A configuração do EAS (`eas.json`, perfis de build e vínculo com o projeto) é responsabilidade da T0011 — [#77](https://github.com/orbita83/Orbity/issues/77).
 
 ## 2. Configuração atual
@@ -24,7 +24,7 @@ Valores configurados pela T0010 em 07/11/2026.
 | `version` | `package.json` e `package-lock.json` | `0.1.0` | Equipe, 07/11/2026 |
 | `expo.android.versionCode` | `app.json` | `1` | Equipe, 07/11/2026 |
 
-A versão inicial `0.1.0` indica a fase de pré-lançamento. A versão `1.0.0` fica reservada para a primeira versão pública estável, cuja aprovação segue o processo de publicação do [`CONTRIBUTING.md`](../../CONTRIBUTING.md#4-processo-de-publicação).
+A versão `0.1.0` representa a primeira versão estável oficial do aplicativo resultante da conclusão do ÉPICO 0, cuja publicação segue o processo formal do [`CONTRIBUTING.md`](../../CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases).
 
 ## 3. Finalidade de cada campo
 
@@ -54,7 +54,7 @@ A versão inicial `0.1.0` indica a fase de pré-lançamento. A versão `1.0.0` f
 
 ## 5. Como atualizar as versões
 
-Os identificadores de versão são controlados pelo processo de publicação. Pull Requests comuns de desenvolvimento não devem alterá-los ([`CONTRIBUTING.md` — Seção 4.3](../../CONTRIBUTING.md#43-política-de-versionamento)).
+Os identificadores de versão são controlados pelo processo de publicação. Pull Requests comuns de desenvolvimento não devem alterá-los ([`CONTRIBUTING.md` — Seção 4.6](../../CONTRIBUTING.md#46-política-de-versionamento-e-alinhamento-com-android)).
 
 **Nova versão pública** (no Pull Request de publicação, depois que a equipe aprovar o número):
 
@@ -87,7 +87,7 @@ Se a T0011 propuser o gerenciamento remoto (`appVersionSource: remote`, com `aut
 ## 7. Referências
 
 - [Identidade e propriedade do aplicativo](./identidade-e-propriedade.md)
-- [`CONTRIBUTING.md` — Seção 4.3](../../CONTRIBUTING.md#43-política-de-versionamento)
+- [`CONTRIBUTING.md` — Seção 4.6](../../CONTRIBUTING.md#46-política-de-versionamento-e-alinhamento-com-android)
 - [Expo — Configuração do aplicativo](https://docs.expo.dev/versions/latest/config/app/)
 - [Expo — Versionamento de aplicativos](https://docs.expo.dev/build-reference/app-versions/)
 - [Android — Versionamento de aplicativos](https://developer.android.com/studio/publish/versioning)
