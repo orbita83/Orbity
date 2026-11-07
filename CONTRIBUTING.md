@@ -33,7 +33,7 @@ As regras descritas neste documento aplicam-se a todos os integrantes da equipe.
     - [4.1. Papel dos elementos no fluxo de publicação](#41-papel-dos-elementos-no-fluxo-de-publicação)
     - [4.2. Planejamento de versões e escopo](#42-planejamento-de-versões-e-escopo)
     - [4.3. Critérios para a primeira versão estável (v0.1.0)](#43-critérios-para-a-primeira-versão-estável-v010)
-    - [4.4. Fluxo development → main e congelamento](#44-fluxo-development--main-e-congelamento)
+    - [4.4. Fluxo development → main e congelamento](#44-fluxo-development-main-e-congelamento)
     - [4.5. Critérios de aprovação de releases](#45-critérios-de-aprovação-de-releases)
     - [4.6. Política de versionamento e alinhamento com Android](#46-política-de-versionamento-e-alinhamento-com-android)
     - [4.7. Convenções de Git tags e GitHub Releases](#47-convenções-de-git-tags-e-github-releases)
