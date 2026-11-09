@@ -109,7 +109,7 @@ A [documentação oficial da Expo](https://docs.expo.dev/accounts/account-types/
 
 - **Risco aceito:** somente o proprietário da conta acessa o projeto no painel da Expo e executa builds na nuvem. Os demais integrantes não recebem acesso por convite enquanto o projeto for de uma conta pessoal.
 - As credenciais da conta Expo **não** podem ser compartilhadas com outros integrantes ([Seção 8](#8-segurança-e-controle-de-acesso)).
-- O vínculo do repositório com o projeto EAS (`owner` e `extra.eas.projectId`) será configurado pela T0011, com a conta definida nesta seção.
+- O vínculo do repositório com o projeto EAS (`owner` e `extra.eas.projectId`) foi configurado pela T0011, com a conta definida nesta seção ([`eas-build.md`](./eas-build.md)).
 
 ### 4.4. Gatilhos de migração para organização
 
@@ -233,7 +233,7 @@ As decisões abaixo foram informadas pela equipe em 07/11/2026 e formalizadas pe
 | Tarefa | Situação em relação à T0009 | Pendências restantes |
 | ------ | --------------------------- | -------------------- |
 | T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) | Liberada: pacote Android, nome e slug aprovados. Configuração descrita em [`versionamento-do-app.md`](./versionamento-do-app.md). | — |
-| T0011 — [#77](https://github.com/orbita83/Orbity/issues/77) | Proprietário Expo/EAS aprovado. | Conta Expo de @MailsonSousa88 disponível para o projeto; T0010 integrada. |
+| T0011 — [#77](https://github.com/orbita83/Orbity/issues/77) | Liberada: proprietário Expo/EAS aprovado e T0010 integrada. Vínculo com o projeto `@mailsons/orbity` descrito em [`eas-build.md`](./eas-build.md). | — |
 | T0013 — [#79](https://github.com/orbita83/Orbity/issues/79) | Tipo e titular da conta Google Play e responsáveis pela publicação definidos. | Predecessora T0012 — [#78](https://github.com/orbita83/Orbity/issues/78). |
 
 ## 12. Referências

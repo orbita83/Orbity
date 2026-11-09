@@ -39,6 +39,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "df3e816f-9b5e-402f-ac46-f7c254a5132b"
+      }
+    },
+    "owner": "mailsons"
   }
 }
