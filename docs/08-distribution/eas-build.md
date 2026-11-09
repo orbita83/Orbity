@@ -6,7 +6,20 @@
 
 Este documento descreve a configuração local do EAS CLI e os perfis Android do Orbity. A identidade do aplicativo e o proprietário autorizado estão definidos em [`identidade-e-propriedade.md`](./identidade-e-propriedade.md); a identidade técnica e o versionamento local estão definidos em [`versionamento-do-app.md`](./versionamento-do-app.md).
 
-O EAS CLI e os perfis locais estão configurados, mas o vínculo externo com o projeto EAS ainda está pendente. A documentação disponível não confirma se o projeto já existe na conta autorizada de @MailsonSousa88. Por isso, `app.json` não declara `owner` nem `extra.eas.projectId`. Não execute builds ou comandos que criem/vinculem projeto até que o projeto existente, seu proprietário e seu ID sejam confirmados.
+O EAS CLI, os perfis Android e o vínculo com o projeto EAS autorizado estão configurados.
+
+## Projeto EAS vinculado
+
+| Item | Valor | Onde está configurado |
+| ---- | ----- | --------------------- |
+| Proprietário | Conta individual Expo de @MailsonSousa88 ([T0009 — Seção 4](./identidade-e-propriedade.md#4-propriedade-do-projeto-expoeas)) | `app.json` → `expo.owner` (`mailsons`) |
+| Projeto | `@mailsons/orbity` | `expo.owner` + `expo.slug` |
+| ID do projeto | `df3e816f-9b5e-402f-ac46-f7c254a5132b` | `app.json` → `expo.extra.eas.projectId` |
+| Pacote Android | `io.github.orbita83.orbity` | `app.json` → `expo.android.package` |
+
+Em 09/11/2026, o proprietário confirmou que o projeto ainda não existia na conta autorizada e o criou com `eas init`. O `projectId` identifica o projeto, mas não é uma credencial e não concede acesso a ele.
+
+Enquanto o projeto pertencer a uma conta individual, somente o proprietário executa builds na nuvem e acessa o painel da Expo ([T0009 — Seção 4.3](./identidade-e-propriedade.md#43-riscos-aceitos-e-regras)). Os demais integrantes podem revisar a configuração no repositório. Se outro integrante precisar desse acesso, aplicam-se os gatilhos de migração para organização ([T0009 — Seção 4.4](./identidade-e-propriedade.md#44-gatilhos-de-migração-para-organização)).
 
 ## EAS CLI
 
@@ -39,7 +52,7 @@ Os perfis estão definidos na raiz do repositório em [`eas.json`](../../eas.jso
 
 O perfil `development` requer `expo-dev-client` (`~57.0.20`, versão compatível indicada pelo Expo SDK 57 instalado). A primeira configuração dos perfis não gera builds. Builds reais e a configuração de assinatura são responsabilidade da T0012 — [#78](https://github.com/orbita83/Orbity/issues/78).
 
-Depois que o projeto autorizado estiver vinculado e a conta Expo estiver autenticada, estes comandos validam a configuração resolvida sem iniciar builds:
+Com a conta Expo autorizada autenticada, estes comandos validam a configuração resolvida sem iniciar builds:
 
 ```bash
 npx eas-cli config --platform android --profile development --json --non-interactive
@@ -47,7 +60,7 @@ npx eas-cli config --platform android --profile preview --json --non-interactive
 npx eas-cli config --platform android --profile production --json --non-interactive
 ```
 
-Após confirmar o vínculo EAS autorizado, os comandos previstos para solicitar cada perfil são:
+Os comandos previstos para solicitar cada perfil são:
 
 ```bash
 npx eas-cli build --platform android --profile development
@@ -61,9 +74,13 @@ Esses comandos não foram executados nesta atividade. O perfil production prepar
 
 `cli.appVersionSource` está definido como `local`. `app.json` continua sendo a fonte versionada para `expo.version` e `expo.android.versionCode`, conforme [`versionamento-do-app.md`](./versionamento-do-app.md). Não habilite `autoIncrement` nem gerenciamento remoto de versão sem uma decisão aprovada que atualize essa documentação.
 
-## Pendência para completar a T0011
+## Validação do vínculo
 
-O responsável pela conta Expo/EAS deve confirmar se já existe um projeto Orbity sob a conta autorizada. Se existir, conferir proprietário e slug `orbity` e registrar o ID real em `extra.eas.projectId` (e `owner`, quando aplicável). Se não existir, não criar um projeto sem autorização explícita da equipe. A Issue #77 só poderá ser considerada concluída após confirmar e validar o vínculo obrigatório.
+Validação realizada em 09/11/2026 com a conta autorizada autenticada:
+
+- `npx eas-cli project:info` retornou `@mailsons/orbity` com o ID registrado no `app.json`.
+- `npx eas-cli config` resolveu os três perfis para Android com o pacote `io.github.orbita83.orbity`, `version` `0.1.0`, `versionCode` `1` e credenciais gerenciadas pelo EAS (`credentialsSource: remote`).
+- Nenhum build foi iniciado e nenhuma credencial de assinatura foi criada. Esses passos pertencem à T0012 — [#78](https://github.com/orbita83/Orbity/issues/78).
 
 ## Referências
 
