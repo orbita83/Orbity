@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
 import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
 import { themes, type OrbityTheme } from "../theme/tokens";
 
@@ -34,7 +34,7 @@ export const DEFAULT_NAV_TABS: readonly NavTabItem[] = [
   {
     id: "cosmos",
     label: "Cosmos",
-    iconSymbol: "auto_awesome",
+    iconSymbol: "star",
     accessibilityHint: "Acessa o mapa de constelações e evolução positiva",
   },
   {
@@ -61,6 +61,19 @@ export const NavBar = ({
   tabs = DEFAULT_NAV_TABS,
 }: NavBarProps) => {
   const [focusedTabId, setFocusedTabId] = useState<NavTabId | null>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    AccessibilityInfo.isReduceMotionEnabled?.()
+      .then((enabled) => mounted && setReduceMotion(enabled))
+      .catch(() => undefined);
+    const subscription = AccessibilityInfo.addEventListener?.("reduceMotionChanged", setReduceMotion);
+    return () => {
+      mounted = false;
+      subscription?.remove();
+    };
+  }, []);
 
   // Ocultação dinâmica durante o Modo Foco (F2) ou Seleção Múltipla (F6)
   if (!visible) {
@@ -95,16 +108,13 @@ export const NavBar = ({
                 onBlur={() => setFocusedTabId(null)}
                 style={({ pressed }) => [
                   styles.tabItem,
+                  isActive && styles.tabItemActive,
                   pressed && styles.tabItemPressed,
+                  pressed && !reduceMotion && styles.tabItemPressedScale,
                 ]}
               >
-                {/* Indicador visual ativo (Pill) e Ícone Material Symbols */}
-                <View
-                  style={[
-                    styles.iconIndicator,
-                    isActive && styles.iconIndicatorActive,
-                  ]}
-                >
+                {/* Na 1.2 o indicador ativo ocupa a aba inteira; o ícone fica centralizado. */}
+                <View style={styles.iconIndicator}>
                   <MaterialSymbol
                     name={tab.iconSymbol}
                     filled={isActive}
@@ -140,14 +150,11 @@ const createStyles = (theme: OrbityTheme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.navbar.bg,
-      borderTopColor: theme.componentOverrides?.navbarBorder ?? theme.primitive["neutral-200"],
+      borderTopColor: theme.componentOverrides?.navbarBorder ?? theme.navbar.border,
       borderTopWidth: 1,
+      boxShadow: theme.navbar.shadow,
       elevation: theme.navbar.elevation,
       paddingHorizontal: theme.space.sm,
-      shadowColor: theme.primitive["neutral-900"],
-      shadowOffset: { width: 0, height: -2 },
-      shadowOpacity: 0.06,
-      shadowRadius: 4,
       width: "100%",
     },
     tabRow: {
@@ -159,7 +166,7 @@ const createStyles = (theme: OrbityTheme) =>
     },
     focusContainer: {
       borderRadius:
-        theme.radius.md +
+        theme.navbar.indicatorRadius +
         theme.navbar.focusOffset +
         theme.navbar.focusWidth,
       borderWidth: theme.navbar.focusWidth,
@@ -171,26 +178,27 @@ const createStyles = (theme: OrbityTheme) =>
     },
     tabItem: {
       alignItems: "center",
-      borderRadius: theme.radius.md,
+      borderRadius: theme.navbar.indicatorRadius,
       justifyContent: "center",
       minHeight: theme.navbar.minHeight,
       minWidth: theme.target.minSize,
       paddingHorizontal: theme.primitive["space-4"],
       paddingVertical: theme.primitive["space-4"],
     },
+    tabItemActive: {
+      backgroundColor: theme.navbar.indicatorBg,
+    },
     tabItemPressed: {
-      opacity: 0.7,
+      opacity: theme.motion.opacityPressed,
+    },
+    tabItemPressedScale: {
+      transform: [{ scale: theme.motion.scalePressed }],
     },
     iconIndicator: {
       alignItems: "center",
-      borderRadius: theme.radius.lg,
       height: theme.primitive["space-32"],
       justifyContent: "center",
       minWidth: theme.target.minSize,
-      paddingHorizontal: theme.space.sm,
-    },
-    iconIndicatorActive: {
-      backgroundColor: theme.navbar.indicatorBg,
     },
     label: {
       ...theme.font.label,
