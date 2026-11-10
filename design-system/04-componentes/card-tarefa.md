@@ -19,7 +19,7 @@ Origem no sistema base: listas e cards do Material 3. Situação: Adaptado. O pa
 1. Container com `color.surface`, `radius.lg`, `elevation.card` e padding `space.md`.
 2. Indicador circular de conclusão com dimensão visual `space-24` (24 dp) e alvo interativo mínimo `target.min-size` (48 dp). `radius.md` (12 dp) corresponde à metade do diâmetro visual de 24 dp e produz a geometria circular indicada pelo padrão F5.
 3. Título escalável em `font.body`, sem truncamento; quando concluído, recebe tachado conforme F5.
-4. Prazo opcional como texto fornecido pelo chamador, em `font.label`; o componente não interpreta datas.
+4. Prazo opcional como texto fornecido pelo chamador, em `font.label`; o componente não interpreta datas. Desde a 1.2, o formato recomendado é dia/mês, ponto médio e intervalo de horário: "19/10 · 08:00–09:00" (traço meia-risca entre os horários).
 5. Controle de opções com reticências e alvo mínimo de 48 dp. O componente chama `onOptionsPress`; a abertura e o conteúdo do menu pertencem ao chamador.
 
 ## Variantes
@@ -43,7 +43,7 @@ Os temas claro e escuro preservam os mesmos papéis semânticos. A conclusão é
 
 O estilo atual ainda usa `focus.ring-width` (2 dp) como espessura do contorno do checkbox, mas F5 não aprova esse token para esse papel. Não há decisão aprovada nem token específico para essa espessura; o uso permanece como pendência e precisa de decisão do grupo.
 
-`motion.duration.short` está documentado como 100 ms em `02-tokens.md`, mas ainda não está disponível no tema. Por isso, o Card aplica o tachado sem animação; o feedback sutil previsto em F5 depende de expor o token no tema e definir o tratamento visual.
+`motion.duration.short` está documentado como 100 ms em `02-tokens.md` e, desde a 1.2, exposto no tema como `theme.motion.durationShort`. Por isso, o Card aplica o tachado sem animação; o feedback sutil previsto em F5 depende de expor o token no tema e definir o tratamento visual.
 
 ## Acessibilidade
 
@@ -60,9 +60,9 @@ O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Na
 ## Lacunas registradas
 
 - Não há token próprio ou decisão aprovada para a espessura do contorno do checkbox; a definição permanece pendente.
-- `motion.duration.short` (100 ms) existe na documentação, mas não está exposto no tema; o tachado é instantâneo e o feedback sutil animado permanece pendente.
+- `motion.duration.short` (100 ms) está exposto no tema desde a 1.2, mas o tachado continua instantâneo; o feedback sutil animado permanece pendente.
 - O protótipo mostra um contorno arredondado externo, mas esta implementação não adiciona contorno, conforme escopo aprovado.
-- `elevation.card` não tem representação visual uniforme entre Android, iOS e Web com os tokens disponíveis. Não foram inventadas sombras adicionais.
+- `elevation.card` não tem representação visual uniforme entre Android, iOS e Web. A 1.2 não criou sombra para o card: no cósmico, a separação vem do gradiente e do contorno `cosmicBorders.card`.
 - A tipografia manuscrita aparente no protótipo não tem fonte ou token aprovado; o título usa `font.body`.
 - O tratamento tipográfico do prazo, prazos vencidos e formatação de datas não foi definido além de receber texto do chamador.
 - O conteúdo do menu e as ações disponíveis não estão especificados; a abertura é delegada a `onOptionsPress`.
@@ -72,3 +72,10 @@ O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Na
 ## Código
 
 A implementação está em [card-tarefa.tsx](../../src/view/components/card-tarefa.tsx), as histórias em [card-tarefa.stories.tsx](../../src/view/components/card-tarefa.stories.tsx), e os tokens consumidos vêm de [tokens.ts](../../src/view/theme/tokens.ts).
+
+## Mudanças da 1.2
+
+- No cósmico, o alvo é gradiente `cosmicGradients.card` (`#141332` → `#0D0E26`) com contorno de 1 dp `cosmicBorders.card` (`#232044`), sem brilho em volta do card nem do checkbox.
+- Formato de prazo "19/10 · 08:00–09:00".
+
+**Implementação pendente:** `card-tarefa.tsx` continua com superfície sólida `color.surface-variant` até existir um componente de gradiente.

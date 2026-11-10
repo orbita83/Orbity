@@ -2,6 +2,19 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
+## 1.2.0 — em preparação
+
+- **Issue #111:** incorporação das mudanças validadas no protótipo navegável de alta fidelidade das telas de Início e Tarefas (09/11/2026), construído a partir dos wireframes do Excalidraw e revisado pela equipe. Esta versão depende da 1.1.0, também em preparação; as duas podem ser publicadas em sequência ou consolidadas.
+- **Regra visual:** destaque por superfície, borda e cor sólida, nunca por brilho. O único brilho permitido é `shadow.glow-planet`, na ilustração do planeta.
+- **Tokens novos:** `color.border-subtle`, `color.scrim`, sombras `shadow.bar`, `shadow.bar-top`, `shadow.sheet`, `shadow.button`, `shadow.modal` e `shadow.glow-planet`, raios `radius.sheet` (24) e `radius.xl` (28), medidas `size.progress-height` (20), `size.handle-width` × `size.handle-height` (40 × 5) e `size.achievement-badge` (60), `font.streak` (64/64, 700), `motion.scale-pressed` (0,96), `motion.opacity-pressed` (0,8) e parâmetros do planeta (volta em 24 s, pulso em 4 s). Tokens de componente `sheet.*`, `progress.*` e `achievement.*`; gradientes cósmicos exportados em `cosmicGradients`.
+- **Correção de contraste:** `color.on-surface-variant` no tema claro passa de `neutral-500` (`#6B7280`, 4,39:1 sobre `surface-variant`, reprovado) para o novo primitivo `neutral-600` (`#5F6673`, 5,25:1 sobre `surface-variant` e 5,78:1 sobre `surface`). Consumidores do tema claro veem o texto secundário levemente mais escuro.
+- **NavBar:** indicador ocupando a aba inteira, fio `color.border-subtle` e `shadow.bar` no lugar da linha lavanda do cósmico, glifo `star` para Cosmos (antes `auto_awesome`; Rotinas mantém `autorenew`) e pressionado com escala e opacidade. Implementado em `nav-bar.tsx`. No tema claro, o fio superior passa de `neutral-200` para `color.border-subtle`.
+- **PrimaryButton:** `shadow.button` e pressionado com escala e opacidade, resolvendo a lacuna `button.bg-pressed`. Implementado em `primary-button.tsx`; o gradiente continua pendente de um componente de gradiente.
+- **Movimento reduzido:** hook `useReduceMotion` desliga a escala do toque na navbar e no botão.
+- **Documentação de componentes:** FilterChips em colunas de largura igual; CardTarefa com gradiente cósmico e prazo "19/10 · 08:00–09:00"; painel com alça, raio, fio e sombra definidos; PlanetStreakView com os parâmetros do spike. Novos: `ProgressBar`, `AchievementBadge`, `FormFields`, `ContextualActionBar` e `Modal` (documentados, ainda sem implementação).
+- **Padrões:** Progresso de hoje conta tarefas e rotinas concluídas ("1 / 25") em vez de minutos ("15 / 25 min"), com a porcentagem fora da barra; conquistas do painel sem rótulo de dias e com nome acessível de posição e estado; detalhe da conquista como modal com "✕"; seleção múltipla com cabeçalho de contador e barra de ações no lugar da navbar; telas sem barra de rolagem visível.
+- **Decisões abertas, registradas como lacunas:** tipos de conquista além de dias de sequência e se conquistas dão estrelas; carrossel automático com pausa ou rolagem pelo dedo; desenho da confirmação de exclusão em lote e da sessão de foco ativa; implementação dos gradientes, chips em grade, card com gradiente e dos novos componentes.
+
 ## 1.1.0 — em preparação
 
 - Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA antes da conclusão da versão. As entregas e seus resultados serão registrados conforme forem integrados.

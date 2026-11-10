@@ -26,12 +26,15 @@ Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais
 | `color.on-action` sobre `color.action` | Escuro | `neutral-900` (`#1B1B1F`) sobre `purple-400` (`#C084FC`) | **6,50:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.on-surface` sobre `color.surface` | Claro | `neutral-900` (`#1B1B1F`) sobre `neutral-0` (`#FFFFFF`) | **17,17:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.on-surface` sobre `color.surface` | Escuro | `neutral-0` (`#FFFFFF`) sobre `neutral-900` (`#1B1B1F`) | **17,17:1** | 4,5:1 | **Aprovado** | Adaptado |
-| `color.on-surface-variant` sobre `color.surface` | Claro | `neutral-500` (`#6B7280`) sobre `neutral-0` (`#FFFFFF`) | **4,79:1** | 4,5:1 | **Aprovado** | Adaptado |
+| `color.on-surface-variant` sobre `color.surface` | Claro | `neutral-600` (`#5F6673`) sobre `neutral-0` (`#FFFFFF`) | **5,78:1** | 4,5:1 | **Aprovado** (1.2) | Adaptado |
+| `color.on-surface-variant` sobre `color.surface-variant` | Claro | `neutral-600` (`#5F6673`) sobre `neutral-100` (`#F3F4F6`) | **5,25:1** | 4,5:1 | **Aprovado** (1.2) | Novo |
 | `color.on-surface-variant` sobre `color.surface` | Escuro | `neutral-200` (`#E5E7EB`) sobre `neutral-900` (`#1B1B1F`) | **13,46:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.error` sobre `color.surface` | Claro | `error-500` (`#EF4444`) sobre `neutral-0` (`#FFFFFF`) | **3,76:1** | 4,5:1 | **Reprovado para texto comum** *(aprovado para texto grande ≥ 24 px ou ≥ 18,67 px em negrito e ícones/elementos ≥ 3,0:1)* | Adaptado |
 | `color.error` sobre `color.surface` | Escuro | `error-500` (`#EF4444`) sobre `neutral-900` (`#1B1B1F`) | **4,56:1** | 4,5:1 | **Aprovado** | Adaptado |
 | `color.focus` sobre `color.surface` | Claro | `blue-600` (`#4F46E5`) sobre `neutral-0` (`#FFFFFF`) | **6,29:1** | 3,0:1 | **Aprovado** | Adaptado |
 | `color.focus` sobre `color.surface` | Escuro | `purple-400` (`#C084FC`) sobre `neutral-900` (`#1B1B1F`) | **6,50:1** | 3,0:1 | **Aprovado** | Adaptado |
+
+**Correção 1.2:** o valor anterior do texto secundário claro, `neutral-500` (`#6B7280`), dava 4,83:1 sobre `#FFFFFF` (a tabela 1.0 registrava 4,79:1), mas apenas **4,39:1** sobre `color.surface-variant` (`#F3F4F6`), reprovado para prazos e legendas dentro de cards e campos. O novo primitivo `neutral-600` (`#5F6673`) aprova os dois fundos. `tests/ods-theme.test.cjs` passou a verificar ambos.
 
 ### Regras de uso de cor e estados de erro
 
@@ -60,9 +63,22 @@ Os valores vêm da [variante cósmica](02-tokens.md#variante-cósmica). A tabela
 | Foco `focus` / painel `sheet`, `sheetEnd` | `#D4A3FF` | `#0D0D29`, `#08091D` | 9,47:1; 9,82:1 | 3:1 | Paradas aprovadas; adjacência e gradiente pendentes |
 | Foco `focus` / card `card`, `cardEnd` | `#D4A3FF` | `#141332`, `#0D0E26` | 8,97:1; 9,46:1 | 3:1 | Paradas aprovadas; adjacência e gradiente pendentes |
 
+#### Pares novos da 1.2
+
+| Uso e tokens | Primeiro plano | Fundo | Razão | Mínimo | Resultado |
+| --- | --- | --- | --- | --- | --- |
+| Porcentagem do progresso `text`, fora da barra / card `card` | `#FAF9FF` | `#141332` | 17,16:1 | 4,5:1 | Aprovado |
+| Alça do painel `sheet.handle` (`inactive`) / painel `sheet` | `#9990CB` | `#0D0D29` | 6,51:1 | 3:1 | Aprovado |
+| Contorno de conquista desbloqueada `unlocked` / preenchimento `action-subtle` | `#C47EFF` | `#232052` | 5,55:1 | 3:1 | Aprovado |
+| Contorno de conquista desbloqueada `unlocked` / card `card` | `#C47EFF` | `#141332` | 6,65:1 | 3:1 | Aprovado |
+| Ícone de conquista bloqueada `achievementPendingIcon` / card `card` | `#8C7BCB` | `#141332` | 4,97:1 | 3:1 | Aprovado |
+| Rótulo da aba ativa `text` / indicador `track` (aba inteira) | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
+
+A porcentagem do progresso fica **fora da barra**, ao lado do contador, desde a 1.2. Assim o texto nunca depende do preenchimento, cujo contraste varia com o avanço. O fio `color.border-subtle` é decorativo: a separação entre camadas também vem da diferença de superfície e da sombra, e nenhum controle depende dele para ser percebido (WCAG 1.4.11). O estado pressionado por escala e opacidade não altera texto nem fundo de forma persistente; a opacidade 0,8 é momentânea, durante o toque.
+
 **Correções em preparação para 1.1.0:** o hover anterior `#8252FC` resultava em 4,40:1 com `text`, abaixo de 4,5:1 para texto comum. A parada final anterior `#713BF5` resultava em 2,60:1 sobre `track`, abaixo de 3:1 quando o indicador gráfico precisa ser distinguido. A nova cor `#8648FA` foi escolhida para ambos os papéis; os resultados acima não comprovam os gradientes inteiros.
 
-**Pendências:** o modelo amostrado não substitui a avaliação da interpolação, composição e região efetiva em cada implementação. Texto sobre o planeta, brilho, imagem ou transparência exige avaliar a composição real. Os estados sem valor definido da alça e da ação pressionada ou desabilitada não possuem pares calculáveis; não infira cores. A navbar sólida do tema global possui fundo e item inativo verificados acima; outras composições exigem nova verificação. O estado desabilitado tem exceção aos critérios WCAG de contraste aplicáveis a componentes inativos, mas sua legibilidade deve ser considerada; não marque estados sem valores como aprovados. Mantenha texto ou outro indicador perceptível para progresso e seleção, além da cor.
+**Pendências:** o modelo amostrado não substitui a avaliação da interpolação, composição e região efetiva em cada implementação. Texto sobre o planeta, brilho, imagem ou transparência exige avaliar a composição real. A alça e a ação pressionada foram definidas na 1.2 (tabela acima e escala/opacidade); o estado desabilitado da ação ainda não possui par calculável; não infira cores. A navbar sólida do tema global possui fundo e item inativo verificados acima; outras composições exigem nova verificação. O estado desabilitado tem exceção aos critérios WCAG de contraste aplicáveis a componentes inativos, mas sua legibilidade deve ser considerada; não marque estados sem valores como aprovados. Mantenha texto ou outro indicador perceptível para progresso e seleção, além da cor.
 
 Os limiares e exceções são descritos em [WCAG 1.4.3 — Contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) e [WCAG 1.4.11 — Contraste de conteúdo não textual](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html). A verificação de cores sólidas não substitui os testes visuais e de acessibilidade em uma implementação real.
 
@@ -180,4 +196,8 @@ A interface do Orbity é flexível e se adapta às necessidades sensoriais e cog
   - Desativar animações complexas, como transições de constelações, efeitos de partículas, translações laterais longas e zooms.
   - Substituir transições de tela por transições instantâneas ou por um desvanecimento suave de opacidade (*crossfade*) com duração ultra curta (`motion.duration.short` de 100 ms ou 0 ms).
   - Manter feedback de interação instantâneo para preservar a percepção de resposta tátil da interface sem deslocamento espacial. (Adaptado)
+  - Desligar a escala `motion.scale-pressed` e manter apenas `motion.opacity-pressed` no toque; o hook `useReduceMotion` (`src/view/theme/use-reduce-motion.ts`) expõe a preferência aos componentes. (Novo, 1.2)
+  - Parar a rotação (24 s) e o pulso (4 s) do planeta, exibindo-o estático. (Novo, 1.2)
+- **Conteúdo em movimento automático (WCAG 2.2.2):** se o carrossel de conquistas girar sozinho, ofereça pausa visível; até a decisão aberta da 1.2, use rolagem pelo dedo. (Novo, 1.2)
+- **Modais (1.2):** confine o foco no modal, feche por "✕", `Escape` e gesto de voltar, anuncie o título e devolva o foco ao elemento de origem. (Novo)
 - **Prevenção de convulsões e reações vestibulares (WCAG 2.3.1):** É expressamente proibido qualquer componente com efeitos visuais que pisquem ou oscilem mais de 3 vezes por segundo (limiar de convulsões fotossensíveis). (Herdado)
