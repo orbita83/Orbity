@@ -22,7 +22,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 
 ## Anatomia
 
-1. **Container do grupo (`FilterChips`):** disposição horizontal em linha (`flexDirection: "row"`), quebra elástica (`flexWrap: "wrap"`), espaçamento horizontal e vertical uniforme com `space.sm` (8 dp), garantindo separação entre alvos adjacentes e integridade em ampliações de texto.
+1. **Container do grupo (`FilterChips`):** desde a 1.2, grade de colunas de largura igual que ocupa a linha inteira (`repeat(n, minmax(0, 1fr))` na Web; `flex: 1` com `minWidth: 0` por item no app), alinhada às bordas do botão Criar e dos cards, com espaçamento `space.sm` (8 dp). Com texto ampliado, os rótulos quebram linha dentro da coluna em vez de transbordar.
 2. **Item do chip (`FilterChipItem`):**
    - **Dimensões e alvo:** altura mínima `target.min-size` (48 dp) e largura mínima de 48 dp, assegurando a área de contato recomendada pelo Material 3 e critérios WCAG 2.5.5 / 2.5.8 sem depender de truncamento.
    - **Bordas e geometria:** cantos arredondados definidos por `radius.md` (12 dp), contorno com espessura `focus.ring-width` (2 dp) em `color.action`.
@@ -36,7 +36,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 | :--- | :--- | :--- | :--- | :--- |
 | **Não selecionado (Padrão)** | Fundo `color.surface` (`neutral-0` / branco), contorno `color.action` (`blue-600`), texto `color.on-surface` (`neutral-900`) | Fundo `color.surface` (`neutral-900` / escuro), contorno `color.action` (`purple-400` / roxo), texto `color.on-surface` (`neutral-0` / branco) | Seleciona o filtro ao toque/clique e atualiza a lista de tarefas | Papel `radio`, `{ checked: false }`, contraste 17,17:1 |
 | **Selecionado** | Fundo preenchido em `color.action` (`blue-600`), contorno `color.action`, texto `color.on-action` (`neutral-0` / branco), peso negrito (700) | Fundo preenchido em `color.action` (`purple-400` / roxo), contorno `color.action`, texto `color.on-action` (`neutral-900` / escuro), peso negrito (700) | Indica o filtro ativo; foco e toque repetido mantêm o estado selecionado | Papel `radio`, `{ checked: true }`, contraste 6,50:1 no escuro e 6,29:1 no claro |
-| **Pressionado** | Redução sutil de opacidade (0.85) para feedback tátil | Redução sutil de opacidade (0.85) para feedback tátil | Feedback visual imediato ao toque | Preserva legibilidade e área de toque |
+| **Pressionado** | Opacidade 0,85 sobre o conjunto; na 1.2, soma `motion.scale-pressed` (0,96) quando o movimento não é reduzido | Opacidade 0,85 sobre o conjunto; na 1.2, soma `motion.scale-pressed` (0,96) quando o movimento não é reduzido | Feedback visual imediato ao toque | Preserva legibilidade e área de toque |
 | **Foco (Teclado)** | Anel externo de 2 dp em `color.focus` com 2 dp de afastamento | Anel externo de 2 dp em `color.focus` com 2 dp de afastamento | Destaca o chip ativo durante a navegação por teclado (Tab) | Atende WCAG 2.4.7 e 2.4.11 |
 | **Desabilitado** | Opacidade reduzida, bloqueio de interação | Opacidade reduzida, bloqueio de interação | Bloqueia seleção | Anuncia `{ disabled: true }` |
 
@@ -56,3 +56,11 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 ## Código
 
 A implementação está em [filter-chips.tsx](../../src/view/components/filter-chips.tsx), o catálogo interativo em [filter-chips.stories.tsx](../../src/view/components/filter-chips.stories.tsx) e os tokens utilizados vêm de [tokens.ts](../../src/view/theme/tokens.ts).
+
+## Mudanças da 1.2
+
+- Colunas de largura igual ocupando a linha, alinhadas ao botão e aos cards (o protótipo mostrou chips desalinhados com larguras de conteúdo).
+- Selecionado sem brilho: o destaque vem do fundo sólido `color.action`, do contorno e do peso do rótulo.
+- A opacidade de 0,85 no pressionado continua coberta pelo teste de contraste do chip em `tests/ods-theme.test.cjs`.
+
+**Implementação pendente:** `filter-chips.tsx` ainda usa `flexWrap: "wrap"` com largura de conteúdo.

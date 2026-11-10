@@ -36,8 +36,8 @@
   4. Durante o arraste, o painel acompanha o dedo. A alça permite arrastar em qualquer posição de rolagem; puxar o conteúdo para baixo movimenta o painel somente quando o gesto começa no topo da lista. Se o conteúdo estiver rolado, o gesto permanece na lista.
   5. Swipe para baixo reduz um estágio; um arraste longo pode recolher completamente. Movimentos curtos retornam à posição de origem. Toque na alça alterna os estágios, e `Escape` recolhe o painel na prévia por teclado.
   6. A navbar permanece fixa e visível nos estágios recolhido, intermediário e expandido, com as abas **Início**, **Tarefas**, **Rotinas**, **Cosmos** e **Perfil**. Neste fluxo, somente a sessão de foco ativa oculta a navbar; a seleção múltipla de tarefas segue o padrão F6.
-  7. **Iniciar foco** apresenta cronômetro regressivo e a ação **Encerrar foco**. Ao encerrar, somente os minutos efetivamente decorridos são registrados no progresso diário; não se acrescenta uma duração fixa fictícia. O contador de sequência continua vinculado ao estado da ViewModel.
-  8. O estudante pode consultar os detalhes das conquistas, seus critérios, o resumo da última sessão e a explicação de funcionamento pelos respectivos cards.
+  7. **Iniciar foco** apresenta cronômetro regressivo e a ação **Encerrar foco**. Ao encerrar, somente os minutos efetivamente decorridos são registrados na sessão (card Última sessão); não se acrescenta uma duração fixa fictícia. Desde a 1.2, o **Progresso de hoje** não conta minutos: conta tarefas e rotinas concluídas sobre o total do dia. O contador de sequência continua vinculado ao estado da ViewModel.
+  8. O estudante pode consultar os detalhes das conquistas, seus critérios, o resumo da última sessão e a explicação de funcionamento pelos respectivos cards. No painel, as conquistas aparecem como [caixas de conquista](04-componentes/cartao-conquista.md) sem rótulo de dias; o detalhe abre como modal (F3).
   9. Configurações oferece a opção local de redução de movimento. As transições automáticas respeitam essa opção e a preferência do sistema. O conteúdo do painel admite rolagem quando a altura disponível ou o texto ampliado exigem.
 
 - **Estados:**
@@ -50,12 +50,14 @@
 | **Sessão em andamento** | Contador regressivo, ação Encerrar foco e indicação textual de foco; navbar oculta | `cosmicTokens.color.action`, `cosmicTokens.color.text`, `cosmicTokens.font.button` |
 | **Carregando** | Esqueletos dos cards do painel e estado de carregamento anunciado | `cosmicTokens.color.card`, `cosmicTokens.color.track`, `cosmicTokens.radius.card` |
 | **Vazio** | Progresso zerado, ação Iniciar foco disponível e apresentação acolhedora da jornada | `cosmicTokens.font.title`, `cosmicTokens.font.body`, `cosmicTokens.color.muted` |
-| **Sucesso** | Contador textual de minutos, como 15 / 25 min, e preenchimento proporcional exato da barra; conquistas identificáveis por texto e ícone | `cosmicTokens.color.progress`, `cosmicTokens.color.progressEnd`, `cosmicTokens.color.track`, `cosmicTokens.color.unlocked` |
+| **Sucesso** | Contador textual de tarefas e rotinas concluídas sobre o total do dia, como "1 / 25", porcentagem fora da barra e preenchimento proporcional exato (1.2; antes "15 / 25 min"); conquistas identificáveis por estado, ícone e nome acessível | `cosmicTokens.color.progress`, `cosmicTokens.color.progressEnd`, `cosmicTokens.color.track`, `cosmicTokens.color.unlocked` |
 
 - **Faça:** Preserve o planeta e o contador central como elementos vetoriais e textuais independentes de uma imagem de fundo; mantenha a sequência escalável e perceptível além da cor.
 - **Faça:** Mantenha a navbar visível nos três estágios do painel e ofereça abertura e recolhimento por gesto, toque e teclado, respeitando a redução de movimento.
 - **Faça:** Diferencie arrastar o painel de rolar os cards e preserve os limites dos três pontos de ancoragem.
 - **Faça:** Exponha nomes de controles, seleção das abas, valor textual do progresso e critérios das conquistas; oculte elementos decorativos do leitor de tela e siga [06-acessibilidade.md](06-acessibilidade.md).
+- **Faça (1.2):** Use a [barra de progresso](04-componentes/barra-progresso.md) com o contador "concluídas / total" e a porcentagem em texto ao lado da barra, nunca sobre o preenchimento.
+- **Faça (1.2):** Dê a cada caixa de conquista um nome acessível com posição e estado (ex.: "Conquista 2 de 6, desbloqueada"), sem rótulo visual de dias.
 - **Evite:** Exigir exclusivamente swipe, deixar o estudante sem saída, adicionar minutos fictícios ou introduzir mensagens e mecânicas punitivas.
 - **Evite:** Tratar a documentação do padrão ou a existência de histórias como comprovação de implementação e validação concluídas.
 
@@ -124,13 +126,13 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 ## 4. Gestão de Tarefas e Ações em Lote (F5, F6)
 
 - **Objetivo:** Filtrar, marcar conclusão pontual ou executar ações em massa (fixar, excluir).
-- **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.on-surface`).
+- **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.on-surface`; desde a 1.2, ver [barra-acoes-contextuais.md](04-componentes/barra-acoes-contextuais.md)).
 - **Passos:**
   1. Toque no círculo marca/desmarca a tarefa imediatamente.
   2. Abas filtram a visualização da lista.
   3. *Long-press* entra no modo de seleção múltipla (2.3); navbar é substituída por:
-     - Topo: "✕ · N selecionados" (`font.label`).
-     - Barra inferior: **Fixar**, **Marcar todas**, **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`).
+     - Topo: cabeçalho fixo "✕ · N selecionados" (`font.label`), com fio `color.border-subtle` e `shadow.bar-top` (1.2).
+     - Barra inferior: **Fixar**, **Marcar todas**, **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`), no lugar exato da navbar, com fio `color.border-subtle` e `shadow.bar` (1.2).
   4. "✕" cancela a seleção e restaura a navbar.
 - **Estados:**
 
@@ -140,6 +142,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Vazio** | Ilustração amigável e texto ("Nenhuma tarefa pendente") | `font.title`, `font.body`, `space.lg` |
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
+- **Faça (1.2):** Divida a linha de filtros em colunas de largura igual, alinhadas ao botão Criar e aos cards; escreva prazos no formato "19/10 · 08:00–09:00".
 - **Faça:** Exija confirmação antes de apagar itens em lote e garanta que ações destrutivas combinem ícone e texto com contraste acessível.
 - **Evite:** Mensagens ou alertas punitivos ao desmarcar tarefas concluídas.
 
@@ -170,12 +173,12 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 ## 6. Conquistas (F3)
 
 - **Objetivo:** Visualizar marcos alcançados, acompanhar critérios de desbloqueio de novas conquistas e compartilhar vitórias de estudo.
-- **Componentes:** Campo de busca ("Buscar conquistas") (`radius.md`, `space.sm`, `font.body`, `color.focus`), Grade/Lista de cards de conquistas (`radius.lg`, `elevation.card`, `space.md`), Modal de detalhes da conquista (**1.4**) (`radius.lg`, `elevation.card`, `space.lg`, `font.title`, `font.body`), Botão "Compartilhar" (`button.bg`, `button.label`, `button.radius`), Botão "✕" (Fechar) (`color.on-surface`, `font.label`).
+- **Componentes:** Campo de busca ("Buscar conquistas") (`radius.md`, `space.sm`, `font.body`, `color.focus`), Grade/Lista de cards de conquistas (`radius.lg`, `elevation.card`, `space.md`), Modal de detalhes da conquista (**1.4**) (desde a 1.2, [modal.md](04-componentes/modal.md): `radius.sheet`, `shadow.modal`, `color.scrim`, medalha de 120 dp em `radius.xl`, `space.lg`, `font.title`, `font.body`), Botão "Compartilhar" (`button.bg`, `button.label`, `button.radius`), Botão "✕" (Fechar) (`color.on-surface`, `font.label`).
 - **Passos:**
   1. Acessa a tela de Conquistas (**1.3**) a partir do painel expandido (**1.2**) ou da aba Perfil.
   2. Filtra ou busca conquistas pelo campo de busca.
   3. Toque em um card de conquista abre o modal de detalhes (**1.4**), exibindo título, descrição do critério, data de desbloqueio (ou progresso restante) e botão "Compartilhar".
-  4. Botão "Compartilhar" dispara o compartilhamento nativo; botão "✕" fecha o modal e retorna à lista.
+  4. Botão "Compartilhar" dispara o compartilhamento nativo; botão "✕" fecha o modal e retorna à lista. O modal também fecha com `Escape` e com o gesto de voltar, e devolve o foco à conquista de origem.
 - **Estados:**
 
 | Situação | O que vê | Tokens |
@@ -259,4 +262,10 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 2. **Modo Foco:** O padrão F1/F2 especifica cronômetro regressivo e encerramento no painel; a integração e a persistência das sessões ainda precisam ser entregues nesta branch.
 3. **Tarefas de Rotina vs. Gerais:** Definir se tarefas de rotinas aparecem ou não na aba geral de Tarefas.
 4. **Conquistas na ERS:** Fluxo desenhado precisa ser formalizado como requisito funcional.
-5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote. No padrão F1/F2, o progresso é expresso como minutos concluídos/meta, por exemplo, "15 / 25 min".
+5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote. Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
+6. **Decisões abertas da 1.2:**
+   - Tipos de conquista além de dias de sequência, e se conquistas dão estrelas como recompensa no Cosmos.
+   - Carrossel de conquistas no painel: giro automático com pausa visível ou rolagem pelo dedo. Até a decisão, use rolagem pelo dedo, que não exige controle de pausa (WCAG 2.2.2).
+   - Desenho da confirmação de exclusão em lote.
+   - Desenho da tela de sessão de foco ativa.
+   - Glifo de Rotinas: a 1.2 mantém `autorenew`; o alvo do protótipo não foi adotado.
