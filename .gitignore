@@ -20,6 +20,13 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# Assinatura Android e artefatos de build (T0012)
+*.keystore
+credentials.json
+credentials/
+*.apk
+*.aab
+
 # Metro
 .metro-health-check*
 
