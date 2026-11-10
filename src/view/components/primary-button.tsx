@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { themes, type OrbityTheme } from "../theme/tokens";
+import { useReduceMotion } from "../theme/use-reduce-motion";
 
 export type PrimaryButtonProps = {
   label: string;
@@ -18,6 +19,7 @@ export const PrimaryButton = ({
   theme = themes.light,
 }: PrimaryButtonProps) => {
   const [isFocused, setIsFocused] = useState(false);
+  const reduceMotion = useReduceMotion();
   const styles = createStyles(theme, isFocused);
 
   return (
@@ -31,7 +33,11 @@ export const PrimaryButton = ({
         onPress={onPress}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        style={styles.button}
+        style={({ pressed }) => [
+          styles.button,
+          pressed && styles.buttonPressed,
+          pressed && !reduceMotion && styles.buttonPressedScale,
+        ]}
       >
         <Text allowFontScaling style={styles.label}>
           {label}
@@ -63,6 +69,14 @@ const createStyles = (theme: OrbityTheme, isFocused: boolean) =>
       minWidth: theme.button.minWidth,
       paddingHorizontal: theme.space.md,
       paddingVertical: theme.space.sm,
+      boxShadow: theme.button.shadow,
+    },
+    // 1.2: o pressionado usa escala e opacidade, sem cor nova.
+    buttonPressed: {
+      opacity: theme.button.opacityPressed,
+    },
+    buttonPressedScale: {
+      transform: [{ scale: theme.button.scalePressed }],
     },
     label: {
       ...theme.font.label,

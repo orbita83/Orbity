@@ -1,7 +1,8 @@
-import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from "react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
 import { themes, type OrbityTheme } from "../theme/tokens";
+import { useReduceMotion } from "../theme/use-reduce-motion";
 
 export type NavTabId = "inicio" | "tarefas" | "rotinas" | "cosmos" | "perfil";
 
@@ -61,19 +62,7 @@ export const NavBar = ({
   tabs = DEFAULT_NAV_TABS,
 }: NavBarProps) => {
   const [focusedTabId, setFocusedTabId] = useState<NavTabId | null>(null);
-  const [reduceMotion, setReduceMotion] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    AccessibilityInfo.isReduceMotionEnabled?.()
-      .then((enabled) => mounted && setReduceMotion(enabled))
-      .catch(() => undefined);
-    const subscription = AccessibilityInfo.addEventListener?.("reduceMotionChanged", setReduceMotion);
-    return () => {
-      mounted = false;
-      subscription?.remove();
-    };
-  }, []);
+  const reduceMotion = useReduceMotion();
 
   // Ocultação dinâmica durante o Modo Foco (F2) ou Seleção Múltipla (F6)
   if (!visible) {
