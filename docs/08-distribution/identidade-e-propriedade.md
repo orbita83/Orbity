@@ -177,11 +177,11 @@ Administrar o repositório GitHub **não** confere, automaticamente, propriedade
 
 ## 8. Segurança e controle de acesso
 
-- É proibido versionar senhas, tokens de acesso, chaves privadas, keystores, arquivos de conta de serviço ou qualquer outra credencial no Git. O `.gitignore` já ignora `*.jks`, `*.p8`, `*.p12`, `*.key`, `*.pem` e arquivos `.env`; outros formatos de credencial devem ser avaliados pela T0012.
+- É proibido versionar senhas, tokens de acesso, chaves privadas, keystores, arquivos de conta de serviço ou qualquer outra credencial no Git. O `.gitignore` ignora `*.jks`, `*.keystore`, `credentials.json`, `credentials/`, `*.p8`, `*.p12`, `*.key`, `*.pem` e arquivos `.env`, além dos artefatos `*.apk` e `*.aab` (formatos avaliados pela T0012).
 - Os acessos são concedidos conforme o princípio do menor privilégio: cada integrante recebe apenas as permissões necessárias às suas responsabilidades.
 - Os acessos devem ser concedidos exclusivamente pelos mecanismos oficiais de convite e permissões de cada plataforma. O compartilhamento informal de senhas ou tokens entre integrantes é proibido.
 - As contas administrativas devem utilizar verificação em duas etapas.
-- As credenciais de assinatura Android deverão ser administradas por mecanismo seguro definido pela T0012, com responsável registrado na [Seção 7](#7-responsabilidades-e-governança).
+- As credenciais de assinatura Android são gerenciadas remotamente pelo EAS, com backup sob guarda do responsável registrado na [Seção 7](#7-responsabilidades-e-governança), conforme [`assinatura-e-builds-android.md`](./assinatura-e-builds-android.md) (T0012).
 
 ### 8.1. Solicitação e revogação de acesso
 
@@ -207,7 +207,7 @@ Com as decisões de 07/11/2026, cada serviço externo depende de um único integ
 
 - Os dois responsáveis devem manter a verificação em duas etapas e meios de recuperação atualizados nas próprias contas, sem registrá-los no repositório.
 - A saída ou indisponibilidade prolongada de um deles dispara o procedimento acima e, no caso da Expo, os gatilhos de migração da [Seção 4.4](#44-gatilhos-de-migração-para-organização).
-- As credenciais de assinatura devem ter backup seguro e recuperável, conforme a estratégia definida pela T0012, para que a perda de acesso a uma conta não impeça futuras atualizações do aplicativo.
+- As credenciais de assinatura devem ter backup seguro e recuperável, conforme a estratégia da [T0012](./assinatura-e-builds-android.md#5-continuidade-e-recuperação), para que a perda de acesso a uma conta não impeça futuras atualizações do aplicativo.
 
 ## 10. Registro de decisões
 
