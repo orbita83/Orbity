@@ -10,7 +10,7 @@ Este documento descreve como o Orbity assina e gera builds Android pelo EAS Buil
 - [`versionamento-do-app.md`](./versionamento-do-app.md): pacote Android, `version` e `versionCode`.
 - [`eas-build.md`](./eas-build.md): EAS CLI, vínculo com o projeto e perfis `development`, `preview` e `production`.
 
-Fora do escopo: submissão à Google Play (T0015 — [#81](https://github.com/orbita83/Orbity/issues/81)) e auditoria de requisitos e políticas da loja (T0013 — [#79](https://github.com/orbita83/Orbity/issues/79)).
+Fora do escopo: builds pelo GitHub Actions ([`build-sob-demanda.md`](./build-sob-demanda.md)), submissão à Google Play ([`submissao-google-play.md`](./submissao-google-play.md)), ambos da T0015 — [#81](https://github.com/orbita83/Orbity/issues/81), e auditoria de requisitos e políticas da loja (T0013 — [#79](https://github.com/orbita83/Orbity/issues/79)).
 
 ## 2. Pré-requisitos
 
@@ -116,7 +116,7 @@ O comando mostra o link do build e, ao final, um QR code para instalação. Para
 npx eas-cli build --platform android --profile production
 ```
 
-O artefato é um Android App Bundle (`.aab`) assinado com o keystore da Seção 3.2. **Não** responda afirmativamente a ofertas de envio à loja: a submissão pertence à T0015.
+O artefato é um Android App Bundle (`.aab`) assinado com o keystore da Seção 3.2. **Não** responda afirmativamente a ofertas de envio à loja: a submissão é manual e segue [`submissao-google-play.md`](./submissao-google-play.md).
 
 ### 6.3. Instalar e validar o build de desenvolvimento
 
