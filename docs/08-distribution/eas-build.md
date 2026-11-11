@@ -38,7 +38,7 @@ npx eas-cli login
 npx eas-cli whoami
 ```
 
-Não compartilhe credenciais nem grave `EXPO_TOKEN`, senhas ou sessões nos arquivos do repositório. Para CI, o token deve ser fornecido pelo mecanismo de segredos do ambiente, fora desta configuração local.
+Não compartilhe credenciais nem grave `EXPO_TOKEN`, senhas ou sessões nos arquivos do repositório. Para CI, o token é fornecido como secret de environment do GitHub ao workflow **EAS Build Android**, conforme [`build-sob-demanda.md`](./build-sob-demanda.md#62-expo_token).
 
 ## Perfis Android
 
