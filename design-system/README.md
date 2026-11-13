@@ -2,7 +2,7 @@
 
 ![Identidade visual do Orbity: planeta roxo com anéis ao lado do nome Orbity](images/assets/orbity-design-system.png)
 
-> **Versão:** 1.0.0 · **Integrantes:** Mailson Sousa, Cássio Sampaio, Mateus de Araujo, Vitor Lopes, Alisson Ramires · **Disciplinas:** IHC e PDM
+> **Versão:** 1.0.0 (1.1.0 e 1.2.0 em preparação; ver [CHANGELOG.md](CHANGELOG.md)) · **Integrantes:** Mailson Sousa, Cássio Sampaio, Mateus de Araujo, Vitor Lopes, Alisson Ramires · **Disciplinas:** IHC e PDM
 
 ## 1. Visão geral
 
@@ -33,13 +33,13 @@ O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroe
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Splash e onboarding           | Logo e slogan, carrossel de quatro etapas, indicadores de etapa, botão Próximo e botão Pular                       | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
 | Tela inicial                  | Cabeçalho, visualizador vetorial do planeta e sequência, painel de atividade e navbar de cinco abas | Parcial: `NavBar` implementada; composição da tela e visualizador especificados no padrão F1/F2, ainda sem integração nesta branch. |
-| Modo foco e progresso         | Painel arrastável, alça, botão Iniciar, progresso, conquistas e ajuda | Parcial: `PrimaryButton` implementado; painel, cronômetro e sessões especificados no padrão F1/F2, ainda sem implementação nesta branch. |
+| Modo foco e progresso         | Painel arrastável, alça, botão Iniciar, `ProgressBar`, `AchievementBadge` e ajuda | Parcial: `PrimaryButton` implementado; painel, cronômetro e sessões especificados no padrão F1/F2; `ProgressBar` e `AchievementBadge` documentados na 1.2, ainda sem implementação. |
 | Lista de tarefas              | Filtros Todos/Pendentes/Concluídas, botão Nova tarefa, cards, controles de conclusão e menu de opções              | Parcial: o botão primário está documentado e implementado como `PrimaryButton`; tela, filtros, cards e demais controles ainda estão planejados. |
-| Nova tarefa e confirmação     | Modal de formulário, campos de texto, seletores, botão Criar, mensagens de validação e modal de sucesso            | Parcial: pode reutilizar `PrimaryButton`; os demais componentes e a tela ainda estão planejados.                                                |
-| Seleção múltipla de tarefas   | Barra contextual, contador de seleção e ações Fixar, Marcar todas, Excluir e Cancelar                              | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
+| Nova tarefa e confirmação     | Modal de formulário, `FormFields`, seletores, botão Criar, mensagens de validação e `Modal` de sucesso            | Parcial: pode reutilizar `PrimaryButton`; `FormFields` e `Modal` documentados na 1.2; os demais componentes e a tela ainda estão planejados. |
+| Seleção múltipla de tarefas   | `ContextualActionBar` (cabeçalho com contador e barra de ações Fixar, Marcar todas, Excluir e Cancelar)            | Planejada em `05-padroes.md`; componente documentado na 1.2; não implementada em `src/app/`.                                                    |
 | Lista e criação de rotinas    | Cards de rotina, botão Nova rotina, formulário, seleção de dias e lista de tarefas reordenáveis                    | Parcial: pode reutilizar `PrimaryButton`; os demais componentes e as telas ainda estão planejados.                                              |
 | Detalhe da rotina             | Cards de turno, itens reordenáveis, controles de conclusão e botões Marcar como concluída e Desmarcar todos        | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
-| Lista e detalhe de conquistas | Campo de busca, cards de conquista, indicadores de progresso, modal de detalhes, botão Compartilhar e botão Fechar | Parcial: pode reutilizar `PrimaryButton`; os demais componentes e as telas ainda estão planejados.                                              |
+| Lista e detalhe de conquistas | Campo de busca, `AchievementBadge`, indicadores de progresso, `Modal` de detalhes, botão Compartilhar e botão Fechar | Parcial: pode reutilizar `PrimaryButton`; `AchievementBadge` e `Modal` documentados na 1.2; os demais componentes e as telas ainda estão planejados. |
 | Cosmos e detalhe da estrela   | Mapa de constelação, estrelas com estados perceptíveis além da cor, modal de detalhes e botão Fechar               | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
 | Perfil                        | Cabeçalho do estudante, cards de métricas e atalhos para Conquistas, Categorias e Ajustes                          | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
 
@@ -133,3 +133,4 @@ Para escolher as cores, aplique o mesmo tema selecionado pelo estudante em todas
 6. Não invente tokens, valores, componentes, estados, telas ou decisões. Se faltar uma definição, solicite esclarecimento ou registre a lacuna no documento adequado antes de implementar.
 7. Mantenha a experiência acolhedora, preserve o controle do estudante e não introduza mensagens ou mecânicas punitivas.
 8. Ao entregar uma interface, liste os tokens, componentes e padrões utilizados e informe quais validações foram realmente executadas.
+9. Crie destaque com superfície, borda e cor sólida. Não adicione brilho colorido em volta de componentes; o único brilho permitido é `shadow.glow-planet`, na ilustração do planeta (1.2).

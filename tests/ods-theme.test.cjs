@@ -17,6 +17,19 @@ assert.equal(themes.cosmic.button.bg, themes.cosmic.color.action);
 assert.equal(themes.cosmic.button.label, themes.cosmic.color['on-action']);
 assert.equal(themes.cosmic.navbar.focusColor, themes.cosmic.color.focus);
 
+// Versão 1.2: borda sutil na navbar, correção do texto secundário claro e novos tokens.
+assert.equal(themes.light.color['on-surface-variant'], '#5F6673');
+assert.equal(themes.cosmic.color['border-subtle'], 'rgba(250, 249, 255, 0.06)');
+assert.equal(themes.cosmic.componentOverrides.navbarBorder, themes.cosmic.color['border-subtle']);
+assert.equal(themes.cosmic.navbar.indicatorRadius, 16);
+assert.equal(themes.cosmic.sheet.radius, 24);
+assert.equal(themes.cosmic.radius.xl, 28);
+assert.equal(themes.cosmic.progress.height, 20);
+assert.equal(themes.cosmic.achievement.size, 60);
+assert.equal(themes.cosmic.font.streak.fontSize, 64);
+assert.equal(themes.cosmic.motion.scalePressed, 0.96);
+assert.equal(themes.cosmic.motion.opacityPressed, 0.8);
+
 function luminance(hex) {
   const channels = hex.match(/[\da-f]{2}/gi).map((channel) => parseInt(channel, 16) / 255)
     .map((channel) => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
@@ -35,6 +48,8 @@ for (const [foreground, background, minimum] of [
   [themes.cosmic.navbar.itemActive, themes.cosmic.navbar.indicatorBg, 4.5],
   [themes.cosmic.navbar.itemInactive, themes.cosmic.navbar.bg, 4.5],
   [themes.cosmic.color.focus, themes.cosmic.color['surface-variant'], 3],
+  [themes.light.color['on-surface-variant'], themes.light.color.surface, 4.5],
+  [themes.light.color['on-surface-variant'], themes.light.color['surface-variant'], 4.5],
 ]) assert.ok(contrast(foreground, background) >= minimum, `${foreground} / ${background}`);
 console.log('Contratos de tema e contrastes: OK');
 
