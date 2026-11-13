@@ -50,7 +50,7 @@ Os perfis estão definidos na raiz do repositório em [`eas.json`](../../eas.jso
 | `preview` | Validação interna sem ferramentas de desenvolvimento | APK para distribuição interna |
 | `production` | Preparação para distribuição pela Google Play | Android App Bundle (`.aab`) |
 
-O perfil `development` requer `expo-dev-client` (`~57.0.20`, versão compatível indicada pelo Expo SDK 57 instalado). A primeira configuração dos perfis não gera builds. Builds reais e a configuração de assinatura são responsabilidade da T0012 — [#78](https://github.com/orbita83/Orbity/issues/78).
+O perfil `development` requer `expo-dev-client` (`~57.0.20`, versão compatível indicada pelo Expo SDK 57 instalado). A primeira configuração dos perfis não gera builds. Builds reais e a configuração de assinatura são descritos em [`assinatura-e-builds-android.md`](./assinatura-e-builds-android.md) (T0012 — [#78](https://github.com/orbita83/Orbity/issues/78)).
 
 Com a conta Expo autorizada autenticada, estes comandos validam a configuração resolvida sem iniciar builds:
 
@@ -68,7 +68,7 @@ npx eas-cli build --platform android --profile preview
 npx eas-cli build --platform android --profile production
 ```
 
-Esses comandos não foram executados nesta atividade. O perfil production prepara um artefato para distribuição, mas não submete nem publica na loja.
+Esses comandos não foram executados na T0011; a execução e as evidências da T0012 estão em [`assinatura-e-builds-android.md`](./assinatura-e-builds-android.md). O perfil production prepara um artefato para distribuição, mas não submete nem publica na loja.
 
 ## Versionamento
 
@@ -80,7 +80,7 @@ Validação realizada em 09/11/2026 com a conta autorizada autenticada:
 
 - `npx eas-cli project:info` retornou `@mailsons/orbity` com o ID registrado no `app.json`.
 - `npx eas-cli config` resolveu os três perfis para Android com o pacote `io.github.orbita83.orbity`, `version` `0.1.0`, `versionCode` `1` e credenciais gerenciadas pelo EAS (`credentialsSource: remote`).
-- Nenhum build foi iniciado e nenhuma credencial de assinatura foi criada. Esses passos pertencem à T0012 — [#78](https://github.com/orbita83/Orbity/issues/78).
+- Nenhum build foi iniciado e nenhuma credencial de assinatura foi criada nessa validação. Esses passos foram executados na T0012 — [#78](https://github.com/orbita83/Orbity/issues/78) e estão registrados em [`assinatura-e-builds-android.md`](./assinatura-e-builds-android.md).
 
 ## Referências
 
