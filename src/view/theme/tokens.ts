@@ -45,6 +45,26 @@ export const cosmicColors = {
   progress: "#8A42FA",
   progressEnd: "#8648FA",
   unlocked: "#C47EFF",
+  // Tela Inicial (tabela de tokens aprovada em docs/designs/tela-inicial-base.md, Etapa 0.2a).
+  iconAccent: "#A56AF4",
+  streakFlame: "#FFB52E",
+  streakFlameCore: "#FFE48A",
+  achievementPendingIcon: "#8C7BCB",
+  achievementPendingBorder: "#2B2654",
+} as const;
+
+// Camadas da ilustração do planeta (02-tokens.md, variante cósmica). Decorativas: não carregam texto.
+export const planetColors = {
+  highlight: "#EBACFF",
+  light: "#BD6AFF",
+  surface: "#8840E9",
+  relief: "#5320B2",
+  shadow: "#39149A",
+  night: "#17075B",
+  border: "#D08BFF",
+  ring: "#A95BFA",
+  ringHighlight: "#E8B5FF",
+  glow: "#8236D9",
 } as const;
 
 // Gradientes da 1.2 (início → fim). O consumo depende de um componente de gradiente;
@@ -88,6 +108,12 @@ export const sizeTokens = {
   progressHeight: 20,
   handle: { width: 40, height: 4 },
   achievementBadge: 60,
+  headerHeight: 64,
+  iconLg: 32,
+} as const;
+
+export const borderTokens = {
+  widthThin: 1,
 } as const;
 
 export const sharedTokens = {
@@ -98,6 +124,7 @@ export const sharedTokens = {
   shadow: shadowTokens,
   motion: motionTokens,
   size: sizeTokens,
+  border: borderTokens,
 } as const;
 
 function createTheme(mode: ThemeMode, cosmic = false) {
@@ -134,6 +161,7 @@ function createTheme(mode: ThemeMode, cosmic = false) {
     shadow: sharedTokens.shadow,
     motion: sharedTokens.motion,
     size: sharedTokens.size,
+    border: sharedTokens.border,
     primitive: primitives,
     font: {
       title: {
@@ -159,6 +187,18 @@ function createTheme(mode: ThemeMode, cosmic = false) {
         fontSize: 64,
         fontWeight: "700",
         lineHeight: 64,
+      } satisfies TextStyle,
+      brand: {
+        fontFamily: "Roboto",
+        fontSize: 28,
+        fontWeight: "700",
+        lineHeight: 36,
+      } satisfies TextStyle,
+      caption: {
+        fontFamily: "Roboto",
+        fontSize: 12,
+        fontWeight: "400",
+        lineHeight: 16,
       } satisfies TextStyle,
     },
     button: {
