@@ -1,3 +1,7 @@
+import { InMemoryProfileRepository } from "@/infra/repositories/in-memory-profile-repository";
+import type { IProfileRepository } from "@/model/repositories/profile-repository";
+import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-cases";
+
 /**
  * Composition Root e Container de Injeção de Dependências (`src/DI/container.ts`).
  *
@@ -13,7 +17,9 @@
  * Registro de contratos de repositórios de domínio (`src/model/repositories/`).
  * Expandido conforme os épicos funcionais introduzem repositórios concretos em `src/infra/repositories/`.
  */
-export type RepositoryRegistry = Record<string, unknown>;
+export type RepositoryRegistry = {
+  profile: IProfileRepository;
+};
 
 /**
  * Registro de contratos de serviços de domínio (`src/model/services/`).
@@ -25,7 +31,9 @@ export type ServiceRegistry = Record<string, unknown>;
  * Registro de contratos de casos de uso (`src/usecase/`).
  * Expandido conforme os épicos funcionais introduzem Use Cases orquestrados sobre contratos de domínio.
  */
-export type UseCaseRegistry = Record<string, unknown>;
+export type UseCaseRegistry = {
+  profile: IProfileUseCases;
+};
 
 /**
  * Contrato que agrupa as abstrações de infraestrutura injetadas nos Use Cases.
@@ -160,9 +168,15 @@ export const appContainerDefinition: ContainerDefinition<
   ServiceRegistry,
   UseCaseRegistry
 > = Object.freeze({
-  repositories: () => ({}),
+  repositories: () => ({
+    profile: new InMemoryProfileRepository(),
+  }),
   services: () => ({}),
-  useCases: () => ({}),
+  useCases: (
+    infra: InfrastructureDependencies<RepositoryRegistry, ServiceRegistry>,
+  ) => ({
+    profile: new ProfileUseCases(infra.repositories.profile),
+  }),
 });
 
 /**
