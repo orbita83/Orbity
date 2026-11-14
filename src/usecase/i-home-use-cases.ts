@@ -1,6 +1,6 @@
-import type { HomeDashboardData } from "../model/entities/home-dashboard";
+import type { HomeSummary } from "@/model/entities/home-summary";
 
 export interface IHomeUseCases {
-  loadDashboard(): Promise<HomeDashboardData>;
-  completeFocusSession(minutesCompleted: number): Promise<HomeDashboardData>;
+  /** Sequência, progresso geral e disponibilidade do Modo Foco, lidos juntos. */
+  loadHome(): Promise<HomeSummary>;
 }

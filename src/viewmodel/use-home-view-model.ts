@@ -3,7 +3,7 @@ import type {
   AchievementMilestone,
   HomeDashboardData,
 } from "../model/entities/home-dashboard";
-import type { IHomeUseCases } from "../usecase/i-home-use-cases";
+import type { IPrototypeHomeUseCases } from "../usecase/i-prototype-home-use-cases";
 import { PROTOTYPE_HOME_DASHBOARD } from "../infra/repositories/in-memory-home-repository";
 import type { NavTabId } from "../view/components/nav-bar";
 
@@ -48,7 +48,7 @@ const NEXT_STAGE_MAP: Record<FocusSheetStage, FocusSheetStage> = {
 };
 
 export const useHomeViewModel = (
-  homeUseCases: IHomeUseCases,
+  homeUseCases: IPrototypeHomeUseCases,
   options: HomeViewModelOptions = {},
 ): HomeState & HomeActions => {
   const [dashboard, setDashboard] = useState<HomeDashboardData>(

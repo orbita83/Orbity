@@ -3,7 +3,7 @@ import { Animated, PanResponder, Platform, Pressable, StyleSheet, Switch, Text, 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path, Rect } from "react-native-svg";
 import { InMemoryHomeRepository, PROTOTYPE_HOME_DASHBOARD } from "../infra/repositories/in-memory-home-repository";
-import { HomeUseCases } from "../usecase/home-use-cases";
+import { PrototypeHomeUseCases } from "../usecase/prototype-home-use-cases";
 import type { HomeDashboardData } from "../model/entities/home-dashboard";
 import { useHomeViewModel, type FocusSheetStage } from "../viewmodel/use-home-view-model";
 import { useReducedMotion } from "../viewmodel/use-reduced-motion";
@@ -41,7 +41,7 @@ const PreviewStatusBar = () => (
 );
 
 const HomeScreen = ({ initialData, initialLoading = false, initialStage = "collapsed", initialFocusMode = false, previewWidth, previewHeight, showPreviewChrome = true }: HomeScreenProps = {}) => {
-  const homeUseCases = useMemo(() => new HomeUseCases(new InMemoryHomeRepository(initialData ?? PROTOTYPE_HOME_DASHBOARD)), [initialData]);
+  const homeUseCases = useMemo(() => new PrototypeHomeUseCases(new InMemoryHomeRepository(initialData ?? PROTOTYPE_HOME_DASHBOARD)), [initialData]);
   const vm = useHomeViewModel(homeUseCases, { initialData, initialLoading, initialStage, initialFocusMode });
   const window = useWindowDimensions();
   const insets = useSafeAreaInsets();
