@@ -735,6 +735,21 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 *   **Hooks:** não se aplica. `.husky/`, `scripts/` e `commitlint.config.cjs` não mudam.
 *   **PR:** aberto como rascunho contra a `development` (D20).
 
+### Notas da implementação (2026-11-14)
+
+O que mudou em relação ao plano acima, e por quê:
+
+*   **Ordem das remoções.** `home-dashboard.ts`, `i-home-repository.ts`, `in-memory-home-repository.ts` e `use-reduced-motion.ts` saíram na Etapa 7, e não nas Etapas 2, 3 e 6, porque o código antigo da tela ainda dependia deles e todo commit precisa compilar. Pelo mesmo motivo, os casos de uso e a ViewModel do protótipo ficaram com nomes temporários (`PrototypeHomeUseCases`, `PrototypeHomeViewModel`) entre as Etapas 4 e 7.
+*   **Arquivo a mais na infraestrutura.** `src/infra/database/persistence-error.ts` (`toDomainError`) concentra a conversão de falhas do driver em `PERSISTENCE_FAILURE`, usada pelo `DatabaseProvider` e pelo repositório SQLite.
+*   **Fila no executor do Expo.** O `ExpoSqlExecutor` passa as operações por uma fila, para nada se intercalar dentro de uma transação em lote.
+*   **Tempo da animação por parâmetro.** `useActivitySheetMotionViewModel` recebe também `timing` (`motion.durationMedium` e `motion.easingStandard`), para a ViewModel não importar tokens da View.
+*   **Durações com o `FilterChips`.** O seletor de duração reaproveita o `FilterChips` (`radiogroup`, setas do teclado na web). O componente ganhou a prop opcional `itemAccessibilityLabel`, para o nome acessível ser "15 minutos" e não "Filtrar por 15 minutos".
+*   **Textos de apoio.** Além da tabela da Etapa 7, entraram no `home-copy.ts` os textos aprovados pelo autor na implementação ("dia/dias de sequência", "Seu progresso", "Seu próximo passo começa aqui.", "Cada atividade concluída conta.", "Modo Foco", "Concentre-se no que importa.", "Iniciar foco", "Deslize para explorar") e três nomes acessíveis: "Duração do foco", "{completed} de {total} atividades concluídas" e "Carregando seu progresso".
+*   **Engrenagem removida.** Sem o diálogo de configurações (D16), o botão do cabeçalho saiu até existir a tela de Ajustes. A tela segue só a preferência de movimento reduzido do sistema.
+*   **Falha num recálculo depois de pronto.** A tela mantém o valor anterior, sem aviso; a próxima volta ao app tenta de novo.
+*   **Tokens (Etapa 0.2a).** Tabela aprovada com a regra da grade de 8 pontos: alça do painel 40 × 4 dp (antes 40 × 5), tokens novos `font.brand`, `font.caption`, `size.header-height`, `size.icon-lg`, `border.width-thin` e as cores `iconAccent`, `streakFlame` e `streakFlameCore`; botão desabilitado sólido só no tema cósmico (7,80:1). A sombra escura do número da sequência usa os raios `space.md` e `space.sm`, porque o ODS não tem token de sombra de texto.
+*   **Verificações não executadas localmente.** O `npm run build-storybook` foi bloqueado pela permissão da sessão e fica para o CI. O passo condicional do `ci.yml` (`build-essential` para o `better-sqlite3`) não foi adicionado, porque não deu para testar o `npm ci` no Linux; o `better-sqlite3` 13.2.0 publica binário pronto para linux-x64 no Node 22.
+
 --------------------------------------------------------------------------------
 
 *Drafted with EGM*
