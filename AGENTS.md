@@ -19,6 +19,7 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 | **Escrever ou refatorar código TS/React Native** | `RULES.md` |
 | **Criar/editar telas, UI, estilos ou componentes** | `design-system/README.md` (Seção 9), `01-principios.md`, `02-tokens.md`, `03-fundamentos.md`, `04-componentes/`, `05-padroes.md` e `06-acessibilidade.md` |
 | **Criar testes ou validar qualidade/CI/hooks** | `CONTRIBUTING.md` (Seções 2.4 e 3), `docs/06-quality/guia-testes.md`, `.github/workflows/ci.yml` e `scripts/verify-local-hooks.mjs` |
+| **Escrever, revisar ou implementar um design técnico (skills `/egm:*`)** | `docs/designs/README.md` e o design da funcionalidade em `docs/designs/` |
 | **Configurar identidade, build, assinatura ou distribuição Android** | `CONTRIBUTING.md` (Seção 4), `docs/08-distribution/README.md`, `docs/08-distribution/identidade-e-propriedade.md` e `docs/08-distribution/versionamento-do-app.md` |
 
 ---
@@ -45,7 +46,15 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 
 ---
 
-## 4. Checklist de Validação Local (Antes de Concluir ou Commitar)
+## 4. Designs Técnicos (EGM)
+
+EGM artifact directory: .dev/egm
+
+- **Design final:** `docs/designs/<funcionalidade>.md`, um por funcionalidade, registrado no índice `docs/designs/README.md`. É o único artefato EGM versionado.
+- **Artefatos de trabalho** (`concepts_brief.md`, `design_draft.md`, relatórios de revisão e de drift): ficam em `.dev/egm/`, fora do Git. A pasta comporta uma tarefa por vez. Limpe-a antes de iniciar outra.
+- Antes de implementar, o design deve estar em `docs/designs/` e ter passado por `/egm:egm-review`.
+
+## 5. Checklist de Validação Local (Antes de Concluir ou Commitar)
 
 Sempre que modificar código, tipos ou configurações, execute:
 

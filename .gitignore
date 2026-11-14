@@ -56,3 +56,6 @@ example
 
 # Agents
 .agents
+
+# EGM (artefatos de trabalho; o design final fica em docs/designs/)
+.dev/
