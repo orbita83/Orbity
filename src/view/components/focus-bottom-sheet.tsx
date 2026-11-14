@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { AchievementMilestone, DailyFocusProgress } from "../../model/entities/home-dashboard";
-import type { FocusSheetStage } from "../../viewmodel/use-home-view-model";
+import type { FocusSheetStage } from "../../viewmodel/PrototypeHomeViewModel";
 import { cosmicTokens as t } from "../theme/prototype-tokens-shim";
 import { CosmicIcon, type CosmicIconName } from "./cosmic-icon";
 import { GradientSurface } from "./gradient-surface";

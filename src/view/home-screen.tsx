@@ -5,9 +5,9 @@ import Svg, { Path, Rect } from "react-native-svg";
 import { InMemoryHomeRepository, PROTOTYPE_HOME_DASHBOARD } from "../infra/repositories/in-memory-home-repository";
 import { PrototypeHomeUseCases } from "../usecase/prototype-home-use-cases";
 import type { HomeDashboardData } from "../model/entities/home-dashboard";
-import { useHomeViewModel, type FocusSheetStage } from "../viewmodel/use-home-view-model";
+import { useHomeViewModel, type FocusSheetStage } from "../viewmodel/PrototypeHomeViewModel";
 import { useReducedMotion } from "../viewmodel/use-reduced-motion";
-import { useActivitySheetMotion } from "../viewmodel/use-activity-sheet-motion";
+import { useActivitySheetMotionViewModel } from "../viewmodel/ActivitySheetMotionViewModel";
 import { CosmicIcon } from "./components/cosmic-icon";
 import { CosmicStarfield } from "./components/cosmic-starfield";
 import { FocusBottomSheet } from "./components/focus-bottom-sheet";
@@ -61,11 +61,11 @@ const HomeScreen = ({ initialData, initialLoading = false, initialStage = "colla
   const sceneHeight = frameHeight - (vm.isNavBarVisible ? t.layout.navHeight + bottomInset : bottomInset);
   const statusHeight = Platform.OS === "web" ? showPreviewChrome ? t.layout.statusHeight : 0 : insets.top;
   const expandedTop = statusHeight + t.layout.compactHeaderHeight;
-  const sheetMotion = useActivitySheetMotion({
+  const sheetMotion = useActivitySheetMotionViewModel({
     stage: vm.sheetStage,
-    sceneHeight,
-    expandedTop,
-    reducedMotion,
+    geometry: { sceneHeight, expandedTop, collapsedHeight: 0 },
+    reduceMotion: reducedMotion,
+    timing: { duration: themes.cosmic.motion.durationMedium, easing: themes.cosmic.motion.easingStandard },
     onStageChange: vm.handleSetSheetStage,
   });
   const lastSession = vm.dashboard.lastSession;

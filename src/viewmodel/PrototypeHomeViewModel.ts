@@ -1,3 +1,4 @@
+// Temporário: ViewModel do protótipo, removida na Etapa 7 de docs/designs/tela-inicial-base.md.
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   AchievementMilestone,
