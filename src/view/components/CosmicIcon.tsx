@@ -1,11 +1,11 @@
 import Svg, { Circle, Path } from "react-native-svg";
-import { cosmicTokens as t } from "../theme/prototype-tokens-shim";
+import { cosmicColors, themes } from "../theme/tokens";
 
 export type CosmicIconName = "home" | "tasks" | "target" | "star" | "person" | "settings" | "timer" | "play" | "chevron" | "up" | "close" | "chart" | "help" | "rocket" | "trophy" | "flame" | "lock" | "check";
 
 type CosmicIconProps = { name: CosmicIconName; color?: string; size?: number; filled?: boolean };
 
-export const CosmicIcon = ({ name, color = t.color.icon, size = t.layout.iconSize, filled = false }: CosmicIconProps) => {
+export const CosmicIcon = ({ name, color = cosmicColors.iconAccent, size = themes.cosmic.navbar.iconSize, filled = false }: CosmicIconProps) => {
   const paths: Partial<Record<CosmicIconName, string>> = {
     home: "m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z",
     tasks: "M14 3H5v18h14V8Zm0 0v5h5M8 12h8M8 15h8M8 18h5",
@@ -28,7 +28,7 @@ export const CosmicIcon = ({ name, color = t.color.icon, size = t.layout.iconSiz
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" accessible={false}>
       {name === "target" ? <><Circle cx="11" cy="13" r="9" /><Circle cx="11" cy="13" r="5.5" /><Path d="m11 13 8-9m-1-2 1 3 3 1" /><Circle cx="11" cy="13" r="1.5" fill={color} stroke="none" /></> : null}
-      {name === "flame" ? <><Path d="M13 1c2 6-1 7 2 10 2-1 3-3 3-5 4 5 5 8 3 12a9 9 0 0 1-17-1c-1-4 1-7 4-10-1 4 1 5 2 5 3-3-1-7 3-11Z" fill={t.color.flame} stroke="none" /><Path d="M12 12c2 4-1 4 2 7 1-1 2-3 2-4 3 4 1 8-3 8-5 0-7-5-1-11Z" fill={t.color.flameCore} stroke="none" /></> : null}
+      {name === "flame" ? <><Path d="M13 1c2 6-1 7 2 10 2-1 3-3 3-5 4 5 5 8 3 12a9 9 0 0 1-17-1c-1-4 1-7 4-10-1 4 1 5 2 5 3-3-1-7 3-11Z" fill={cosmicColors.streakFlame} stroke="none" /><Path d="M12 12c2 4-1 4 2 7 1-1 2-3 2-4 3 4 1 8-3 8-5 0-7-5-1-11Z" fill={cosmicColors.streakFlameCore} stroke="none" /></> : null}
       {name === "settings" ? <Circle cx="12" cy="12" r="3" /> : null}
       {name === "help" ? <Circle cx="12" cy="12" r="10" /> : null}
       {name === "rocket" ? <Circle cx="15" cy="8" r="2" /> : null}
