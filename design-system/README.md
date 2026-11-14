@@ -54,6 +54,7 @@ O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroe
 | [05-padroes.md](05-padroes.md)               | Documenta fluxos de interação, composição de telas, estados e lacunas funcionais conhecidas.                                               |
 | [06-acessibilidade.md](06-acessibilidade.md) | Centraliza requisitos e verificações de contraste, alvos de toque, foco, leitores de tela, texto ampliado e redução de movimento.          |
 | [07-teste-com-ia.md](07-teste-com-ia.md)     | Reserva o registro das rodadas de validação do ODS com assistentes de IA e das correções decorrentes.                                      |
+| [08-home-cosmica.md](08-home-cosmica.md)     | Registro histórico do protótipo da Tela Inicial cósmica, com valores alinhados aos tokens da 1.2.                                         |
 | [CHANGELOG.md](CHANGELOG.md)                 | Mantém o histórico de versões, responsáveis e mudanças do ODS.                                                                             |
 
 ## 5. Etiquetas de origem

@@ -85,7 +85,7 @@
 | `focus.ring-width` | 2 dp    | Espessura do indicador de foco      | Herdado  |
 | `focus.ring-offset`| 2 dp    | Distância entre foco e componente   | Herdado  |
 | `size.progress-height` | 20 dp | Altura da barra de progresso        | Novo (1.2) |
-| `size.handle-width` / `size.handle-height` | 40 × 5 dp | Alça do painel deslizante | Novo (1.2) |
+| `size.handle-width` / `size.handle-height` | 40 × 4 dp | Alça do painel deslizante (1.2; antes 40 × 5, fora da grade) | Novo (1.2) |
 | `size.achievement-badge` | 60 dp | Caixa da conquista no painel      | Novo (1.2) |
 
 ### Sombras (1.2)

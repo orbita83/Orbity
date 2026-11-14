@@ -1,5 +1,7 @@
 # Tela inicial cósmica — protótipo para revisão
 
+> **Status (2026-11-14):** registro histórico do protótipo `feat/tela-principal-prototipo`. Os valores visuais passam a seguir os tokens do ODS 1.2.0, conforme a tabela de tokens aprovada no design [`tela-inicial-base.md`](../docs/designs/tela-inicial-base.md) (Etapa 0.2a). A variante `appearance="cosmic"` deu lugar a `theme={themes.cosmic}`, e a sessão de foco, a última sessão e os diálogos ficaram fora da primeira entrega. Onde este texto divergir de [02-tokens.md](02-tokens.md) ou de [05-padroes.md](05-padroes.md), valem esses documentos.
+
 Direção visual autorizada pelo operador em 22/10/2026, baseada na referência de três telas fornecida na conversa. Para esta tela, esta especificação substitui as restrições anteriores de paleta, tipografia, geometria do planeta e comportamento de ocultação da navbar. Os componentes existentes continuam com seus temas claro e escuro; `PrimaryButton` e `NavBar` possuem a variante explícita `appearance="cosmic"`.
 
 ## Composição
@@ -13,7 +15,7 @@ Abertura por toque no planeta, toque no convite ou arraste vertical. O painel ac
 
 ## Tokens da variante
 
-A implementação usa `cosmicTokens` em `src/view/theme/tokens.ts`. Os valores abaixo são decisões deste protótipo, não aliases implícitos dos temas anteriores.
+O protótipo usava `cosmicTokens`; a integração substitui esse objeto pelos tokens de `src/view/theme/tokens.ts`. A tabela abaixo já está alinhada a eles.
 
 | Grupo | Decisão |
 | --- | --- |
@@ -21,13 +23,13 @@ A implementação usa `cosmicTokens` em `src/view/theme/tokens.ts`. Os valores a
 | Painel | Gradiente `sheet #0D0D29` → `sheetEnd #08091D`; contorno `sheetBorder #373064` |
 | Cards | Gradiente `card #141332` → `cardEnd #0D0E26`; contorno `cardBorder #232044` |
 | Texto | `text #FAF9FF`; secundário `muted #BBB6E3`; navegação/chevrons `inactive #9990CB` |
-| Ação | Gradiente `action #7137F5` → `actionEnd #703BF6`; texto claro; hover `#8252FC` e feedback pressionado |
+| Ação | Gradiente `action #7137F5` → `actionEnd #703BF6`; texto claro; hover `#8648FA` (`cosmicColors.actionHover`) e pressionado por escala e opacidade |
 | Acessibilidade | Foco `#D4A3FF`; texto escalável; nomes de controles e estados de seleção; modal nativo para detalhes |
-| Progresso | Trilha `#232052`; gradiente `#8A42FA` → `#713BF5`; altura 17 dp; preenchimento proporcional exato |
+| Progresso | Trilha `#232052`; gradiente `#8A42FA` → `#8648FA`; altura `size.progress-height` (20 dp); preenchimento proporcional exato |
 | Conquistas | Aro ativo `#C47EFF`, ícones pendentes `#8C7BCB`, contorno pendente `#2B2654`; cadeado e descrição acessível |
-| Tipografia | Marca 28/36; sequência 56/64; título 15/20; corpo 13/18; botão 16/24; legenda 12/16; navbar 11/16 |
-| Forma | Botão 15 dp; card 18 dp; painel 32 dp; preview 38 dp; medalhas circulares de 56 dp |
-| Movimento | Painel 380 ms; curva suave; atualização instantânea com movimento reduzido |
+| Tipografia | Marca `font.brand` (28/36); sequência `font.streak` (64/64); título de card `font.label` (14/20); texto de apoio `font.caption` (12/16); botão `font.label`; navbar conforme `navbar.*` |
+| Forma | Botão `radius.md` (12 dp); card `radius.lg` (16 dp); painel `radius.sheet` (24 dp); medalhas circulares de `achievement.size` (60 dp) |
+| Movimento | Painel `motion.duration.medium` (300 ms) com `motion.easing.standard`; atualização instantânea com movimento reduzido |
 | Visualizador | `planet.aspectRatio 0.85`; esfera e anéis em SVG; estrelas determinísticas; sequência como texto real |
 | Paleta do planeta | Realce `#EBACFF`, luz `#BD6AFF`, superfície `#8840E9`, relevo `#5320B2`, sombra `#39149A`, noite `#17075B`, borda `#D08BFF`, anel `#A95BFA`, realce do anel `#E8B5FF` e brilho `#8236D9` |
 | Swipe | Ativação após 10 dp; movimento intencional de 48 dp ou velocidade de 0,55 dp/ms; projeção de 160 ms; limites nos três pontos de ancoragem |

@@ -86,7 +86,7 @@ export const motionTokens = {
 
 export const sizeTokens = {
   progressHeight: 20,
-  handle: { width: 40, height: 5 },
+  handle: { width: 40, height: 4 },
   achievementBadge: 60,
 } as const;
 

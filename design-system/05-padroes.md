@@ -69,11 +69,11 @@ As cores e lacunas estão em [02-tokens.md](02-tokens.md#variante-cósmica). `th
 | --- | --- |
 | Cores | Fundo, painel, cards, texto, ação, foco, progresso, conquistas e planeta: [variante cósmica](02-tokens.md#variante-cósmica) |
 | Acessibilidade | Texto escalável; nomes de controles e estados de seleção; modal nativo para detalhes |
-| Progresso | Altura 17 dp; preenchimento proporcional exato |
+| Progresso | Altura `size.progress-height` (20 dp); preenchimento proporcional exato |
 | Conquistas | Cadeado e descrição acessível |
-| Tipografia | Marca 28/36; sequência 56/64; título 15/20; corpo 13/18; botão 16/24; legenda 12/16; navbar 11/16 |
-| Forma | Botão 15 dp; card 18 dp; painel 32 dp; preview 38 dp; medalhas circulares de 56 dp |
-| Movimento | Painel 380 ms; curva suave; atualização instantânea com movimento reduzido |
+| Tipografia | Marca `font.brand` (28/36); sequência `font.streak` (64/64); título de card `font.label` (14/20); texto de apoio `font.caption` (12/16); botão `font.label`; navbar conforme `navbar.*` |
+| Forma | Botão `radius.md` (12 dp); card `radius.lg` (16 dp); painel `radius.sheet` (24 dp); medalhas circulares de `achievement.size` (60 dp) |
+| Movimento | Painel `motion.duration.medium` (300 ms) com `motion.easing.standard`; atualização instantânea com movimento reduzido |
 | Visualizador | `planet.aspectRatio 0.85`; esfera e anéis em SVG; estrelas determinísticas; sequência como texto real |
 | Swipe | Ativação após 10 dp; movimento intencional de 48 dp ou velocidade de 0,55 dp/ms; projeção de 160 ms; limites nos três pontos de ancoragem |
 
