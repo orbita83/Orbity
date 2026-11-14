@@ -204,6 +204,9 @@ function createTheme(mode: ThemeMode, cosmic = false) {
     button: {
       bg: color.action,
       label: color["on-action"],
+      // Desabilitado sólido só no cósmico (7,80:1); nos legados segue a lacuna do botao.md.
+      bgDisabled: cosmic ? color["action-subtle"] : color.action,
+      labelDisabled: cosmic ? color["on-surface-variant"] : color["on-action"],
       radius: sharedTokens.radius.md,
       minHeight: sharedTokens.target.minSize,
       minWidth: sharedTokens.target.minSize,

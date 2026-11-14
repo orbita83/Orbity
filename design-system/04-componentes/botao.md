@@ -52,11 +52,11 @@ A variante somente com ícone não faz parte deste componente. Os temas claro e 
 | Hover | Fundo `button.bg-hover`; demais tokens mantidos | Realça ao passar o ponteiro; não se aplica em toque | Não revela informação exclusiva nem executa a ação |
 | Pressionado | `button.bg` com `motion.scale-pressed` (0,96) e `motion.opacity-pressed` (0,8); rótulo mantido | Fornece feedback durante o toque; executa ao concluir a ativação | Mantém nome, papel e área interativa |
 | Foco | Anel `button.focus-color`, `button.focus-width` e `button.focus-offset` | Identifica o controle na navegação por teclado | Contraste de 6,29:1 no claro e 6,50:1 no escuro, acima dos 3:1 exigidos para foco |
-| Desabilitado | Fundo `button.bg-disabled`; aparência textual pendente | Bloqueia a ativação | Expõe `{ disabled: true }` por `accessibilityState`; explique o motivo em texto próximo quando necessário |
+| Desabilitado | Cósmico: fundo `button.bg-disabled` (`#232052`) e texto `button.label-disabled` (`#BBB6E3`, 7,80:1). Legados: aparência pendente | Bloqueia a ativação | Expõe `{ disabled: true }` por `accessibilityState`; explique o motivo em texto próximo quando necessário |
 
 Prioridade dos fundos: desabilitado, pressionado, hover, padrão. O foco é independente do fundo.
 
-**Lacunas nos tokens:** a 1.2 resolveu `button.bg-pressed` por escala e opacidade, sem cor nova. `button.bg-hover` e `button.bg-disabled` ainda não possuem cores, opacidades ou composições definidas nos temas legados. Também faltam o token de texto desabilitado e o token de tamanho do ícone. Não substitua essas lacunas por valores arbitrários. A implementação atual entrega o comportamento e a semântica do estado desabilitado, mantendo o visual padrão até a definição dos tokens.
+**Lacunas nos tokens:** a 1.2 resolveu `button.bg-pressed` por escala e opacidade, sem cor nova. `button.bg-hover` ainda não possui cor definida nos temas legados. O desabilitado foi definido na 1.2 só para o tema cósmico, com cores sólidas já existentes; nos legados, a mesma combinação ficaria abaixo de 4,5:1 (4,24:1 no claro e 4,35:1 no escuro) e continua pendente. Também falta o token de tamanho do ícone. Não substitua essas lacunas por valores arbitrários. Nos temas legados, a implementação entrega o comportamento e a semântica do estado desabilitado, mantendo o visual padrão até a definição dos tokens.
 
 ## Acessibilidade
 

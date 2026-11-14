@@ -20,7 +20,7 @@ export const PrimaryButton = ({
 }: PrimaryButtonProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const reduceMotion = useReduceMotion();
-  const styles = createStyles(theme, isFocused);
+  const styles = createStyles(theme, isFocused, disabled);
 
   return (
     <View style={styles.focusContainer}>
@@ -47,7 +47,7 @@ export const PrimaryButton = ({
   );
 };
 
-const createStyles = (theme: OrbityTheme, isFocused: boolean) =>
+const createStyles = (theme: OrbityTheme, isFocused: boolean, disabled: boolean) =>
   StyleSheet.create({
     focusContainer: {
       borderColor: theme.button.focusColor,
@@ -62,7 +62,7 @@ const createStyles = (theme: OrbityTheme, isFocused: boolean) =>
     },
     button: {
       alignItems: "center",
-      backgroundColor: theme.button.bg,
+      backgroundColor: disabled ? theme.button.bgDisabled : theme.button.bg,
       borderRadius: theme.button.radius,
       justifyContent: "center",
       minHeight: theme.button.minHeight,
@@ -80,7 +80,7 @@ const createStyles = (theme: OrbityTheme, isFocused: boolean) =>
     },
     label: {
       ...theme.font.label,
-      color: theme.button.label,
+      color: disabled ? theme.button.labelDisabled : theme.button.label,
       textAlign: "center",
     },
   });

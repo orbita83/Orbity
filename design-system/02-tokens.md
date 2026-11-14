@@ -194,9 +194,9 @@ No código, `cosmicColors` exporta `iconAccent`, `streakFlame`, `streakFlameCore
 | `button.bg-hover`         | `color.action` + estado hover                | Adaptado |
 | `button.bg-pressed`       | `color.action` + `motion.scale-pressed` + `motion.opacity-pressed` (1.2) | Adaptado |
 | `button.shadow`           | `shadow.button` (1.2)                        | Novo     |
-| `button.bg-disabled`      | `color.surface` + estado disabled            | Adaptado |
-| `button.label-disabled`   | `color.on-surface`                           | Adaptado |
-| `button.opacity-disabled` | `0.6`                                        | Novo     |
+| `button.bg-disabled`      | cósmico `color.action-subtle` (`#232052`, 1.2); legados: lacuna, mantém `button.bg` | Adaptado |
+| `button.label-disabled`   | cósmico `color.on-surface-variant` (`#BBB6E3`, 7,80:1, 1.2); legados: lacuna, mantém `button.label` | Adaptado |
+| `button.opacity-disabled` | `0.6` — não usado no cósmico, onde o desabilitado é sólido; opacidade 0,5 daria 3,08:1 | Novo     |
 | `navbar.bg`               | `color.surface`                              | Adaptado |
 | `navbar.item-active`      | `color.action`                               | Adaptado |
 | `navbar.item-inactive`    | `color.on-surface`                           | Adaptado |

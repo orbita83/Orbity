@@ -35,6 +35,9 @@ assert.equal(themes.cosmic.sheet.handleHeight, 4);
 assert.equal(themes.cosmic.size.headerHeight, 64);
 assert.equal(themes.cosmic.size.iconLg, 32);
 assert.equal(themes.cosmic.border.widthThin, 1);
+assert.equal(themes.cosmic.button.bgDisabled, '#232052');
+assert.equal(themes.cosmic.button.labelDisabled, '#BBB6E3');
+assert.equal(themes.light.button.bgDisabled, themes.light.button.bg);
 assert.deepEqual([themes.cosmic.font.brand.fontSize, themes.cosmic.font.brand.lineHeight], [28, 36]);
 assert.deepEqual([themes.cosmic.font.caption.fontSize, themes.cosmic.font.caption.lineHeight], [12, 16]);
 assert.equal(planetColors.relief, '#5320B2');
@@ -55,6 +58,7 @@ for (const [foreground, background, minimum] of [
   [themes.cosmic.color['on-surface'], themes.cosmic.color.surface, 4.5],
   [themes.cosmic.color['on-surface-variant'], themes.cosmic.color['surface-variant'], 4.5],
   [themes.cosmic.color['on-action'], themes.cosmic.color.action, 4.5],
+  [themes.cosmic.button.labelDisabled, themes.cosmic.button.bgDisabled, 4.5],
   [themes.cosmic.color.action, themes.cosmic.color.surface, 3],
   [themes.cosmic.color.action, themes.cosmic.color['surface-variant'], 3],
   [themes.cosmic.navbar.itemActive, themes.cosmic.navbar.indicatorBg, 4.5],
