@@ -1,3 +1,4 @@
+import { container, createAppContainer } from "@/DI/container";
 import { DatabaseProvider } from "@/infra/database/database-provider";
 import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
 import { LocalDate } from "@/model/entities/local-date";
@@ -17,6 +18,8 @@ describe("container da aplicação", () => {
     const get = jest.spyOn(DatabaseProvider.prototype, "get");
 
     jest.isolateModules(() => {
+      // Import dinâmico de propósito: o módulo precisa ser carregado depois do spy.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       require("@/DI/container");
     });
 
@@ -24,22 +27,19 @@ describe("container da aplicação", () => {
   });
 
   it("o caso de uso da sequência usa o repositório passado em overrides", async () => {
-    const { createAppContainer } = require("@/DI/container") as typeof import("@/DI/container");
     const dailyActivity = new InMemoryDailyActivityRepository();
-    const container = createAppContainer({
+    const isolated = createAppContainer({
       repositories: { dailyActivity },
       services: { clock: fixedClock },
     });
 
-    await container.useCases.streak.recordActivity({ kind: "routine", id: "r1" });
+    await isolated.useCases.streak.recordActivity({ kind: "routine", id: "r1" });
 
     expect((await dailyActivity.listDays()).map(String)).toEqual(["2026-11-14"]);
-    expect((await container.useCases.home.loadHome()).streak.currentDays).toBe(1);
+    expect((await isolated.useCases.home.loadHome()).streak.currentDays).toBe(1);
   });
 
   it("o container e seus registros ficam congelados", () => {
-    const { container } = require("@/DI/container") as typeof import("@/DI/container");
-
     expect(Object.isFrozen(container)).toBe(true);
     expect(Object.isFrozen(container.repositories)).toBe(true);
     expect(Object.isFrozen(container.services)).toBe(true);
