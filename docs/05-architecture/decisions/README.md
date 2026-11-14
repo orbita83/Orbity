@@ -4,7 +4,7 @@ Este catálogo reúne os Architecture Decision Records (`ADR`) do Orbity. Cada A
 
 | ID | Decisão | Status | Especificação |
 | -- | ------- | ------ | ------------- |
-| ADR-0001 | Persistência local com SQLite por meio de repositórios da infraestrutura | Proposed | [ADR-0001](ADR-0001.md) |
+| ADR-0001 | Persistência local com SQLite por meio de repositórios da infraestrutura | Accepted | [ADR-0001](ADR-0001.md) |
 
 ## Status de uma decisão
 
