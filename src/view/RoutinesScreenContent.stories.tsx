@@ -72,6 +72,7 @@ export const ForaDoDia: Story = {
 };
 
 export const ErroAoSalvar: Story = { name: "3 · Erro ao salvar", args: { errorKey: "error.save" } };
+export const Carregando: Story = { name: "3 · Carregando (esqueleto)", args: { visibleRoutines: [], loading: true } };
 
 /** Dublê do caso de uso: a história não grava nada nem importa a composição real. */
 const unsaved = (): Promise<never> => Promise.reject(new Error("Sem gravação no Storybook"));
@@ -96,7 +97,7 @@ const storyRoutineUseCases: IRoutineUseCases = {
 
 const InteractiveForm = () => {
   const vm = useNewRoutineViewModel(storyRoutineUseCases);
-  return <NewRoutineScreenContent {...vm} onBack={vm.reset} />;
+  return <NewRoutineScreenContent {...vm} onBack={vm.reset} onFinish={vm.reset} />;
 };
 export const NovaRotina: Story = { name: "3.1 · Nova rotina (interativa)", render: () => <InteractiveForm /> };
 

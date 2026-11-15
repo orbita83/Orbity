@@ -6,6 +6,7 @@ import { GradientSurface } from "./components/GradientSurface";
 import { MaterialSymbol } from "./components/material-symbol";
 import { PrimaryButton } from "./components/primary-button";
 import { ScreenHeader } from "./components/ScreenHeader";
+import { SuccessDialog } from "./components/SuccessDialog";
 import { TextField } from "./components/TextField";
 import { ROUTINE_ICON_LABELS, ROUTINES_COPY, formatDays, formatRoutinesCopy, weekdayLong, weekdayShort } from "./routines-copy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
@@ -16,6 +17,8 @@ const WEEK = [0, 1, 2, 3, 4, 5, 6] as const;
 export type NewRoutineScreenContentProps = NewRoutineState &
   NewRoutineActions & {
     onBack: () => void;
+    /** Fecha o "Rotina criada!" e volta para a lista (05-padroes.md, F7, passo 4). */
+    onFinish: () => void;
   };
 
 const FieldError = ({ message }: { message: string }) => (
@@ -45,6 +48,7 @@ export const NewRoutineScreenContent = ({
   daysError,
   formError,
   submitting,
+  created,
   setName,
   setIcon,
   setDescription,
@@ -55,6 +59,7 @@ export const NewRoutineScreenContent = ({
   moveTaskUp,
   submit,
   onBack,
+  onFinish,
 }: NewRoutineScreenContentProps) => {
   const insets = useSafeAreaInsets();
   return (
@@ -192,6 +197,14 @@ export const NewRoutineScreenContent = ({
         {formError ? <FieldError message={formError} /> : null}
         <PrimaryButton theme={theme} label={ROUTINES_COPY["form.submit"]} onPress={submit} disabled={submitting} />
       </View>
+      {/* Variante Sucesso do Modal (modal.md), como o "Tarefa criada!" de Tarefas. */}
+      <SuccessDialog
+        visible={created}
+        title={ROUTINES_COPY["created.title"]}
+        message={ROUTINES_COPY["created.message"]}
+        actionLabel={ROUTINES_COPY["created.action"]}
+        onClose={onFinish}
+      />
     </View>
   );
 };

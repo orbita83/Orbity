@@ -113,6 +113,7 @@ No detalhe, o estudante toca em "Excluir rotina" e confirma. A lista mostra "Rot
 - As três ViewModels usam `IRoutineUseCases` e ganham `loading` e `errorKey`. Elas aceitam um array de protótipo, como o `useTasksViewModel`, para o Storybook e as fixtures continuarem sem `@/DI`.
 - `RoutineListItem` e `RoutineDetails` ganham `activeToday`, e o detalhe ganha `doneToday`, vindo da ocorrência e não de "todas as tarefas marcadas".
 - `RoutineDetailsScreen` lê o `id` da rota. As telas recarregam ao ganhar foco (`useFocusEffect`), como em Tarefas (T6).
+- **ODS 1.2.0:** depois de criar, "Rotina criada!" (`SuccessDialog`, passo 4 do F7); esqueleto dos cards ao carregar (`SkeletonCards`, F8); barra de progresso do detalhe com contador e porcentagem fora da barra (`barra-progresso.md`); estado vazio "Nenhuma tarefa nesta rotina" (F8), ainda sem o atalho para adicionar, que depende da edição (#137).
 
 ## Alternatives Considered
 

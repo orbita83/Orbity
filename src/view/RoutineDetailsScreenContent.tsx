@@ -8,6 +8,7 @@ import { IconTile } from "./components/IconTile";
 import { MaterialSymbol, type MaterialSymbolName } from "./components/material-symbol";
 import { PrimaryButton } from "./components/primary-button";
 import { ScreenHeader } from "./components/ScreenHeader";
+import { SkeletonCards } from "./components/SkeletonCards";
 import { ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routines-copy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 
@@ -48,14 +49,13 @@ export const RoutineDetailsScreenContent = ({
 }: RoutineDetailsScreenContentProps) => {
   const insets = useSafeAreaInsets();
 
+  // F8, Carregando: esqueleto estrutural dos cards da rotina (05-padroes.md).
   if (!routine && loading) {
     return (
       <View style={[styles.screen, { paddingTop: insets.top }]}>
         <ScreenHeader title={ROUTINES_COPY.title} backLabel={ROUTINES_COPY["details.back"]} onBack={onBack} />
-        <View style={styles.missing}>
-          <Text accessibilityLiveRegion="polite" allowFontScaling style={[styles.muted, styles.centered]}>
-            {ROUTINES_COPY.loading}
-          </Text>
+        <View style={styles.content}>
+          <SkeletonCards accessibilityLabel={ROUTINES_COPY["details.loading"]} />
         </View>
       </View>
     );
@@ -79,6 +79,16 @@ export const RoutineDetailsScreenContent = ({
 
   const total = routine.tasks.length;
   const percent = total === 0 ? 0 : (completedCount / total) * 100;
+  // barra-progresso.md: contador e porcentagem em texto, fora da barra; sem tarefas, sem porcentagem.
+  const percentLabel = total === 0 ? null : Math.round(percent);
+  const counterLabel =
+    percentLabel === null
+      ? formatRoutinesCopy("details.progress.counter", { done: completedCount, total })
+      : formatRoutinesCopy("details.progress.counterPercent", { done: completedCount, total, percent: percentLabel });
+  const progressText =
+    percentLabel === null
+      ? formatRoutinesCopy("details.progress", { done: completedCount, total })
+      : formatRoutinesCopy("details.progress.a11y", { done: completedCount, total, percent: percentLabel });
   // Fora dos dias da rotina, concluir e marcar ficam bloqueados, com o motivo em texto (rotinas.md, R6; botao.md).
   const inactive = !routine.activeToday;
 
@@ -126,15 +136,15 @@ export const RoutineDetailsScreenContent = ({
             <Text accessibilityRole="header" allowFontScaling style={styles.sectionTitle}>
               {ROUTINES_COPY["details.tasks"]}
             </Text>
-            <Text allowFontScaling style={styles.muted}>
-              {formatRoutinesCopy("details.progress", { done: completedCount, total })}
+            <Text allowFontScaling style={styles.counter}>
+              {counterLabel}
             </Text>
           </View>
           <View
             accessible
             accessibilityRole="progressbar"
             accessibilityLabel={ROUTINES_COPY["details.progress.label"]}
-            accessibilityValue={{ min: 0, max: total, now: completedCount }}
+            accessibilityValue={{ min: 0, max: total, now: completedCount, text: progressText }}
             style={styles.track}
           >
             {percent > 0 ? (
@@ -159,7 +169,7 @@ export const RoutineDetailsScreenContent = ({
                 checked={task.done}
                 onToggle={() => toggleTask(task.id)}
                 disabled={inactive}
-                accessibilityLabel={`${task.done ? "Desmarcar" : "Concluir"} ${task.title}`}
+                accessibilityLabel={formatRoutinesCopy(task.done ? "task.uncomplete" : "task.complete", { name: task.title })}
               />
               <Text allowFontScaling style={[styles.taskTitle, task.done && styles.taskDone]}>
                 {task.title}
@@ -314,6 +324,7 @@ const styles = StyleSheet.create({
   section: { gap: theme.space.sm },
   sectionHeading: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: theme.space.sm },
   sectionTitle: { ...theme.font["card-title"], color: theme.color["on-surface"] },
+  counter: { ...theme.font.label, color: theme.color["on-surface"] },
   track: { height: theme.progress.height, borderRadius: theme.progress.height / 2, backgroundColor: theme.progress.track, overflow: "hidden" },
   fill: { height: "100%", borderRadius: theme.progress.height / 2, overflow: "hidden" },
   task: {

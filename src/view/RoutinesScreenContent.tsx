@@ -6,6 +6,7 @@ import { CheckCircle } from "./components/CheckCircle";
 import { IconTile } from "./components/IconTile";
 import { MaterialSymbol } from "./components/material-symbol";
 import { PrimaryButton } from "./components/primary-button";
+import { SkeletonCards } from "./components/SkeletonCards";
 import { Snackbar } from "./components/Snackbar";
 import { ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routines-copy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
@@ -143,11 +144,7 @@ export const RoutinesScreenContent = ({
               </Text>
             </View>
           ) : null}
-          {loading ? (
-            <Text accessibilityLiveRegion="polite" allowFontScaling style={styles.muted}>
-              {ROUTINES_COPY.loading}
-            </Text>
-          ) : null}
+          {loading && visibleRoutines.length === 0 ? <SkeletonCards accessibilityLabel={ROUTINES_COPY.loading} /> : null}
           {visibleRoutines.map((routine) => (
             <RoutineCard
               key={routine.id}

@@ -82,9 +82,9 @@ describe("RoutinesScreenContent", () => {
     expect(props.toggleDoneToday).not.toHaveBeenCalled();
   });
 
-  it("carregando não mostra o estado vazio, e um erro aparece com texto", async () => {
+  it("F8: carregando mostra o esqueleto e não o estado vazio; um erro aparece com texto", async () => {
     const view = await inSafeArea(<RoutinesScreenContent {...listProps({ visibleRoutines: [], totalCount: 0, loading: true })} />);
-    expect(screen.getByText(ROUTINES_COPY.loading)).toBeTruthy();
+    expect(screen.getByLabelText(ROUTINES_COPY.loading)).toBeTruthy();
     expect(screen.queryByText(ROUTINES_COPY["empty.title"])).toBeNull();
 
     await view.rerender(
@@ -119,6 +119,7 @@ const formProps = (overrides: Partial<NewRoutineScreenContentProps> = {}): NewRo
   submit: jest.fn(),
   reset: jest.fn(),
   onBack: jest.fn(),
+  onFinish: jest.fn(),
   ...overrides,
 });
 
@@ -154,6 +155,15 @@ describe("NewRoutineScreenContent", () => {
     });
   });
 
+  it("F7, passo 4: depois de criar, mostra Rotina criada! e volta para a lista", async () => {
+    const props = formProps({ created: true });
+    await inSafeArea(<NewRoutineScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: ROUTINES_COPY["created.title"] })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["created.action"] }));
+    expect(props.onFinish).toHaveBeenCalledTimes(1);
+  });
+
   it("com erros, mostra as duas mensagens", async () => {
     await inSafeArea(<NewRoutineScreenContent {...formProps({ nameError: true, daysError: true })} />);
     const alerts = screen.getAllByRole("alert");
@@ -187,8 +197,13 @@ describe("RoutineDetailsScreenContent", () => {
     await inSafeArea(<RoutineDetailsScreenContent {...props} />);
 
     expect(screen.getByRole("header", { name: "Matemática" })).toBeTruthy();
-    expect(screen.getByText("1 de 3 concluídas")).toBeTruthy();
-    expect(screen.getByRole("progressbar").props.accessibilityValue).toMatchObject({ now: 1, max: 3 });
+    // barra-progresso.md: contador e porcentagem em texto, fora da barra.
+    expect(screen.getByText("1 / 3 · 33%")).toBeTruthy();
+    expect(screen.getByRole("progressbar").props.accessibilityValue).toMatchObject({
+      now: 1,
+      max: 3,
+      text: "1 de 3 concluídas, 33%",
+    });
 
     await fireEvent.press(screen.getByRole("checkbox", { name: "Concluir Resolver a lista de exercícios" }));
     expect(props.toggleTask).toHaveBeenCalledWith("b");
@@ -233,6 +248,14 @@ describe("RoutineDetailsScreenContent", () => {
       <RoutineDetailsScreenContent {...detailsProps({ completedCount: 0, routine: { ...PROTOTYPE_ROUTINE_DETAILS, tasks: [] } })} />,
     );
     expect(screen.getByText(ROUTINES_COPY["details.tasks.empty"])).toBeTruthy();
+    // Sem tarefas não há porcentagem (barra-progresso.md, estado Vazio).
+    expect(screen.getByText("0 / 0")).toBeTruthy();
+  });
+
+  it("F8: carregando a rotina mostra o esqueleto", async () => {
+    await inSafeArea(<RoutineDetailsScreenContent {...detailsProps({ routine: null, loading: true })} />);
+    expect(screen.getByLabelText(ROUTINES_COPY["details.loading"])).toBeTruthy();
+    expect(screen.queryByText(ROUTINES_COPY["details.missing.title"])).toBeNull();
   });
 
   it("3.3: confirmar a exclusão volta para a lista com a rotina excluída", async () => {
