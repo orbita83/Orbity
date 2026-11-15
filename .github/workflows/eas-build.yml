@@ -1,0 +1,205 @@
+name: EAS Build Android
+
+# Build Android sob demanda pelo EAS (T0015 — #81).
+# Guia: docs/08-distribution/build-sob-demanda.md
+# Somente gera artefatos: não submete à Google Play, não cria tags ou releases e não faz merges.
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'Perfil EAS (eas.json)'
+        required: true
+        type: choice
+        default: preview
+        options:
+          - development
+          - preview
+          - production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eas-build-${{ github.ref }}-${{ inputs.profile }}
+  cancel-in-progress: false
+
+jobs:
+  authorize:
+    name: Validar solicitação
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      environment: ${{ steps.check.outputs.environment }}
+    steps:
+      - name: Validar perfil e referência
+        id: check
+        env:
+          PROFILE: ${{ inputs.profile }}
+          REF: ${{ github.ref }}
+        run: |
+          case "$PROFILE" in
+            development|preview) environment=eas-build ;;
+            production) environment=eas-production ;;
+            *)
+              echo "::error::Perfil não autorizado: $PROFILE"
+              exit 1
+              ;;
+          esac
+
+          case "$REF" in
+            refs/heads/development|refs/heads/main) ;;
+            *)
+              echo "::error::Builds só podem ser gerados a partir de development ou main. Referência recebida: $REF"
+              exit 1
+              ;;
+          esac
+
+          echo "environment=$environment" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build Android (${{ inputs.profile }})
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    environment: ${{ needs.authorize.outputs.environment }}
+    env:
+      HUSKY: '0'
+      PROFILE: ${{ inputs.profile }}
+    steps:
+      - name: Verificar EXPO_TOKEN
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::O secret EXPO_TOKEN não está configurado no environment ${{ needs.authorize.outputs.environment }}."
+            exit 1
+          fi
+
+      - name: Obter código
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Conferir conta e projeto EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          expected_owner="$(node -p "require('./app.json').expo.owner")"
+          if ! account="$(npx --no-install eas-cli whoami 2>/dev/null | head -n 1)"; then
+            echo "::error::Falha na autenticação com o EAS. Confira se o EXPO_TOKEN é válido e não foi revogado."
+            exit 1
+          fi
+          if [ "$account" != "$expected_owner" ]; then
+            echo "::error::O EXPO_TOKEN pertence à conta '$account', mas o projeto pertence a '$expected_owner'."
+            exit 1
+          fi
+          npx --no-install eas-cli project:info
+
+      - name: Solicitar build
+        id: request
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          MESSAGE: 'GitHub Actions run ${{ github.run_id }} (${{ github.ref_name }})'
+        run: |
+          npx --no-install eas-cli build \
+            --platform android \
+            --profile "$PROFILE" \
+            --message "$MESSAGE" \
+            --freeze-credentials \
+            --no-wait \
+            --json > build-request.json
+
+          build_id="$(node -p "require('./build-request.json')[0].id")"
+          if [ -z "$build_id" ] || [ "$build_id" = "undefined" ]; then
+            echo "::error::O EAS não retornou o identificador do build."
+            exit 1
+          fi
+          echo "build_id=$build_id" >> "$GITHUB_OUTPUT"
+          echo "Build solicitado: $build_id"
+
+      - name: Acompanhar compilação no EAS
+        id: follow
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          BUILD_ID: ${{ steps.request.outputs.build_id }}
+        run: |
+          failures=0
+          while true; do
+            if ! npx --no-install eas-cli build:view "$BUILD_ID" --json > build-view.json 2> build-view.err; then
+              failures=$((failures + 1))
+              if [ "$failures" -ge 10 ]; then
+                echo "::error::Não foi possível consultar o build após 10 tentativas seguidas."
+                cat build-view.err >&2
+                exit 1
+              fi
+              echo "::warning::Falha temporária ao consultar o build; nova tentativa em 60 s."
+              sleep 60
+              continue
+            fi
+            failures=0
+            mv build-view.json build.json
+            status="$(node -p "require('./build.json').status")"
+            echo "$(date -u +%H:%M:%S) status: $status"
+            case "$status" in
+              FINISHED|ERRORED|CANCELED) break ;;
+            esac
+            sleep 60
+          done
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Registrar resumo
+        if: always() && steps.request.outputs.build_id != ''
+        env:
+          BUILD_ID: ${{ steps.request.outputs.build_id }}
+          STATUS: ${{ steps.follow.outputs.status }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          owner="$(node -p "require('./app.json').expo.owner")"
+          slug="$(node -p "require('./app.json').expo.slug")"
+          version="-"
+          version_code="-"
+          eas_commit="-"
+          if [ -f build.json ]; then
+            version="$(node -p "require('./build.json').appVersion ?? '-'")"
+            version_code="$(node -p "require('./build.json').appBuildVersion ?? '-'")"
+            eas_commit="$(node -p "require('./build.json').gitCommitHash ?? '-'")"
+          fi
+          {
+            echo "## EAS Build Android"
+            echo
+            echo "| Item | Valor |"
+            echo "| ---- | ----- |"
+            echo "| Perfil | \`$PROFILE\` |"
+            echo "| Plataforma | Android |"
+            echo "| Referência | \`$REF_NAME\` |"
+            echo "| Commit (GitHub) | \`$SHA\` |"
+            echo "| Commit (EAS) | \`$eas_commit\` |"
+            echo "| Solicitado por | @$ACTOR |"
+            echo "| Versão / versionCode | \`$version\` / \`$version_code\` |"
+            echo "| Build EAS | [\`$BUILD_ID\`](https://expo.dev/accounts/$owner/projects/$slug/builds/$BUILD_ID) |"
+            echo "| Status final | \`${STATUS:-não confirmado}\` |"
+            echo
+            echo "O artefato é baixado pela página do build no EAS. O link direto não é registrado aqui porque os logs deste repositório são públicos."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verificar resultado da compilação
+        env:
+          STATUS: ${{ steps.follow.outputs.status }}
+        run: |
+          if [ "$STATUS" != "FINISHED" ]; then
+            echo "::error::O build terminou com status $STATUS. Consulte os logs na página do build no EAS."
+            exit 1
+          fi
+          echo "Build concluído com sucesso."

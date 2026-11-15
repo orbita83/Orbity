@@ -52,7 +52,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 
 ## Código
 
-Ainda não implementado. A variante Texto (uma ou várias linhas) está prevista como `TextField`, e o placeholder usa `cosmicColors.inactive`. O campo aceita um botão acessório à direita (`trailingIcon`, `trailingLabel` e `onTrailingPress`), usado em Data e hora para abrir o [seletor de opções](seletor-opcoes.md) sem impedir a digitação, e o contorno de foco envolve o campo e o botão. A Seleção de categoria usa o mesmo seletor.
+A variante Texto (uma ou várias linhas) está em [TextField.tsx](../../src/view/components/TextField.tsx), com testes em `FormControls.test.tsx` e histórias em `FormControls.stories.tsx`. O placeholder usa `cosmicColors.inactive`. As variantes Data e hora e Seleção ainda não estão implementadas.
 
 ```tsx
 <TextField

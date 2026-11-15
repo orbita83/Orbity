@@ -473,6 +473,8 @@ Para reproduzir localmente as mesmas validações antes de enviar alterações, 
 
 Na configuração de proteção da branch `development` (Ruleset **Branch Protection (Development)**), o status check `validate` deve permanecer configurado como obrigatório (*Require status checks to pass*) junto às regras existentes de revisão e aprovação de Pull Requests.
 
+Builds Android pelo EAS são solicitados manualmente pelo workflow [`.github/workflows/eas-build.yml`](.github/workflows/eas-build.yml) (**EAS Build Android**). Ele não roda em Pull Requests, só gera artefatos e não cria tags, releases ou submissões à Google Play. O uso, os environments e o `EXPO_TOKEN` estão descritos em [`docs/08-distribution/build-sob-demanda.md`](docs/08-distribution/build-sob-demanda.md).
+
 ---
 
 ## 4. Processo de Publicação e Governança de Releases

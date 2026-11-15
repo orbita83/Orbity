@@ -17,4 +17,4 @@ Origem no sistema base: sem equivalente direto. Situação: Novo (1.2). Motivo: 
 
 ## Código
 
-Ainda não implementado. Ícones de rotina já disponíveis em `material-symbol.tsx`: `track_changes` (Geral), `menu_book`, `calculate`, `translate`, `science`, `code` e `music_note`.
+Implementado em [IconTile.tsx](../../src/view/components/IconTile.tsx). Ícones disponíveis para rotinas: `track_changes` (Geral), `menu_book`, `calculate`, `translate`, `science`, `code` e `music_note`.

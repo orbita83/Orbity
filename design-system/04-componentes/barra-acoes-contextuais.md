@@ -51,4 +51,4 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 ## Código
 
-Ainda não implementado. A implementação prevista divide o componente em `ContextualHeader` (✕ "Cancelar seleção" e contador em região ao vivo) e `ContextualActionBar` (ações com ícone em `color.focus` e rótulo; `destructive` usa `color.error` no ícone; `disabled` usa `button.opacity-disabled`). Os dois devem respeitar a área segura.
+Implementado em [ContextualActionBar.tsx](../../src/view/components/ContextualActionBar.tsx): `ContextualHeader` (✕ "Cancelar seleção" e contador em região ao vivo) e `ContextualActionBar` (ações com ícone e rótulo; `destructive` usa `color.error` no ícone; `disabled` usa `button.opacity-disabled`). Os dois respeitam a área segura. Testes em `FeedbackComponents.test.tsx`.

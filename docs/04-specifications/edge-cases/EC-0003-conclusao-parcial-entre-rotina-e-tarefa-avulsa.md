@@ -1,5 +1,7 @@
 # [EC-0003] - Conclusão de apenas uma categoria quando existem rotina e tarefa avulsa
 
+> **Status:** Superseded por [RN-0002](../../02-requirements/business-rules/RN-0002.md) (D1), 2026-11-14.
+
 ## 1. Contexto
 
 Quando o usuário possui rotinas e tarefas sem rotina associada, a regra de negócio [`RN-0002`](../../02-requirements/business-rules/RN-0002.md) estabelece que a conclusão de 1 rotina somada à conclusão de 1 tarefa sem rotina associada aumenta o contador de sequência, o qual progride junto com a constelação do usuário ([`RN-0003`](../../02-requirements/business-rules/RN-0003.md)).

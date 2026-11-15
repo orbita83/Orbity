@@ -24,4 +24,4 @@ Origem no sistema base: Material 3, Top app bar (small). Situação: Adaptado (1
 
 ## Código
 
-Ainda não implementado. A tela decide para onde voltar.
+Implementado em [ScreenHeader.tsx](../../src/view/components/ScreenHeader.tsx). A tela decide para onde voltar.

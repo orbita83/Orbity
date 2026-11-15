@@ -21,6 +21,8 @@ export type FilterChipItemProps = {
   onPress: () => void;
   theme?: OrbityTheme;
   disabled?: boolean;
+  /** Nome acessível da opção; o padrão é "Filtrar por <rótulo>". */
+  accessibilityLabel?: string;
 };
 
 export const FilterChipItem = ({
@@ -29,6 +31,7 @@ export const FilterChipItem = ({
   onPress,
   theme = themes.light,
   disabled = false,
+  accessibilityLabel = `Filtrar por ${label}`,
 }: FilterChipItemProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const styles = createChipStyles(theme, selected, isFocused);
@@ -37,7 +40,7 @@ export const FilterChipItem = ({
     <View style={styles.focusContainer}>
       <Pressable
         accessibilityRole="radio"
-        accessibilityLabel={`Filtrar por ${label}`}
+        accessibilityLabel={accessibilityLabel}
         accessibilityState={{ checked: selected, disabled }}
         aria-checked={selected}
         disabled={disabled}
@@ -63,6 +66,8 @@ export type FilterChipsProps<T extends string = TaskFilter> = {
   filters?: readonly FilterChipOption<T>[];
   theme?: OrbityTheme;
   accessibilityLabel?: string;
+  /** Nome acessível de cada opção; o padrão é "Filtrar por <rótulo>". */
+  itemAccessibilityLabel?: (label: string) => string;
 };
 
 export const FilterChips = <T extends string = TaskFilter>({
@@ -71,6 +76,7 @@ export const FilterChips = <T extends string = TaskFilter>({
   filters = DEFAULT_TASK_FILTERS as unknown as readonly FilterChipOption<T>[],
   theme = themes.light,
   accessibilityLabel = "Filtros de tarefas",
+  itemAccessibilityLabel,
 }: FilterChipsProps<T>) => {
   const styles = createContainerStyles(theme);
   const handleWebKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -100,6 +106,7 @@ export const FilterChips = <T extends string = TaskFilter>({
           selected={filter.id === selectedFilter}
           onPress={() => onSelectFilter(filter.id)}
           theme={theme}
+          accessibilityLabel={itemAccessibilityLabel?.(filter.label)}
         />
       ))}
     </View>
