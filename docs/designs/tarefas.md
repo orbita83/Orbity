@@ -54,8 +54,8 @@ O estudante toca em "Nova tarefa", preenche o título, escolhe a data pelo selet
 ### CUJ 2: Concluir e desmarcar
 Ao tocar no círculo, a tarefa fica riscada, o dia entra na sequência e o progresso da Início sobe. Desmarcar volta a tarefa para pendente sem apagar o dia.
 
-### CUJ 3: Ações em lote
-O estudante segura uma tarefa (ou toca no "•••"), seleciona outras e escolhe Fixar ou Excluir. Excluir pede confirmação antes.
+### CUJ 3: Ações em lote e edição
+O estudante segura uma tarefa (ou toca no "•••"), pode escolher **Editar** (habilitado quando apenas 1 tarefa está selecionada, abrindo o formulário preenchido para atualização) ou selecionar outras tarefas e escolher Fixar/Desafixar, Marcar todas ou Excluir. Excluir pede confirmação antes.
 
 ### CUJ 4: Dados mantidos
 O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
@@ -81,7 +81,7 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)
 - `useTasksViewModel` carrega, filtra, conclui, seleciona, fixa e exclui pelo caso de uso, com estados de carregamento e erro.
-- `useNewTaskViewModel` cuida do formulário, das opções dos seletores e da categoria escolhida já pronta para exibir; a view não importa regras do model.
+- `useNewTaskViewModel` cuida do formulário (criação e modo de edição quando recebe `taskId`), das opções dos seletores e da categoria escolhida já pronta para exibir; a view não importa regras do model.
 - `TasksScreen` e `HomeScreen` recarregam ao ganhar foco.
 
 ## Alternatives Considered
