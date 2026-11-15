@@ -34,7 +34,10 @@ export const TasksScreenContent = ({
   filter,
   selectionMode,
   selectedIds,
+  allSelectedPinned,
   confirmDeleteVisible,
+  loading,
+  errorKey,
   selectFilter,
   toggleCompleted,
   startSelection,
@@ -45,6 +48,7 @@ export const TasksScreenContent = ({
   requestDelete,
   cancelDelete,
   confirmDelete,
+  reload,
   onCreateTask,
 }: TasksScreenContentProps) => {
   const insets = useSafeAreaInsets();
@@ -94,12 +98,24 @@ export const TasksScreenContent = ({
         )}
 
         <View style={styles.list}>
+          {errorKey ? (
+            <View style={styles.errorCard}>
+              <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.errorHeader}>
+                <MaterialSymbol name="error" filled color={theme.color.error} size={theme.navbar.iconSize} />
+                <Text allowFontScaling style={styles.errorText}>
+                  {TASKS_COPY[errorKey]}
+                </Text>
+              </View>
+              <PrimaryButton theme={theme} label={TASKS_COPY["error.retry"]} onPress={() => void reload()} />
+            </View>
+          ) : null}
           {visibleTasks.map((task) => (
             <CardTarefa
               key={task.id}
               theme={theme}
               title={task.title}
               dueDate={task.dueLabel}
+              category={task.categoryLabel}
               completed={task.completed}
               pinned={task.pinned}
               onToggleCompleted={() => toggleCompleted(task.id)}
@@ -112,7 +128,7 @@ export const TasksScreenContent = ({
               onToggleSelected={() => toggleSelected(task.id)}
             />
           ))}
-          {visibleTasks.length === 0 ? (
+          {!loading && visibleTasks.length === 0 && !errorKey ? (
             <View style={styles.empty}>
               <Text allowFontScaling style={styles.emptyTitle}>
                 {TASKS_COPY["empty.title"]}
@@ -128,7 +144,13 @@ export const TasksScreenContent = ({
       {selectionMode ? (
         <ContextualActionBar
           actions={[
-            { id: "pin", label: TASKS_COPY["action.pin"], icon: "push_pin", onPress: pinSelected, disabled: selectedCount === 0 },
+            {
+              id: "pin",
+              label: allSelectedPinned ? TASKS_COPY["action.unpin"] : TASKS_COPY["action.pin"],
+              icon: "push_pin",
+              onPress: pinSelected,
+              disabled: selectedCount === 0,
+            },
             { id: "all", label: TASKS_COPY["action.selectAll"], icon: "done_all", onPress: selectAll },
             {
               id: "delete",
@@ -180,4 +202,18 @@ const styles = StyleSheet.create({
     borderColor: cosmicBorders.sheet,
   },
   emptyTitle: { ...theme.font["card-title"], color: theme.color["on-surface"], textAlign: "center" },
+  errorCard: {
+    gap: theme.space.md,
+    padding: theme.space.md,
+    borderRadius: theme.radius.lg,
+    borderWidth: theme.border.widthThin,
+    borderColor: theme.color["border-subtle"],
+    backgroundColor: theme.color["surface-variant"],
+  },
+  errorHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.space.sm,
+  },
+  errorText: { ...theme.font.body, color: theme.color["on-surface"], flex: 1 },
 });

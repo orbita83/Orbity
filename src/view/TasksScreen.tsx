@@ -1,5 +1,5 @@
-import { useNavigation, useRouter } from "expo-router";
-import { useEffect, useLayoutEffect } from "react";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useCallback, useEffect, useLayoutEffect } from "react";
 import { BackHandler } from "react-native";
 import { useTasksViewModel } from "../viewmodel/TasksViewModel";
 import { TasksScreenContent } from "./TasksScreenContent";
@@ -10,7 +10,13 @@ const TasksScreen = () => {
   const router = useRouter();
   const navigation = useNavigation();
 
-  const { selectionMode, cancelSelection } = vm;
+  const { selectionMode, cancelSelection, reload } = vm;
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
+
   useLayoutEffect(() => {
     navigation.setOptions({ tabBarStyle: selectionMode ? { display: "none" } : undefined });
   }, [navigation, selectionMode]);

@@ -123,6 +123,21 @@ describe("useHomeViewModel", () => {
     expect(result.current.summary?.streak.currentDays).toBe(5);
   });
 
+  it("refresh recalcula sequência e progresso ao voltar para a aba sem voltar para carregando", async () => {
+    const useCases = useCasesFrom(summaryWith(0, 0, 1), summaryWith(1, 1, 1));
+    const { result } = await renderHook(() => useHomeViewModel(useCases));
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+    expect(result.current.progressLabel).toBe("0/1");
+
+    await act(async () => {
+      await result.current.refresh();
+    });
+
+    expect(result.current.status).toBe("ready");
+    expect(result.current.summary?.streak.currentDays).toBe(1);
+    expect(result.current.progressLabel).toBe("1/1");
+  });
+
   it("abre e fecha o painel pelos botões", async () => {
     const useCases = useCasesFrom(summaryWith(0));
     const { result } = await renderHook(() => useHomeViewModel(useCases));

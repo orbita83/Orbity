@@ -7,6 +7,7 @@ import { MaterialSymbol } from "./material-symbol";
 export type CardTarefaProps = {
   title: string;
   dueDate?: string;
+  category?: string;
   completed: boolean;
   onToggleCompleted: () => void;
   onOptionsPress?: () => void;
@@ -24,6 +25,7 @@ export type CardTarefaProps = {
 export const CardTarefa = ({
   title,
   dueDate,
+  category,
   completed,
   onToggleCompleted,
   onOptionsPress,
@@ -36,6 +38,7 @@ export const CardTarefa = ({
 }: CardTarefaProps) => {
   const styles = createStyles(theme, completed);
   const cosmic = Boolean(theme.componentOverrides?.cardSurface);
+  const secondaryMeta = [category, dueDate].filter(Boolean).join(" · ");
 
   const content = (
     <View style={styles.content}>
@@ -45,9 +48,9 @@ export const CardTarefa = ({
           {title}
         </Text>
       </View>
-      {dueDate ? (
+      {secondaryMeta ? (
         <Text allowFontScaling style={styles.dueDate}>
-          {dueDate}
+          {secondaryMeta}
         </Text>
       ) : null}
     </View>

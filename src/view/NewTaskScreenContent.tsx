@@ -1,12 +1,20 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { NewTaskActions, NewTaskFields, NewTaskState } from "../viewmodel/NewTaskViewModel";
+import { getTaskCategoryOption, type TaskCategoryId } from "../model/entities/task";
+import type {
+  NewTaskActions,
+  NewTaskFields,
+  NewTaskPickerField,
+  NewTaskState,
+  NewTaskTextField,
+} from "../viewmodel/NewTaskViewModel";
 import { MaterialSymbol } from "./components/material-symbol";
 import { PrimaryButton } from "./components/primary-button";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
+import { TaskPickerModal } from "./components/TaskPickerModal";
 import { TextField } from "./components/TextField";
-import { TASKS_COPY } from "./tasks-copy";
+import { TASKS_COPY, formatTasksCopy } from "./tasks-copy";
 import { cosmicColors, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
@@ -21,14 +29,15 @@ export type NewTaskScreenContentProps = NewTaskState &
 
 type DateTimeGroupProps = {
   legend: string;
-  dateField: keyof NewTaskFields;
-  timeField: keyof NewTaskFields;
+  dateField: Extract<NewTaskTextField, "startDate" | "endDate">;
+  timeField: Extract<NewTaskTextField, "startTime" | "endTime">;
   fields: NewTaskFields;
   setField: NewTaskActions["setField"];
+  openPicker: NewTaskActions["openPicker"];
 };
 
 /** Data e hora em colunas que podem encolher (campos-formulario.md), para não passar da tela. */
-const DateTimeGroup = ({ legend, dateField, timeField, fields, setField }: DateTimeGroupProps) => (
+const DateTimeGroup = ({ legend, dateField, timeField, fields, setField, openPicker }: DateTimeGroupProps) => (
   <View style={styles.group}>
     <Text accessibilityRole="header" allowFontScaling style={styles.legend}>
       {legend}
@@ -41,6 +50,9 @@ const DateTimeGroup = ({ legend, dateField, timeField, fields, setField }: DateT
           onChangeText={(value) => setField(dateField, value)}
           placeholder={TASKS_COPY["form.date.placeholder"]}
           keyboardType="numbers-and-punctuation"
+          trailingIcon="calendar_today"
+          trailingLabel={formatTasksCopy("picker.openDate", { field: legend })}
+          onTrailingPress={() => openPicker(dateField)}
         />
       </View>
       <View style={styles.timeColumn}>
@@ -50,23 +62,74 @@ const DateTimeGroup = ({ legend, dateField, timeField, fields, setField }: DateT
           onChangeText={(value) => setField(timeField, value)}
           placeholder={TASKS_COPY["form.time.placeholder"]}
           keyboardType="numbers-and-punctuation"
+          trailingIcon="schedule"
+          trailingLabel={formatTasksCopy("picker.openTime", { field: legend })}
+          onTrailingPress={() => openPicker(timeField)}
         />
       </View>
     </View>
   </View>
 );
 
+const pickerTitleOf = (picker: NewTaskPickerField | null): string => {
+  if (picker === "startDate" || picker === "endDate") {
+    return TASKS_COPY["picker.date.title"];
+  }
+  if (picker === "startTime" || picker === "endTime") {
+    return TASKS_COPY["picker.time.title"];
+  }
+  return TASKS_COPY["picker.category.title"];
+};
+
 /** Formulário de Nova tarefa e confirmação "Tarefa criada!" (protótipo 2.1 e 2.2). */
 export const NewTaskScreenContent = ({
   fields,
   titleError,
+  formError,
+  activePicker,
+  dateOptions,
+  timeOptions,
+  categoryOptions,
+  submitting,
   created,
   setField,
+  selectCategory,
+  openPicker,
+  closePicker,
   submit,
   onClose,
   onFinish,
 }: NewTaskScreenContentProps) => {
   const insets = useSafeAreaInsets();
+  const selectedCategory = getTaskCategoryOption(fields.category);
+  const categoryLabel = selectedCategory?.label ?? TASKS_COPY["form.category.empty"];
+
+  const activePickerOptions =
+    activePicker === "startDate" || activePicker === "endDate"
+      ? dateOptions
+      : activePicker === "startTime" || activePicker === "endTime"
+        ? timeOptions
+        : categoryOptions;
+
+  const activeSelectedValue =
+    activePicker === "category"
+      ? (fields.category ?? "")
+      : activePicker
+        ? fields[activePicker]
+        : "";
+
+  const handleSelectPickerValue = (value: string) => {
+    if (!activePicker) {
+      return;
+    }
+    if (activePicker === "category") {
+      selectCategory(value ? (value as TaskCategoryId) : undefined);
+      return;
+    }
+    setField(activePicker, value);
+    closePicker();
+  };
+
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <ScreenHeader title={TASKS_COPY["form.title"]} variant="close" backLabel={TASKS_COPY["form.close"]} onBack={onClose} />
@@ -87,34 +150,70 @@ export const NewTaskScreenContent = ({
           placeholder={TASKS_COPY["form.description.placeholder"]}
           multiline
         />
-        <DateTimeGroup legend={TASKS_COPY["form.start"]} dateField="startDate" timeField="startTime" fields={fields} setField={setField} />
-        <DateTimeGroup legend={TASKS_COPY["form.end"]} dateField="endDate" timeField="endTime" fields={fields} setField={setField} />
+        <DateTimeGroup
+          legend={TASKS_COPY["form.start"]}
+          dateField="startDate"
+          timeField="startTime"
+          fields={fields}
+          setField={setField}
+          openPicker={openPicker}
+        />
+        <DateTimeGroup
+          legend={TASKS_COPY["form.end"]}
+          dateField="endDate"
+          timeField="endTime"
+          fields={fields}
+          setField={setField}
+          openPicker={openPicker}
+        />
+
         <View style={styles.group}>
           <Text allowFontScaling style={styles.legend}>
             {TASKS_COPY["form.category"]} <Text style={styles.optional}>(opcional)</Text>
           </Text>
-          {/* A escolha de categoria chega com o domínio de Tarefas; o campo aparece desabilitado. */}
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`${TASKS_COPY["form.category"]}: ${TASKS_COPY["form.category.empty"]}`}
-            accessibilityHint={TASKS_COPY["form.category.soon"]}
-            accessibilityState={{ disabled: true }}
-            disabled
-            style={styles.select}
+            accessibilityLabel={`${TASKS_COPY["form.category"]}: ${categoryLabel}`}
+            accessibilityHint={TASKS_COPY["form.category.choose"]}
+            onPress={() => openPicker("category")}
+            style={({ pressed }) => [styles.select, pressed && styles.pressed]}
           >
             <View style={styles.selectIcon}>
-              <MaterialSymbol name="label" filled color={cosmicColors.focus} size={theme.space.lg} />
+              <MaterialSymbol
+                name={selectedCategory?.icon ?? "label"}
+                filled
+                color={cosmicColors.focus}
+                size={theme.space.lg}
+              />
             </View>
             <Text allowFontScaling style={styles.selectValue}>
-              {TASKS_COPY["form.category.empty"]}
+              {categoryLabel}
             </Text>
             <MaterialSymbol name="chevron_right" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
           </Pressable>
         </View>
+
+        {formError ? (
+          <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.formError}>
+            <MaterialSymbol name="error" filled color={theme.color.error} size={theme.navbar.iconSize} />
+            <Text allowFontScaling style={styles.formErrorText}>
+              {formError}
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
-        <PrimaryButton theme={theme} label={TASKS_COPY["form.submit"]} onPress={submit} />
+        <PrimaryButton theme={theme} label={TASKS_COPY["form.submit"]} onPress={submit} disabled={submitting} />
       </View>
+      <TaskPickerModal
+        visible={activePicker !== null}
+        title={pickerTitleOf(activePicker)}
+        closeLabel={TASKS_COPY["picker.close"]}
+        options={activePickerOptions}
+        selectedValue={activeSelectedValue}
+        onSelect={handleSelectPickerValue}
+        onClose={closePicker}
+      />
       <SuccessDialog
         visible={created}
         title={TASKS_COPY["created.title"]}
@@ -158,6 +257,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   selectValue: { ...theme.font.body, color: theme.color["on-surface"], flex: 1 },
+  pressed: { opacity: theme.motion.opacityPressed },
+  formError: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.space.sm,
+    padding: theme.space.md,
+    borderRadius: theme.radius.md,
+    borderWidth: theme.border.widthThin,
+    borderColor: theme.color["border-subtle"],
+    backgroundColor: theme.color["surface-variant"],
+  },
+  formErrorText: { ...theme.font.label, color: theme.color["on-surface"], flex: 1 },
   footer: {
     paddingTop: theme.space.md,
     paddingHorizontal: theme.space.md,
