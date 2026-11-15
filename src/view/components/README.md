@@ -12,6 +12,13 @@ Os arquivos `*.stories.tsx` (`card-tarefa`, `filter-chips`, `nav-bar`, `primary-
   - `MainTabBar({ state, navigation }: MainTabBarProps)`: barra de abas customizada para o `Tabs` do Expo Router; usada em `src/app/_layout.tsx`. Renderiza `NavBar` com `theme={themes.cosmic}` dentro de um `View` com `paddingBottom: insets.bottom` (`useSafeAreaInsets`).
   - `MainTabBarProps`: tipo derivado de `Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0]`.
   - Mapeamentos internos (não exportados) `routeByTab` / `tabByRoute`: `inicio` <-> `index`, `tarefas` <-> `tasks`, `rotinas` <-> `routines`, `cosmos` <-> `cosmos`, `perfil` <-> `profile`.
+- `CheckCircle.tsx`: `CheckCircle({ checked, onToggle, accessibilityLabel, disabled? })`, círculo de concluir com papel `checkbox` e alvo de 48 dp.
+- `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; o ✕ e a ação segura chamam `onCancel`, a ação destrutiva chama `onConfirm`.
+- `ContextualActionBar.tsx`: `ContextualHeader({ countLabel, onCancel })` e `ContextualActionBar({ actions })` para a seleção múltipla; `ContextualAction` = `{ id, label, icon, onPress, destructive?, disabled? }`.
+- `IconTile.tsx`: `IconTile({ icon })`, quadro decorativo com o ícone de uma rotina.
+- `ScreenHeader.tsx`: `ScreenHeader({ title, onBack, variant?, backLabel })`, cabeçalho das telas empilhadas (seta ou ✕).
+- `Snackbar.tsx`: `Snackbar({ message, actionLabel?, onAction? })`, aviso curto com ação opcional.
+- `TextField.tsx`: `TextField(props)`, campo de texto com rótulo visível, `requirement`, `helper`, `error` e `multiline`.
 - `PlaceholderScreen.tsx`
   - `PlaceholderScreen({ title, message })`: tela de espera com `ScrollView`, título com `accessibilityRole="header"` e mensagem; usa fixamente `themes.cosmic`.
 - `card-tarefa.tsx`
@@ -46,6 +53,7 @@ Os arquivos `*.stories.tsx` (`card-tarefa`, `filter-chips`, `nav-bar`, `primary-
 - Acessibilidade: `CardTarefa` expõe `accessibilityState={{ checked }}` e rótulo "Concluir/Desmarcar tarefa: <title>"; `FilterChipItem` expõe `accessibilityState={{ checked, disabled }}`; `NavBar` expõe `accessibilityState={{ selected }}` e rótulo "Aba <label>, <n> de <total>"; textos usam `allowFontScaling`; `MaterialSymbol` é `accessible={false}` (e `aria-hidden` na web).
 - `NavBar` retorna `null` quando `visible` é `false`.
 - `FilterChips` marca como selecionado o chip cujo `filter.id === selectedFilter` e chama `onSelectFilter(filter.id)` no toque; não guarda o filtro selecionado em estado próprio.
+- `MainTabBar` retorna `null` nas rotas fora das abas (`new-task`, `new-routine`, `routine-details`).
 - `MainTabBar` só navega quando a rota alvo existe em `state.routes`, é diferente da rota ativa e o evento `tabPress` não teve `defaultPrevented`.
 - `MaterialSymbol` usa o caminho `filled` quando `filled` é `true` (com fallback para `outlined`); na web renderiza `<svg>` nativo do DOM, nos demais plataformas `Svg`/`Path` de `react-native-svg`.
 
@@ -59,4 +67,4 @@ Os arquivos `*.stories.tsx` (`card-tarefa`, `filter-chips`, `nav-bar`, `primary-
 ## Verification
 
 - Run: `npm test`
-- Testes existentes nesta pasta: `MainTabBar.test.tsx`, `PlaceholderScreen.test.tsx`, `primary-button.test.tsx`.
+- Testes existentes nesta pasta: `MainTabBar.test.tsx`, `PlaceholderScreen.test.tsx`, `primary-button.test.tsx`, `FocusBottomSheet.test.tsx`, `FormControls.test.tsx` e `FeedbackComponents.test.tsx`.
