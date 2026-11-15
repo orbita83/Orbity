@@ -52,4 +52,15 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 
 ## Código
 
-Ainda não implementado.
+A variante Texto (uma ou várias linhas) está em [TextField.tsx](../../src/view/components/TextField.tsx), com testes em `FormControls.test.tsx` e histórias em `FormControls.stories.tsx`. O placeholder usa `cosmicColors.inactive`. As variantes Data e hora e Seleção ainda não estão implementadas.
+
+```tsx
+<TextField
+  label="Nome da rotina"
+  requirement="required"
+  value={name}
+  onChangeText={setName}
+  placeholder="Ex.: Matemática"
+  error={nameError}
+/>
+```
