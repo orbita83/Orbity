@@ -79,6 +79,15 @@
 | `focus.ring-width` | 2 dp    | Espessura do indicador de foco      | Herdado  |
 | `focus.ring-offset`| 2 dp    | Distância entre foco e componente   | Herdado  |
 
+### Divisores e feedback do perfil
+
+| Token | Valor | Uso | Origem |
+| --- | --- | --- | --- |
+| `divider.width` | 1 dp | Divisores sutis entre métricas | Novo |
+| `feedback.pressedOpacity` | 0.8 | Feedback imediato de toque em atalhos | Adaptado |
+
+Os temas exportam `divider.width` e `feedback.pressedOpacity`. Validar o contraste da composição pressionada nos três temas; manter rótulo e foco independentes da opacidade.
+
 ### Movimento
 
 | Token                    | Valor                        | Uso                     | Origem   |

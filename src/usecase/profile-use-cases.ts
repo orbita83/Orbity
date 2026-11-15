@@ -2,6 +2,18 @@ import type { StudentProfile } from "@/model/entities/student-profile";
 import { ValidationError } from "@/model/errors/domain-error";
 import type { IProfileRepository } from "@/model/repositories/profile-repository";
 
+const normalizeMetric = (value: unknown): number =>
+  typeof value === "number" && Number.isFinite(value) && value > 0
+    ? Math.trunc(value)
+    : 0;
+
+const normalizeProfile = (profile: StudentProfile): StudentProfile => ({
+  ...profile,
+  streakDays: normalizeMetric(profile.streakDays),
+  achievementsCount: normalizeMetric(profile.achievementsCount),
+  studyHours: normalizeMetric(profile.studyHours),
+});
+
 /**
  * Contrato público dos casos de uso de perfil do estudante.
  */
@@ -26,10 +38,10 @@ export interface IProfileUseCases {
 export class ProfileUseCases implements IProfileUseCases {
   private static readonly MAX_NAME_LENGTH = 60;
 
-  constructor(private readonly profileRepository: IProfileRepository) {}
+  constructor(private readonly profileRepository: IProfileRepository) { }
 
   async getProfile(): Promise<StudentProfile> {
-    return this.profileRepository.getProfile();
+    return normalizeProfile(await this.profileRepository.getProfile());
   }
 
   async updateName(name: string): Promise<StudentProfile> {
@@ -43,6 +55,6 @@ export class ProfileUseCases implements IProfileUseCases {
       throw new ValidationError("O nome deve ter no máximo 60 caracteres.");
     }
 
-    return this.profileRepository.updateName(normalizedName);
+    return normalizeProfile(await this.profileRepository.updateName(normalizedName));
   }
 }

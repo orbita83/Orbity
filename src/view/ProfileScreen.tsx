@@ -1,11 +1,14 @@
 import {
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { PrimaryButton } from "./components/primary-button";
+import { MaterialSymbol } from "./components/material-symbol";
+import { ProfileMetricsCard } from "./components/ProfileMetricsCard";
+import { ProfileShortcutItem } from "./components/ProfileShortcutItem";
 import { EditProfileNameModal } from "./components/EditProfileNameModal";
 import { ProfileHeaderCard } from "./components/ProfileHeaderCard";
 import { themes, type OrbityTheme } from "./theme/tokens";
@@ -20,11 +23,10 @@ export type ProfileScreenProps = {
   readonly viewModel?: ProfileState & ProfileActions;
 };
 
-const ProfileScreen = ({
+const ProfileContent = ({
   theme = themes.cosmic,
   viewModel,
-}: ProfileScreenProps) => {
-  const defaultViewModel = useProfileViewModel();
+}: ProfileScreenProps & { readonly viewModel: ProfileState & ProfileActions }) => {
   const {
     profile,
     loading,
@@ -39,39 +41,22 @@ const ProfileScreen = ({
     setNameInput,
     saveName,
     clearError,
-  } = viewModel ?? defaultViewModel;
+  } = viewModel;
+
+  const styles = createStyles(theme);
 
   return (
     <SafeAreaView
-      style={[
-        styles.telaContainer,
-        {
-          backgroundColor: theme.color.surface,
-        },
-      ]}
+      style={styles.screen}
     >
       <ScrollView
-        contentContainerStyle={[
-          styles.conteudoScroll,
-          {
-            padding: theme.space.md,
-            gap: theme.space.md,
-          },
-        ]}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Cabeçalho da Tela */}
-        <View style={styles.areaCabecalho}>
+        <View style={styles.header}>
           <Text
-            style={[
-              styles.tituloCabecalho,
-              {
-                color: theme.color["on-surface"],
-                fontSize: theme.font.title.fontSize,
-                fontWeight: theme.font.title.fontWeight,
-                lineHeight: theme.font.title.lineHeight,
-              },
-            ]}
+            style={styles.title}
             accessibilityRole="header"
           >
             Meu perfil
@@ -81,57 +66,17 @@ const ProfileScreen = ({
         {/* Notificação de Erro Global */}
         {error ? (
           <View
-            style={[
-              styles.areaErroGlobal,
-              {
-                backgroundColor: theme.color["action-subtle"],
-                borderRadius: theme.radius.md,
-                borderColor: theme.color.error,
-                padding: theme.space.md,
-              },
-            ]}
-            accessibilityRole="alert"
+            style={styles.errorContainer}
           >
+            <MaterialSymbol name="info" color={theme.color.error} size={theme.space.lg} />
             <Text
-              style={[
-                styles.textoErroGlobal,
-                {
-                  color: theme.color.error,
-                  fontSize: theme.font.label.fontSize,
-                  lineHeight: theme.font.label.lineHeight,
-                },
-              ]}
+              style={styles.errorText}
+              accessibilityRole="alert"
+              accessibilityLiveRegion="polite"
             >
               {error}
             </Text>
-            <Pressable
-              onPress={() => {
-                clearError();
-                loadProfile();
-              }}
-              style={[
-                styles.botaoTentarNovamente,
-                {
-                  minHeight: theme.target.minSize,
-                  paddingHorizontal: theme.space.md,
-                },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="Tentar carregar o perfil novamente"
-            >
-              <Text
-                style={[
-                  styles.textoBotaoTentarNovamente,
-                  {
-                    color: theme.color["on-surface"],
-                    fontSize: theme.font.label.fontSize,
-                    fontWeight: "600",
-                  },
-                ]}
-              >
-                Tentar novamente
-              </Text>
-            </Pressable>
+            <PrimaryButton label="Tentar novamente" accessibilityHint="Tentar carregar o perfil novamente" onPress={() => { clearError(); void loadProfile(); }} theme={theme} />
           </View>
         ) : null}
 
@@ -143,7 +88,10 @@ const ProfileScreen = ({
           theme={theme}
         />
 
-        {/* Espaço reservado para as métricas e atalhos da Sub-issue #124 */}
+        <ProfileMetricsCard metrics={profile} loading={loading} theme={theme} />
+        <ProfileShortcutItem icon="emoji_events" title="Conquistas" description="Acompanhe suas conquistas" href="/achievements" loading={loading} theme={theme} />
+        <ProfileShortcutItem icon="category" title="Categorias" description="Organize suas categorias de estudo" href="/categories" loading={loading} theme={theme} />
+        <ProfileShortcutItem icon="settings" title="Configurações" description="Acesse as configurações do aplicativo" href="/settings" loading={loading} theme={theme} />
       </ScrollView>
 
       {/* Modal de Edição de Nome */}
@@ -161,37 +109,26 @@ const ProfileScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  telaContainer: {
-    flex: 1,
+const ConnectedProfileScreen = ({ theme }: Pick<ProfileScreenProps, "theme">) => {
+  const viewModel = useProfileViewModel();
+  return <ProfileContent theme={theme} viewModel={viewModel} />;
+};
+
+const ProfileScreen = ({ theme, viewModel }: ProfileScreenProps) => viewModel
+  ? <ProfileContent theme={theme} viewModel={viewModel} />
+  : <ConnectedProfileScreen theme={theme} />;
+
+const createStyles = (theme: OrbityTheme) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: theme.color.surface },
+  content: { flexGrow: 1, padding: theme.space.md, gap: theme.space.md },
+  header: { paddingVertical: theme.space.sm },
+  title: { ...theme.font.title, color: theme.color["on-surface"] },
+  errorContainer: {
+    gap: theme.space.sm, backgroundColor: theme.color["surface-variant"],
+    borderRadius: theme.radius.md, borderColor: theme.color.error,
+    borderWidth: theme.divider.width, padding: theme.space.md,
   },
-  conteudoScroll: {
-    flexGrow: 1,
-  },
-  areaCabecalho: {
-    paddingVertical: 8,
-  },
-  tituloCabecalho: {
-    letterSpacing: -0.3,
-  },
-  areaErroGlobal: {
-    borderWidth: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  textoErroGlobal: {
-    flex: 1,
-    fontWeight: "500",
-  },
-  botaoTentarNovamente: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textoBotaoTentarNovamente: {
-    textDecorationLine: "underline",
-  },
+  errorText: { ...theme.font.label, color: theme.color["on-surface"] },
 });
 
 export default ProfileScreen;

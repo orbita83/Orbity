@@ -204,4 +204,28 @@ describe("useProfileViewModel", () => {
     // Assert
     expect(result.current.error).toBeNull();
   });
+  it("preserva as métricas após falha na recarga e permite recuperação", async () => {
+    const { result } = await renderHook(() => useProfileViewModel(fakeUseCases));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    const previous = result.current.profile;
+    fakeUseCases.getProfile = jest.fn().mockRejectedValueOnce(new DomainError("Falha temporária")).mockResolvedValue(currentProfile);
+    await act(async () => { await result.current.loadProfile(); });
+    expect(result.current.profile).toBe(previous);
+    expect(result.current.error).toBe("Falha temporária");
+    await act(async () => { await result.current.loadProfile(); });
+    expect(result.current.error).toBeNull();
+    expect(result.current.profile).toEqual(currentProfile);
+  });
+
+  it("mantém as métricas conhecidas quando salvar o nome falha", async () => {
+    const { result } = await renderHook(() => useProfileViewModel(fakeUseCases));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    const previous = result.current.profile;
+    fakeUseCases.updateName = jest.fn().mockRejectedValue(new DomainError("Não foi possível salvar."));
+    await act(async () => { await result.current.saveName(); });
+    expect(result.current.profile).toBe(previous);
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe("Não foi possível salvar.");
+  });
+
 });

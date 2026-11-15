@@ -49,3 +49,6 @@ example
 
 # Agents
 .agents
+
+# Documentos de revisao local
+/.revisao-local/
