@@ -40,4 +40,44 @@ export const MIGRATIONS: readonly Migration[] = [
       },
     ],
   },
+  {
+    // Rotinas (rotinas.md): ocorrências e marcações por dia; tarefas da rotina ficam em `tasks`.
+    version: 3,
+    statements: [
+      {
+        sql: `CREATE TABLE routines (
+  id          TEXT PRIMARY KEY,
+  title       TEXT NOT NULL,
+  description TEXT,
+  icon        TEXT NOT NULL,
+  days        TEXT NOT NULL,
+  created_at  TEXT NOT NULL,
+  updated_at  TEXT NOT NULL,
+  deleted_at  TEXT
+)`,
+      },
+      {
+        sql: `CREATE TABLE routine_occurrences (
+  routine_id   TEXT NOT NULL,
+  local_date   TEXT NOT NULL
+               CHECK (local_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+  completed_at TEXT NOT NULL,
+  PRIMARY KEY (routine_id, local_date)
+)`,
+      },
+      {
+        sql: `CREATE TABLE routine_task_checks (
+  routine_id TEXT NOT NULL,
+  task_id    TEXT NOT NULL,
+  local_date TEXT NOT NULL
+             CHECK (local_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+  PRIMARY KEY (task_id, local_date)
+)`,
+      },
+      { sql: `ALTER TABLE tasks ADD COLUMN routine_id TEXT` },
+      { sql: `ALTER TABLE tasks ADD COLUMN position INTEGER` },
+      { sql: `CREATE INDEX idx_tasks_routine ON tasks (routine_id, position)` },
+      { sql: `CREATE INDEX idx_routine_task_checks_day ON routine_task_checks (routine_id, local_date)` },
+    ],
+  },
 ];

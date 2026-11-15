@@ -29,6 +29,13 @@ export class InMemoryTaskRepository implements ITaskRepository {
       .map((entry) => entry.task);
   }
 
+  async listByRoutine(routineId: string): Promise<Task[]> {
+    return [...this.items.values()]
+      .filter((entry) => entry.task.routineId === routineId)
+      .sort((a, b) => (a.task.position ?? 0) - (b.task.position ?? 0) || a.order - b.order)
+      .map((entry) => entry.task);
+  }
+
   async findById(id: string): Promise<Task | null> {
     return this.items.get(id)?.task ?? null;
   }

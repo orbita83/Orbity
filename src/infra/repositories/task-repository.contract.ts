@@ -93,5 +93,26 @@ export function runTaskRepositoryContractTests(createRepository: () => Promise<I
       expect((await repo.listAll()).map((task) => task.id)).toEqual(["t2"]);
       expect(await repo.findById("t1")).toBeNull();
     });
+
+    it("rotinas.md R1: guarda o vínculo com a rotina e lista as tarefas dela pela posição", async () => {
+      const repo = await createRepository();
+      const standalone = createTaskFixture({ id: "avulsa" });
+      const second = createTaskFixture({ id: "r2", routineId: "routine-1", position: 1 });
+      const first = createTaskFixture({ id: "r1", routineId: "routine-1", position: 0 });
+      const other = createTaskFixture({ id: "x1", routineId: "routine-2", position: 0 });
+      for (const task of [standalone, second, first, other]) {
+        await repo.create(task);
+      }
+
+      expect((await repo.listByRoutine("routine-1")).map((task) => task.id)).toEqual(["r1", "r2"]);
+      expect(await repo.findById("avulsa")).toEqual(standalone);
+      expect(await repo.findById("r1")).toEqual(first);
+
+      await repo.updateMany([
+        { ...first, position: 1 },
+        { ...second, position: 0 },
+      ]);
+      expect((await repo.listByRoutine("routine-1")).map((task) => task.id)).toEqual(["r2", "r1"]);
+    });
   });
 }

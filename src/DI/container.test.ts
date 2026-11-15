@@ -1,6 +1,7 @@
 import { container, createAppContainer } from "@/DI/container";
 import { DatabaseProvider } from "@/infra/database/database-provider";
 import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
+import { InMemoryRoutineRepository } from "@/infra/repositories/in-memory-routine-repository";
 import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
 import { TaskActivityCatalog } from "@/infra/repositories/task-activity-catalog";
 import { LocalDate } from "@/model/entities/local-date";
@@ -9,6 +10,17 @@ import type { IClockService } from "@/model/services/i-clock-service";
 const fixedClock: IClockService = {
   now: () => "2026-11-14T10:00:00-03:00",
   todayLocal: () => LocalDate.parse("2026-11-14"),
+};
+
+const memoryRepositories = () => {
+  const tasks = new InMemoryTaskRepository();
+  const routines = new InMemoryRoutineRepository(tasks);
+  return {
+    dailyActivity: new InMemoryDailyActivityRepository(),
+    tasks,
+    routines,
+    activityCatalog: new TaskActivityCatalog(tasks, routines),
+  };
 };
 
 describe("container da aplicação", () => {
@@ -29,12 +41,9 @@ describe("container da aplicação", () => {
   });
 
   it("o caso de uso da sequência usa o repositório passado em overrides", async () => {
-    const dailyActivity = new InMemoryDailyActivityRepository();
-    const tasks = new InMemoryTaskRepository();
-    const isolated = createAppContainer({
-      repositories: { dailyActivity, tasks, activityCatalog: new TaskActivityCatalog(tasks) },
-      services: { clock: fixedClock },
-    });
+    const repositories = memoryRepositories();
+    const { dailyActivity } = repositories;
+    const isolated = createAppContainer({ repositories, services: { clock: fixedClock } });
 
     await isolated.useCases.streak.recordActivity({ kind: "routine", id: "r1" });
 
@@ -42,13 +51,31 @@ describe("container da aplicação", () => {
     expect((await isolated.useCases.home.loadHome()).streak.currentDays).toBe(1);
   });
 
-  it("concluir uma tarefa no container reflete no progresso, nas metas e na sequência da Home", async () => {
-    const dailyActivity = new InMemoryDailyActivityRepository();
-    const tasks = new InMemoryTaskRepository();
-    const isolated = createAppContainer({
-      repositories: { dailyActivity, tasks, activityCatalog: new TaskActivityCatalog(tasks) },
-      services: { clock: fixedClock },
+  it("rotinas.md: concluir uma rotina no container libera o foco e sobe a sequência, sem mexer no progresso", async () => {
+    const monday: IClockService = {
+      now: () => "2026-11-16T10:00:00-03:00",
+      todayLocal: () => LocalDate.parse("2026-11-16"),
+    };
+    const isolated = createAppContainer({ repositories: memoryRepositories(), services: { clock: monday } });
+
+    const routine = await isolated.useCases.routines.createRoutine({ title: "Matemática", days: [1], tasks: ["Revisar"] });
+    expect(await isolated.useCases.home.loadHome()).toMatchObject({
+      focus: { canStart: true },
+      progress: { completed: 0, total: 0 },
+      streak: { currentDays: 0 },
     });
+    expect(await isolated.useCases.tasks.listTasks()).toEqual([]);
+
+    await isolated.useCases.routines.completeOccurrence(routine.id);
+
+    expect(await isolated.useCases.home.loadHome()).toMatchObject({
+      progress: { completed: 0, total: 0 },
+      streak: { currentDays: 1 },
+    });
+  });
+
+  it("concluir uma tarefa no container reflete no progresso, nas metas e na sequência da Home", async () => {
+    const isolated = createAppContainer({ repositories: memoryRepositories(), services: { clock: fixedClock } });
 
     const created = await isolated.useCases.tasks.createTask({ title: "Estudar estrutura de dados" });
     expect(await isolated.useCases.home.loadHome()).toMatchObject({
