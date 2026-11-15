@@ -54,7 +54,7 @@ const ProfileContent = ({
         showsVerticalScrollIndicator={false}
       >
         {/* Cabeçalho da Tela */}
-        <View style={styles.header}>
+        <View>
           <Text
             style={styles.title}
             accessibilityRole="header"
@@ -89,9 +89,16 @@ const ProfileContent = ({
         />
 
         <ProfileMetricsCard metrics={profile} loading={loading} theme={theme} />
-        <ProfileShortcutItem icon="emoji_events" title="Conquistas" description="Acompanhe suas conquistas" href="/achievements" loading={loading} theme={theme} />
-        <ProfileShortcutItem icon="category" title="Categorias" description="Organize suas categorias de estudo" href="/categories" loading={loading} theme={theme} />
-        <ProfileShortcutItem icon="settings" title="Configurações" description="Acesse as configurações do aplicativo" href="/settings" loading={loading} theme={theme} />
+
+        {/* Atalhos (protótipo, tela 5) */}
+        <View style={styles.shortcuts}>
+          <Text allowFontScaling accessibilityRole="header" style={styles.sectionTitle}>
+            Atalhos
+          </Text>
+          <ProfileShortcutItem icon="star" title="Conquistas" description="Acompanhe suas conquistas" href="/achievements" loading={loading} theme={theme} />
+          <ProfileShortcutItem icon="category" title="Categorias" description="Organize suas categorias de estudo" href="/categories" loading={loading} theme={theme} />
+          <ProfileShortcutItem icon="settings" title="Configurações" description="Tema, notificações e conta" href="/settings" loading={loading} theme={theme} />
+        </View>
       </ScrollView>
 
       {/* Modal de Edição de Nome */}
@@ -120,8 +127,15 @@ const ProfileScreen = ({ theme, viewModel }: ProfileScreenProps) => viewModel
 
 const createStyles = (theme: OrbityTheme) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.color.surface },
-  content: { flexGrow: 1, padding: theme.space.md, gap: theme.space.md },
-  header: { paddingVertical: theme.space.sm },
+  content: {
+    flexGrow: 1,
+    paddingTop: theme.primitive["space-32"],
+    paddingHorizontal: theme.space.md,
+    paddingBottom: theme.space.lg,
+    gap: theme.space.lg,
+  },
+  shortcuts: { gap: theme.space.sm },
+  sectionTitle: { ...theme.font["card-title"], color: theme.color["on-surface"] },
   title: { ...theme.font.title, color: theme.color["on-surface"] },
   errorContainer: {
     gap: theme.space.sm, backgroundColor: theme.color["surface-variant"],

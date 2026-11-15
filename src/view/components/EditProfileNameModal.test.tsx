@@ -50,7 +50,7 @@ describe("EditProfileNameModal", () => {
     await render(<EditProfileNameModal {...defaultProps} onSave={onSaveMock} />);
 
     // Act
-    const saveButton = screen.getByLabelText("Salvar novo nome");
+    const saveButton = screen.getByRole("button", { name: "Salvar" });
     fireEvent.press(saveButton);
 
     // Assert
@@ -91,9 +91,10 @@ describe("EditProfileNameModal", () => {
     );
 
     // Assert
-    const errorElement = screen.getByText(errorMessage);
-    expect(errorElement).toBeTruthy();
-    expect(errorElement.props.accessibilityRole).toBe("alert");
+    expect(screen.getByText(errorMessage)).toBeTruthy();
+    expect(screen.getByRole("alert")).toBeTruthy();
+    // A mensagem de apoio dá lugar ao erro.
+    expect(screen.queryByText("Como você quer ser chamado no Orbity.")).toBeNull();
   });
 
   it("deve desabilitar os botões e anunciar estado de carregamento quando saving for true", async () => {
@@ -102,7 +103,7 @@ describe("EditProfileNameModal", () => {
 
     // Assert
     expect(screen.getByText("Salvando...")).toBeTruthy();
-    const saveButton = screen.getByLabelText("Salvar novo nome");
+    const saveButton = screen.getByRole("button", { name: "Salvando..." });
     expect(saveButton.props.accessibilityState.busy).toBe(true);
     expect(saveButton.props.accessibilityState.disabled).toBe(true);
 

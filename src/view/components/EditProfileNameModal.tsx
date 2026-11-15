@@ -1,16 +1,11 @@
-import { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialSymbol } from "./material-symbol";
-import { themes, type OrbityTheme } from "../theme/tokens";
+import { PrimaryButton } from "./primary-button";
+import { TextField } from "./TextField";
+import { cosmicBorders, themes, type OrbityTheme } from "../theme/tokens";
+
+/** Limite do nome do estudante, o mesmo validado pelo caso de uso. */
+const MAX_NAME_LENGTH = 60;
 
 export type EditProfileNameModalProps = {
   readonly visible: boolean;
@@ -23,6 +18,10 @@ export type EditProfileNameModalProps = {
   readonly theme?: OrbityTheme;
 };
 
+/**
+ * Edição do nome (protótipo, tela 5.1), na superfície do Modal do ODS (modal.md): véu, raio de painel,
+ * ✕ visível e ações empilhadas, com Salvar em destaque e Cancelar secundário.
+ */
 export const EditProfileNameModal = ({
   visible,
   name,
@@ -33,253 +32,63 @@ export const EditProfileNameModal = ({
   onClose,
   theme = themes.cosmic,
 }: EditProfileNameModalProps) => {
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [isCancelFocused, setIsCancelFocused] = useState(false);
-  const [isSaveFocused, setIsSaveFocused] = useState(false);
-  const [isCloseFocused, setIsCloseFocused] = useState(false);
-
-  const characterCount = name.length;
-  const maxCharacters = 60;
+  const styles = createStyles(theme);
+  const close = saving ? () => undefined : onClose;
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onClose}
-      accessibilityViewIsModal={true}
-    >
-      <KeyboardAvoidingView
-        style={styles.camadaSobreposicao}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <Pressable
-          style={styles.panoFundo}
-          onPress={saving ? undefined : onClose}
-          accessible={false}
-          aria-hidden={true}
-        />
-
-        <View
-          style={[
-            styles.cartaoDialogo,
-            {
-              backgroundColor:
-                theme.componentOverrides?.cardSurface ??
-                theme.color["surface-variant"],
-              borderRadius: theme.radius.lg,
-              padding: theme.space.lg,
-              gap: theme.space.md,
-            },
-          ]}
-          aria-modal={true}
-          accessibilityLabel="Editar nome do perfil"
-        >
-          {/* Cabeçalho do Modal */}
-          <View style={styles.linhaCabecalho}>
-            <Text
-              style={[
-                styles.tituloModal,
-                {
-                  color: theme.color["on-surface"],
-                  fontSize: theme.font.title.fontSize,
-                  fontWeight: theme.font.title.fontWeight,
-                  lineHeight: theme.font.title.lineHeight,
-                },
-              ]}
-              accessibilityRole="header"
-            >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={close} statusBarTranslucent>
+      <KeyboardAvoidingView style={styles.scrim} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+        <View accessibilityViewIsModal aria-modal style={styles.surface}>
+          <View style={styles.header}>
+            <Text accessibilityRole="header" allowFontScaling style={styles.title}>
               Editar nome
             </Text>
-
             <Pressable
-              onPress={saving ? undefined : onClose}
-              onFocus={() => setIsCloseFocused(true)}
-              onBlur={() => setIsCloseFocused(false)}
-              disabled={saving}
-              style={({ pressed }) => [
-                styles.botaoFechar,
-                {
-                  width: theme.target.minSize,
-                  height: theme.target.minSize,
-                  borderRadius: theme.radius.md,
-                },
-                pressed && { opacity: 0.7 },
-                isCloseFocused && {
-                  borderWidth: theme.focus.ringWidth,
-                  borderColor: theme.color.focus,
-                },
-              ]}
               accessibilityRole="button"
               accessibilityLabel="Fechar modal de edição"
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityHint="Fecha sem salvar"
+              disabled={saving}
+              onPress={onClose}
+              style={({ pressed }) => [styles.close, pressed && styles.pressed]}
             >
-              <MaterialSymbol
-                name="close"
-                size={24}
-                color={theme.color["on-surface-variant"]}
-              />
+              <MaterialSymbol name="close" color={theme.color["on-surface"]} size={theme.navbar.iconSize} />
             </Pressable>
           </View>
 
-          {/* Campo de Entrada */}
-          <View style={styles.secaoFormulario}>
-            <Text
-              style={[
-                styles.rotuloCampo,
-                {
-                  color: theme.color["on-surface-variant"],
-                  fontSize: theme.font.label.fontSize,
-                  fontWeight: theme.font.label.fontWeight,
-                  lineHeight: theme.font.label.lineHeight,
-                },
-              ]}
-              nativeID="label-nome-estudante"
-            >
-              Nome do estudante
-            </Text>
-
-            <TextInput
-              style={[
-                styles.campoTexto,
-                {
-                  backgroundColor: theme.color.surface,
-                  color: theme.color["on-surface"],
-                  borderRadius: theme.radius.md,
-                  paddingHorizontal: theme.space.md,
-                  fontSize: theme.font.body.fontSize,
-                  lineHeight: theme.font.body.lineHeight,
-                  borderColor: validationError
-                    ? theme.color.error
-                    : isInputFocused
-                      ? theme.color.focus
-                      : theme.color.border,
-                  borderWidth: validationError || isInputFocused ? 2 : 1,
-                },
-              ]}
+          <View style={styles.field}>
+            <TextField
+              label="Nome do estudante"
+              requirement="required"
               value={name}
-              onChangeText={onChangeName}
+              onChangeText={(value) => onChangeName(value.slice(0, MAX_NAME_LENGTH))}
               placeholder="Digite seu nome"
-              placeholderTextColor={theme.color["on-surface-variant"]}
-              maxLength={maxCharacters}
-              autoFocus={true}
-              editable={!saving}
-              onFocus={() => setIsInputFocused(true)}
-              onBlur={() => setIsInputFocused(false)}
-              accessibilityLabel="Nome do estudante"
-              accessibilityRole="none"
-              aria-labelledby="label-nome-estudante"
+              helper="Como você quer ser chamado no Orbity."
+              error={validationError}
+              onSubmitEditing={saving ? undefined : onSave}
             />
-
-            {/* Linha de apoio: erro de validação e contador de caracteres */}
-            <View style={styles.linhaApoio}>
-              <View style={styles.areaErro}>
-                {validationError ? (
-                  <Text
-                    style={[
-                      styles.textoErro,
-                      {
-                        color: theme.color.error,
-                        fontSize: theme.font.label.fontSize,
-                        lineHeight: theme.font.label.lineHeight,
-                      },
-                    ]}
-                    accessibilityLiveRegion="polite"
-                    accessibilityRole="alert"
-                  >
-                    {validationError}
-                  </Text>
-                ) : null}
-              </View>
-
-              <Text
-                style={[
-                  styles.contadorCaracteres,
-                  {
-                    color: theme.color["on-surface-variant"],
-                    fontSize: theme.font.label.fontSize,
-                    lineHeight: theme.font.label.lineHeight,
-                  },
-                ]}
-              >
-                {characterCount}/{maxCharacters}
-              </Text>
-            </View>
+            <Text allowFontScaling accessibilityLiveRegion="polite" style={styles.counter}>
+              {name.length}/{MAX_NAME_LENGTH}
+            </Text>
           </View>
 
-          {/* Botões de Ação */}
-          <View style={styles.linhaAcoes}>
-            <Pressable
-              onPress={onClose}
-              onFocus={() => setIsCancelFocused(true)}
-              onBlur={() => setIsCancelFocused(false)}
+          <View style={styles.actions}>
+            <PrimaryButton
+              theme={theme}
+              label={saving ? "Salvando..." : "Salvar"}
+              accessibilityHint="Salva o novo nome do perfil"
               disabled={saving}
-              style={({ pressed }) => [
-                styles.botaoCancelar,
-                {
-                  minHeight: theme.target.minSize,
-                  borderRadius: theme.radius.md,
-                  borderColor: theme.color.border,
-                  borderWidth: 1,
-                  paddingHorizontal: theme.space.md,
-                },
-                pressed && { opacity: 0.75 },
-                isCancelFocused && {
-                  borderWidth: theme.focus.ringWidth,
-                  borderColor: theme.color.focus,
-                },
-              ]}
+              busy={saving}
+              onPress={onSave}
+            />
+            <Pressable
               accessibilityRole="button"
               accessibilityLabel="Cancelar edição do nome"
-            >
-              <Text
-                style={[
-                  styles.textoBotaoCancelar,
-                  {
-                    color: theme.color["on-surface"],
-                    fontSize: theme.font.label.fontSize,
-                    fontWeight: "600",
-                  },
-                ]}
-              >
-                Cancelar
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={onSave}
-              onFocus={() => setIsSaveFocused(true)}
-              onBlur={() => setIsSaveFocused(false)}
               disabled={saving}
-              style={({ pressed }) => [
-                styles.botaoSalvar,
-                {
-                  backgroundColor: theme.color.action,
-                  minHeight: theme.target.minSize,
-                  borderRadius: theme.radius.md,
-                  paddingHorizontal: theme.space.lg,
-                },
-                (pressed || saving) && { opacity: 0.8 },
-                isSaveFocused && {
-                  borderWidth: theme.focus.ringWidth,
-                  borderColor: theme.color.focus,
-                },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="Salvar novo nome"
-              accessibilityState={{ busy: saving, disabled: saving }}
+              onPress={onClose}
+              style={({ pressed }) => [styles.secondary, pressed && styles.pressed]}
             >
-              <Text
-                style={[
-                  styles.textoBotaoSalvar,
-                  {
-                    color: theme.color["on-action"],
-                    fontSize: theme.font.label.fontSize,
-                    fontWeight: "600",
-                  },
-                ]}
-              >
-                {saving ? "Salvando..." : "Salvar"}
+              <Text allowFontScaling style={styles.secondaryLabel}>
+                Cancelar
               </Text>
             </Pressable>
           </View>
@@ -289,89 +98,48 @@ export const EditProfileNameModal = ({
   );
 };
 
-const styles = StyleSheet.create({
-  camadaSobreposicao: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-  },
-  panoFundo: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(0, 0, 0, 0.65)",
-  },
-  cartaoDialogo: {
-    width: "100%",
-    maxWidth: 440,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 6,
-      },
-      default: {},
-    }),
-  },
-  linhaCabecalho: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  tituloModal: {
-    letterSpacing: -0.2,
-  },
-  botaoFechar: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  secaoFormulario: {
-    gap: 8,
-  },
-  rotuloCampo: {
-    letterSpacing: 0.1,
-  },
-  campoTexto: {
-    height: 56,
-  },
-  linhaApoio: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    minHeight: 20,
-  },
-  areaErro: {
-    flex: 1,
-    paddingRight: 8,
-  },
-  textoErro: {
-    fontWeight: "500",
-  },
-  contadorCaracteres: {
-    textAlign: "right",
-  },
-  linhaAcoes: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 8,
-  },
-  botaoCancelar: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textoBotaoCancelar: {
-    textAlign: "center",
-  },
-  botaoSalvar: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textoBotaoSalvar: {
-    textAlign: "center",
-  },
-});
+const createStyles = (theme: OrbityTheme) =>
+  StyleSheet.create({
+    scrim: {
+      flex: 1,
+      backgroundColor: theme.color.scrim,
+      justifyContent: "center",
+      padding: theme.space.lg,
+    },
+    surface: {
+      // Ocupa a largura entre as margens do véu; sem isso, o Modal da Web encolhe a superfície ao texto.
+      width: "100%",
+      gap: theme.space.md,
+      padding: theme.space.lg,
+      paddingTop: theme.space.sm,
+      borderRadius: theme.sheet.radius,
+      borderWidth: theme.border.widthThin,
+      borderColor: theme.color["border-subtle"],
+      backgroundColor: theme.color["surface-variant"],
+      boxShadow: theme.shadow.modal,
+    },
+    header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: theme.space.sm },
+    title: { ...theme.font.title, color: theme.color["on-surface"], paddingTop: theme.space.sm, flex: 1 },
+    close: {
+      width: theme.target.minSize,
+      height: theme.target.minSize,
+      marginRight: -theme.space.sm,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: theme.radius.md,
+    },
+    field: { gap: theme.primitive["space-4"] },
+    counter: { ...theme.font["body-sm"], color: theme.color["on-surface-variant"], textAlign: "right" },
+    actions: { gap: theme.space.sm },
+    secondary: {
+      minHeight: theme.target.minSize,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: theme.space.md,
+      borderRadius: theme.radius.md,
+      borderWidth: theme.border.widthThin,
+      borderColor: cosmicBorders.sheet,
+    },
+    secondaryLabel: { ...theme.font.label, color: theme.color["on-surface"] },
+    pressed: { opacity: theme.motion.opacityPressed, transform: [{ scale: theme.motion.scalePressed }] },
+  });

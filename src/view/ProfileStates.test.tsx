@@ -31,12 +31,12 @@ describe("Estados integrados do perfil", () => {
     expect(screen.getAllByRole("link")).toHaveLength(3);
     expect(screen.getAllByRole("alert")).toHaveLength(1);
     expect(screen.getByText("Métricas indisponíveis no momento.")).toBeTruthy();
-    expect(screen.queryByText(/Sua jornada/)).toBeNull();
+    expect(screen.queryByText(/Sua jornada pode começar/)).toBeNull();
   });
 
   it("preserva dados conhecidos durante salvamento e erro de edição", async () => {
     await render(<ProfileScreen viewModel={{ ...state, saving: true, error: "Não foi possível salvar o nome." }} />);
-    expect(screen.getByLabelText("42 horas de estudos completos")).toBeTruthy();
+    expect(screen.getByLabelText("42 horas de estudo")).toBeTruthy();
     expect(screen.queryByLabelText("Carregando métricas do perfil")).toBeNull();
     expect(screen.getAllByRole("link")).toHaveLength(3);
   });

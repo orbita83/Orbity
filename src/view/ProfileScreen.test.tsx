@@ -101,7 +101,7 @@ describe("ProfileScreen", () => {
     expect(screen.getByDisplayValue("Alex Silva Atualizado")).toBeTruthy();
 
     // Act
-    const saveButton = screen.getByLabelText("Salvar novo nome");
+    const saveButton = screen.getByRole("button", { name: "Salvar" });
     fireEvent.press(saveButton);
 
     // Assert

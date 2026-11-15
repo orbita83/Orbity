@@ -1,13 +1,7 @@
-import { useState } from "react";
-import {
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { GradientSurface } from "./GradientSurface";
 import { MaterialSymbol } from "./material-symbol";
-import { themes, type OrbityTheme } from "../theme/tokens";
+import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
 
 export type ProfileHeaderCardProps = {
   readonly name?: string;
@@ -16,224 +10,116 @@ export type ProfileHeaderCardProps = {
   readonly theme?: OrbityTheme;
 };
 
+/** Cartão de identificação do Perfil (protótipo, tela 5): avatar com a inicial, nome, papel e editar. */
 export const ProfileHeaderCard = ({
   name = "",
   loading = false,
   onEditPress,
   theme = themes.cosmic,
 }: ProfileHeaderCardProps) => {
-  const [isFocused, setIsFocused] = useState(false);
-
+  const styles = createStyles(theme);
   const initialLetter = name.trim().charAt(0).toUpperCase() || "?";
 
   if (loading) {
     return (
       <View
-        style={[
-          styles.cartao,
-          {
-            backgroundColor:
-              theme.componentOverrides?.cardSurface ??
-              theme.color["surface-variant"],
-            borderRadius: theme.radius.lg,
-            padding: theme.space.md,
-            gap: theme.space.md,
-          },
-        ]}
-        accessible={true}
+        style={styles.card}
+        accessible
         accessibilityLabel="Carregando identificação do estudante"
         accessibilityState={{ busy: true }}
       >
-        <View
-          style={[
-            styles.avatarSkeleton,
-            {
-              backgroundColor: theme.color["action-subtle"],
-              width: theme.target.minSize,
-              height: theme.target.minSize,
-              borderRadius: theme.target.minSize / 2,
-            },
-          ]}
-        />
-        <View style={styles.conteudoInfo}>
-          <View
-            style={[
-              styles.nomeSkeleton,
-              {
-                backgroundColor: theme.color["action-subtle"],
-                height: theme.font.title.lineHeight,
-                borderRadius: theme.radius.md,
-              },
-            ]}
-          />
-          <View
-            style={[
-              styles.subtituloSkeleton,
-              {
-                backgroundColor: theme.color["action-subtle"],
-                height: theme.font.label.lineHeight,
-                borderRadius: theme.radius.md,
-              },
-            ]}
-          />
+        <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
+        <View style={styles.avatarSkeleton} />
+        <View style={styles.texts} importantForAccessibility="no-hide-descendants" aria-hidden>
+          <View style={styles.nameSkeleton} />
+          <View style={styles.roleSkeleton} />
         </View>
       </View>
     );
   }
 
   return (
-    <View
-      style={[
-        styles.cartao,
-        {
-          backgroundColor:
-            theme.componentOverrides?.cardSurface ??
-            theme.color["surface-variant"],
-          borderRadius: theme.radius.lg,
-          padding: theme.space.md,
-          gap: theme.space.md,
-        },
-      ]}
-    >
-      <View
-        style={[
-          styles.avatar,
-          {
-            backgroundColor: theme.color.action,
-            width: theme.target.minSize,
-            height: theme.target.minSize,
-            borderRadius: theme.target.minSize / 2,
-          },
-        ]}
-        accessible={false}
-        aria-hidden={true}
-      >
-        <Text
-          style={[
-            styles.inicialTexto,
-            {
-              color: theme.color["on-action"],
-              fontSize: theme.font.title.fontSize,
-              fontWeight: theme.font.title.fontWeight,
-            },
-          ]}
-        >
+    <View style={styles.card}>
+      <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
+      <View style={styles.avatar} accessible={false} importantForAccessibility="no-hide-descendants">
+        <GradientSurface from={cosmicColors.actionHover} to={cosmicColors.action} />
+        <Text allowFontScaling={false} style={styles.initial}>
           {initialLetter}
         </Text>
       </View>
-
-      <View style={styles.conteudoInfo}>
-        <Text
-          style={[
-            styles.nomeTexto,
-            {
-              color: theme.color["on-surface"],
-              fontSize: theme.font.title.fontSize,
-              fontWeight: theme.font.title.fontWeight,
-              lineHeight: theme.font.title.lineHeight,
-            },
-          ]}
-          numberOfLines={2}
-          accessibilityRole="header"
-        >
+      <View style={styles.texts}>
+        <Text allowFontScaling numberOfLines={1} style={styles.name}>
           {name}
         </Text>
-        <Text
-          style={[
-            styles.subtituloTexto,
-            {
-              color: theme.color["on-surface-variant"],
-              fontSize: theme.font.label.fontSize,
-              fontWeight: theme.font.label.fontWeight,
-              lineHeight: theme.font.label.lineHeight,
-            },
-          ]}
-        >
+        <Text allowFontScaling style={styles.role}>
           Estudante
         </Text>
       </View>
-
       <Pressable
-        onPress={onEditPress}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        style={({ pressed }) => [
-          styles.botaoEditar,
-          {
-            width: theme.target.minSize,
-            height: theme.target.minSize,
-            borderRadius: theme.radius.md,
-          },
-          pressed && { opacity: 0.75 },
-          isFocused && {
-            borderWidth: theme.focus.ringWidth,
-            borderColor: theme.color.focus,
-          },
-        ]}
         accessibilityRole="button"
         accessibilityLabel="Editar nome do perfil"
-        accessibilityHint="Abre formulário para alterar seu nome exibido"
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        onPress={onEditPress}
+        style={({ pressed }) => [styles.editButton, pressed && styles.pressed]}
       >
-        <MaterialSymbol
-          name="edit"
-          size={24}
-          color={theme.color["on-surface"]}
-        />
+        <MaterialSymbol name="edit" filled color={theme.color.focus} size={theme.navbar.iconSize} />
       </Pressable>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  cartao: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-      default: {},
-    }),
-  },
-  avatar: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarSkeleton: {
-    opacity: 0.6,
-  },
-  inicialTexto: {
-    textAlign: "center",
-  },
-  conteudoInfo: {
-    flex: 1,
-    justifyContent: "center",
-    gap: 4,
-  },
-  nomeTexto: {
-    letterSpacing: -0.2,
-  },
-  subtituloTexto: {
-    letterSpacing: 0.1,
-  },
-  nomeSkeleton: {
-    width: "70%",
-    opacity: 0.6,
-  },
-  subtituloSkeleton: {
-    width: "35%",
-    opacity: 0.4,
-  },
-  botaoEditar: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+const createStyles = (theme: OrbityTheme) =>
+  StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.space.md,
+      padding: theme.space.md,
+      borderRadius: theme.radius.lg,
+      borderWidth: theme.border.widthThin,
+      borderColor: cosmicBorders.card,
+      backgroundColor: cosmicColors.card,
+      overflow: "hidden",
+    },
+    avatar: {
+      width: theme.achievement.size,
+      height: theme.achievement.size,
+      borderRadius: theme.achievement.size / 2,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    // A inicial é decorativa: o nome completo vem logo ao lado, em texto real.
+    initial: { ...theme.font.title, color: theme.color["on-surface"] },
+    texts: { flex: 1, minWidth: 0 },
+    name: { ...theme.font.title, color: theme.color["on-surface"] },
+    role: { ...theme.font.body, color: theme.color["on-surface-variant"] },
+    editButton: {
+      width: theme.target.minSize,
+      height: theme.target.minSize,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: theme.radius.md,
+      borderWidth: theme.border.widthThin,
+      borderColor: cosmicBorders.sheet,
+      backgroundColor: cosmicColors.sheet,
+    },
+    pressed: { opacity: theme.motion.opacityPressed, transform: [{ scale: theme.motion.scalePressed }] },
+    avatarSkeleton: {
+      width: theme.achievement.size,
+      height: theme.achievement.size,
+      borderRadius: theme.achievement.size / 2,
+      backgroundColor: theme.color["action-subtle"],
+    },
+    nameSkeleton: {
+      width: "60%",
+      height: theme.font.title.lineHeight,
+      borderRadius: theme.radius.md,
+      backgroundColor: theme.color["action-subtle"],
+    },
+    roleSkeleton: {
+      width: "40%",
+      height: theme.font.body.lineHeight,
+      borderRadius: theme.radius.md,
+      backgroundColor: theme.color["action-subtle"],
+    },
+  });
