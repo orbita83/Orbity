@@ -70,6 +70,8 @@
 | `font.streak`| Roboto  | 64 px   | 700  | 64 px           | Número da sequência     | Novo (1.2) |
 | `font.brand` | Roboto  | 28 px   | 700  | 36 px           | Marca no cabeçalho da Tela Inicial | Novo (1.2) |
 | `font.caption`| Roboto | 12 px   | 400  | 16 px           | Texto de apoio e legendas | Novo (1.2) |
+| `font.card-title`| Roboto | 16 px | 600 | 24 px          | Título de card do painel da Tela Inicial | Novo (protótipo Claude Design) |
+| `font.body-sm`| Roboto | 14 px   | 400  | 20 px           | Descrição de card e texto de apoio do painel | Novo (protótipo Claude Design) |
 
 ### Espaço, forma e elevação
 

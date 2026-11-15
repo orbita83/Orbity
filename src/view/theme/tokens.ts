@@ -200,6 +200,18 @@ function createTheme(mode: ThemeMode, cosmic = false) {
         fontWeight: "400",
         lineHeight: 16,
       } satisfies TextStyle,
+      "card-title": {
+        fontFamily: "Roboto",
+        fontSize: 16,
+        fontWeight: "600",
+        lineHeight: 24,
+      } satisfies TextStyle,
+      "body-sm": {
+        fontFamily: "Roboto",
+        fontSize: 14,
+        fontWeight: "400",
+        lineHeight: 20,
+      } satisfies TextStyle,
     },
     button: {
       bg: color.action,

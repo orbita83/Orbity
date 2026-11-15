@@ -40,6 +40,14 @@ assert.equal(themes.cosmic.button.labelDisabled, '#BBB6E3');
 assert.equal(themes.light.button.bgDisabled, themes.light.button.bg);
 assert.deepEqual([themes.cosmic.font.brand.fontSize, themes.cosmic.font.brand.lineHeight], [28, 36]);
 assert.deepEqual([themes.cosmic.font.caption.fontSize, themes.cosmic.font.caption.lineHeight], [12, 16]);
+assert.deepEqual(
+  [themes.cosmic.font['card-title'].fontSize, themes.cosmic.font['card-title'].lineHeight, themes.cosmic.font['card-title'].fontWeight],
+  [16, 24, '600'],
+);
+assert.deepEqual(
+  [themes.cosmic.font['body-sm'].fontSize, themes.cosmic.font['body-sm'].lineHeight, themes.cosmic.font['body-sm'].fontWeight],
+  [14, 20, '400'],
+);
 assert.equal(planetColors.relief, '#5320B2');
 for (const value of [themes.cosmic.size.headerHeight, themes.cosmic.size.iconLg, themes.cosmic.sheet.handleHeight, themes.cosmic.sheet.handleWidth, themes.cosmic.progress.height, themes.cosmic.achievement.size]) {
   assert.equal(value % 4, 0, `fora da grade de 4: ${value}`);
