@@ -5,7 +5,7 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 24, left: 0 }),
 }));
 
-const routes = ["index", "tasks", "routines", "cosmos", "profile"].map(
+const routes = ["index", "tasks", "routines", "cosmos", "profile", "new-routine"].map(
   (name) => ({ key: `${name}-key`, name }),
 );
 
@@ -43,6 +43,11 @@ describe("MainTabBar", () => {
 
     await fireEvent.press(screen.getByRole("tab", { name: /Aba Início/ }));
     expect(navigate).toHaveBeenCalledTimes(1);
+  });
+
+  it("some nas telas empilhadas, como Nova rotina", async () => {
+    await render(<MainTabBar {...createProps(5).props} />);
+    expect(screen.queryByRole("tab")).toBeNull();
   });
 
   it("respeita um evento de navegação cancelado", async () => {
