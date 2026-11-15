@@ -48,6 +48,7 @@ export type NewTaskState = {
   selectedCategory: { label: string; icon: TaskCategoryIcon } | null;
   submitting: boolean;
   created: boolean;
+  editing?: boolean;
 };
 
 export type NewTaskActions = {
@@ -133,10 +134,14 @@ const selectedCategoryOf = (id?: TaskCategoryId): NewTaskState["selectedCategory
 export const useNewTaskViewModel = (
   taskUseCases?: ITaskUseCases,
   clockService?: IClockService,
+  taskId?: string,
 ): NewTaskState & NewTaskActions => {
   const useCases = resolveUseCase(taskUseCases, container.useCases.tasks);
   const clock = resolveUseCase(clockService, container.services.clock);
+  const normalizedTaskId = taskId && taskId.trim().length > 0 ? taskId.trim() : undefined;
+  const editing = Boolean(normalizedTaskId);
 
+  const [trackedTaskId, setTrackedTaskId] = useState<string | undefined>(normalizedTaskId);
   const [fields, setFields] = useState<NewTaskFields>(EMPTY_FIELDS);
   const [showErrors, setShowErrors] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -145,12 +150,60 @@ export const useNewTaskViewModel = (
   const [created, setCreated] = useState(false);
   const mountedRef = useRef(true);
 
+  if (trackedTaskId !== normalizedTaskId) {
+    setTrackedTaskId(normalizedTaskId);
+    setFields(EMPTY_FIELDS);
+    setShowErrors(false);
+    setFormError(null);
+    setActivePicker(null);
+    setSubmitting(false);
+    setCreated(false);
+  }
+
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!normalizedTaskId) {
+      return;
+    }
+
+    let active = true;
+    useCases.listTasks().then(
+      (loaded) => {
+        if (!active) {
+          return;
+        }
+        const found = loaded.find((item) => item.id === normalizedTaskId);
+        if (!found) {
+          setFormError("Não foi possível carregar a tarefa agora.");
+          return;
+        }
+        setFields({
+          title: found.title,
+          description: found.description ?? "",
+          startDate: found.startDate ?? "",
+          startTime: found.startTime ?? "",
+          endDate: found.endDate ?? "",
+          endTime: found.endTime ?? "",
+          category: found.category,
+        });
+      },
+      () => {
+        if (active) {
+          setFormError("Não foi possível carregar a tarefa agora.");
+        }
+      },
+    );
+
+    return () => {
+      active = false;
+    };
+  }, [normalizedTaskId, useCases]);
 
   const dateOptions = useMemo(() => buildDatePickerOptions(clock.todayLocal()), [clock]);
 
@@ -192,7 +245,20 @@ export const useNewTaskViewModel = (
 
     void (async () => {
       try {
-        await useCases.createTask(fields);
+        if (normalizedTaskId) {
+          await useCases.updateTask({
+            id: normalizedTaskId,
+            title: fields.title,
+            description: fields.description.trim() || null,
+            startDate: fields.startDate.trim() || null,
+            startTime: fields.startTime.trim() || null,
+            endDate: fields.endDate.trim() || null,
+            endTime: fields.endTime.trim() || null,
+            category: fields.category ?? null,
+          });
+        } else {
+          await useCases.createTask(fields);
+        }
         if (mountedRef.current) {
           setCreated(true);
         }
@@ -208,7 +274,7 @@ export const useNewTaskViewModel = (
         }
       }
     })();
-  }, [fields, submitting, titleMissing, useCases]);
+  }, [fields, normalizedTaskId, submitting, titleMissing, useCases]);
 
   const reset = useCallback(() => {
     setFields(EMPTY_FIELDS);
@@ -230,6 +296,7 @@ export const useNewTaskViewModel = (
     selectedCategory: selectedCategoryOf(fields.category),
     submitting,
     created,
+    editing,
     setField,
     selectCategory,
     openPicker,
