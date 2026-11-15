@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
 import { cosmicColors, themes } from "../theme/tokens";
 import { MaterialSymbol } from "./material-symbol";
 
@@ -19,6 +19,7 @@ export type TextFieldProps = {
   helper?: string;
   multiline?: boolean;
   onSubmitEditing?: () => void;
+  keyboardType?: TextInputProps["keyboardType"];
   testID?: string;
 };
 
@@ -35,6 +36,7 @@ export const TextField = ({
   helper,
   multiline = false,
   onSubmitEditing,
+  keyboardType,
   testID,
 }: TextFieldProps) => {
   const [focused, setFocused] = useState(false);
@@ -60,6 +62,7 @@ export const TextField = ({
         numberOfLines={multiline ? MULTILINE_ROWS : 1}
         textAlignVertical={multiline ? "top" : "center"}
         onSubmitEditing={onSubmitEditing}
+        keyboardType={keyboardType}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={[styles.field, multiline && styles.multiline, focused && styles.focused]}

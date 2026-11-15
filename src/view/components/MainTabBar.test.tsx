@@ -50,6 +50,13 @@ describe("MainTabBar", () => {
     expect(screen.queryByRole("tab")).toBeNull();
   });
 
+  it("some quando a tela pede tabBarStyle display none, como na seleção múltipla", async () => {
+    const { props } = createProps(1);
+    const withHiddenBar = { ...props, descriptors: { "tasks-key": { options: { tabBarStyle: { display: "none" } } } } } as unknown as MainTabBarProps;
+    await render(<MainTabBar {...withHiddenBar} />);
+    expect(screen.queryByRole("tab")).toBeNull();
+  });
+
   it("respeita um evento de navegação cancelado", async () => {
     const { props, navigate, emit } = createProps(0);
     emit.mockReturnValue({ defaultPrevented: true });
