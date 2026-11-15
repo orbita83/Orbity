@@ -31,7 +31,13 @@ const TasksScreen = () => {
     return () => subscription.remove();
   }, [cancelSelection, selectionMode]);
 
-  return <TasksScreenContent {...vm} onCreateTask={() => router.navigate("/new-task")} />;
+  return (
+    <TasksScreenContent
+      {...vm}
+      onCreateTask={() => router.navigate({ pathname: "/new-task", params: { id: "" } })}
+      onEditTask={(id) => router.navigate({ pathname: "/new-task", params: { id } })}
+    />
+  );
 };
 
 export default TasksScreen;

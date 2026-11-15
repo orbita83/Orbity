@@ -92,6 +92,7 @@ export const NewTaskScreenContent = ({
   selectedCategory,
   submitting,
   created,
+  editing = false,
   setField,
   selectCategory,
   openPicker,
@@ -131,7 +132,12 @@ export const NewTaskScreenContent = ({
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
-      <ScreenHeader title={TASKS_COPY["form.title"]} variant="close" backLabel={TASKS_COPY["form.close"]} onBack={onClose} />
+      <ScreenHeader
+        title={editing ? TASKS_COPY["form.editTitle"] : TASKS_COPY["form.title"]}
+        variant="close"
+        backLabel={editing ? TASKS_COPY["form.editClose"] : TASKS_COPY["form.close"]}
+        onBack={onClose}
+      />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
         <TextField
           label={TASKS_COPY["form.name"]}
@@ -202,7 +208,12 @@ export const NewTaskScreenContent = ({
         ) : null}
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
-        <PrimaryButton theme={theme} label={TASKS_COPY["form.submit"]} onPress={submit} disabled={submitting} />
+        <PrimaryButton
+          theme={theme}
+          label={editing ? TASKS_COPY["form.editSubmit"] : TASKS_COPY["form.submit"]}
+          onPress={submit}
+          disabled={submitting}
+        />
       </View>
       <TaskPickerModal
         visible={activePicker !== null}
@@ -215,9 +226,9 @@ export const NewTaskScreenContent = ({
       />
       <SuccessDialog
         visible={created}
-        title={TASKS_COPY["created.title"]}
-        message={TASKS_COPY["created.message"]}
-        actionLabel={TASKS_COPY["created.action"]}
+        title={editing ? TASKS_COPY["updated.title"] : TASKS_COPY["created.title"]}
+        message={editing ? TASKS_COPY["updated.message"] : TASKS_COPY["created.message"]}
+        actionLabel={editing ? TASKS_COPY["updated.action"] : TASKS_COPY["created.action"]}
         onClose={onFinish}
       />
     </View>

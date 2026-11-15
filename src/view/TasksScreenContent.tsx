@@ -18,7 +18,11 @@ const FILTERS: readonly FilterChipOption<TaskFilter>[] = [
   { id: "completed", label: TASKS_COPY["filter.completed"] },
 ];
 
-export type TasksScreenContentProps = TasksState & TasksActions & { onCreateTask: () => void };
+export type TasksScreenContentProps = TasksState &
+  TasksActions & {
+    onCreateTask: () => void;
+    onEditTask?: (id: string) => void;
+  };
 
 const summaryOf = (pendingCount: number, totalCount: number) => {
   if (totalCount === 0) return TASKS_COPY["summary.empty"];
@@ -50,6 +54,7 @@ export const TasksScreenContent = ({
   confirmDelete,
   reload,
   onCreateTask,
+  onEditTask,
 }: TasksScreenContentProps) => {
   const insets = useSafeAreaInsets();
   const selectedCount = selectedIds.length;
@@ -144,6 +149,18 @@ export const TasksScreenContent = ({
       {selectionMode ? (
         <ContextualActionBar
           actions={[
+            {
+              id: "edit",
+              label: TASKS_COPY["action.edit"],
+              icon: "edit",
+              onPress: () => {
+                if (selectedIds.length === 1) {
+                  cancelSelection();
+                  onEditTask?.(selectedIds[0]);
+                }
+              },
+              disabled: selectedCount !== 1,
+            },
             {
               id: "pin",
               label: allSelectedPinned ? TASKS_COPY["action.unpin"] : TASKS_COPY["action.pin"],

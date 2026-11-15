@@ -18,6 +18,7 @@ export const TASKS_COPY = {
   "selection.hint": "Toque nas tarefas para incluir ou tirar da seleção.",
   "selection.one": "1 selecionada",
   "selection.other": "{n} selecionadas",
+  "action.edit": "Editar",
   "action.pin": "Fixar",
   "action.unpin": "Desafixar",
   "action.selectAll": "Marcar todas",
@@ -29,6 +30,8 @@ export const TASKS_COPY = {
   "delete.confirm": "Excluir",
   "form.title": "Nova tarefa",
   "form.close": "Fechar sem criar",
+  "form.editTitle": "Editar tarefa",
+  "form.editClose": "Fechar sem salvar",
   "form.name": "Título da tarefa",
   "form.name.placeholder": "Ex.: Revisar SOLID",
   "form.name.error": "Dê um título para a tarefa.",
@@ -58,9 +61,13 @@ export const TASKS_COPY = {
   "error.save": "Não foi possível salvar as alterações agora.",
   "error.retry": "Tentar novamente",
   "form.submit": "Criar tarefa",
+  "form.editSubmit": "Salvar alterações",
   "created.title": "Tarefa criada!",
   "created.message": "Sua tarefa foi adicionada à lista de tarefas.",
   "created.action": "Ver minhas tarefas",
+  "updated.title": "Tarefa atualizada!",
+  "updated.message": "As alterações da sua tarefa foram salvas.",
+  "updated.action": "Ver minhas tarefas",
 } as const;
 
 export type TasksCopyKey = keyof typeof TASKS_COPY;

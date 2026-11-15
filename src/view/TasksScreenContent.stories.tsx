@@ -78,6 +78,7 @@ const baseArgs: TasksScreenContentProps = {
   confirmDelete: fn(),
   reload: fn(async () => undefined),
   onCreateTask: fn(),
+  onEditTask: fn(),
 };
 
 const meta = {
@@ -115,7 +116,7 @@ export const ConfirmarExclusao: Story = {
 
 const InteractiveList = () => {
   const vm = useTasksViewModel(PROTOTYPE_TASKS);
-  return <TasksScreenContent {...vm} onCreateTask={noop} />;
+  return <TasksScreenContent {...vm} onCreateTask={noop} onEditTask={noop} />;
 };
 export const Interativa: Story = {
   name: "Interativa · filtros, conclusão e seleção (toque longo)",
