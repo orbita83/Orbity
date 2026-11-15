@@ -8,6 +8,8 @@ Esta pasta reúne a documentação de build, assinatura e distribuição Android
 | [`versionamento-do-app.md`](./versionamento-do-app.md) | Identidade técnica configurada no `app.json`, finalidade dos campos de versão, estratégia do `versionCode` e como atualizar as versões. | T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) |
 | [`eas-build.md`](./eas-build.md) | Instalação e autenticação do EAS CLI, perfis Android e vínculo com o projeto EAS autorizado. | T0011 — [#77](https://github.com/orbita83/Orbity/issues/77) |
 | [`assinatura-e-builds-android.md`](./assinatura-e-builds-android.md) | Keystore gerenciado pelo EAS, responsáveis, backup e recuperação das credenciais, chave de upload × chave da Google Play, comandos de build, instalação do development client, APK × AAB e registro de validação. | T0012 — [#78](https://github.com/orbita83/Orbity/issues/78) |
+| [`build-sob-demanda.md`](./build-sob-demanda.md) | Workflow manual **EAS Build Android** no GitHub Actions: perfis, referências permitidas, environments, `EXPO_TOKEN`, rastreabilidade, diagnóstico de falhas e manutenção. | T0015 — [#81](https://github.com/orbita83/Orbity/issues/81) |
+| [`submissao-google-play.md`](./submissao-google-play.md) | Preparação e submissão manual do AAB à Google Play: pré-requisitos, conferência de versão, faixas de teste e acompanhamento da revisão. | T0015 — [#81](https://github.com/orbita83/Orbity/issues/81) |
 | [`CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases`](../../CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases) | Política de governança de versões, releases, critérios de corte para `v0.1.0`, tags Git anotadas, aprovação e hotfixes. | T0014 — [#80](https://github.com/orbita83/Orbity/issues/80) |
 
 ## Orientações
