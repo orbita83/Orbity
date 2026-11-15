@@ -28,18 +28,25 @@ describe("SqliteTaskRepository", () => {
     const dbPath = join(dir, "orbity.db");
     const task = createTaskFixture({ id: "t-persist", title: "Revisar algoritmos", pinned: true });
 
+    const fileExecutors: BetterSqliteExecutor[] = [];
+
     try {
       const firstExecutor = new BetterSqliteExecutor(dbPath);
+      fileExecutors.push(firstExecutor);
       const firstRepo = new SqliteTaskRepository(new DatabaseProvider(async () => firstExecutor));
       await firstRepo.create(task);
       firstExecutor.close();
 
       const secondExecutor = new BetterSqliteExecutor(dbPath);
-      openExecutors.push(secondExecutor);
+      fileExecutors.push(secondExecutor);
       const secondRepo = new SqliteTaskRepository(new DatabaseProvider(async () => secondExecutor));
 
       expect(await secondRepo.listAll()).toEqual([task]);
     } finally {
+      // No Windows, um arquivo de banco ainda aberto não pode ser apagado (EBUSY): fecha antes de remover.
+      fileExecutors.forEach((executor) => {
+        if (executor.database.open) executor.close();
+      });
       rmSync(dir, { recursive: true, force: true });
     }
   });
