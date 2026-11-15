@@ -23,6 +23,11 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
   - **PlanetStreakView:** novo desenho em grade de 280 × 280 (aspecto 1, antes 0,85). O planeta ocupa 320/390 da largura quando recolhido, encolhe para 190/320 no intermediário e some sob o painel no expandido; o painel intermediário fica a 35,4% da cena (antes 44%).
   - **AchievementBadge:** a variante bloqueada mostra o símbolo da conquista esmaecido com selo de cadeado, em vez de só o cadeado.
   - **Padrão F1/F2:** botão de Configurações no cabeçalho; card Modo Foco sem chips de duração (a escolha vai para a sessão de foco); cards Última sessão e Como funciona? presentes desde já, em estado vazio. A porcentagem do progresso continua fora da barra, ao lado do contador.
+- **Base das telas de Tarefas e Rotinas:** componentes compartilhados implementados para as duas telas, seguindo o protótipo do Claude Design e os documentos do ODS.
+  - **Implementados:** `TextField` (variante Texto de [campos-formulario.md](04-componentes/campos-formulario.md)), `ConfirmDialog` (variante Confirmação de [modal.md](04-componentes/modal.md), com ✕ e raio de painel), `ContextualHeader` e `ContextualActionBar` ([barra-acoes-contextuais.md](04-componentes/barra-acoes-contextuais.md)).
+  - **Componentes novos:** [Snackbar](04-componentes/snackbar.md), [CheckCircle](04-componentes/circulo-concluir.md), [IconTile](04-componentes/quadro-icone.md) e [ScreenHeader](04-componentes/cabecalho-tela.md).
+  - **Tokens:** `size.dialog-icon` (96 dp) é novo, e `button.opacity-disabled` (0,6), que já estava documentado, passa a existir em `tokens.ts`. Ícones Material novos em `material-symbol.tsx` para as duas telas.
+  - **Navegação:** rotas `new-task`, `new-routine` e `routine-details` registradas sem item na barra de abas, que fica escondida nelas.
 - **Decisões abertas, registradas como lacunas:** tipos de conquista além de dias de sequência e se conquistas dão estrelas; carrossel automático com pausa ou rolagem pelo dedo; desenho da confirmação de exclusão em lote e da sessão de foco ativa; implementação dos gradientes, chips em grade, card com gradiente e dos novos componentes.
 
 ## 1.1.0 — em preparação
