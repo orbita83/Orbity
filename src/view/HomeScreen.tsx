@@ -1,3 +1,5 @@
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import { useReduceMotion } from "./theme/use-reduce-motion";
 import { useHomeViewModel } from "../viewmodel/HomeViewModel";
 import { HomeScreenContent } from "./HomeScreenContent";
@@ -5,7 +7,14 @@ import { HomeScreenContent } from "./HomeScreenContent";
 /** Tela Início: liga a ViewModel à apresentação (HomeScreenContent). */
 const HomeScreen = () => {
   const vm = useHomeViewModel();
+  const { refresh } = vm;
   const reduceMotion = useReduceMotion();
+
+  useFocusEffect(
+    useCallback(() => {
+      void refresh();
+    }, [refresh]),
+  );
 
   return (
     <HomeScreenContent

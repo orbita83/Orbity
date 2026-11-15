@@ -73,7 +73,7 @@ O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Na
 
 A implementação está em [card-tarefa.tsx](../../src/view/components/card-tarefa.tsx), as histórias em [card-tarefa.stories.tsx](../../src/view/components/card-tarefa.stories.tsx), e os tokens consumidos vêm de [tokens.ts](../../src/view/theme/tokens.ts).
 
-A tela de Tarefas (protótipo 2 e 2.3) especifica as mudanças abaixo, ainda não aplicadas a `card-tarefa.tsx`:
+Desde a tela de Tarefas (protótipo 2 e 2.3):
 
 - O tema padrão passa a ser `themes.cosmic`, com gradiente `cosmicGradients.card` e contorno `cosmicBorders.card`.
 - A conclusão usa o [CheckCircle](circulo-concluir.md).

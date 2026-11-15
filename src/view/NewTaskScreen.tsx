@@ -1,6 +1,20 @@
-import { PlaceholderScreen } from "./components/PlaceholderScreen";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useNewTaskViewModel } from "../viewmodel/NewTaskViewModel";
+import { NewTaskScreenContent } from "./NewTaskScreenContent";
 
-// Rota registrada na base compartilhada; a tela entra na branch da funcionalidade.
-const NewTaskScreen = () => <PlaceholderScreen title="Nova tarefa" message="O formulário de nova tarefa chega com a tela de Tarefas." />;
+/** Tela Nova/Editar tarefa: abre por cima de Tarefas e volta para a lista ao fechar ou depois de salvar. */
+const NewTaskScreen = () => {
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const taskId = Array.isArray(id) ? id[0] : id;
+  const vm = useNewTaskViewModel(undefined, undefined, taskId);
+  const router = useRouter();
+  const backToTasks = () => {
+    vm.reset();
+    router.setParams({ id: "" });
+    router.navigate("/tasks");
+  };
+
+  return <NewTaskScreenContent {...vm} onClose={backToTasks} onFinish={backToTasks} />;
+};
 
 export default NewTaskScreen;

@@ -8,7 +8,9 @@ Camada de apresentação do Orbity. Contém os componentes de tela exportados co
 
 - Telas (exportação `default`, cada uma renderiza `PlaceholderScreen` com `title` e `message` em pt-BR):
   - `HomeScreen.tsx` -> `HomeScreen` (título "Início"); importado por `src/app/index.tsx`.
-  - `TasksScreen.tsx` -> `TasksScreen` (título "Tarefas"); importado por `src/app/tasks.tsx`.
+  - `TasksScreen.tsx` -> `TasksScreen`; liga `useTasksViewModel` a `TasksScreenContent` (lista, filtros e seleção múltipla) e esconde a barra de abas na seleção; importado por `src/app/tasks.tsx`.
+  - `NewTaskScreen.tsx` -> `NewTaskScreen`; liga `useNewTaskViewModel` a `NewTaskScreenContent` (formulário e "Tarefa criada!"); importado por `src/app/new-task.tsx`.
+  - Textos das telas de Tarefas em `tasks-copy.ts`; tarefas de exemplo só para histórias e testes em `__fixtures__/task-list.fixture.ts`.
   - `RoutinesScreen.tsx` -> `RoutinesScreen` (título "Rotinas"); importado por `src/app/routines.tsx`.
   - `CosmosScreen.tsx` -> `CosmosScreen` (título "Cosmos"); importado por `src/app/cosmos.tsx`.
   - `ProfileScreen.tsx` -> `ProfileScreen` (título "Perfil"); importado por `src/app/profile.tsx`.

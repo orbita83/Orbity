@@ -120,6 +120,9 @@ const createChipStyles = (
 ) =>
   StyleSheet.create({
     focusContainer: {
+      // 1.2: colunas de largura igual que ocupam a linha (chips-filtro.md).
+      flex: 1,
+      minWidth: 0,
       borderColor: theme.color.focus,
       borderRadius:
         theme.radius.md +
@@ -139,7 +142,7 @@ const createChipStyles = (
       justifyContent: "center",
       minHeight: theme.target.minSize,
       minWidth: theme.target.minSize,
-      paddingHorizontal: theme.space.md,
+      paddingHorizontal: theme.space.sm,
       paddingVertical: theme.space.sm,
     },
     chipPressed: {
@@ -156,9 +159,8 @@ const createChipStyles = (
 const createContainerStyles = (theme: OrbityTheme) =>
   StyleSheet.create({
     container: {
-      alignItems: "center",
+      alignItems: "stretch",
       flexDirection: "row",
-      flexWrap: "wrap",
       gap: theme.space.sm,
     },
   });
