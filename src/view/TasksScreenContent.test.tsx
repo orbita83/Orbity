@@ -124,6 +124,7 @@ const formProps = (overrides: Partial<NewTaskScreenContentProps> = {}): NewTaskS
   dateOptions: sampleDateOptions,
   timeOptions: TIME_PICKER_OPTIONS,
   categoryOptions: CATEGORY_PICKER_OPTIONS,
+  selectedCategory: null,
   submitting: false,
   created: false,
   setField: jest.fn(),

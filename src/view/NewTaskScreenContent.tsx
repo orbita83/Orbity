@@ -1,6 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getTaskCategoryOption, type TaskCategoryId } from "../model/entities/task";
 import type {
   NewTaskActions,
   NewTaskFields,
@@ -90,6 +89,7 @@ export const NewTaskScreenContent = ({
   dateOptions,
   timeOptions,
   categoryOptions,
+  selectedCategory,
   submitting,
   created,
   setField,
@@ -101,7 +101,6 @@ export const NewTaskScreenContent = ({
   onFinish,
 }: NewTaskScreenContentProps) => {
   const insets = useSafeAreaInsets();
-  const selectedCategory = getTaskCategoryOption(fields.category);
   const categoryLabel = selectedCategory?.label ?? TASKS_COPY["form.category.empty"];
 
   const activePickerOptions =
@@ -123,7 +122,7 @@ export const NewTaskScreenContent = ({
       return;
     }
     if (activePicker === "category") {
-      selectCategory(value ? (value as TaskCategoryId) : undefined);
+      selectCategory(value || undefined);
       return;
     }
     setField(activePicker, value);

@@ -3,6 +3,8 @@ import { container, resolveUseCase } from "@/DI/container";
 import type { LocalDate } from "@/model/entities/local-date";
 import {
   TASK_CATEGORIES,
+  getTaskCategoryOption,
+  isValidTaskCategoryId,
   type TaskCategoryIcon,
   type TaskCategoryId,
 } from "@/model/entities/task";
@@ -42,13 +44,16 @@ export type NewTaskState = {
   dateOptions: readonly TaskPickerOption[];
   timeOptions: readonly TaskPickerOption[];
   categoryOptions: readonly TaskPickerOption[];
+  /** Categoria escolhida já pronta para exibir, ou `null` quando a tarefa está sem categoria. */
+  selectedCategory: { label: string; icon: TaskCategoryIcon } | null;
   submitting: boolean;
   created: boolean;
 };
 
 export type NewTaskActions = {
   setField: (field: NewTaskTextField, value: string) => void;
-  selectCategory: (category?: TaskCategoryId) => void;
+  /** Recebe o valor do seletor (id da categoria ou vazio para "Sem categoria"). */
+  selectCategory: (value?: string) => void;
   openPicker: (picker: NewTaskPickerField) => void;
   closePicker: () => void;
   submit: () => void;
@@ -120,6 +125,11 @@ export const CATEGORY_PICKER_OPTIONS: readonly TaskPickerOption[] = Object.freez
 ]);
 
 /** Estado e ações do formulário de Nova tarefa conectado ao domínio e à persistência. */
+const selectedCategoryOf = (id?: TaskCategoryId): NewTaskState["selectedCategory"] => {
+  const option = getTaskCategoryOption(id);
+  return option ? { label: option.label, icon: option.icon } : null;
+};
+
 export const useNewTaskViewModel = (
   taskUseCases?: ITaskUseCases,
   clockService?: IClockService,
@@ -149,7 +159,8 @@ export const useNewTaskViewModel = (
     setFormError(null);
   }, []);
 
-  const selectCategory = useCallback((category?: TaskCategoryId) => {
+  const selectCategory = useCallback((value?: string) => {
+    const category = value && isValidTaskCategoryId(value) ? value : undefined;
     setFields((current) => ({ ...current, category }));
     setActivePicker(null);
     setFormError(null);
@@ -216,6 +227,7 @@ export const useNewTaskViewModel = (
     dateOptions,
     timeOptions: TIME_PICKER_OPTIONS,
     categoryOptions: CATEGORY_PICKER_OPTIONS,
+    selectedCategory: selectedCategoryOf(fields.category),
     submitting,
     created,
     setField,

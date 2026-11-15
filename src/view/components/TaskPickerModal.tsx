@@ -1,5 +1,5 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { cosmicBorders, themes } from "../theme/tokens";
+import { themes } from "../theme/tokens";
 import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
 
 const theme = themes.cosmic;
@@ -108,15 +108,15 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color.scrim,
   },
   surface: {
+    // Mesma superfície do Modal do ODS (modal.md), como ConfirmDialog e SuccessDialog.
     width: "100%",
-    maxWidth: 420,
     gap: theme.space.sm,
     padding: theme.space.lg,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.sheet.radius,
     borderWidth: theme.border.widthThin,
-    borderColor: cosmicBorders.sheet,
+    borderColor: theme.color["border-subtle"],
     backgroundColor: theme.color["surface-variant"],
-    boxShadow: theme.shadow.sheet,
+    boxShadow: theme.shadow.modal,
   },
   header: {
     flexDirection: "row",
