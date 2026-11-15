@@ -68,6 +68,10 @@
 | `font.body`  | Roboto  | 16 px   | 400  | 24 px           | Texto corrido           | Adaptado |
 | `font.label` | Roboto  | 14 px   | 500  | 20 px           | Rótulos de botão e campo| Adaptado |
 | `font.streak`| Roboto  | 64 px   | 700  | 64 px           | Número da sequência     | Novo (1.2) |
+| `font.brand` | Roboto  | 28 px   | 700  | 36 px           | Marca no cabeçalho da Tela Inicial | Novo (1.2) |
+| `font.caption`| Roboto | 12 px   | 400  | 16 px           | Texto de apoio e legendas | Novo (1.2) |
+| `font.card-title`| Roboto | 16 px | 600 | 24 px          | Título de card do painel da Tela Inicial | Novo (1.2) |
+| `font.body-sm`| Roboto | 14 px   | 400  | 20 px           | Descrição de card e texto de apoio do painel | Novo (1.2) |
 
 ### Espaço, forma e elevação
 
@@ -85,8 +89,14 @@
 | `focus.ring-width` | 2 dp    | Espessura do indicador de foco      | Herdado  |
 | `focus.ring-offset`| 2 dp    | Distância entre foco e componente   | Herdado  |
 | `size.progress-height` | 20 dp | Altura da barra de progresso        | Novo (1.2) |
-| `size.handle-width` / `size.handle-height` | 40 × 5 dp | Alça do painel deslizante | Novo (1.2) |
+| `size.handle-width` / `size.handle-height` | 40 × 4 dp | Alça do painel deslizante (1.2; antes 40 × 5, fora da grade) | Novo (1.2) |
 | `size.achievement-badge` | 60 dp | Caixa da conquista no painel      | Novo (1.2) |
+| `size.header-height` | 64 dp | Altura do cabeçalho da Tela Inicial | Novo (1.2) |
+| `size.icon-lg` | 32 dp | Ícones grandes dos cards e da conquista no painel | Novo (1.2) |
+| `size.dialog-icon` | 96 dp | Ícone central dos diálogos de confirmação e de sucesso, em círculo | Novo (1.2) |
+| `border.width-thin` | 1 dp | Contorno fino de cards e do painel (traço, fora da grade de espaço) | Novo (1.2) |
+
+Tamanhos, espaços e raios novos usam múltiplos de 4. Cantos de pílula não têm token: o raio é metade do tamanho que já é token (`progress.height / 2`, `achievement.size / 2`).
 
 ### Sombras (1.2)
 
@@ -154,6 +164,9 @@ Esta paleta é a direção global escura do Orbity, aplicável a qualquer tela. 
 | `cosmicTokens.color.unlocked` | `#C47EFF` | Aro de conquista ativa (`cosmicColors.unlocked` na 1.2) | Adaptado |
 | `cosmicTokens.color.achievementPendingIcon` | `#8C7BCB` | Ícone de conquista pendente | Adaptado |
 | `cosmicTokens.color.achievementPendingBorder` | `#2B2654` | Contorno de conquista pendente | Adaptado |
+| `cosmicTokens.color.iconAccent` | `#A56AF4` | Ícones dos cards do painel (≥ 3:1 sobre fundo, painel e card) | Novo (1.2) |
+| `cosmicTokens.color.streakFlame` | `#FFB52E` | Chama da sequência (≥ 3:1 sobre fundo, painel e card) | Novo (1.2) |
+| `cosmicTokens.color.streakFlameCore` | `#FFE48A` | Miolo da chama, decorativo | Novo (1.2) |
 | `cosmicTokens.planet.highlight` | `#EBACFF` | Realce do planeta | Adaptado |
 | `cosmicTokens.planet.light` | `#BD6AFF` | Luz do planeta | Adaptado |
 | `cosmicTokens.planet.surface` | `#8840E9` | Superfície do planeta | Adaptado |
@@ -165,7 +178,7 @@ Esta paleta é a direção global escura do Orbity, aplicável a qualquer tela. 
 | `cosmicTokens.planet.ringHighlight` | `#E8B5FF` | Realce do anel | Adaptado |
 | `cosmicTokens.planet.glow` | `#8236D9` | Brilho decorativo | Adaptado |
 
-Nas linhas com dois nomes, ambos pertencem ao mesmo grupo `cosmicTokens.color`. Os nomes para hover, conquistas pendentes e camadas do planeta formalizam papéis descritos no protótipo, sem afirmar sua implementação.
+No código, `cosmicColors` exporta `iconAccent`, `streakFlame`, `streakFlameCore`, `achievementPendingIcon` e `achievementPendingBorder`, e `planetColors` exporta as camadas do planeta com os nomes desta tabela. Nas linhas com dois nomes, ambos pertencem ao mesmo grupo `cosmicTokens.color`. Os nomes para hover, conquistas pendentes e camadas do planeta formalizam papéis descritos no protótipo, sem afirmar sua implementação.
 
 **Lacunas:** o estado pressionado da ação cósmica foi resolvido na 1.2 por escala e opacidade (ver Movimento). O estado desabilitado ainda precisa de validação visual e de contraste. Os gradientes de ação, painel, card e progresso estão exportados em `cosmicGradients`, mas ainda não são desenhados pelos componentes. O teste `tests/ods-theme.test.cjs` amostra os gradientes de ação e de progresso; os de painel e card não carregam texto direto.
 
@@ -184,9 +197,9 @@ Nas linhas com dois nomes, ambos pertencem ao mesmo grupo `cosmicTokens.color`. 
 | `button.bg-hover`         | `color.action` + estado hover                | Adaptado |
 | `button.bg-pressed`       | `color.action` + `motion.scale-pressed` + `motion.opacity-pressed` (1.2) | Adaptado |
 | `button.shadow`           | `shadow.button` (1.2)                        | Novo     |
-| `button.bg-disabled`      | `color.surface` + estado disabled            | Adaptado |
-| `button.label-disabled`   | `color.on-surface`                           | Adaptado |
-| `button.opacity-disabled` | `0.6`                                        | Novo     |
+| `button.bg-disabled`      | cósmico `color.action-subtle` (`#232052`, 1.2); legados: lacuna, mantém `button.bg` | Adaptado |
+| `button.label-disabled`   | cósmico `color.on-surface-variant` (`#BBB6E3`, 7,80:1, 1.2); legados: lacuna, mantém `button.label` | Adaptado |
+| `button.opacity-disabled` | `0.6` — não usado no cósmico, onde o desabilitado é sólido; opacidade 0,5 daria 3,08:1 | Novo     |
 | `navbar.bg`               | `color.surface`                              | Adaptado |
 | `navbar.item-active`      | `color.action`                               | Adaptado |
 | `navbar.item-inactive`    | `color.on-surface`                           | Adaptado |

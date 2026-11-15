@@ -47,8 +47,8 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 ## Lacunas
 
-- Desenho da confirmação de exclusão em lote.
+- A confirmação de exclusão em lote usa a variante Confirmação do [modal](modal.md); o texto final fica com a tela de Tarefas.
 
 ## Código
 
-Ainda não implementado.
+Ainda não implementado. A implementação prevista divide o componente em `ContextualHeader` (✕ "Cancelar seleção" e contador em região ao vivo) e `ContextualActionBar` (ações com ícone em `color.focus` e rótulo; `destructive` usa `color.error` no ícone; `disabled` usa `button.opacity-disabled`). Os dois devem respeitar a área segura.

@@ -52,4 +52,15 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 
 ## Código
 
-Ainda não implementado.
+Ainda não implementado. A variante Texto (uma ou várias linhas) está prevista como `TextField`, e o placeholder usa `cosmicColors.inactive`. O campo aceita um botão acessório à direita (`trailingIcon`, `trailingLabel` e `onTrailingPress`), usado em Data e hora para abrir o [seletor de opções](seletor-opcoes.md) sem impedir a digitação, e o contorno de foco envolve o campo e o botão. A Seleção de categoria usa o mesmo seletor.
+
+```tsx
+<TextField
+  label="Nome da rotina"
+  requirement="required"
+  value={name}
+  onChangeText={setName}
+  placeholder="Ex.: Matemática"
+  error={nameError}
+/>
+```

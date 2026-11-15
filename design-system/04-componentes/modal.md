@@ -26,7 +26,9 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 | Variante | Uso | Tokens |
 | --- | --- | --- |
 | Detalhe | Conquista | Anatomia acima |
-| Confirmação | Ação destrutiva | Mesmos tokens; ação destrutiva com ícone `color.error` e texto (pendente) |
+| Sucesso | Confirmação de criação ("Tarefa criada!") | Mesmos tokens; ícone `check` de `size.dialog-icon` em círculo com borda `color.success`; uma ação principal |
+| Seleção | Escolher data, horário ou categoria | Mesmos tokens; lista de opções em `radiogroup` ([seletor-opcoes.md](seletor-opcoes.md)) |
+| Confirmação | Ação destrutiva (excluir rotina, excluir tarefas em lote) | Mesmos tokens; ícone central de `size.dialog-icon` (96 dp) em círculo com borda `color.error`; título e texto centralizados; ações empilhadas: a segura em destaque (`PrimaryButton`) e a destrutiva secundária, com ícone `color.error` e texto `color.on-surface` |
 
 ## Estados
 
@@ -51,4 +53,17 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 
 ## Código
 
-Ainda não implementado. React Native oferece `Modal`; os valores estão em `theme.color.scrim`, `theme.shadow.modal` e `theme.sheet.radius`.
+Ainda não implementado. React Native oferece `Modal` (com `transparent`); os valores estão em `theme.color.scrim`, `theme.shadow.modal` e `theme.sheet.radius`. Na variante Confirmação, o ✕ e o voltar do Android devem chamar `onCancel`. Uso previsto:
+
+```tsx
+<ConfirmDialog
+  visible={visible}
+  icon="delete_outline"
+  title="Excluir a rotina Matemática?"
+  message="Ela sai da sua lista e não aparece mais nos próximos dias."
+  cancelLabel="Manter rotina"
+  confirmLabel="Excluir rotina"
+  onCancel={closeDialog}
+  onConfirm={deleteRoutine}
+/>
+```

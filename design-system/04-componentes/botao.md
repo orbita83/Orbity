@@ -23,7 +23,7 @@ Os mesmos papéis desta anatomia se aplicam em qualquer tema, inclusive `themes.
 
 1. Área interativa: fundo `button.bg`, cantos `button.radius`, altura mínima `button.min-height`, largura mínima `button.min-width`, `space.md` na horizontal e `space.sm` na vertical.
 2. Rótulo: `button.label` e `font.label`, centralizado, escalável e sem truncamento.
-3. Ícone opcional: Material Symbols `add`, antes do rótulo, separado por `space.sm`, na mesma cor do texto. O token de tamanho do ícone ainda é uma lacuna.
+3. Ícone opcional (prop `icon`): Material Symbols, como `add` em Nova tarefa e `play_arrow` em Iniciar foco, antes do rótulo, separado por `space.sm`, na mesma cor do texto. Enquanto falta o token de tamanho, a implementação usa `navbar.icon-size` (24 dp).
 4. Foco externo: cor `button.focus-color`, espessura `button.focus-width` e afastamento `button.focus-offset`. O espaço é reservado sem foco para evitar deslocamento do conteúdo.
 5. Alvo de toque: mínimo de 48 × 48 dp por meio de `button.min-height` e `button.min-width`. A altura cresce para acomodar texto ampliado.
 
@@ -52,11 +52,11 @@ A variante somente com ícone não faz parte deste componente. Os temas claro e 
 | Hover | Fundo `button.bg-hover`; demais tokens mantidos | Realça ao passar o ponteiro; não se aplica em toque | Não revela informação exclusiva nem executa a ação |
 | Pressionado | `button.bg` com `motion.scale-pressed` (0,96) e `motion.opacity-pressed` (0,8); rótulo mantido | Fornece feedback durante o toque; executa ao concluir a ativação | Mantém nome, papel e área interativa |
 | Foco | Anel `button.focus-color`, `button.focus-width` e `button.focus-offset` | Identifica o controle na navegação por teclado | Contraste de 6,29:1 no claro e 6,50:1 no escuro, acima dos 3:1 exigidos para foco |
-| Desabilitado | Fundo `button.bg-disabled`; aparência textual pendente | Bloqueia a ativação | Expõe `{ disabled: true }` por `accessibilityState`; explique o motivo em texto próximo quando necessário |
+| Desabilitado | Cósmico: fundo `button.bg-disabled` (`#232052`) e texto `button.label-disabled` (`#BBB6E3`, 7,80:1). Legados: aparência pendente | Bloqueia a ativação | Expõe `{ disabled: true }` por `accessibilityState`; explique o motivo em texto próximo quando necessário |
 
 Prioridade dos fundos: desabilitado, pressionado, hover, padrão. O foco é independente do fundo.
 
-**Lacunas nos tokens:** a 1.2 resolveu `button.bg-pressed` por escala e opacidade, sem cor nova. `button.bg-hover` e `button.bg-disabled` ainda não possuem cores, opacidades ou composições definidas nos temas legados. Também faltam o token de texto desabilitado e o token de tamanho do ícone. Não substitua essas lacunas por valores arbitrários. A implementação atual entrega o comportamento e a semântica do estado desabilitado, mantendo o visual padrão até a definição dos tokens.
+**Lacunas nos tokens:** a 1.2 resolveu `button.bg-pressed` por escala e opacidade, sem cor nova. `button.bg-hover` ainda não possui cor definida nos temas legados. O desabilitado foi definido na 1.2 só para o tema cósmico, com cores sólidas já existentes; nos legados, a mesma combinação ficaria abaixo de 4,5:1 (4,24:1 no claro e 4,35:1 no escuro) e continua pendente. Também falta o token de tamanho do ícone. Não substitua essas lacunas por valores arbitrários. Nos temas legados, a implementação entrega o comportamento e a semântica do estado desabilitado, mantendo o visual padrão até a definição dos tokens.
 
 ## Acessibilidade
 

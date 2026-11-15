@@ -23,7 +23,7 @@ Oculte camadas decorativas do leitor de tela e exponha contagem e ação por nom
 
 ## Especificações futuras e implementação
 
-A evolução visual por ponto e a rotação axial durante o foco são propostas futuras: faltam limiares, mapeamento de cada estágio e duração do ciclo. Quando definidas, devem preservar conquistas após pausas e desativar rotação com movimento reduzido. Não as apresente como comportamento existente. O visualizador não está implementado nesta branch; as cores globais cósmicas estão disponíveis no tema compartilhado.
+A evolução visual por ponto e a rotação axial durante o foco são propostas futuras: faltam limiares, mapeamento de cada estágio e duração do ciclo. Quando definidas, devem preservar conquistas após pausas e desativar rotação com movimento reduzido. Não as apresente como comportamento existente. O visualizador não está implementado nesta branch; o desenho segue o componente "Planeta da sequência" do protótipo do Claude Design, em grade de 280 × 280.
 
 ## Animação validada no spike (1.2)
 
