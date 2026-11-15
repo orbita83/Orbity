@@ -9,7 +9,10 @@ Camada de apresentação do Orbity. Contém os componentes de tela exportados co
 - Telas (exportação `default`, cada uma renderiza `PlaceholderScreen` com `title` e `message` em pt-BR):
   - `HomeScreen.tsx` -> `HomeScreen` (título "Início"); importado por `src/app/index.tsx`.
   - `TasksScreen.tsx` -> `TasksScreen` (título "Tarefas"); importado por `src/app/tasks.tsx`.
-  - `RoutinesScreen.tsx` -> `RoutinesScreen` (título "Rotinas"); importado por `src/app/routines.tsx`.
+  - `RoutinesScreen.tsx` -> `RoutinesScreen`; liga `useRoutinesViewModel` a `RoutinesScreenContent` (busca, cards e aviso de exclusão com Desfazer) e exclui a rotina recebida em `?deleted=<id>`; importado por `src/app/routines.tsx`.
+  - `NewRoutineScreen.tsx` -> `NewRoutineScreen`; liga `useNewRoutineViewModel` a `NewRoutineScreenContent`; importado por `src/app/new-routine.tsx`.
+  - `RoutineDetailsScreen.tsx` -> `RoutineDetailsScreen`; liga `useRoutineDetailsViewModel` a `RoutineDetailsScreenContent` (detalhe, conclusão e confirmação de exclusão); importado por `src/app/routine-details.tsx`.
+  - Textos e formatação de dias das telas de Rotinas em `routines-copy.ts`; rotinas de exemplo só para histórias e testes em `__fixtures__/routines.fixture.ts`.
   - `CosmosScreen.tsx` -> `CosmosScreen` (título "Cosmos"); importado por `src/app/cosmos.tsx`.
   - `ProfileScreen.tsx` -> `ProfileScreen` (título "Perfil"); importado por `src/app/profile.tsx`.
 - Subdiretórios:
