@@ -31,3 +31,9 @@ jobs:
 
       - name: Verificar tipos
         run: npx --no-install tsc --noEmit
+
+      - name: Gerar Storybook
+        run: npm run build-storybook
+
+      - name: Executar testes
+        run: npm test

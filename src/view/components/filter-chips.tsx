@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useState, type KeyboardEvent } from "react";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { themes, type OrbityTheme } from "../theme/tokens";
 
 export type TaskFilter = "all" | "pending" | "completed";
@@ -36,9 +36,10 @@ export const FilterChipItem = ({
   return (
     <View style={styles.focusContainer}>
       <Pressable
-        accessibilityRole="button"
+        accessibilityRole="radio"
         accessibilityLabel={`Filtrar por ${label}`}
-        accessibilityState={{ selected, disabled }}
+        accessibilityState={{ checked: selected, disabled }}
+        aria-checked={selected}
         disabled={disabled}
         onPress={onPress}
         onFocus={() => setIsFocused(true)}
@@ -72,11 +73,24 @@ export const FilterChips = <T extends string = TaskFilter>({
   accessibilityLabel = "Filtros de tarefas",
 }: FilterChipsProps<T>) => {
   const styles = createContainerStyles(theme);
+  const handleWebKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const direction = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1
+      : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+    if (!direction) return;
+    const radios = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="radio"]'));
+    const current = radios.indexOf(event.target as HTMLElement);
+    if (current < 0 || radios.length === 0) return;
+    event.preventDefault();
+    const next = radios[(current + direction + radios.length) % radios.length];
+    next.focus();
+    next.click();
+  };
 
   return (
     <View
       accessibilityRole="radiogroup"
       accessibilityLabel={accessibilityLabel}
+      {...(Platform.OS === "web" ? { onKeyDown: handleWebKeyDown } : {})}
       style={styles.container}
     >
       {filters.map((filter) => (

@@ -25,12 +25,17 @@ npm run build-storybook
 ```
 
 A saída fica em `storybook-static/` e não deve ser versionada.
+O workflow de CI também executa esse comando em Pull Requests destinados à
+`development`; uma falha no catálogo faz o job `validate` falhar. Tornar esse
+status obrigatório para o merge é uma configuração administrativa da proteção
+da branch `development`.
 
 ## Adicionar um componente
 
 1. Especifique o componente em `design-system/04-componentes/`.
 2. Implemente-o em `src/view/components/`, usando os tokens de `src/view/theme/`.
-3. Adicione um arquivo `NomeDoComponente.stories.tsx` ao lado do componente.
+3. Adicione um arquivo `nome-do-componente.stories.tsx` ao lado do componente,
+   usando `kebab-case` (por exemplo, `primary-button.stories.tsx`).
 4. Declare `title`, `component`, `args` e `tags: ["autodocs"]`, seguindo o botão.
 5. Documente variantes e limitações; exponha propriedades editáveis em Controls.
 
@@ -39,17 +44,19 @@ Os comandos normais do Expo continuam iniciando o aplicativo.
 Roboto é carregada localmente no catálogo pelo pacote `@fontsource/roboto`;
 a integração nativa deverá carregar a fonte com Expo Font.
 
-## Estado inicial
+## Catálogo atual
 
-O botão possui exemplos de “Nova tarefa”, rótulo longo e bloqueio da ação.
-Os valores de cor, espaço, tipografia e raio implementados vêm de
+O catálogo possui histórias para `PrimaryButton`, `CardTarefa`, `FilterChips`,
+`NavBar` e a composição global do ODS. Elas demonstram variantes, estados
+interativos e os temas claro, escuro ou cósmico quando aplicáveis. Os valores de
+cor, espaço, tipografia e raio implementados vêm de
 `design-system/02-tokens.md`.
 
 Os tokens de hover, pressionado e desabilitado ainda não possuem valores
 definitivos na especificação. Por isso, esses estados mantêm a aparência padrão
-nesta implementação inicial. O estado desabilitado bloqueia a ação e expõe a
-semântica acessível, mas ainda não deve ser considerado visualmente concluído.
-O exemplo com ícone também está pendente.
+quando não há contrato visual disponível. O estado desabilitado bloqueia a ação
+e expõe a semântica acessível, mas ainda não deve ser considerado visualmente
+concluído.
 
 O catálogo web permite revisar a apresentação, mas a validação de comportamento
 e acessibilidade no Android/iOS deve ocorrer no aplicativo nativo.

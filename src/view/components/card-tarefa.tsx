@@ -26,6 +26,7 @@ export const CardTarefa = ({
         accessibilityRole="checkbox"
         accessibilityLabel={`${completed ? "Desmarcar" : "Concluir"} tarefa: ${title}`}
         accessibilityState={{ checked: completed }}
+        aria-checked={completed}
         onPress={onToggleCompleted}
         style={styles.checkbox}
       >
@@ -70,7 +71,7 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
   StyleSheet.create({
     card: {
       alignItems: "center",
-      backgroundColor: theme.color.surface,
+      backgroundColor: theme.componentOverrides?.cardSurface ?? theme.color.surface,
       borderRadius: theme.radius.lg,
       elevation: theme.elevation.card,
       flexDirection: "row",
@@ -86,7 +87,7 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
     },
     checkboxVisual: {
       alignItems: "center",
-      backgroundColor: theme.color.surface,
+      backgroundColor: theme.componentOverrides?.cardSurface ?? theme.color.surface,
       borderColor: theme.color.action,
       borderRadius: theme.radius.md,
       borderWidth: theme.focus.ringWidth,
@@ -97,7 +98,7 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
     checkboxCompleted: { backgroundColor: theme.color.action },
     checkboxLabel: {
       ...theme.font.label,
-      color: theme.color.surface,
+      color: theme.componentOverrides?.checkboxMark ?? theme.color.surface,
       textAlign: "center",
     },
     content: { flex: 1, flexShrink: 1 },

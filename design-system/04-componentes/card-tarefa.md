@@ -1,5 +1,7 @@
 # Card de tarefa (CardTarefa)
 
+> Em `themes.cosmic`, o card usa `color.surface-variant` e a marca do checkbox usa `color.on-action`. Os temas legados mantêm sua superfície anterior. Os contrastes legados citados abaixo não se aplicam automaticamente ao tema cósmico.
+
 Origem no sistema base: listas e cards do Material 3. Situação: Adaptado. O padrão F5 define o card de tarefa, checkbox circular e tokens de forma/elevação. O protótipo de referência mostra título, prazo, conclusão e controle de opções.
 
 ## Quando usar

@@ -1,11 +1,12 @@
 {
   "name": "orbity",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "dependencies": {
     "@expo/ui": "~57.0.25",
     "expo": "~57.0.30",
     "expo-constants": "~57.0.22",
+    "expo-dev-client": "~57.0.20",
     "expo-device": "~57.0.2",
     "expo-font": "~57.0.4",
     "expo-glass-effect": "~57.0.4",
@@ -36,6 +37,7 @@
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "29.5.14",
     "@types/react": "~19.2.2",
+    "eas-cli": "27.5.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~57.0.2",
     "husky": "^9.1.7",
@@ -56,7 +58,9 @@
     "web": "expo start --web",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test": "jest --watchAll=false",
+    "test:watch": "jest --watch"
   },
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,tsx}": "eslint"

@@ -5,6 +5,13 @@
 
 ## Cor
 
+- Em qualquer tela, use o tema escolhido pelo estudante e os mesmos papéis semânticos. Para a identidade escura cósmica, propague `themes.cosmic` a todos os componentes; os temas anteriores continuam disponíveis para migração. (Adaptado)
+- Fundo, card, texto, ação e foco usam os papéis globais de [02-tokens.md](02-tokens.md#variante-cósmica). Gradientes e cores decorativas são contratos separados; o planeta é específico de sua composição. (Adaptado)
+- Estados de ação ainda não definidos e contrastes de gradientes exigem validação antes de serem declarados prontos. (Novo)
+- Em qualquer aparência, associe texto ou ícone aos estados e verifique o contraste dos pares utilizados. (Herdado)
+
+Para componentes em qualquer tema:
+
 - Use `color.action` somente para a ação principal da tela e estados ativos destacados. (Adaptado)
 - Use `color.action-subtle` para indicadores de estado, pílulas de navegação e cápsulas visuais suaves. (Adaptado)
 - Nunca use cor como única forma de comunicar um estado; acrescente ícone ou texto. (Herdado)

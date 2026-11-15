@@ -10,11 +10,13 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 
 - **Funções normais:** `camelCase` (ex: `handleSubmit`, `fetchData`)
 - **Componentes funcionais:** `PascalCase` (ex: `Button`, `UserProfile`)
-- **Arquivos:** `kebab-case` com extensão apropriada (ex: `nome-arquivo.ts`, `nome-arquivo.tsx`)
-- **Hooks (ViewModel):** Prefixo `use` seguido do nome da tela em PascalCase com sufixo `ViewModel` (ex: `useTelaViewModel()`)
-- **Telas:**
-  - Identificador/Componente na View (`src/view/`): `PascalCase` com sufixo `Screen` (ex: `HomeScreen`, `LoginScreen`) em arquivo `kebab-case.tsx` (ex: `src/view/home-screen.tsx`, `src/view/login-screen.tsx`).
-  - Módulo de rota em `src/app/`: arquivo com o mesmo nome em `kebab-case.tsx` (ex: `src/app/home-screen.tsx`, `src/app/login-screen.tsx`) que importa a tela da `view` como `default` e a exporta novamente como `default`.
+- **Arquivos gerais:** `kebab-case` com extensão apropriada para módulos de domínio, use cases, infraestrutura e rotas do app (`src/app/`) (ex: `timestamp-use-case.ts`, `timestamp-record.ts`)
+- **Arquivos de View e ViewModel:** Devem estar obrigatoriamente em **`PascalCase`**:
+  - **Telas na View (`src/view/`):** Identificador do componente e arquivo em `PascalCase.tsx` com sufixo `Screen` (ex: `src/view/HomeScreen.tsx`, `src/view/LoginScreen.tsx`, `src/view/TimestampScreen.tsx`).
+  - **Componentes de UI na View (`src/view/components/`):** Identificador do componente e arquivo em `PascalCase.tsx` (ex: `src/view/components/UserProfile.tsx`, `src/view/components/PrimaryButton.tsx`).
+  - **Arquivos da ViewModel (`src/viewmodel/`):** Arquivo em `PascalCase.ts` com sufixo `ViewModel` (ex: `src/viewmodel/HomeViewModel.ts`, `src/viewmodel/LoginViewModel.ts`, `src/viewmodel/useTimestampViewModel.ts`).
+  - **Hooks da ViewModel:** Função exportada em `camelCase` com prefixo `use` seguido do nome da tela em PascalCase e sufixo `ViewModel` (ex: `useHomeViewModel()`, `useTimestampViewModel()`).
+- **Módulos de rota em `src/app/`:** Arquivos em `kebab-case.tsx` (ex: `src/app/home-screen.tsx`, `src/app/login-screen.tsx`, `src/app/timestamp-screen.tsx`) que determinam a rota no Expo Router, importam a tela da `view` em PascalCase como `default` e a exportam novamente como `default`.
 
 ---
 
@@ -34,25 +36,25 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 
 ### Padrão de Exportação e Roteamento (`src/view/` → `src/app/`)
 * **1. Componente de Tela na View (`src/view/`)**:
-  * O componente de tela é implementado em `src/view/` e deve conter obrigatoriamente um **`export default`** ao final do arquivo:
+  * O componente de tela é implementado em arquivo `PascalCase.tsx` em `src/view/` e deve conter obrigatoriamente um **`export default`** ao final do arquivo:
   ```typescript
-  // src/view/login-screen.tsx
+  // src/view/LoginScreen.tsx
   const LoginScreen = () => { ... };
 
   export default LoginScreen;
   ```
 * **2. Módulo de Rota no App (`src/app/`)**:
-  * Em `src/app/`, cria-se o módulo com o mesmo nome em `kebab-case.tsx` (determinando a rota no Expo Router), **importa-se o componente de tela como `default`** da camada `view` e **exporta-se como `default` novamente**:
+  * Em `src/app/`, cria-se o módulo com o mesmo nome em `kebab-case.tsx` (determinando a rota no Expo Router), **importa-se o componente de tela como `default`** da camada `view` (em `PascalCase`) e **exporta-se como `default` novamente**:
   ```typescript
   // src/app/login-screen.tsx
-  import LoginScreen from "../view/login-screen";
+  import LoginScreen from "../view/LoginScreen";
 
   export default LoginScreen;
   ```
 * **3. Componentes Reutilizáveis (`src/view/components/`)**:
-  * Utilizar preferencialmente **Export Nomeado** (*Named Export*):
+  * Utilizar preferencialmente **Export Nomeado** (*Named Export*) em arquivos `PascalCase.tsx`:
   ```typescript
-  // src/view/components/user-profile.tsx
+  // src/view/components/UserProfileScreen.tsx
   export const UserProfile = ({ nome, tipo }: UserProfileProps) => { ... };
   ```
 
