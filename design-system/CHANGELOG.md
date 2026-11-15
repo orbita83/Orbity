@@ -32,9 +32,9 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 - **Domínio de Tarefas na tela:** o [seletor de opções](04-componentes/seletor-opcoes.md) (`TaskPickerModal`) entra para data, horário e categoria em Nova tarefa, com a superfície do Modal do ODS; o `TextField` ganha o botão acessório à direita. Seis categorias iniciais de estudo, mais "Sem categoria".
 - **Decisões abertas, registradas como lacunas:** tipos de conquista além de dias de sequência e se conquistas dão estrelas; carrossel automático com pausa ou rolagem pelo dedo; desenho da confirmação de exclusão em lote e da sessão de foco ativa; implementação dos gradientes, chips em grade, card com gradiente e dos novos componentes.
 
-## 1.1.0 — em preparação
+## 1.1.0 · 2026-11-15
 
-- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA antes da conclusão da versão. As entregas e seus resultados serão registrados conforme forem integrados.
+- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA. As entregas e seus resultados estão registrados abaixo.
 - **Issue #84:** Centralização documental dos papéis cromáticos cósmicos e orientação para seleção da variante em F1/F2. Os contratos dos temas base claro e escuro da versão 1.0.0 foram preservados; os novos nomes documentais não alteram seus valores.
 - **Issue #85:** Alinhamento documental das variantes cósmicas do painel, planeta, botão e navbar com F1/F2, incluindo a visibilidade da navbar e lacunas dos estados. Os componentes base existentes permanecem inalterados; a migração das variantes depende da implementação futura.
 - **Issue #86:** Registro de contraste dos pares cósmicos conhecidos e ajuste de `actionHover` e `progressEnd` para `#8648FA` após revisão de contraste. A validação de gradientes, sobreposições, estados sem valor e renderização real permanece pendente; consumidores da proposta cósmica anterior devem atualizar esses dois papéis ao implementá-la.
@@ -42,7 +42,8 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 - **Acessibilidade dos controles:** filtros exclusivos passam a expor papel de opção de rádio e estado marcado; checkbox de tarefa e abas também expõem seu estado na Web. A alteração muda o papel acessível dos filtros, mantendo suas propriedades e callbacks de código; consumidores que consultam o papel anterior devem atualizar suas consultas.
 - **Filtros por teclado:** na Web, as setas navegam entre opções exclusivas, atualizando seleção e foco; o comportamento foi verificado na prévia e no Storybook.
 - **Issue #87:** teste cromático de Conquistas com IA sem histórico da conversa e aprovação visual do operador; o registro identifica limitações do isolamento e lacunas de componentes, sem afirmar comparação antes/depois ou validação completa de acessibilidade.
-- **Pendências:** Implementação TypeScript na #73, alinhamento de componentes na #85 e matriz completa de contraste na #86. Esta entrada não representa uma versão publicada.
+- **Concluídas:** implementação TypeScript dos tokens (#73), alinhamento de componentes (#85) e registro de contraste dos pares cósmicos (#86).
+- **Lacunas que seguem para versões futuras:** validação de gradientes, sobreposições, estados sem valor e renderização real, registradas na #86.
 
 ## 1.0.0 · 2026-10-21
 

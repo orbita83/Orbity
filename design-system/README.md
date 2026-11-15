@@ -2,7 +2,7 @@
 
 ![Identidade visual do Orbity: planeta roxo com anéis ao lado do nome Orbity](images/assets/orbity-design-system.png)
 
-> **Versão:** 1.0.0 (1.1.0 e 1.2.0 em preparação; ver [CHANGELOG.md](CHANGELOG.md)) · **Integrantes:** Mailson Sousa, Cássio Sampaio, Mateus de Araujo, Vitor Lopes, Alisson Ramires · **Disciplinas:** IHC e PDM
+> **Versão:** 1.1.0 (1.2.0 em preparação; ver [CHANGELOG.md](CHANGELOG.md)) · **Integrantes:** Mailson Sousa, Cássio Sampaio, Mateus de Araujo, Vitor Lopes, Alisson Ramires · **Disciplinas:** IHC e PDM
 
 ## 1. Visão geral
 
