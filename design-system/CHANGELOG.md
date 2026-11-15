@@ -2,9 +2,9 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
-## 1.2.0 — em preparação
+## 1.2.0 · 2026-11-15
 
-- **Issue #111:** incorporação das mudanças validadas no protótipo navegável de alta fidelidade das telas de Início e Tarefas (09/11/2026), construído a partir dos wireframes do Excalidraw e revisado pela equipe. Esta versão depende da 1.1.0, também em preparação; as duas podem ser publicadas em sequência ou consolidadas.
+- **Issue #111:** incorporação das mudanças validadas no protótipo navegável de alta fidelidade das telas de Início e Tarefas (09/11/2026), construído a partir dos wireframes do Excalidraw e revisado pela equipe. Esta versão foi publicada depois da 1.1.0 (`ds-v1.1.0`).
 - **Regra visual:** destaque por superfície, borda e cor sólida, nunca por brilho. O único brilho permitido é `shadow.glow-planet`, na ilustração do planeta.
 - **Tokens novos:** `color.border-subtle`, `color.scrim`, sombras `shadow.bar`, `shadow.bar-top`, `shadow.sheet`, `shadow.button`, `shadow.modal` e `shadow.glow-planet`, raios `radius.sheet` (24) e `radius.xl` (28), medidas `size.progress-height` (20), `size.handle-width` × `size.handle-height` (40 × 4) e `size.achievement-badge` (60), `font.streak` (64/64, 700), `motion.scale-pressed` (0,96), `motion.opacity-pressed` (0,8) e parâmetros do planeta (volta em 24 s, pulso em 4 s). Tokens de componente `sheet.*`, `progress.*` e `achievement.*`; gradientes cósmicos exportados em `cosmicGradients`.
 - **Tokens da Tela Inicial:** `font.brand` (28/36, 700), `font.caption` (12/16, 400), `size.header-height` (64), `size.icon-lg` (32), `border.width-thin` (1) e as cores cósmicas `iconAccent`, `streakFlame` e `streakFlameCore`. `achievementPendingIcon`, `achievementPendingBorder` e as camadas do planeta (`planetColors`) passam a ser exportados em `tokens.ts`. Contrastes de 3:1 dos ícones e da chama verificados em `tests/ods-theme.test.cjs`.
@@ -28,12 +28,14 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
   - **Componentes novos:** [Snackbar](04-componentes/snackbar.md), [CheckCircle](04-componentes/circulo-concluir.md), [IconTile](04-componentes/quadro-icone.md) e [ScreenHeader](04-componentes/cabecalho-tela.md).
   - **Tokens:** `size.dialog-icon` (96 dp) é novo, e `button.opacity-disabled` (0,6), que já estava documentado, passa a existir em `tokens.ts`. Ícones Material novos em `material-symbol.tsx` para as duas telas.
   - **Navegação:** rotas `new-task`, `new-routine` e `routine-details` registradas sem item na barra de abas, que fica escondida nelas.
+- **Tela de Tarefas (protótipo 2 a 2.3):** lista com filtros em colunas iguais, "Nova tarefa", estado vazio acolhedor, seleção múltipla por toque longo ou pelo "•••" com Fixar, Marcar todas e Excluir, e confirmação antes de excluir em lote. Formulário de Nova tarefa com título obrigatório e erro com ícone, e confirmação "Tarefa criada!" (`SuccessDialog`, variante de sucesso do [modal](04-componentes/modal.md)). O `CardTarefa` passa ao tema cósmico com `CheckCircle`, e o `MainTabBar` se esconde quando a tela pede `tabBarStyle: { display: "none" }`. Data, hora e categoria ainda são campos simples: os seletores ficam para o domínio de Tarefas.
+- **Domínio de Tarefas na tela:** o [seletor de opções](04-componentes/seletor-opcoes.md) (`TaskPickerModal`) entra para data, horário e categoria em Nova tarefa, com a superfície do Modal do ODS; o `TextField` ganha o botão acessório à direita. Seis categorias iniciais de estudo, mais "Sem categoria".
 - **Telas de Rotinas (protótipo 3 a 3.4):** lista com busca, "Nova rotina", cards com `IconTile`, resumo do dia e `CheckCircle` separado do toque que abre a rotina; Nova rotina com nome obrigatório, ícone escolhido entre 7 opções, descrição, dias da semana obrigatórios e tarefas que se adicionam, reordenam e removem; detalhe com resumo, dias e horário, progresso do dia, "Marcar como concluída" e "Desmarcar todos" (F8) e "Excluir rotina"; confirmação com aviso de que sequência, estrelas e conquistas não mudam, e aviso com "Desfazer" na lista. O arraste das tarefas ainda é simulado pela alça (cada toque sobe uma posição) e "Editar" fica desabilitado até a edição existir.
 - **Decisões abertas, registradas como lacunas:** tipos de conquista além de dias de sequência e se conquistas dão estrelas; carrossel automático com pausa ou rolagem pelo dedo; desenho da confirmação de exclusão em lote e da sessão de foco ativa; implementação dos gradientes, chips em grade, card com gradiente e dos novos componentes.
 
-## 1.1.0 — em preparação
+## 1.1.0 · 2026-11-15
 
-- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA antes da conclusão da versão. As entregas e seus resultados serão registrados conforme forem integrados.
+- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA. As entregas e seus resultados estão registrados abaixo.
 - **Issue #84:** Centralização documental dos papéis cromáticos cósmicos e orientação para seleção da variante em F1/F2. Os contratos dos temas base claro e escuro da versão 1.0.0 foram preservados; os novos nomes documentais não alteram seus valores.
 - **Issue #85:** Alinhamento documental das variantes cósmicas do painel, planeta, botão e navbar com F1/F2, incluindo a visibilidade da navbar e lacunas dos estados. Os componentes base existentes permanecem inalterados; a migração das variantes depende da implementação futura.
 - **Issue #86:** Registro de contraste dos pares cósmicos conhecidos e ajuste de `actionHover` e `progressEnd` para `#8648FA` após revisão de contraste. A validação de gradientes, sobreposições, estados sem valor e renderização real permanece pendente; consumidores da proposta cósmica anterior devem atualizar esses dois papéis ao implementá-la.
@@ -41,7 +43,8 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 - **Acessibilidade dos controles:** filtros exclusivos passam a expor papel de opção de rádio e estado marcado; checkbox de tarefa e abas também expõem seu estado na Web. A alteração muda o papel acessível dos filtros, mantendo suas propriedades e callbacks de código; consumidores que consultam o papel anterior devem atualizar suas consultas.
 - **Filtros por teclado:** na Web, as setas navegam entre opções exclusivas, atualizando seleção e foco; o comportamento foi verificado na prévia e no Storybook.
 - **Issue #87:** teste cromático de Conquistas com IA sem histórico da conversa e aprovação visual do operador; o registro identifica limitações do isolamento e lacunas de componentes, sem afirmar comparação antes/depois ou validação completa de acessibilidade.
-- **Pendências:** Implementação TypeScript na #73, alinhamento de componentes na #85 e matriz completa de contraste na #86. Esta entrada não representa uma versão publicada.
+- **Concluídas:** implementação TypeScript dos tokens (#73), alinhamento de componentes (#85) e registro de contraste dos pares cósmicos (#86).
+- **Lacunas que seguem para versões futuras:** validação de gradientes, sobreposições, estados sem valor e renderização real, registradas na #86.
 
 ## 1.0.0 · 2026-10-21
 

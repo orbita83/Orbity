@@ -66,12 +66,21 @@ O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Na
 - A tipografia manuscrita aparente no protótipo não tem fonte ou token aprovado; o título usa `font.body`.
 - O tratamento tipográfico do prazo, prazos vencidos e formatação de datas não foi definido além de receber texto do chamador.
 - O conteúdo do menu e as ações disponíveis não estão especificados; a abertura é delegada a `onOptionsPress`.
-- Não foi definido se tocar no container abre detalhes, nem o comportamento de long-press/seleção múltipla.
+- Não foi definido se tocar no container abre detalhes. O long-press abre a seleção múltipla (F6).
 - Não há estado desabilitado ou de carregamento especificado para o Card.
 
 ## Código
 
 A implementação está em [card-tarefa.tsx](../../src/view/components/card-tarefa.tsx), as histórias em [card-tarefa.stories.tsx](../../src/view/components/card-tarefa.stories.tsx), e os tokens consumidos vêm de [tokens.ts](../../src/view/theme/tokens.ts).
+
+Desde a tela de Tarefas (protótipo 2 e 2.3):
+
+- O tema padrão passa a ser `themes.cosmic`, com gradiente `cosmicGradients.card` e contorno `cosmicBorders.card`.
+- A conclusão usa o [CheckCircle](circulo-concluir.md).
+- O prazo usa `font.label` em `color.on-surface-variant`.
+- `onLongPress` no texto abre a seleção múltipla (F6); o "•••" (`onOptionsPress`) abre as mesmas ações e serve de alternativa acessível ao toque longo.
+- `pinned` mostra o ícone `push_pin` antes do título.
+- `selectionMode`, `selected` e `onToggleSelected`: o card inteiro vira um `checkbox` "Selecionar tarefa: <título>"; selecionado, ganha fundo `color.action-subtle`, borda de 2 dp `color.focus` e marca preenchida.
 
 ## Mudanças da 1.2
 

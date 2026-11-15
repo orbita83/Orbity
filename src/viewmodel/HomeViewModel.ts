@@ -19,6 +19,7 @@ export type HomeState = {
 
 export type HomeActions = {
   retry: () => Promise<void>;
+  refresh: () => Promise<void>;
   handleCycleSheetStage: () => void;
   handleCollapseSheet: () => void;
   handleExpandSheet: () => void;
@@ -114,6 +115,7 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): HomeState & Home
     progressLabel: `${progress?.completed ?? 0}/${progress?.total ?? 0}`,
     sheetStage,
     retry,
+    refresh: fetchHome,
     handleCycleSheetStage,
     handleCollapseSheet,
     handleExpandSheet,

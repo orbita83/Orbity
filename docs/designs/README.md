@@ -24,6 +24,7 @@ A pasta de trabalho é definida pela linha `EGM artifact directory: .dev/egm` no
 
 | Documento | Autor | Status | Componente principal |
 | :-------- | :---- | :----- | :------------------- |
+| [tarefas.md](tarefas.md)<br>Domínio, persistência (migração v2) e integração de Tarefas com a Início e a sequência. Escrito depois da implementação do PR #129 (issue #131). | vitorlopes-coder, MailsonSousa88 | Proposed | Tela Tarefas, [ADR-0001](../05-architecture/decisions/ADR-0001.md) |
 | [tela-inicial-base.md](tela-inicial-base.md)<br>Base da tela Início: sequência calculada pelo registro diário em SQLite, trava do Modo Foco e barra de progresso, partindo do protótipo `feat/tela-principal-prototipo`. Motor do foco adiado para a mudança de Tarefas. | MailsonSousa88 | Approved | Tela Início ([UC-0009](../04-specifications/use-cases/UC-0009-consultar-tela-inicial.md)), [ADR-0001](../05-architecture/decisions/ADR-0001.md) |
 
 ## Status

@@ -22,21 +22,42 @@ describe("DatabaseProvider", () => {
     executor.close();
   });
 
-  it("aplica a v1 num banco novo e grava user_version = 1", async () => {
+  it("aplica a v1 e a v2 num banco novo e grava user_version = 2", async () => {
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(1);
+    expect(userVersion(executor)).toBe(2);
     expect(tableExists(executor, "daily_activity")).toBe(true);
+    expect(tableExists(executor, "tasks")).toBe(true);
   });
 
-  it("chamar get() duas vezes roda as migrações uma vez só", async () => {
+  it("atualiza um banco na v1 para a v2 preservando os registros anteriores", async () => {
+    executor.database.exec(`
+      CREATE TABLE daily_activity (
+        local_date  TEXT PRIMARY KEY
+                    CHECK (local_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        recorded_at TEXT NOT NULL
+      );
+      INSERT INTO daily_activity (local_date, recorded_at) VALUES ('2026-11-14', '2026-11-14T20:00:00-03:00');
+      PRAGMA user_version = 1;
+    `);
+
+    await new DatabaseProvider(async () => executor).get();
+
+    expect(userVersion(executor)).toBe(2);
+    expect(tableExists(executor, "tasks")).toBe(true);
+    expect(executor.database.prepare("SELECT local_date FROM daily_activity").all()).toEqual([
+      { local_date: "2026-11-14" },
+    ]);
+  });
+
+  it("chamar get() duas vezes roda as migrações pendentes uma vez só", async () => {
     const spy = jest.spyOn(executor, "runInTransaction");
     const provider = new DatabaseProvider(async () => executor);
 
     await provider.get();
     await provider.get();
 
-    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 
   it("D14: banco mais novo que o app dá SCHEMA_VERSION_UNSUPPORTED sem mexer nas tabelas", async () => {
