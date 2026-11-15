@@ -2,9 +2,37 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
-## 1.1.0 — em preparação
+## 1.2.0 — em preparação
 
-- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA antes da conclusão da versão. As entregas e seus resultados serão registrados conforme forem integrados.
+- **Issue #111:** incorporação das mudanças validadas no protótipo navegável de alta fidelidade das telas de Início e Tarefas (09/11/2026), construído a partir dos wireframes do Excalidraw e revisado pela equipe. Esta versão depende da 1.1.0, também em preparação; as duas podem ser publicadas em sequência ou consolidadas.
+- **Regra visual:** destaque por superfície, borda e cor sólida, nunca por brilho. O único brilho permitido é `shadow.glow-planet`, na ilustração do planeta.
+- **Tokens novos:** `color.border-subtle`, `color.scrim`, sombras `shadow.bar`, `shadow.bar-top`, `shadow.sheet`, `shadow.button`, `shadow.modal` e `shadow.glow-planet`, raios `radius.sheet` (24) e `radius.xl` (28), medidas `size.progress-height` (20), `size.handle-width` × `size.handle-height` (40 × 4) e `size.achievement-badge` (60), `font.streak` (64/64, 700), `motion.scale-pressed` (0,96), `motion.opacity-pressed` (0,8) e parâmetros do planeta (volta em 24 s, pulso em 4 s). Tokens de componente `sheet.*`, `progress.*` e `achievement.*`; gradientes cósmicos exportados em `cosmicGradients`.
+- **Tokens da Tela Inicial:** `font.brand` (28/36, 700), `font.caption` (12/16, 400), `size.header-height` (64), `size.icon-lg` (32), `border.width-thin` (1) e as cores cósmicas `iconAccent`, `streakFlame` e `streakFlameCore`. `achievementPendingIcon`, `achievementPendingBorder` e as camadas do planeta (`planetColors`) passam a ser exportados em `tokens.ts`. Contrastes de 3:1 dos ícones e da chama verificados em `tests/ods-theme.test.cjs`.
+- **Botão desabilitado (cósmico):** `button.bg-disabled` = `color.action-subtle` e `button.label-disabled` = `color.on-surface-variant` (7,80:1), implementado em `primary-button.tsx`. Nos temas legados a lacuna continua, porque a mesma combinação fica abaixo de 4,5:1.
+- **Grade de 8 pontos:** a alça do painel passa de 40 × 5 para 40 × 4 dp, e a tabela da Tela Inicial em `05-padroes.md` deixa os valores do protótipo fora da grade (botão 15, card 18, painel 32, progresso 17, fontes 15/20 e 13/18, painel 380 ms) e passa a citar os tokens: botão `radius.md` (12), card `radius.lg` (16), painel `radius.sheet` (24), medalha `achievement.size` (60) e progresso `size.progress-height` (20).
+- **Correção de contraste:** `color.on-surface-variant` no tema claro passa de `neutral-500` (`#6B7280`, 4,39:1 sobre `surface-variant`, reprovado) para o novo primitivo `neutral-600` (`#5F6673`, 5,25:1 sobre `surface-variant` e 5,78:1 sobre `surface`). Consumidores do tema claro veem o texto secundário levemente mais escuro.
+- **NavBar:** indicador ocupando a aba inteira, fio `color.border-subtle` e `shadow.bar` no lugar da linha lavanda do cósmico, glifo `star` para Cosmos (antes `auto_awesome`; Rotinas mantém `autorenew`) e pressionado com escala e opacidade. Implementado em `nav-bar.tsx`. No tema claro, o fio superior passa de `neutral-200` para `color.border-subtle`.
+- **PrimaryButton:** `shadow.button` e pressionado com escala e opacidade, resolvendo a lacuna `button.bg-pressed`. Implementado em `primary-button.tsx`; o gradiente continua pendente de um componente de gradiente.
+- **Movimento reduzido:** hook `useReduceMotion` desliga a escala do toque na navbar e no botão.
+- **Documentação de componentes:** FilterChips em colunas de largura igual; CardTarefa com gradiente cósmico e prazo "19/10 · 08:00–09:00"; painel com alça, raio, fio e sombra definidos; PlanetStreakView com os parâmetros do spike. Novos: `ProgressBar`, `AchievementBadge`, `FormFields`, `ContextualActionBar` e `Modal` (documentados, ainda sem implementação).
+- **Padrões:** Progresso de hoje conta tarefas e rotinas concluídas ("1 / 25") em vez de minutos ("15 / 25 min"), com a porcentagem fora da barra; conquistas do painel sem rótulo de dias e com nome acessível de posição e estado; detalhe da conquista como modal com "✕"; seleção múltipla com cabeçalho de contador e barra de ações no lugar da navbar; telas sem barra de rolagem visível.
+- **Protótipo do Claude Design (D23, 15/11/2026):** a Tela Inicial passa a seguir as telas 1, 1.1 e 1.2 do canvas "Orbity · Protótipo Início e Tarefas".
+  - **Tokens novos:** `font.card-title` (16/24, 600) para títulos de card e `font.body-sm` (14/20, 400) para descrições, com contrato em `tests/ods-theme.test.cjs`. A marca do cabeçalho passa a usar `font.title` (24/32); `font.brand` continua exportado.
+  - **Ícones:** `material-symbol.tsx` ganha `whatshot`, `bolt`, `history`, `help_outline` e `expand_less`; os cards e o convite usam Material Symbols no lugar de `CosmicIcon`.
+  - **PrimaryButton:** aceita ícone opcional antes do rótulo (`play_arrow` em Iniciar foco), com `navbar.icon-size` até existir o token de tamanho.
+  - **PlanetStreakView:** novo desenho em grade de 280 × 280 (aspecto 1, antes 0,85). O planeta ocupa 320/390 da largura quando recolhido, encolhe para 190/320 no intermediário e some sob o painel no expandido; o painel intermediário fica a 35,4% da cena (antes 44%).
+  - **AchievementBadge:** a variante bloqueada mostra o símbolo da conquista esmaecido com selo de cadeado, em vez de só o cadeado.
+  - **Padrão F1/F2:** botão de Configurações no cabeçalho; card Modo Foco sem chips de duração (a escolha vai para a sessão de foco); cards Última sessão e Como funciona? presentes desde já, em estado vazio. A porcentagem do progresso continua fora da barra, ao lado do contador.
+- **Base das telas de Tarefas e Rotinas:** componentes compartilhados implementados para as duas telas, seguindo o protótipo do Claude Design e os documentos do ODS.
+  - **Implementados:** `TextField` (variante Texto de [campos-formulario.md](04-componentes/campos-formulario.md)), `ConfirmDialog` (variante Confirmação de [modal.md](04-componentes/modal.md), com ✕ e raio de painel), `ContextualHeader` e `ContextualActionBar` ([barra-acoes-contextuais.md](04-componentes/barra-acoes-contextuais.md)).
+  - **Componentes novos:** [Snackbar](04-componentes/snackbar.md), [CheckCircle](04-componentes/circulo-concluir.md), [IconTile](04-componentes/quadro-icone.md) e [ScreenHeader](04-componentes/cabecalho-tela.md).
+  - **Tokens:** `size.dialog-icon` (96 dp) é novo, e `button.opacity-disabled` (0,6), que já estava documentado, passa a existir em `tokens.ts`. Ícones Material novos em `material-symbol.tsx` para as duas telas.
+  - **Navegação:** rotas `new-task`, `new-routine` e `routine-details` registradas sem item na barra de abas, que fica escondida nelas.
+- **Decisões abertas, registradas como lacunas:** tipos de conquista além de dias de sequência e se conquistas dão estrelas; carrossel automático com pausa ou rolagem pelo dedo; desenho da confirmação de exclusão em lote e da sessão de foco ativa; implementação dos gradientes, chips em grade, card com gradiente e dos novos componentes.
+
+## 1.1.0 · 2026-11-15
+
+- Revisão da identidade cromática, dos componentes e da acessibilidade do ODS, com validação visual e teste com IA. As entregas e seus resultados estão registrados abaixo.
 - **Issue #84:** Centralização documental dos papéis cromáticos cósmicos e orientação para seleção da variante em F1/F2. Os contratos dos temas base claro e escuro da versão 1.0.0 foram preservados; os novos nomes documentais não alteram seus valores.
 - **Issue #85:** Alinhamento documental das variantes cósmicas do painel, planeta, botão e navbar com F1/F2, incluindo a visibilidade da navbar e lacunas dos estados. Os componentes base existentes permanecem inalterados; a migração das variantes depende da implementação futura.
 - **Issue #86:** Registro de contraste dos pares cósmicos conhecidos e ajuste de `actionHover` e `progressEnd` para `#8648FA` após revisão de contraste. A validação de gradientes, sobreposições, estados sem valor e renderização real permanece pendente; consumidores da proposta cósmica anterior devem atualizar esses dois papéis ao implementá-la.
@@ -12,7 +40,8 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 - **Acessibilidade dos controles:** filtros exclusivos passam a expor papel de opção de rádio e estado marcado; checkbox de tarefa e abas também expõem seu estado na Web. A alteração muda o papel acessível dos filtros, mantendo suas propriedades e callbacks de código; consumidores que consultam o papel anterior devem atualizar suas consultas.
 - **Filtros por teclado:** na Web, as setas navegam entre opções exclusivas, atualizando seleção e foco; o comportamento foi verificado na prévia e no Storybook.
 - **Issue #87:** teste cromático de Conquistas com IA sem histórico da conversa e aprovação visual do operador; o registro identifica limitações do isolamento e lacunas de componentes, sem afirmar comparação antes/depois ou validação completa de acessibilidade.
-- **Pendências:** Implementação TypeScript na #73, alinhamento de componentes na #85 e matriz completa de contraste na #86. Esta entrada não representa uma versão publicada.
+- **Concluídas:** implementação TypeScript dos tokens (#73), alinhamento de componentes (#85) e registro de contraste dos pares cósmicos (#86).
+- **Lacunas que seguem para versões futuras:** validação de gradientes, sobreposições, estados sem valor e renderização real, registradas na #86.
 
 ## 1.0.0 · 2026-10-21
 

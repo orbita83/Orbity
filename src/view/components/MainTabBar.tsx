@@ -30,6 +30,8 @@ export const MainTabBar = ({ state, navigation }: MainTabBarProps) => {
   const insets = useSafeAreaInsets();
   const activeRoute = state.routes[state.index];
   const activeTab = tabByRoute[activeRoute.name];
+  // Formulários e detalhes abrem por cima das abas e não mostram a barra (protótipo 2.1, 3.1 e 3.2).
+  if (!activeTab) return null;
 
   const handleSelectTab = (tabId: NavTabId) => {
     const route = state.routes.find((item) => item.name === routeByTab[tabId]);

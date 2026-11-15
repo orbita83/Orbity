@@ -19,6 +19,10 @@ const RootLayout = () => (
       <Tabs.Screen name="achievements" options={{ href: null }} />
       <Tabs.Screen name="categories" options={{ href: null }} />
       <Tabs.Screen name="settings" options={{ href: null }} />
+      {/* Telas empilhadas sobre as abas: sem item na barra, que fica escondida nelas. */}
+      <Tabs.Screen name="new-task" options={{ title: "Nova tarefa", href: null }} />
+      <Tabs.Screen name="new-routine" options={{ title: "Nova rotina", href: null }} />
+      <Tabs.Screen name="routine-details" options={{ title: "Rotina", href: null }} />
     </Tabs>
   </>
 );

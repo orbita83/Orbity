@@ -35,7 +35,7 @@ describe("ProfileUseCases", () => {
     it("deve propagar erro de domínio caso o repositório falhe", async () => {
       // Arrange
       fakeRepository.getProfile = jest.fn(async () => {
-        throw new DomainError("Falha na consulta do perfil.", "PROFILE_FETCH_FAILED");
+        throw new DomainError("PERSISTENCE_FAILURE", "Falha na consulta do perfil.");
       });
       const useCases = new ProfileUseCases(fakeRepository);
 

@@ -1,6 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 import { PrimaryButton } from "@/view/components/primary-button";
+import { themes } from "@/view/theme/tokens";
 
 describe("PrimaryButton", () => {
   it("renderiza o rótulo do botão corretamente", async () => {
@@ -20,5 +22,16 @@ describe("PrimaryButton", () => {
     await render(<PrimaryButton label="Salvar" onPress={() => {}} disabled />);
     const button = screen.getByRole("button");
     expect(button.props.accessibilityState.disabled).toBe(true);
+  });
+
+  it("usa o fundo e o texto desabilitados sólidos no tema cósmico", async () => {
+    await render(<PrimaryButton label="Iniciar" onPress={() => {}} disabled theme={themes.cosmic} />);
+    const label = StyleSheet.flatten(screen.getByText("Iniciar").props.style);
+    expect(label.color).toBe(themes.cosmic.button.labelDisabled);
+    const button = screen.getByRole("button");
+    const style = StyleSheet.flatten(
+      typeof button.props.style === "function" ? button.props.style({ pressed: false }) : button.props.style,
+    );
+    expect(style.backgroundColor).toBe(themes.cosmic.button.bgDisabled);
   });
 });

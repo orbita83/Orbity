@@ -11,4 +11,5 @@ module.exports = {
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
   clearMocks: true,
+  globalSetup: '<rootDir>/tests/setup/timezone.cjs',
 };

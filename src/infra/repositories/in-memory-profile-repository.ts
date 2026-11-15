@@ -20,10 +20,7 @@ export class InMemoryProfileRepository implements IProfileRepository {
     try {
       return { ...this.currentProfile };
     } catch {
-      throw new DomainError(
-        "Não foi possível consultar os dados do perfil em memória.",
-        "PROFILE_READ_ERROR",
-      );
+      throw new DomainError("PERSISTENCE_FAILURE", "Não foi possível consultar os dados do perfil em memória.");
     }
   }
 
@@ -35,10 +32,7 @@ export class InMemoryProfileRepository implements IProfileRepository {
       };
       return { ...this.currentProfile };
     } catch {
-      throw new DomainError(
-        "Não foi possível atualizar o nome do perfil em memória.",
-        "PROFILE_WRITE_ERROR",
-      );
+      throw new DomainError("PERSISTENCE_FAILURE", "Não foi possível atualizar o nome do perfil em memória.");
     }
   }
 }

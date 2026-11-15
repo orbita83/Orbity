@@ -1,20 +1,25 @@
-/**
- * Erros puros de domínio do Orbity.
- * Não possuem dependências de bibliotecas externas ou frameworks.
- */
+export type DomainErrorCode =
+  | "VALIDATION_ERROR"
+  | "PERSISTENCE_FAILURE"
+  | "SCHEMA_VERSION_UNSUPPORTED";
+
+// Erro puro de domínio (ARCHITECTURE.md §5). Só PERSISTENCE_FAILURE admite nova tentativa.
 export class DomainError extends Error {
+  readonly retryable: boolean;
+
   constructor(
-    message: string,
-    readonly code: string = "DOMAIN_ERROR",
+    readonly code: DomainErrorCode,
+    message: string = code,
   ) {
     super(message);
     this.name = "DomainError";
+    this.retryable = code === "PERSISTENCE_FAILURE";
   }
 }
 
 export class ValidationError extends DomainError {
   constructor(message: string) {
-    super(message, "VALIDATION_ERROR");
+    super("VALIDATION_ERROR", message);
     this.name = "ValidationError";
   }
 }

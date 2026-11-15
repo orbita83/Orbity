@@ -2,10 +2,9 @@
 
 Este catálogo reúne os Architecture Decision Records (`ADR`) do Orbity. Cada ADR registra individualmente uma decisão arquitetural relevante, seu contexto, as consequências positivas e negativas e os riscos assumidos, preservando o histórico das decisões técnicas do projeto. O modelo adotado é o de Michael Nygard (Status, Contexto, Decisão e Consequências), acrescido da seção de Riscos.
 
-O catálogo está vazio: ainda não há decisões arquiteturais registradas.
-
 | ID | Decisão | Status | Especificação |
 | -- | ------- | ------ | ------------- |
+| ADR-0001 | Persistência local com SQLite por meio de repositórios da infraestrutura | Accepted | [ADR-0001](ADR-0001.md) |
 
 ## Status de uma decisão
 
