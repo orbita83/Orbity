@@ -45,6 +45,26 @@ export const cosmicColors = {
   progress: "#8A42FA",
   progressEnd: "#8648FA",
   unlocked: "#C47EFF",
+  // Tela Inicial (tabela de tokens aprovada em docs/designs/tela-inicial-base.md, Etapa 0.2a).
+  iconAccent: "#A56AF4",
+  streakFlame: "#FFB52E",
+  streakFlameCore: "#FFE48A",
+  achievementPendingIcon: "#8C7BCB",
+  achievementPendingBorder: "#2B2654",
+} as const;
+
+// Camadas da ilustração do planeta (02-tokens.md, variante cósmica). Decorativas: não carregam texto.
+export const planetColors = {
+  highlight: "#EBACFF",
+  light: "#BD6AFF",
+  surface: "#8840E9",
+  relief: "#5320B2",
+  shadow: "#39149A",
+  night: "#17075B",
+  border: "#D08BFF",
+  ring: "#A95BFA",
+  ringHighlight: "#E8B5FF",
+  glow: "#8236D9",
 } as const;
 
 // Gradientes da 1.2 (início → fim). O consumo depende de um componente de gradiente;
@@ -86,8 +106,16 @@ export const motionTokens = {
 
 export const sizeTokens = {
   progressHeight: 20,
-  handle: { width: 40, height: 5 },
+  handle: { width: 40, height: 4 },
   achievementBadge: 60,
+  headerHeight: 64,
+  iconLg: 32,
+  // Ícone central dos diálogos de confirmação e de sucesso (protótipo do Claude Design).
+  dialogIcon: 96,
+} as const;
+
+export const borderTokens = {
+  widthThin: 1,
 } as const;
 
 export const sharedTokens = {
@@ -98,6 +126,7 @@ export const sharedTokens = {
   shadow: shadowTokens,
   motion: motionTokens,
   size: sizeTokens,
+  border: borderTokens,
 } as const;
 
 function createTheme(mode: ThemeMode, cosmic = false) {
@@ -134,6 +163,7 @@ function createTheme(mode: ThemeMode, cosmic = false) {
     shadow: sharedTokens.shadow,
     motion: sharedTokens.motion,
     size: sharedTokens.size,
+    border: sharedTokens.border,
     primitive: primitives,
     font: {
       title: {
@@ -160,10 +190,39 @@ function createTheme(mode: ThemeMode, cosmic = false) {
         fontWeight: "700",
         lineHeight: 64,
       } satisfies TextStyle,
+      brand: {
+        fontFamily: "Roboto",
+        fontSize: 28,
+        fontWeight: "700",
+        lineHeight: 36,
+      } satisfies TextStyle,
+      caption: {
+        fontFamily: "Roboto",
+        fontSize: 12,
+        fontWeight: "400",
+        lineHeight: 16,
+      } satisfies TextStyle,
+      "card-title": {
+        fontFamily: "Roboto",
+        fontSize: 16,
+        fontWeight: "600",
+        lineHeight: 24,
+      } satisfies TextStyle,
+      "body-sm": {
+        fontFamily: "Roboto",
+        fontSize: 14,
+        fontWeight: "400",
+        lineHeight: 20,
+      } satisfies TextStyle,
     },
     button: {
       bg: color.action,
       label: color["on-action"],
+      // Desabilitado sólido só no cósmico (7,80:1); nos legados segue a lacuna do botao.md.
+      bgDisabled: cosmic ? color["action-subtle"] : color.action,
+      // Opacidade de controles desabilitados sem cor própria (barra contextual).
+      opacityDisabled: 0.6,
+      labelDisabled: cosmic ? color["on-surface-variant"] : color["on-action"],
       radius: sharedTokens.radius.md,
       minHeight: sharedTokens.target.minSize,
       minWidth: sharedTokens.target.minSize,

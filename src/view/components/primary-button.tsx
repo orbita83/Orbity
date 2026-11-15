@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { themes, type OrbityTheme } from "../theme/tokens";
 import { useReduceMotion } from "../theme/use-reduce-motion";
@@ -9,6 +9,8 @@ export type PrimaryButtonProps = {
   accessibilityHint?: string;
   disabled?: boolean;
   theme?: OrbityTheme;
+  /** Ícone decorativo antes do rótulo (ex.: play no Iniciar foco). */
+  icon?: ReactNode;
 };
 
 export const PrimaryButton = ({
@@ -17,10 +19,11 @@ export const PrimaryButton = ({
   accessibilityHint,
   disabled = false,
   theme = themes.light,
+  icon,
 }: PrimaryButtonProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const reduceMotion = useReduceMotion();
-  const styles = createStyles(theme, isFocused);
+  const styles = createStyles(theme, isFocused, disabled);
 
   return (
     <View style={styles.focusContainer}>
@@ -39,15 +42,18 @@ export const PrimaryButton = ({
           pressed && !reduceMotion && styles.buttonPressedScale,
         ]}
       >
-        <Text allowFontScaling style={styles.label}>
-          {label}
-        </Text>
+        <View style={styles.content}>
+          {icon}
+          <Text allowFontScaling style={styles.label}>
+            {label}
+          </Text>
+        </View>
       </Pressable>
     </View>
   );
 };
 
-const createStyles = (theme: OrbityTheme, isFocused: boolean) =>
+const createStyles = (theme: OrbityTheme, isFocused: boolean, disabled: boolean) =>
   StyleSheet.create({
     focusContainer: {
       borderColor: theme.button.focusColor,
@@ -62,7 +68,7 @@ const createStyles = (theme: OrbityTheme, isFocused: boolean) =>
     },
     button: {
       alignItems: "center",
-      backgroundColor: theme.button.bg,
+      backgroundColor: disabled ? theme.button.bgDisabled : theme.button.bg,
       borderRadius: theme.button.radius,
       justifyContent: "center",
       minHeight: theme.button.minHeight,
@@ -78,9 +84,15 @@ const createStyles = (theme: OrbityTheme, isFocused: boolean) =>
     buttonPressedScale: {
       transform: [{ scale: theme.button.scalePressed }],
     },
+    content: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: theme.space.sm,
+      justifyContent: "center",
+    },
     label: {
       ...theme.font.label,
-      color: theme.button.label,
+      color: disabled ? theme.button.labelDisabled : theme.button.label,
       textAlign: "center",
     },
   });
