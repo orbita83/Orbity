@@ -14,6 +14,9 @@ const routeByTab: Record<NavTabId, string> = {
 };
 
 const tabByRoute: Record<string, NavTabId> = {
+  achievements: "perfil",
+  categories: "perfil",
+  settings: "perfil",
   index: "inicio",
   tasks: "tarefas",
   routines: "rotinas",

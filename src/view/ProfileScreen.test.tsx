@@ -3,7 +3,21 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
 import ProfileScreen from "./ProfileScreen";
 
+// A navegação real é exercitada em ProfileNavigation.test.tsx.
+// A renderização SVG real permanece nos testes dos componentes e da navegação.
+jest.mock("./components/material-symbol", () => ({ MaterialSymbol: () => null }));
+
+jest.mock("react-native-safe-area-context", () => ({
+  SafeAreaView: jest.requireActual<typeof import("react-native")>("react-native").View,
+}));
+
+jest.mock("expo-router", () => ({
+  Link: ({ children }: { children: import("react").ReactNode }) => children,
+}));
+
 describe("ProfileScreen", () => {
+  // A montagem a frio dos controles nativos levou cerca de 25 s neste ambiente Windows.
+  // O limite maior vale só para esta montagem; os demais testes mantêm o padrão do Jest.
   it("deve renderizar o título da tela com accessibilityRole header", async () => {
     // Arrange
     const mockViewModel = {
@@ -30,7 +44,7 @@ describe("ProfileScreen", () => {
     expect(header).toBeTruthy();
     expect(header.props.accessibilityRole).toBe("header");
     expect(screen.getByText(mockStudentProfile.name)).toBeTruthy();
-  });
+  }, 30000);
 
   it("deve disparar openEditNameModal ao clicar no botão de editar", async () => {
     // Arrange
@@ -120,7 +134,7 @@ describe("ProfileScreen", () => {
     expect(screen.getByText("Falha na conexão de rede.")).toBeTruthy();
 
     // Act
-    const retryButton = screen.getByLabelText("Tentar carregar o perfil novamente");
+    const retryButton = screen.getByRole("button", { name: "Tentar novamente" });
     fireEvent.press(retryButton);
 
     // Assert

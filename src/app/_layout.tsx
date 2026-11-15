@@ -16,6 +16,9 @@ const RootLayout = () => (
       <Tabs.Screen name="routines" options={{ title: "Rotinas" }} />
       <Tabs.Screen name="cosmos" options={{ title: "Cosmos" }} />
       <Tabs.Screen name="profile" options={{ title: "Perfil" }} />
+      <Tabs.Screen name="achievements" options={{ href: null }} />
+      <Tabs.Screen name="categories" options={{ href: null }} />
+      <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>
   </>
 );
