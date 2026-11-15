@@ -110,6 +110,8 @@ export const sizeTokens = {
   achievementBadge: 60,
   headerHeight: 64,
   iconLg: 32,
+  // Ícone central dos diálogos de confirmação e de sucesso (protótipo do Claude Design).
+  dialogIcon: 96,
 } as const;
 
 export const borderTokens = {
@@ -218,6 +220,8 @@ function createTheme(mode: ThemeMode, cosmic = false) {
       label: color["on-action"],
       // Desabilitado sólido só no cósmico (7,80:1); nos legados segue a lacuna do botao.md.
       bgDisabled: cosmic ? color["action-subtle"] : color.action,
+      // Opacidade de controles desabilitados sem cor própria (barra contextual).
+      opacityDisabled: 0.6,
       labelDisabled: cosmic ? color["on-surface-variant"] : color["on-action"],
       radius: sharedTokens.radius.md,
       minHeight: sharedTokens.target.minSize,

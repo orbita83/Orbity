@@ -34,6 +34,8 @@ assert.equal(themes.cosmic.motion.opacityPressed, 0.8);
 assert.equal(themes.cosmic.sheet.handleHeight, 4);
 assert.equal(themes.cosmic.size.headerHeight, 64);
 assert.equal(themes.cosmic.size.iconLg, 32);
+assert.equal(themes.cosmic.size.dialogIcon, 96);
+assert.equal(themes.cosmic.button.opacityDisabled, 0.6);
 assert.equal(themes.cosmic.border.widthThin, 1);
 assert.equal(themes.cosmic.button.bgDisabled, '#232052');
 assert.equal(themes.cosmic.button.labelDisabled, '#BBB6E3');

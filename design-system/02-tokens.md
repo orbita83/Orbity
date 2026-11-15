@@ -93,6 +93,7 @@
 | `size.achievement-badge` | 60 dp | Caixa da conquista no painel      | Novo (1.2) |
 | `size.header-height` | 64 dp | Altura do cabeçalho da Tela Inicial | Novo (1.2) |
 | `size.icon-lg` | 32 dp | Ícones grandes dos cards e da conquista no painel | Novo (1.2) |
+| `size.dialog-icon` | 96 dp | Ícone central dos diálogos de confirmação e de sucesso, em círculo | Novo (1.2) |
 | `border.width-thin` | 1 dp | Contorno fino de cards e do painel (traço, fora da grade de espaço) | Novo (1.2) |
 
 Tamanhos, espaços e raios novos usam múltiplos de 4. Cantos de pílula não têm token: o raio é metade do tamanho que já é token (`progress.height / 2`, `achievement.size / 2`).
