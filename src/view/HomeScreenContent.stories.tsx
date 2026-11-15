@@ -22,11 +22,9 @@ const baseArgs: HomeScreenContentProps = {
   error: null,
   summary: summaryWith(0, 0, 0),
   progressLabel: "0/0",
-  selectedDuration: 15,
   sheetStage: "collapsed",
   reduceMotion: false,
   onRetry: noop,
-  onSelectDuration: noop,
   onCycleSheetStage: noop,
   onCollapseSheet: noop,
   onExpandSheet: noop,
@@ -56,9 +54,14 @@ type Story = StoryObj<HomeScreenContentProps>;
 
 export const Vazio: Story = { name: "Vazio · sem atividades" };
 export const VazioPainelAberto: Story = { name: "Vazio · painel aberto", args: { sheetStage: "stage1_1" } };
+export const VazioPainelExpandido: Story = { name: "Vazio · painel expandido", args: { sheetStage: "stage1_2" } };
 export const ComSequencia: Story = {
-  name: "Com sequência · 12 dias, 3/30",
-  args: { summary: summaryWith(12, 3, 30), progressLabel: "3/30", sheetStage: "stage1_1" },
+  name: "Com sequência · 12 dias, 1/25",
+  args: { summary: summaryWith(12, 1, 25), progressLabel: "1/25", sheetStage: "collapsed" },
+};
+export const ComSequenciaPainelAberto: Story = {
+  name: "Com sequência · painel aberto",
+  args: { summary: summaryWith(12, 1, 25), progressLabel: "1/25", sheetStage: "stage1_1" },
 };
 export const Erro: Story = {
   name: "Erro · nova tentativa",

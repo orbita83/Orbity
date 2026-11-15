@@ -6,9 +6,9 @@ import {
 
 describe("ActivitySheetGeometry", () => {
   it.each([
-    [640, { collapsed: 640, stage1_1: 281.6, stage1_2: 92 }],
-    [800, { collapsed: 800, stage1_1: 352, stage1_2: 92 }],
-    [932, { collapsed: 932, stage1_1: 410.08, stage1_2: 92 }],
+    [640, { collapsed: 640, stage1_1: 226.56, stage1_2: 92 }],
+    [756, { collapsed: 756, stage1_1: 267.62, stage1_2: 92 }],
+    [932, { collapsed: 932, stage1_1: 329.93, stage1_2: 92 }],
   ])("calcula os pontos de parada para a cena de %p dp", (sceneHeight, expected) => {
     const snaps = createSheetSnapPoints({ sceneHeight, expandedTop: 92, collapsedHeight: 0 });
     expect(snaps.collapsed).toBe(expected.collapsed);

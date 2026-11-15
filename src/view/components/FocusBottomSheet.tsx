@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import type { FocusDuration } from "../../model/entities/focus-duration";
 import type { FocusAvailability } from "../../model/entities/home-summary";
 import type { FocusSheetStage } from "../../viewmodel/ActivitySheetGeometry";
 import { HOME_COPY, formatCopy } from "../home-copy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "../theme/tokens";
-import { CosmicIcon } from "./CosmicIcon";
-import { FilterChips } from "./filter-chips";
 import { GradientSurface } from "./GradientSurface";
+import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
 import { PrimaryButton } from "./primary-button";
 
 const theme = themes.cosmic;
+
+/** Medalhas do card de Conquistas, na ordem do protótipo. Sem dados ainda: todas bloqueadas. */
+const ACHIEVEMENT_ICONS: readonly MaterialSymbolName[] = ["whatshot", "track_changes", "bolt", "emoji_events"];
 
 export type FocusBottomSheetProps = {
   stage: FocusSheetStage;
@@ -22,8 +23,6 @@ export type FocusBottomSheetProps = {
   progressCompleted: number;
   progressTotal: number;
   focus: FocusAvailability;
-  selectedDuration: FocusDuration;
-  onSelectDuration: (duration: FocusDuration) => void;
   onToggleStage: () => void;
   onCollapseSheet: () => void;
   dragging: boolean;
@@ -38,6 +37,38 @@ const Card = ({ children }: { children: ReactNode }) => (
   </View>
 );
 
+/** Seta do card. As telas de destino ainda não existem: o botão aparece, mas fica desabilitado. */
+const ChevronButton = ({ label }: { label: string }) => (
+  <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled: true }} disabled style={styles.chevron}>
+    <MaterialSymbol name="chevron_right" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+  </Pressable>
+);
+
+type CardHeadingProps = {
+  icon?: MaterialSymbolName;
+  title: string;
+  description: string;
+  action?: string;
+  alignTop?: boolean;
+  trailing?: ReactNode;
+};
+
+const CardHeading = ({ icon, title, description, action, alignTop = false, trailing }: CardHeadingProps) => (
+  <View style={[styles.heading, alignTop && styles.headingTop]}>
+    {icon ? <MaterialSymbol name={icon} color={cosmicColors.focus} size={theme.size.iconLg} /> : null}
+    <View style={styles.headingText}>
+      <Text allowFontScaling accessibilityRole="header" style={styles.title}>
+        {title}
+      </Text>
+      <Text allowFontScaling style={styles.description}>
+        {description}
+      </Text>
+    </View>
+    {trailing}
+    {action ? <ChevronButton label={action} /> : null}
+  </View>
+);
+
 export const FocusBottomSheet = ({
   stage,
   loading = false,
@@ -46,8 +77,6 @@ export const FocusBottomSheet = ({
   progressCompleted,
   progressTotal,
   focus,
-  selectedDuration,
-  onSelectDuration,
   onToggleStage,
   onCollapseSheet,
   dragging,
@@ -64,10 +93,7 @@ export const FocusBottomSheet = ({
   }, [onScrollOffsetChange, stage]);
 
   const blocked = !focus.canStart;
-  const durationOptions = focus.durations.map((duration) => ({
-    id: String(duration),
-    label: formatCopy("focus.duration", { n: duration }),
-  }));
+  const percent = progressRatio === null ? null : Math.round(progressRatio * 100);
 
   return (
     <View style={styles.sheet}>
@@ -110,28 +136,16 @@ export const FocusBottomSheet = ({
         ) : (
           <>
             <Card>
-              <View style={styles.heading}>
-                <CosmicIcon name="timer" size={theme.size.iconLg} />
-                <View style={styles.headingText}>
-                  <Text allowFontScaling accessibilityRole="header" style={styles.title}>
-                    {HOME_COPY["focus.title"]}
-                  </Text>
-                  <Text allowFontScaling style={styles.description}>
-                    {HOME_COPY["focus.description"]}
-                  </Text>
-                </View>
-              </View>
-              <FilterChips
-                theme={theme}
-                accessibilityLabel={HOME_COPY["focus.durations"]}
-                itemAccessibilityLabel={(label) => label}
-                filters={durationOptions}
-                selectedFilter={String(selectedDuration)}
-                onSelectFilter={(id) => onSelectDuration(Number(id) as FocusDuration)}
+              <CardHeading
+                icon="timer"
+                title={HOME_COPY["focus.title"]}
+                description={HOME_COPY["focus.description"]}
+                action={HOME_COPY["focus.details"]}
               />
               <PrimaryButton
                 theme={theme}
                 label={HOME_COPY["focus.start"]}
+                icon={<MaterialSymbol name="play_arrow" filled color={blocked ? theme.button.labelDisabled : theme.button.label} size={theme.navbar.iconSize} />}
                 // O motor da sessão de foco chega com a mudança de Tarefas (E1).
                 onPress={() => undefined}
                 disabled={blocked}
@@ -145,21 +159,18 @@ export const FocusBottomSheet = ({
             </Card>
 
             <Card>
-              <View style={styles.progressHeading}>
-                <View style={styles.headingText}>
-                  <Text allowFontScaling accessibilityRole="header" style={styles.title}>
-                    {HOME_COPY["progress.title"]}
-                  </Text>
-                  <Text allowFontScaling style={styles.description}>
-                    {progressCompleted === 0 ? HOME_COPY["progress.empty"] : HOME_COPY["progress.ongoing"]}
-                  </Text>
-                </View>
-                <View style={styles.progressBadge}>
-                  <Text allowFontScaling style={styles.badgeLabel}>
-                    {progressLabel}
-                  </Text>
-                </View>
-              </View>
+              <CardHeading
+                alignTop
+                title={HOME_COPY["progress.title"]}
+                description={HOME_COPY["progress.description"]}
+                trailing={
+                  <View style={styles.progressBadge}>
+                    <Text allowFontScaling style={styles.badgeLabel}>
+                      {progressLabel}
+                    </Text>
+                  </View>
+                }
+              />
               <View
                 accessible
                 accessibilityRole="progressbar"
@@ -177,21 +188,60 @@ export const FocusBottomSheet = ({
                     <GradientSurface from={cosmicGradients.progress[0]} to={cosmicGradients.progress[1]} horizontal />
                   </View>
                 ) : null}
+                {/* RN-0007: sem atividades não há porcentagem. */}
+                {percent !== null ? (
+                  <View pointerEvents="none" style={styles.progressPercent}>
+                    <Text allowFontScaling={false} style={styles.badgeLabel}>
+                      {formatCopy("progress.percent", { percent })}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
             </Card>
 
-            <View
-              accessible
-              accessibilityRole="button"
-              accessibilityLabel={HOME_COPY["achievements.label"]}
-              accessibilityState={{ disabled: true }}
-              style={[styles.card, styles.achievements]}
-            >
-              <CosmicIcon name="star" size={theme.size.iconLg} color={cosmicColors.achievementPendingIcon} />
-              <Text allowFontScaling style={styles.description}>
-                {HOME_COPY["achievements.soon"]}
-              </Text>
-            </View>
+            <Card>
+              <CardHeading
+                icon="star"
+                title={HOME_COPY["achievements.title"]}
+                description={HOME_COPY["achievements.description"]}
+                action={HOME_COPY["achievements.open"]}
+              />
+              <View style={styles.badges}>
+                {ACHIEVEMENT_ICONS.map((icon, index) => (
+                  <View
+                    key={icon}
+                    accessible
+                    accessibilityLabel={formatCopy("achievements.badge", { n: index + 1, total: ACHIEVEMENT_ICONS.length })}
+                    style={styles.badgeSlot}
+                  >
+                    <View style={styles.badge}>
+                      <MaterialSymbol name={icon} color={cosmicColors.achievementPendingIcon} size={theme.size.iconLg} />
+                      <View style={styles.lockBubble}>
+                        <MaterialSymbol name="lock" filled color={cosmicColors.achievementPendingIcon} size={theme.space.md} />
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </Card>
+
+            <Card>
+              <CardHeading
+                icon="history"
+                title={HOME_COPY["lastSession.title"]}
+                description={HOME_COPY["lastSession.empty"]}
+                action={HOME_COPY["lastSession.details"]}
+              />
+            </Card>
+
+            <Card>
+              <CardHeading
+                icon="help_outline"
+                title={HOME_COPY["howItWorks.title"]}
+                description={HOME_COPY["howItWorks.description"]}
+                action={HOME_COPY["howItWorks.open"]}
+              />
+            </Card>
           </>
         )}
       </ScrollView>
@@ -207,7 +257,7 @@ const styles = StyleSheet.create({
     borderTopWidth: theme.border.widthThin,
     borderLeftWidth: theme.border.widthThin,
     borderRightWidth: theme.border.widthThin,
-    borderColor: cosmicBorders.sheet,
+    borderColor: theme.color["border-subtle"],
     backgroundColor: cosmicColors.sheet,
     boxShadow: theme.sheet.shadow,
     overflow: "hidden",
@@ -238,18 +288,26 @@ const styles = StyleSheet.create({
     gap: theme.space.sm,
     overflow: "hidden",
   },
-  heading: { flexDirection: "row", gap: theme.space.md, alignItems: "center" },
-  headingText: { flex: 1, gap: theme.primitive["space-4"] },
-  title: { ...theme.font.label, color: theme.color["on-surface"] },
-  description: { ...theme.font.caption, color: theme.color["on-surface-variant"] },
+  heading: { flexDirection: "row", gap: theme.space.sm, alignItems: "center" },
+  headingTop: { alignItems: "flex-start" },
+  headingText: { flex: 1 },
+  title: { ...theme.font["card-title"], color: theme.color["on-surface"] },
+  description: { ...theme.font["body-sm"], color: theme.color["on-surface-variant"] },
+  chevron: {
+    width: theme.target.minSize,
+    height: theme.target.minSize,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: theme.radius.md,
+  },
   focused: { borderColor: theme.color.focus },
-  progressHeading: { flexDirection: "row", alignItems: "center", gap: theme.space.sm, flexWrap: "wrap" },
   progressBadge: {
     borderWidth: theme.border.widthThin,
-    borderColor: cosmicBorders.sheet,
+    borderColor: cosmicColors.action,
+    backgroundColor: cosmicColors.track,
     borderRadius: theme.radius.md,
-    paddingVertical: theme.space.sm,
-    paddingHorizontal: theme.space.md,
+    paddingVertical: theme.primitive["space-4"],
+    paddingHorizontal: theme.space.sm,
   },
   badgeLabel: { ...theme.font.label, color: theme.color["on-surface"] },
   progressTrack: {
@@ -259,7 +317,31 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   progressFill: { height: "100%", borderRadius: theme.progress.height / 2, overflow: "hidden" },
-  achievements: { flexDirection: "row", alignItems: "center", gap: theme.space.md, minHeight: theme.target.minSize },
+  progressPercent: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, alignItems: "center", justifyContent: "center" },
+  badges: { flexDirection: "row", gap: theme.space.sm },
+  badgeSlot: { flex: 1, alignItems: "center", paddingVertical: theme.primitive["space-4"] },
+  badge: {
+    width: theme.achievement.size,
+    height: theme.achievement.size,
+    borderRadius: theme.achievement.radius,
+    borderWidth: theme.border.widthThin,
+    borderColor: cosmicColors.achievementPendingBorder,
+    backgroundColor: cosmicGradients.card[1],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  lockBubble: {
+    position: "absolute",
+    bottom: -theme.primitive["space-4"],
+    width: theme.space.lg,
+    height: theme.space.lg,
+    borderRadius: theme.space.lg / 2,
+    borderWidth: theme.border.widthThin,
+    borderColor: cosmicColors.achievementPendingBorder,
+    backgroundColor: cosmicColors.card,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   skeletonGroup: { gap: theme.space.md },
   skeletonCard: {
     borderRadius: theme.radius.lg,

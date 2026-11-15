@@ -10,7 +10,8 @@ describe("textos da Tela Inicial", () => {
   });
 
   it("formata os marcadores", () => {
-    expect(formatCopy("focus.duration", { n: 15 })).toBe("15 minutos");
+    expect(formatCopy("progress.percent", { percent: 4 })).toBe("4%");
+    expect(formatCopy("achievements.badge", { n: 1, total: 4 })).toBe("Conquista 1 de 4, bloqueada");
     expect(formatCopy("progress.value", { completed: 3, total: 30 })).toBe("3 de 30 atividades concluídas");
   });
 

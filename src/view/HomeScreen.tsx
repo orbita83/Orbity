@@ -13,11 +13,9 @@ const HomeScreen = () => {
       error={vm.error}
       summary={vm.summary}
       progressLabel={vm.progressLabel}
-      selectedDuration={vm.selectedDuration}
       sheetStage={vm.sheetStage}
       reduceMotion={reduceMotion}
       onRetry={() => void vm.retry()}
-      onSelectDuration={vm.selectDuration}
       onCycleSheetStage={vm.handleCycleSheetStage}
       onCollapseSheet={vm.handleCollapseSheet}
       onExpandSheet={vm.handleExpandSheet}

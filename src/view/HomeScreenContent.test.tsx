@@ -19,11 +19,9 @@ const propsWith = (overrides: Partial<HomeScreenContentProps> = {}): HomeScreenC
   error: null,
   summary: emptySummary,
   progressLabel: "0/0",
-  selectedDuration: 15,
   sheetStage: "stage1_1",
   reduceMotion: true,
   onRetry: jest.fn(),
-  onSelectDuration: jest.fn(),
   onCycleSheetStage: jest.fn(),
   onCollapseSheet: jest.fn(),
   onExpandSheet: jest.fn(),
@@ -47,14 +45,23 @@ describe("HomeScreenContent", () => {
     await renderContent(propsWith());
 
     expect(screen.getByText("0")).toBeTruthy();
-    expect(screen.getByText(HOME_COPY["streak.empty"])).toBeTruthy();
+    // O convite à jornada não aparece no planeta (protótipo), mas segue no nome acessível.
+    expect(screen.getByLabelText(`0 dias de sequência. ${HOME_COPY["streak.empty"]}`)).toBeTruthy();
     expect(screen.getByText("0/0")).toBeTruthy();
 
     const start = screen.getByRole("button", { name: HOME_COPY["focus.start"] });
     expect(start.props.accessibilityState.disabled).toBe(true);
     expect(start.props.accessibilityHint).toBe(HOME_COPY["focus.blocked"]);
     expect(screen.getByText(HOME_COPY["focus.blocked"])).toBeTruthy();
-    expect(screen.getByText(HOME_COPY["achievements.soon"])).toBeTruthy();
+    expect(screen.getByText(HOME_COPY["achievements.title"])).toBeTruthy();
+  });
+
+  it("D23: o cabeçalho mostra a marca e o botão de Configurações, ainda sem ação", async () => {
+    await renderContent(propsWith());
+
+    expect(screen.getByRole("header", { name: HOME_COPY.brand })).toBeTruthy();
+    const settings = screen.getByRole("button", { name: HOME_COPY.settings });
+    expect(settings.props.accessibilityState.disabled).toBe(true);
   });
 
   it("CUJ 4: erro com nova tentativa mostra a mensagem e o botão, sem o número", async () => {
@@ -98,6 +105,76 @@ describe("HomeScreenContent", () => {
 
     fireEvent.press(screen.getByRole("button", { name: HOME_COPY["sheet.open"] }));
     expect(onExpandSheet).toHaveBeenCalled();
+  });
+
+  describe("arraste vertical no cenário", () => {
+    // Evento mínimo do sistema de responder: um toque que foi de `fromY` para `toY` em `timestamp`.
+    const touchEvent = (fromY: number, toY: number, timestamp: number) => ({
+      nativeEvent: { touches: [{}] },
+      touchHistory: {
+        numberActiveTouches: 1,
+        indexOfSingleActiveTouch: 0,
+        mostRecentTimeStamp: timestamp,
+        touchBank: [
+          {
+            touchActive: true,
+            startPageX: 200,
+            startPageY: fromY,
+            previousPageX: 200,
+            previousPageY: fromY,
+            currentPageX: 200,
+            currentPageY: toY,
+            startTimeStamp: 1,
+            previousTimeStamp: timestamp - 1,
+            currentTimeStamp: timestamp,
+          },
+        ],
+      },
+    });
+
+    // Segue a ordem do sistema de responder. O mesmo elemento que reivindica o toque precisa
+    // receber a soltura (antes, um Pressable sobrescrevia esses handlers e o arraste se perdia).
+    const swipe = (fromY: number, toY: number) => {
+      const hero = screen.getByTestId("home-hero");
+      const start = touchEvent(fromY, fromY, 1);
+      hero.props.onStartShouldSetResponderCapture(start);
+      expect(hero.props.onStartShouldSetResponder(start)).toBe(true);
+      hero.props.onResponderGrant(start);
+      if (toY !== fromY) hero.props.onResponderMove(touchEvent(fromY, toY, 2));
+      hero.props.onResponderRelease(touchEvent(toY, toY, 3));
+    };
+
+    it("tocar no planeta abre um estágio só", async () => {
+      const onExpandSheet = jest.fn();
+      await renderContent(propsWith({ sheetStage: "collapsed", onExpandSheet }));
+      swipe(500, 500);
+      expect(onExpandSheet).toHaveBeenCalledTimes(1);
+    });
+
+    it("um arraste curto e indeciso não muda o painel", async () => {
+      const onExpandSheet = jest.fn();
+      const onReduceSheet = jest.fn();
+      await renderContent(propsWith({ sheetStage: "stage1_1", onExpandSheet, onReduceSheet }));
+      swipe(500, 490);
+      expect(onExpandSheet).not.toHaveBeenCalled();
+      expect(onReduceSheet).not.toHaveBeenCalled();
+    });
+
+    it("arrastar para cima abre o painel", async () => {
+      const onExpandSheet = jest.fn();
+      await renderContent(propsWith({ sheetStage: "collapsed", onExpandSheet }));
+      swipe(500, 400);
+      expect(onExpandSheet).toHaveBeenCalledTimes(1);
+    });
+
+    it("arrastar para baixo reduz o painel", async () => {
+      const onReduceSheet = jest.fn();
+      const onExpandSheet = jest.fn();
+      await renderContent(propsWith({ sheetStage: "stage1_1", onReduceSheet, onExpandSheet }));
+      swipe(400, 500);
+      expect(onReduceSheet).toHaveBeenCalledTimes(1);
+      expect(onExpandSheet).not.toHaveBeenCalled();
+    });
   });
 
   it("RNF-0002: nenhum texto na tela tem termo punitivo", async () => {

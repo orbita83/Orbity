@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { container, resolveUseCase } from "@/DI/container";
-import { DEFAULT_FOCUS_DURATION, isFocusDuration, type FocusDuration } from "@/model/entities/focus-duration";
 import type { HomeSummary } from "@/model/entities/home-summary";
 import { DomainError } from "@/model/errors/domain-error";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
@@ -15,13 +14,11 @@ export type HomeState = {
   summary: HomeSummary | null;
   /** Texto "concluídas/total", sempre visível (RN-0007). */
   progressLabel: string;
-  selectedDuration: FocusDuration;
   sheetStage: FocusSheetStage;
 };
 
 export type HomeActions = {
   retry: () => Promise<void>;
-  selectDuration: (duration: number) => void;
   handleCycleSheetStage: () => void;
   handleCollapseSheet: () => void;
   handleExpandSheet: () => void;
@@ -52,7 +49,6 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): HomeState & Home
   const [status, setStatus] = useState<HomeState["status"]>("loading");
   const [error, setError] = useState<HomeState["error"]>(null);
   const [summary, setSummary] = useState<HomeSummary | null>(null);
-  const [selectedDuration, setSelectedDuration] = useState<FocusDuration>(DEFAULT_FOCUS_DURATION);
   const [sheetStage, setSheetStage] = useState<FocusSheetStage>("collapsed");
   const hasSummary = useRef(false);
   const latestRequest = useRef(0);
@@ -98,10 +94,6 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): HomeState & Home
     return fetchHome();
   }, [fetchHome]);
 
-  const selectDuration = useCallback((duration: number) => {
-    if (isFocusDuration(duration)) setSelectedDuration(duration);
-  }, []);
-
   const handleCycleSheetStage = useCallback(() => setSheetStage((current) => NEXT_STAGE[current]), []);
   const handleCollapseSheet = useCallback(() => setSheetStage("collapsed"), []);
   const handleExpandSheet = useCallback(
@@ -120,10 +112,8 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): HomeState & Home
     error,
     summary,
     progressLabel: `${progress?.completed ?? 0}/${progress?.total ?? 0}`,
-    selectedDuration,
     sheetStage,
     retry,
-    selectDuration,
     handleCycleSheetStage,
     handleCollapseSheet,
     handleExpandSheet,

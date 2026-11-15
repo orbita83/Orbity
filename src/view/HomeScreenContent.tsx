@@ -11,37 +11,40 @@ import {
   type LayoutChangeEvent,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { FocusDuration } from "../model/entities/focus-duration";
 import type { HomeSummary } from "../model/entities/home-summary";
 import type { FocusSheetStage } from "../viewmodel/ActivitySheetGeometry";
 import { useActivitySheetMotionViewModel } from "../viewmodel/ActivitySheetMotionViewModel";
 import type { HomeState } from "../viewmodel/HomeViewModel";
-import { CosmicIcon } from "./components/CosmicIcon";
 import { CosmicStarfield } from "./components/CosmicStarfield";
 import { FocusBottomSheet } from "./components/FocusBottomSheet";
-import { PLANET_ASPECT_RATIO } from "./components/PlanetIllustration";
+import { MaterialSymbol } from "./components/material-symbol";
 import { PlanetStreakView } from "./components/PlanetStreakView";
 import { PrimaryButton } from "./components/primary-button";
 import { HOME_COPY } from "./home-copy";
-import { cosmicColors, themes } from "./theme/tokens";
+import { cosmicBorders, cosmicColors, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
 
-/** Centro vertical do planeta, como fração da altura da cena (constante de layout do protótipo). */
-const PLANET_CENTER_RATIO = 0.465;
+// Constantes de layout do protótipo do Claude Design (cena de 390 × 756 dp, sem a barra de abas).
+/** Centro vertical do planeta recolhido, como fração da altura da cena (356 / 756). */
+const PLANET_CENTER_RATIO = 0.471;
+/** Lado do planeta recolhido, como fração da largura (320 / 390). */
+const PLANET_WIDTH_RATIO = 0.82;
+/** Limite do lado do planeta em telas baixas, como fração da altura da cena. */
+const PLANET_MAX_HEIGHT_RATIO = 0.42;
 /** Arraste mínimo (dp) no cenário para abrir ou reduzir o painel. */
 const HERO_SWIPE_DISTANCE = theme.space.lg;
+/** Altura do cabeçalho: respiro de cima, botão de Configurações e respiro até o painel aberto. */
+const HEADER_HEIGHT = theme.space.lg + theme.target.minSize + theme.space.sm;
 
 export type HomeScreenContentProps = {
   status: HomeState["status"];
   error: HomeState["error"];
   summary: HomeSummary | null;
   progressLabel: string;
-  selectedDuration: FocusDuration;
   sheetStage: FocusSheetStage;
   reduceMotion: boolean;
   onRetry: () => void;
-  onSelectDuration: (duration: FocusDuration) => void;
   onCycleSheetStage: () => void;
   onCollapseSheet: () => void;
   onExpandSheet: () => void;
@@ -55,11 +58,9 @@ export const HomeScreenContent = ({
   error,
   summary,
   progressLabel,
-  selectedDuration,
   sheetStage,
   reduceMotion,
   onRetry,
-  onSelectDuration,
   onCycleSheetStage,
   onCollapseSheet,
   onExpandSheet,
@@ -72,8 +73,7 @@ export const HomeScreenContent = ({
   // Até o primeiro onLayout, usa a janela como estimativa.
   const width = frame.width || window.width;
   const sceneHeight = frame.height || window.height;
-  const expanded = sheetStage === "stage1_2";
-  const expandedTop = insets.top + theme.target.minSize;
+  const expandedTop = insets.top + HEADER_HEIGHT;
 
   const sheetMotion = useActivitySheetMotionViewModel({
     stage: sheetStage,
@@ -92,14 +92,17 @@ export const HomeScreenContent = ({
     return () => globalThis.removeEventListener("keydown", handleKey);
   }, [onCollapseSheet]);
 
+  // Toque e arraste no cenário passam por um único responder. Com um Pressable por cima, ele
+  // sobrescrevia os handlers do gesto (o arraste não chegava) e, na web, o clique do mouse
+  // ainda disparava o toque depois de um arraste, abrindo dois estágios de uma vez.
   const heroPan = useMemo(
     () =>
       PanResponder.create({
-        onMoveShouldSetPanResponder: (_, gesture) =>
-          Math.abs(gesture.dy) > theme.space.sm && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+        onStartShouldSetPanResponder: () => true,
         onPanResponderRelease: (_, gesture) => {
           if (gesture.dy < -HERO_SWIPE_DISTANCE) onExpandSheet();
           else if (gesture.dy > HERO_SWIPE_DISTANCE) onReduceSheet();
+          else if (Math.abs(gesture.dx) < theme.space.sm && Math.abs(gesture.dy) < theme.space.sm) onExpandSheet();
         },
       }),
     [onExpandSheet, onReduceSheet],
@@ -113,7 +116,8 @@ export const HomeScreenContent = ({
   };
 
   const ready = status === "ready" && summary !== null;
-  const planetTop = sceneHeight * PLANET_CENTER_RATIO - (width * PLANET_ASPECT_RATIO) / 2;
+  const planetSize = Math.min(width * PLANET_WIDTH_RATIO, sceneHeight * PLANET_MAX_HEIGHT_RATIO);
+  const planetTop = sceneHeight * PLANET_CENTER_RATIO - planetSize / 2;
 
   return (
     <View style={styles.screen} onLayout={onLayout}>
@@ -122,22 +126,36 @@ export const HomeScreenContent = ({
       </View>
 
       {ready ? (
-        <Pressable
-          {...heroPan.panHandlers}
-          accessible={false}
-          onPress={onExpandSheet}
-          style={StyleSheet.absoluteFill}
-        >
-          <Animated.View style={[styles.planet, { top: planetTop, transform: [{ translateY: sheetMotion.artworkShift }] }]}>
-            {width > 0 ? <PlanetStreakView days={summary.streak.currentDays} size={width} /> : null}
+        <View testID="home-hero" {...heroPan.panHandlers} style={StyleSheet.absoluteFill}>
+          <Animated.View
+            style={[
+              styles.planet,
+              {
+                top: planetTop,
+                opacity: sheetMotion.artworkOpacity,
+                transform: [{ translateY: sheetMotion.artworkShift }, { scale: sheetMotion.artworkScale }],
+              },
+            ]}
+          >
+            {width > 0 ? <PlanetStreakView days={summary.streak.currentDays} size={planetSize} /> : null}
           </Animated.View>
-        </Pressable>
+        </View>
       ) : null}
 
-      <View style={[styles.header, { top: insets.top, height: expanded ? theme.target.minSize : theme.size.headerHeight }]}>
+      <View style={[styles.header, { top: insets.top }]}>
         <Text accessibilityRole="header" allowFontScaling style={styles.brand}>
           {HOME_COPY.brand}
         </Text>
+        {/* A tela de Configurações ainda não existe: o botão aparece, mas não navega. */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={HOME_COPY.settings}
+          accessibilityState={{ disabled: true }}
+          disabled
+          style={styles.settings}
+        >
+          <MaterialSymbol name="settings" filled color={cosmicColors.focus} size={theme.navbar.iconSize} />
+        </Pressable>
       </View>
 
       {status === "loading" ? (
@@ -162,7 +180,7 @@ export const HomeScreenContent = ({
           onPress={onExpandSheet}
           style={({ pressed }) => [styles.invite, pressed && styles.pressed]}
         >
-          <CosmicIcon name="up" color={cosmicColors.unlocked} size={theme.size.iconLg} />
+          <MaterialSymbol name="expand_less" color={theme.color["on-surface-variant"]} size={theme.navbar.iconSize} />
           <Text allowFontScaling style={styles.inviteLabel}>
             {HOME_COPY["sheet.invite"]}
           </Text>
@@ -184,8 +202,6 @@ export const HomeScreenContent = ({
             progressCompleted={summary.progress.completed}
             progressTotal={summary.progress.total}
             focus={summary.focus}
-            selectedDuration={selectedDuration}
-            onSelectDuration={onSelectDuration}
             onToggleStage={onCycleSheetStage}
             onCollapseSheet={onCollapseSheet}
             dragging={sheetMotion.dragging}
@@ -205,11 +221,23 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    paddingHorizontal: theme.space.lg,
+    paddingTop: theme.space.lg,
+    paddingHorizontal: theme.space.md,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
-  brand: { ...theme.font.brand, color: theme.color["on-surface"] },
+  brand: { ...theme.font.title, color: theme.color["on-surface"] },
+  settings: {
+    width: theme.target.minSize,
+    height: theme.target.minSize,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: theme.radius.md,
+    borderWidth: theme.border.widthThin,
+    borderColor: cosmicBorders.sheet,
+    backgroundColor: cosmicColors.sheet,
+  },
   center: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, alignItems: "center", justifyContent: "center", padding: theme.space.lg },
   errorCard: {
     alignSelf: "stretch",
@@ -224,14 +252,15 @@ const styles = StyleSheet.create({
   invite: {
     position: "absolute",
     bottom: theme.space.lg,
-    left: theme.primitive["space-32"],
-    right: theme.primitive["space-32"],
+    alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
     minHeight: theme.target.minSize,
-    gap: theme.space.sm,
+    paddingHorizontal: theme.space.lg,
+    gap: theme.primitive["space-4"],
+    borderRadius: theme.radius.md,
   },
-  inviteLabel: { ...theme.font.caption, color: theme.color.focus },
+  inviteLabel: { ...theme.font.label, color: theme.color["on-surface-variant"] },
   pressed: { opacity: theme.motion.opacityPressed },
   sheetPosition: { position: "absolute", bottom: 0, left: 0, right: 0, overflow: "hidden" },
 });

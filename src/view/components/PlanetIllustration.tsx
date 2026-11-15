@@ -1,91 +1,85 @@
 import { useId } from "react";
-import Svg, {
-  Circle,
-  ClipPath,
-  Defs,
-  Ellipse,
-  G,
-  LinearGradient,
-  Path,
-  RadialGradient,
-  Stop,
-} from "react-native-svg";
+import Svg, { Circle, ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from "react-native-svg";
 import { planetColors } from "../theme/tokens";
 
 /** Proporção altura/largura da arte do planeta (constante da ilustração, não token). */
-export const PLANET_ASPECT_RATIO = 0.85;
+export const PLANET_ASPECT_RATIO = 1;
 
-// Geometria vetorial em coordenadas locais: esfera, relevo e órbita são camadas
-// independentes, sem textura raster ou contexto WebGL.
+/** Lado da grade de desenho, igual ao componente "Planeta da sequência" do protótipo (280 × 280). */
+export const PLANET_ARTBOARD = 280;
+/** Centro e raio da esfera na grade de desenho; o contador da sequência fica centrado nela. */
+export const PLANET_SPHERE = { cx: 140, cy: 140, r: 96 } as const;
+
+// Camadas do protótipo do Claude Design: brilho, anel de trás, esfera com crateras,
+// metade da frente do anel, lua e dois asteroides. Tudo vetorial, sem imagem.
 export const PlanetIllustration = () => {
   const instanceId = useId().replace(/[^a-zA-Z0-9]/g, "");
   const id = (name: string) => `planet-${instanceId}-${name}`;
   const paint = (name: string) => `url(#${id(name)})`;
   const color = planetColors;
+  const { cx, cy, r } = PLANET_SPHERE;
+  // Anel: elipse 280 × 72 com traço de 9, girada -16° em torno do próprio centro.
+  const ring = { cx: 140, cy: 148, rx: 135.5, ry: 31.5, angle: -16 };
+  const ringTransform = `rotate(${ring.angle} ${ring.cx} ${ring.cy})`;
+  const frontArc = `M${ring.cx - ring.rx} ${ring.cy}a${ring.rx} ${ring.ry} 0 0 0 ${ring.rx * 2} 0`;
+  const highlightArc = `M${ring.cx - 120} ${ring.cy + 13}a133 29 0 0 0 240 0`;
 
   return (
-    <Svg width="100%" height="100%" viewBox="0 0 1000 850" accessible={false}>
+    <Svg width="100%" height="100%" viewBox={`0 0 ${PLANET_ARTBOARD} ${PLANET_ARTBOARD}`} accessible={false}>
       <Defs>
-        <RadialGradient id={id("surface")} cx="25%" cy="18%" r="86%">
-          <Stop offset="0" stopColor={color.highlight} />
-          <Stop offset="0.28" stopColor={color.light} />
-          <Stop offset="0.58" stopColor={color.surface} />
-          <Stop offset="0.84" stopColor={color.shadow} />
-          <Stop offset="1" stopColor={color.night} />
-        </RadialGradient>
-        <RadialGradient id={id("shadow")} cx="15%" cy="10%" r="100%">
-          <Stop offset="0.28" stopColor={color.night} stopOpacity="0" />
-          <Stop offset="0.7" stopColor={color.night} stopOpacity="0.2" />
-          <Stop offset="1" stopColor={color.night} stopOpacity="0.88" />
-        </RadialGradient>
-        <RadialGradient id={id("glow")}>
-          <Stop offset="0.66" stopColor={color.glow} stopOpacity={0.2} />
+        <RadialGradient id={id("glow")} cx="50%" cy="50%" r="50%">
+          <Stop offset="0.64" stopColor={color.glow} stopOpacity="0.55" />
           <Stop offset="1" stopColor={color.glow} stopOpacity="0" />
         </RadialGradient>
-        <LinearGradient id={id("ring")} x1="0" y1="0" x2="100%" y2="100%">
-          <Stop offset="0" stopColor={color.ringHighlight} />
-          <Stop offset="0.35" stopColor={color.ring} />
-          <Stop offset="0.7" stopColor={color.light} />
-          <Stop offset="1" stopColor={color.ringHighlight} />
+        <RadialGradient id={id("surface")} cx="34%" cy="28%" fx="34%" fy="28%" r="98%">
+          <Stop offset="0" stopColor={color.highlight} />
+          <Stop offset="0.16" stopColor={color.light} />
+          <Stop offset="0.42" stopColor={color.surface} />
+          <Stop offset="0.7" stopColor={color.relief} />
+          <Stop offset="0.86" stopColor={color.shadow} />
+          <Stop offset="1" stopColor={color.night} />
+        </RadialGradient>
+        <RadialGradient id={id("moon")} cx="35%" cy="30%" fx="35%" fy="30%" r="80%">
+          <Stop offset="0" stopColor={color.light} />
+          <Stop offset="0.62" stopColor={color.relief} />
+          <Stop offset="1" stopColor={color.shadow} />
+        </RadialGradient>
+        <RadialGradient id={id("moonGlow")} cx="50%" cy="50%" r="50%">
+          <Stop offset="0.78" stopColor={color.glow} stopOpacity="0.45" />
+          <Stop offset="1" stopColor={color.glow} stopOpacity="0" />
+        </RadialGradient>
+        <LinearGradient id={id("rock")} x1="0" y1="0" x2="100%" y2="100%">
+          <Stop offset="0" stopColor={color.relief} />
+          <Stop offset="1" stopColor={color.night} />
         </LinearGradient>
-        <LinearGradient id={id("rim")} x1="0" y1="0" x2="100%" y2="100%">
-          <Stop offset="0" stopColor={color.ringHighlight} />
-          <Stop offset="0.45" stopColor={color.border} stopOpacity="0.8" />
-          <Stop offset="1" stopColor={color.surface} stopOpacity="0.2" />
-        </LinearGradient>
-        <ClipPath id={id("sphere")}><Circle cx="500" cy="425" r="330" /></ClipPath>
+        <ClipPath id={id("sphere")}>
+          <Circle cx={cx} cy={cy} r={r} />
+        </ClipPath>
       </Defs>
 
-      <Circle cx="500" cy="425" r="425" fill={paint("glow")} />
-      <Ellipse cx="500" cy="425" rx="480" ry="143" transform="rotate(-24 500 425)" fill="none" stroke={paint("ring")} strokeWidth="32" opacity="0.85" />
-      <Circle cx="500" cy="425" r="330" fill={paint("surface")} />
+      {/* O brilho termina dentro da grade de 280: passar dela recortaria um quadrado visível. */}
+      <Circle cx={cx} cy={cy} r={140} fill={paint("glow")} />
+      <Ellipse cx={ring.cx} cy={ring.cy} rx={ring.rx} ry={ring.ry} transform={ringTransform} fill="none" stroke={color.ring} strokeWidth={9} opacity={0.85} />
 
+      <Circle cx={cx} cy={cy} r={r} fill={paint("surface")} />
       <G clipPath={paint("sphere")}>
-        <G fill={color.relief} opacity="0.62">
-          <Path d="M243 157c57-33 95-8 117 7 18 13 48-5 69 5 39 20 4 58-24 62-32 4-26 32-50 42-32 13-45-9-71-3-31 7-22 43-49 46-36 5-54-32-41-59 10-21 42-27 38-47-3-15-8-34 11-53Z" />
-          <Path d="M462 104c38-11 75-3 99 11 28 17 27 40 65 40 25 0 51-9 72 12 27 29-10 52-37 45-25-7-48-7-65 13-24 26-52 21-58-4-4-21-24-18-46-20-33-3-32-30-14-43 18-14-46-28-16-54Z" />
-          <Path d="M657 249c36-27 47 2 73-4 35-7 49-45 74-19 19 20-3 39 1 60 4 23 38 36 31 65-9 32-39 26-59 9-25-20-18-53-45-52-28 2-37 30-64 24-38-8-37-56-11-83Z" />
-          <Path d="M463 298c29-35 68-22 75 5 7 24 42 10 58 33 16 24-13 45-39 47-28 3-29 35-52 34-30-2-35-31-61-32-33-2-34-30-13-43 15-9 20-30 32-44Z" />
-          <Path d="M210 425c24-22 56-18 66 3 9 20 32 11 46 31 25 34-12 43-8 68 3 21 36 36 23 66-12 29-43 18-45-6-2-22-29-10-39-31-10-22 1-32-16-53-25-31-52-41-27-78Z" />
-          <Path d="M572 469c30-35 52-4 71-14 29-15 15-48 49-56 40-10 54 38 36 69-14 23 1 41-12 63-17 30-51 5-61 25-17 36 7 64-19 87-37 32-75-2-58-35 10-18-10-38-30-43-34-9-37-42-15-59 14-11 24-19 39-37Z" />
-          <Path d="M387 641c20-24 38-8 56-1 24 8 36-17 58-3 21 14-5 31 14 44 36 25 15 51-13 48-29-3-40 21-68 17-23-4-28-28-15-46 12-17-58-29-32-59Z" />
-        </G>
-        <G fill={color.shadow} opacity="0.38">
-          <Ellipse cx="288" cy="339" rx="39" ry="25" transform="rotate(-48 288 339)" />
-          <Ellipse cx="375" cy="217" rx="22" ry="12" transform="rotate(-20 375 217)" />
-          <Ellipse cx="735" cy="402" rx="22" ry="30" transform="rotate(-18 735 402)" />
-          <Ellipse cx="407" cy="545" rx="34" ry="20" transform="rotate(22 407 545)" />
-          <Ellipse cx="532" cy="608" rx="18" ry="24" />
-        </G>
-        <Path d="M266 358c-11-24 11-53 36-57" fill="none" stroke={color.highlight} strokeWidth="5" opacity="0.32" />
-        <Circle cx="500" cy="425" r="330" fill={paint("shadow")} />
+        <Ellipse cx={101} cy={161} rx={17} ry={11} fill={color.relief} opacity={0.55} />
+        <Ellipse cx={181} cy={101} rx={13} ry={9} fill={color.relief} opacity={0.45} />
+        <Ellipse cx={179} cy={191} rx={21} ry={13} fill={color.shadow} opacity={0.5} />
+        <Ellipse cx={119} cy={86} rx={9} ry={6} fill={color.light} opacity={0.45} />
+        <Ellipse cx={204} cy={144} rx={8} ry={6} fill={color.relief} opacity={0.5} />
+      </G>
+      <Circle cx={cx} cy={cy} r={r - 1} fill="none" stroke={color.border} strokeWidth={2} />
+
+      <G transform={ringTransform}>
+        <Path d={frontArc} fill="none" stroke={color.ring} strokeWidth={9} />
+        <Path d={highlightArc} fill="none" stroke={color.ringHighlight} strokeWidth={2} opacity={0.8} />
       </G>
 
-      <Circle cx="500" cy="425" r="329" fill="none" stroke={paint("rim")} strokeWidth={3} />
-      <G transform="rotate(-24 500 425)">
-        <Path d="M20 425a480 143 0 0 0 960 0" fill="none" stroke={paint("ring")} strokeWidth="32" />
-        <Path d="M20 425a480 143 0 0 0 960 0" fill="none" stroke={color.ringHighlight} strokeWidth="2" opacity="0.72" />
-      </G>
+      <Circle cx={28} cy={40} r={28} fill={paint("moonGlow")} />
+      <Circle cx={28} cy={40} r={22} fill={paint("moon")} />
+      <Ellipse cx={249} cy={224} rx={13} ry={10} transform="rotate(18 249 224)" fill={paint("rock")} />
+      <Ellipse cx={237} cy={37} rx={9} ry={7} fill={paint("rock")} />
     </Svg>
   );
 };

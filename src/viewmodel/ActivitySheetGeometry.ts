@@ -17,13 +17,28 @@ export type SheetGeometryConfig = {
 
 export type ActivitySheetSnapPoints = Record<FocusSheetStage, number>;
 
-/** Topo do estágio intermediário, como fração da altura da cena. */
-export const INTERMEDIATE_TOP_RATIO = 0.44;
-/** Deslocamento vertical da arte do planeta, como fração da altura da cena. */
-export const ARTWORK_OFFSET_RATIO: Record<FocusSheetStage, number> = {
-  collapsed: 0,
-  stage1_1: -0.13,
-  stage1_2: -0.23,
+/**
+ * Topo do estágio intermediário, como fração da altura da cena.
+ * Protótipo do Claude Design: painel em 268 dp numa cena de 756 dp (844 menos a barra de abas).
+ */
+export const INTERMEDIATE_TOP_RATIO = 0.354;
+
+export type ArtworkPose = {
+  /** Deslocamento vertical do centro do planeta, como fração da altura da cena. */
+  offset: number;
+  /** Escala em relação ao planeta do estágio recolhido. */
+  scale: number;
+  opacity: number;
+};
+
+/**
+ * Pose do planeta em cada estágio, tirada do protótipo: 320 dp centrado em 356 dp quando recolhido,
+ * 190 dp centrado em 159 dp no intermediário e escondido sob o painel quando expandido.
+ */
+export const ARTWORK_POSE: Record<FocusSheetStage, ArtworkPose> = {
+  collapsed: { offset: 0, scale: 1, opacity: 1 },
+  stage1_1: { offset: -0.261, scale: 0.594, opacity: 1 },
+  stage1_2: { offset: -0.33, scale: 0.45, opacity: 0 },
 };
 
 export const SHEET_GESTURE = {

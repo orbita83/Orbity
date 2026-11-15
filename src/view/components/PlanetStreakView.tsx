@@ -1,67 +1,58 @@
 import { StyleSheet, Text, View } from "react-native";
 import { HOME_COPY, streakUnit } from "../home-copy";
-import { cosmicColors, themes } from "../theme/tokens";
-import { PLANET_ASPECT_RATIO, PlanetIllustration } from "./PlanetIllustration";
+import { planetColors, themes } from "../theme/tokens";
+import { PLANET_ARTBOARD, PLANET_SPHERE, PlanetIllustration } from "./PlanetIllustration";
 
 const theme = themes.cosmic;
 
 export type PlanetStreakViewProps = {
   /** Dias de sequência (RF-0015). */
   days: number;
-  /** Largura da arte; a altura segue a proporção do planeta. */
+  /** Lado da arte, em dp. Desenho e contador escalam juntos, como no protótipo. */
   size: number;
 };
 
 /** Planeta com o número da sequência como texto real (visualizacao-sequencia.md). */
 export const PlanetStreakView = ({ days, size }: PlanetStreakViewProps) => {
   const label = `${days} ${streakUnit(days)}`;
+  const offset = (size - PLANET_ARTBOARD) / 2;
   return (
     <View
       accessible
       accessibilityRole="text"
       accessibilityLabel={days === 0 ? `${label}. ${HOME_COPY["streak.empty"]}` : label}
-      style={[styles.container, { width: size, height: size * PLANET_ASPECT_RATIO }]}
+      style={{ width: size, height: size }}
     >
-      <PlanetIllustration />
-      <View pointerEvents="none" style={styles.sequence}>
-        <Text allowFontScaling style={styles.count}>
-          {days}
-        </Text>
-        <Text allowFontScaling style={styles.label}>
-          {streakUnit(days)}
-        </Text>
-        {days === 0 ? (
-          <Text allowFontScaling style={styles.empty}>
-            {HOME_COPY["streak.empty"]}
+      <View style={[styles.artboard, { left: offset, top: offset, transform: [{ scale: size / PLANET_ARTBOARD }] }]}>
+        <PlanetIllustration />
+        <View pointerEvents="none" style={styles.sequence}>
+          <Text allowFontScaling={false} style={styles.count}>
+            {days}
           </Text>
-        ) : null}
+          <Text allowFontScaling={false} style={styles.label}>
+            {streakUnit(days)}
+          </Text>
+        </View>
       </View>
     </View>
   );
 };
 
 // A sombra escura em volta do texto garante leitura sobre as áreas claras do planeta.
-const textHalo = {
-  textShadowColor: cosmicColors.background,
-  textShadowOffset: { width: 0, height: 0 },
-} as const;
+const textHalo = { textShadowColor: planetColors.night, textShadowOffset: { width: 0, height: 2 } } as const;
+const sphereSide = PLANET_SPHERE.r * 2;
 
 const styles = StyleSheet.create({
-  container: { alignItems: "center", justifyContent: "center" },
+  artboard: { position: "absolute", width: PLANET_ARTBOARD, height: PLANET_ARTBOARD },
   sequence: {
-    position: "absolute", top: 0, right: 0, bottom: 0, left: 0,
+    position: "absolute",
+    left: PLANET_SPHERE.cx - PLANET_SPHERE.r,
+    top: PLANET_SPHERE.cy - PLANET_SPHERE.r,
+    width: sphereSide,
+    height: sphereSide,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: theme.space.lg,
   },
   count: { ...theme.font.streak, ...textHalo, textShadowRadius: theme.space.md, color: theme.color["on-surface"], textAlign: "center" },
-  label: { ...theme.font.body, ...textHalo, textShadowRadius: theme.space.sm, color: theme.color["on-surface"], textAlign: "center" },
-  empty: {
-    ...theme.font.caption,
-    ...textHalo,
-    textShadowRadius: theme.space.sm,
-    color: theme.color["on-surface"],
-    textAlign: "center",
-    marginTop: theme.space.sm,
-  },
+  label: { ...theme.font.label, ...textHalo, textShadowRadius: theme.space.sm, color: theme.color["on-surface"], textAlign: "center" },
 });

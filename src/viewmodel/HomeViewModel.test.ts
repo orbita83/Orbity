@@ -123,23 +123,6 @@ describe("useHomeViewModel", () => {
     expect(result.current.summary?.streak.currentDays).toBe(5);
   });
 
-  it("RF-0019: começa em 15 minutos e só aceita durações pré-definidas", async () => {
-    const useCases = useCasesFrom(summaryWith(0));
-    const { result } = await renderHook(() => useHomeViewModel(useCases));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
-    expect(result.current.selectedDuration).toBe(15);
-
-    await act(async () => {
-      result.current.selectDuration(20);
-    });
-    expect(result.current.selectedDuration).toBe(20);
-
-    await act(async () => {
-      result.current.selectDuration(17);
-    });
-    expect(result.current.selectedDuration).toBe(20);
-  });
-
   it("abre e fecha o painel pelos botões", async () => {
     const useCases = useCasesFrom(summaryWith(0));
     const { result } = await renderHook(() => useHomeViewModel(useCases));

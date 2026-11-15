@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Easing, PanResponder, type PanResponderGestureState } from "react-native";
 import {
-  ARTWORK_OFFSET_RATIO,
+  ARTWORK_POSE,
   SHEET_GESTURE,
   clampSheetTop,
   createSheetSnapPoints,
@@ -134,19 +134,23 @@ export const useActivitySheetMotionViewModel = ({
   );
   /* eslint-enable react-hooks/refs */
 
-  const artworkShift = top.interpolate({
-    inputRange: [snaps.stage1_2, snaps.stage1_1, snaps.collapsed],
-    outputRange: [
-      sceneHeight * ARTWORK_OFFSET_RATIO.stage1_2,
-      sceneHeight * ARTWORK_OFFSET_RATIO.stage1_1,
-      sceneHeight * ARTWORK_OFFSET_RATIO.collapsed,
-    ],
-    extrapolate: "clamp",
-  });
+  // O planeta acompanha o painel: sobe, encolhe e some sob ele, como nos estágios do protótipo.
+  const inputRange = [snaps.stage1_2, snaps.stage1_1, snaps.collapsed];
+  const poseRange = (pick: (stage: FocusSheetStage) => number) =>
+    top.interpolate({
+      inputRange,
+      outputRange: [pick("stage1_2"), pick("stage1_1"), pick("collapsed")],
+      extrapolate: "clamp",
+    });
+  const artworkShift = poseRange((s) => sceneHeight * ARTWORK_POSE[s].offset);
+  const artworkScale = poseRange((s) => ARTWORK_POSE[s].scale);
+  const artworkOpacity = poseRange((s) => ARTWORK_POSE[s].opacity);
 
   return {
     top,
     artworkShift,
+    artworkScale,
+    artworkOpacity,
     dragging,
     panHandlers: responder.panHandlers,
     onScrollOffsetChange,
