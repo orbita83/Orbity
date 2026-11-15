@@ -2,7 +2,7 @@
 
 ![Identidade visual do Orbity: planeta roxo com anéis ao lado do nome Orbity](images/assets/orbity-design-system.png)
 
-> **Versão:** 1.1.0 (1.2.0 em preparação; ver [CHANGELOG.md](CHANGELOG.md)) · **Integrantes:** Mailson Sousa, Cássio Sampaio, Mateus de Araujo, Vitor Lopes, Alisson Ramires · **Disciplinas:** IHC e PDM
+> **Versão:** 1.2.0 · **Integrantes:** Mailson Sousa, Cássio Sampaio, Mateus de Araujo, Vitor Lopes, Alisson Ramires · **Disciplinas:** IHC e PDM
 
 ## 1. Visão geral
 
@@ -34,9 +34,9 @@ O inventário abaixo foi consolidado a partir dos fluxos descritos em [05-padroe
 | Splash e onboarding           | Logo e slogan, carrossel de quatro etapas, indicadores de etapa, botão Próximo e botão Pular                       | Planejada em `05-padroes.md`; não implementada em `src/app/`.                                                                                   |
 | Tela inicial                  | Cabeçalho, visualizador vetorial do planeta e sequência, painel de atividade e navbar de cinco abas | Parcial: `NavBar` implementada; composição da tela e visualizador especificados no padrão F1/F2, ainda sem integração nesta branch. |
 | Modo foco e progresso         | Painel arrastável, alça, botão Iniciar, `ProgressBar`, `AchievementBadge` e ajuda | Parcial: `PrimaryButton` implementado; painel, cronômetro e sessões especificados no padrão F1/F2; `ProgressBar` e `AchievementBadge` documentados na 1.2, ainda sem implementação. |
-| Lista de tarefas              | Filtros Todos/Pendentes/Concluídas, botão Nova tarefa, cards, controles de conclusão e menu de opções              | Parcial: o botão primário está documentado e implementado como `PrimaryButton`; tela, filtros, cards e demais controles ainda estão planejados. |
-| Nova tarefa e confirmação     | Modal de formulário, `FormFields`, seletores, botão Criar, mensagens de validação e `Modal` de sucesso            | Parcial: `TextField` (FormFields, variante Texto), `ScreenHeader` e `PrimaryButton` implementados, e rota `new-task` registrada; seletores de data, hora e categoria, o `Modal` de sucesso e a tela ainda estão planejados. |
-| Seleção múltipla de tarefas   | `ContextualActionBar` (cabeçalho com contador e barra de ações Fixar, Marcar todas, Excluir e Cancelar)            | Parcial: `ContextualHeader`, `ContextualActionBar` e `ConfirmDialog` implementados; a integração na tela de Tarefas ainda está planejada. |
+| Lista de tarefas              | Filtros Todos/Pendentes/Concluídas, botão Nova tarefa, cards, controles de conclusão e menu de opções              | Implementada (`TasksScreen`): filtros, `CardTarefa`, `CheckCircle` e `PrimaryButton`, com as tarefas salvas no SQLite (memória na web). |
+| Nova tarefa e confirmação     | Modal de formulário, `FormFields`, seletores, botão Criar, mensagens de validação e `Modal` de sucesso            | Implementada (`NewTaskScreen`): `TextField` com botão acessório, `TaskPickerModal` para data, hora e categoria, `ScreenHeader`, `SuccessDialog` e `PrimaryButton`; a tarefa é salva pelo domínio de Tarefas. |
+| Seleção múltipla de tarefas   | `ContextualActionBar` (cabeçalho com contador e barra de ações Fixar, Marcar todas, Excluir e Cancelar)            | Implementada: `ContextualHeader`, `ContextualActionBar` e `ConfirmDialog` na tela de Tarefas; fixar, desafixar e excluir em lote passam pelo domínio de Tarefas. |
 | Lista e criação de rotinas    | Cards de rotina, botão Nova rotina, formulário, seleção de dias e lista de tarefas reordenáveis                    | Parcial: `CheckCircle`, `IconTile`, `TextField`, `ScreenHeader` e `PrimaryButton` implementados, e rota `new-routine` registrada; as telas ainda estão planejadas. |
 | Detalhe da rotina             | Cards de turno, itens reordenáveis, controles de conclusão e botões Marcar como concluída e Desmarcar todos        | Parcial: `CheckCircle`, `ConfirmDialog`, `Snackbar` e `ScreenHeader` implementados, e rota `routine-details` registrada; a tela ainda está planejada. |
 | Lista e detalhe de conquistas | Campo de busca, `AchievementBadge`, indicadores de progresso, `Modal` de detalhes, botão Compartilhar e botão Fechar | Parcial: pode reutilizar `PrimaryButton`; `AchievementBadge` e `Modal` documentados na 1.2; os demais componentes e as telas ainda estão planejados. |

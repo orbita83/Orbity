@@ -61,7 +61,7 @@ export const ContextualActionBar = ({ actions }: ContextualActionBarProps) => {
         >
           <MaterialSymbol
             name={action.icon}
-            color={action.destructive ? theme.color.error : theme.color["on-surface"]}
+            color={action.destructive ? theme.color.error : theme.color.focus}
             size={theme.navbar.iconSize}
           />
           <Text allowFontScaling style={styles.actionLabel}>

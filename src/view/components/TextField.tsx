@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
 import { cosmicColors, themes } from "../theme/tokens";
-import { MaterialSymbol } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
 
 const theme = themes.cosmic;
 /** Linhas visíveis do campo de várias linhas antes de rolar. */
@@ -19,7 +19,12 @@ export type TextFieldProps = {
   helper?: string;
   multiline?: boolean;
   onSubmitEditing?: () => void;
+  keyboardType?: TextInputProps["keyboardType"];
   testID?: string;
+  /** Botão acessório à direita do campo (ex.: abrir seletor de data/hora sem impedir digitação). */
+  trailingIcon?: MaterialSymbolName;
+  trailingLabel?: string;
+  onTrailingPress?: () => void;
 };
 
 const REQUIREMENT_LABEL = { required: "(obrigatório)", optional: "(opcional)" } as const;
@@ -35,10 +40,41 @@ export const TextField = ({
   helper,
   multiline = false,
   onSubmitEditing,
+  keyboardType,
   testID,
+  trailingIcon,
+  trailingLabel,
+  onTrailingPress,
 }: TextFieldProps) => {
   const [focused, setFocused] = useState(false);
   const accessibleLabel = requirement ? `${label}, ${REQUIREMENT_LABEL[requirement]}` : label;
+  const hasTrailing = Boolean(trailingIcon && onTrailingPress);
+
+  const inputNode = (
+    <TextInput
+      testID={testID}
+      accessibilityLabel={accessibleLabel}
+      accessibilityHint={error ?? helper}
+      aria-invalid={Boolean(error)}
+      allowFontScaling
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={cosmicColors.inactive}
+      multiline={multiline}
+      numberOfLines={multiline ? MULTILINE_ROWS : 1}
+      textAlignVertical={multiline ? "top" : "center"}
+      onSubmitEditing={onSubmitEditing}
+      keyboardType={keyboardType}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={[
+        hasTrailing ? styles.fieldInline : styles.field,
+        multiline && styles.multiline,
+        !hasTrailing && focused && styles.focused,
+      ]}
+    />
+  );
 
   return (
     <View style={styles.group}>
@@ -46,24 +82,21 @@ export const TextField = ({
         {label}
         {requirement ? <Text style={styles.requirement}> {REQUIREMENT_LABEL[requirement]}</Text> : null}
       </Text>
-      <TextInput
-        testID={testID}
-        accessibilityLabel={accessibleLabel}
-        accessibilityHint={error ?? helper}
-        aria-invalid={Boolean(error)}
-        allowFontScaling
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={cosmicColors.inactive}
-        multiline={multiline}
-        numberOfLines={multiline ? MULTILINE_ROWS : 1}
-        textAlignVertical={multiline ? "top" : "center"}
-        onSubmitEditing={onSubmitEditing}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={[styles.field, multiline && styles.multiline, focused && styles.focused]}
-      />
+      {hasTrailing && trailingIcon ? (
+        <View style={[styles.fieldRow, focused && styles.focused]}>
+          {inputNode}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={trailingLabel ?? label}
+            onPress={onTrailingPress}
+            style={({ pressed }) => [styles.trailingButton, pressed && styles.trailingPressed]}
+          >
+            <MaterialSymbol name={trailingIcon} color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+          </Pressable>
+        </View>
+      ) : (
+        inputNode
+      )}
       {error ? (
         <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.message}>
           <MaterialSymbol name="error" filled color={theme.color.error} size={theme.navbar.iconSize} />
@@ -95,6 +128,33 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color["surface-variant"],
     color: theme.color["on-surface"],
   },
+  fieldRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: theme.target.minSize,
+    borderRadius: theme.radius.md,
+    borderWidth: theme.border.widthThin,
+    borderColor: theme.color["border-subtle"],
+    backgroundColor: theme.color["surface-variant"],
+    overflow: "hidden",
+  },
+  fieldInline: {
+    ...theme.font.body,
+    flex: 1,
+    minWidth: 0,
+    minHeight: theme.target.minSize,
+    paddingLeft: theme.space.md,
+    paddingRight: theme.primitive["space-4"],
+    paddingVertical: theme.space.sm,
+    color: theme.color["on-surface"],
+  },
+  trailingButton: {
+    width: theme.target.minSize,
+    height: theme.target.minSize,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  trailingPressed: { opacity: theme.motion.opacityPressed },
   multiline: { minHeight: theme.font.body.lineHeight * MULTILINE_ROWS + theme.space.md * 2 },
   focused: { borderWidth: theme.focus.ringWidth, borderColor: theme.color.focus },
   message: { flexDirection: "row", alignItems: "center", gap: theme.space.sm },

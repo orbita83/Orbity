@@ -16,7 +16,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 1. **Cabeçalho fixo:** botão "✕" (48 dp) e texto "N selecionados" em `font.label`; fundo `navbar.bg`, fio inferior `color.border-subtle` e `shadow.bar-top`.
 2. **Barra inferior:** ocupa exatamente o lugar da navbar; fundo `navbar.bg`, fio superior `color.border-subtle` e `shadow.bar`.
-3. **Ações:** Fixar, Marcar todas e Excluir (n), cada uma com ícone de 24 dp e rótulo visível em `font.label` e `color.on-surface`; o ícone de Excluir usa `color.error`.
+3. **Ações:** Editar (habilitada apenas quando 1 tarefa está selecionada), Fixar, Marcar todas e Excluir (n), cada uma com ícone de 24 dp e rótulo visível em `font.label` e `color.on-surface`; o ícone de Excluir usa `color.error`.
 
 ## Variantes
 
@@ -51,4 +51,4 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 ## Código
 
-Implementado em [ContextualActionBar.tsx](../../src/view/components/ContextualActionBar.tsx): `ContextualHeader` (✕ "Cancelar seleção" e contador em região ao vivo) e `ContextualActionBar` (ações com ícone e rótulo; `destructive` usa `color.error` no ícone; `disabled` usa `button.opacity-disabled`). Os dois respeitam a área segura. Testes em `FeedbackComponents.test.tsx`.
+Implementado em [ContextualActionBar.tsx](../../src/view/components/ContextualActionBar.tsx): `ContextualHeader` (✕ "Cancelar seleção" e contador em região ao vivo) e `ContextualActionBar` (ações com ícone em `color.focus` e rótulo; `destructive` usa `color.error` no ícone; `disabled` usa `button.opacity-disabled`). Os dois respeitam a área segura. Testes em `FeedbackComponents.test.tsx`.

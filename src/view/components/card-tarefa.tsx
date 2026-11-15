@@ -1,66 +1,107 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { themes, type OrbityTheme } from "../theme/tokens";
+import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
+import { CheckCircle } from "./CheckCircle";
+import { GradientSurface } from "./GradientSurface";
+import { MaterialSymbol } from "./material-symbol";
 
 export type CardTarefaProps = {
   title: string;
   dueDate?: string;
+  category?: string;
   completed: boolean;
   onToggleCompleted: () => void;
   onOptionsPress?: () => void;
+  /** Toque longo no texto da tarefa: abre a seleção múltipla (padrão F6). */
+  onLongPress?: () => void;
+  /** Tarefa fixada no topo da lista. */
+  pinned?: boolean;
+  /** Modo de seleção múltipla: o card inteiro alterna a seleção. */
+  selectionMode?: boolean;
+  selected?: boolean;
+  onToggleSelected?: () => void;
   theme?: OrbityTheme;
 };
 
 export const CardTarefa = ({
   title,
   dueDate,
+  category,
   completed,
   onToggleCompleted,
   onOptionsPress,
-  theme = themes.light,
+  onLongPress,
+  pinned = false,
+  selectionMode = false,
+  selected = false,
+  onToggleSelected,
+  theme = themes.cosmic,
 }: CardTarefaProps) => {
   const styles = createStyles(theme, completed);
+  const cosmic = Boolean(theme.componentOverrides?.cardSurface);
+  const secondaryMeta = [category, dueDate].filter(Boolean).join(" · ");
 
-  return (
-    <View style={styles.card}>
-      <Pressable
-        accessibilityRole="checkbox"
-        accessibilityLabel={`${completed ? "Desmarcar" : "Concluir"} tarefa: ${title}`}
-        accessibilityState={{ checked: completed }}
-        aria-checked={completed}
-        onPress={onToggleCompleted}
-        style={styles.checkbox}
-      >
-        <View
-          style={[
-            styles.checkboxVisual,
-            completed && styles.checkboxCompleted,
-          ]}
-        >
-          {completed ? (
-            <Text allowFontScaling style={styles.checkboxLabel}>
-              ✓
-            </Text>
-          ) : null}
-        </View>
-      </Pressable>
-      <View style={styles.content}>
+  const content = (
+    <View style={styles.content}>
+      <View style={styles.titleRow}>
+        {pinned ? <MaterialSymbol name="push_pin" filled color={cosmicColors.focus} size={theme.space.md} /> : null}
         <Text allowFontScaling style={styles.title}>
           {title}
         </Text>
-        {dueDate ? (
-          <Text allowFontScaling style={styles.dueDate}>
-            {dueDate}
-          </Text>
-        ) : null}
       </View>
+      {secondaryMeta ? (
+        <Text allowFontScaling style={styles.dueDate}>
+          {secondaryMeta}
+        </Text>
+      ) : null}
+    </View>
+  );
+
+  if (selectionMode) {
+    return (
+      <Pressable
+        accessibilityRole="checkbox"
+        accessibilityLabel={`Selecionar tarefa: ${title}`}
+        accessibilityState={{ checked: selected }}
+        aria-checked={selected}
+        onPress={onToggleSelected}
+        style={({ pressed }) => [styles.card, selected && styles.cardSelected, pressed && styles.pressed]}
+      >
+        {cosmic && !selected ? <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} /> : null}
+        <View style={styles.selectionTarget}>
+          <View style={[styles.selectionMark, selected && styles.selectionMarkOn]}>
+            {selected ? <MaterialSymbol name="check" color={theme.color.surface} size={theme.space.md} /> : null}
+          </View>
+        </View>
+        {content}
+      </Pressable>
+    );
+  }
+
+  return (
+    <View style={styles.card}>
+      {cosmic ? <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} /> : null}
+      <CheckCircle
+        checked={completed}
+        onToggle={onToggleCompleted}
+        accessibilityLabel={`${completed ? "Desmarcar" : "Concluir"} tarefa: ${title}`}
+      />
+      <Pressable
+        accessible={Boolean(onLongPress)}
+        accessibilityHint={onLongPress ? "Toque longo para selecionar várias tarefas" : undefined}
+        onLongPress={onLongPress}
+        disabled={!onLongPress}
+        style={styles.contentPressable}
+      >
+        {content}
+      </Pressable>
       {onOptionsPress ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Opções da tarefa: ${title}`}
           onPress={onOptionsPress}
-          style={styles.optionsButton}
+          style={({ pressed }) => [styles.optionsButton, pressed && styles.pressed]}
         >
-          <Text allowFontScaling style={styles.optionsLabel}>…</Text>
+          <MaterialSymbol name="more_horiz" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
         </Pressable>
       ) : null}
     </View>
@@ -72,53 +113,52 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
     card: {
       alignItems: "center",
       backgroundColor: theme.componentOverrides?.cardSurface ?? theme.color.surface,
+      borderColor: theme.componentOverrides?.cardSurface ? cosmicBorders.card : theme.color["border-subtle"],
       borderRadius: theme.radius.lg,
-      elevation: theme.elevation.card,
+      borderWidth: theme.border.widthThin,
       flexDirection: "row",
-      padding: theme.space.md,
+      gap: theme.primitive["space-4"],
+      overflow: "hidden",
+      paddingHorizontal: theme.primitive["space-4"],
+      paddingVertical: theme.space.sm,
     },
-    checkbox: {
-      alignItems: "center",
-      justifyContent: "center",
-      marginRight: theme.space.md,
-      minHeight: theme.target.minSize,
-      minWidth: theme.target.minSize,
-      width: theme.target.minSize,
-    },
-    checkboxVisual: {
-      alignItems: "center",
-      backgroundColor: theme.componentOverrides?.cardSurface ?? theme.color.surface,
-      borderColor: theme.color.action,
-      borderRadius: theme.radius.md,
+    cardSelected: {
+      backgroundColor: theme.color["action-subtle"],
+      borderColor: theme.color.focus,
       borderWidth: theme.focus.ringWidth,
-      height: theme.primitive["space-24"],
-      justifyContent: "center",
-      width: theme.primitive["space-24"],
     },
-    checkboxCompleted: { backgroundColor: theme.color.action },
-    checkboxLabel: {
-      ...theme.font.label,
-      color: theme.componentOverrides?.checkboxMark ?? theme.color.surface,
-      textAlign: "center",
-    },
-    content: { flex: 1, flexShrink: 1 },
+    pressed: { opacity: theme.motion.opacityPressed },
+    contentPressable: { flex: 1, minWidth: 0 },
+    content: { flex: 1, minWidth: 0, paddingVertical: theme.primitive["space-4"] },
+    titleRow: { flexDirection: "row", alignItems: "center", gap: theme.primitive["space-4"] },
     title: {
       ...theme.font.body,
       color: theme.color["on-surface"],
       flexShrink: 1,
       textDecorationLine: completed ? "line-through" : "none",
     },
-    dueDate: {
-      ...theme.font.label,
-      color: theme.color["on-surface"],
-      marginTop: theme.space.sm,
-    },
+    dueDate: { ...theme.font.label, color: theme.color["on-surface-variant"] },
     optionsButton: {
       alignItems: "center",
       justifyContent: "center",
-      marginLeft: theme.space.sm,
       minHeight: theme.target.minSize,
       minWidth: theme.target.minSize,
+      borderRadius: theme.radius.md,
     },
-    optionsLabel: { ...theme.font.label, color: theme.color["on-surface"] },
+    selectionTarget: {
+      width: theme.target.minSize,
+      height: theme.target.minSize,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    selectionMark: {
+      width: theme.navbar.iconSize,
+      height: theme.navbar.iconSize,
+      borderRadius: theme.navbar.iconSize / 2,
+      borderWidth: theme.focus.ringWidth,
+      borderColor: cosmicColors.inactive,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    selectionMarkOn: { backgroundColor: theme.color.focus, borderColor: theme.color.focus },
   });
