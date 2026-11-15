@@ -105,4 +105,53 @@ describe("useNewTaskViewModel", () => {
     expect(result.current.categoryOptions.some((option) => option.value === "programacao")).toBe(true);
     expect(result.current.timeOptions[1]).toEqual({ id: "00:00", label: "00:00", value: "00:00" });
   });
+
+  it("no modo de edição, carrega os dados da tarefa existente e atualiza ao salvar", async () => {
+    const taskRepo = new InMemoryTaskRepository([
+      {
+        id: "t1",
+        title: "Estudar Cálculo",
+        description: "Limites",
+        startDate: "15/11/2026",
+        startTime: "08:00",
+        endDate: "15/11/2026",
+        endTime: "09:00",
+        category: "matematica",
+        completed: false,
+        pinned: true,
+        createdAt: "2026-11-15T08:00:00-03:00",
+        updatedAt: "2026-11-15T08:00:00-03:00",
+      },
+    ]);
+    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), fixedClock);
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock, "t1"));
+
+    expect(result.current.editing).toBe(true);
+    await waitFor(() => expect(result.current.fields.title).toBe("Estudar Cálculo"));
+    expect(result.current.fields).toEqual({
+      title: "Estudar Cálculo",
+      description: "Limites",
+      startDate: "15/11/2026",
+      startTime: "08:00",
+      endDate: "15/11/2026",
+      endTime: "09:00",
+      category: "matematica",
+    });
+
+    await act(async () => result.current.setField("title", "Estudar Cálculo II"));
+    await act(async () => result.current.setField("description", ""));
+    await act(async () => result.current.selectCategory(undefined));
+    await act(async () => result.current.submit());
+
+    await waitFor(() => expect(result.current.created).toBe(true));
+
+    const updated = await taskRepo.findById("t1");
+    expect(updated).toMatchObject({
+      id: "t1",
+      title: "Estudar Cálculo II",
+      description: undefined,
+      category: undefined,
+      pinned: true,
+    });
+  });
 });

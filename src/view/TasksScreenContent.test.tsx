@@ -36,6 +36,7 @@ const listProps = (overrides: Partial<TasksScreenContentProps> = {}): TasksScree
   confirmDelete: jest.fn(),
   reload: jest.fn(async () => undefined),
   onCreateTask: jest.fn(),
+  onEditTask: jest.fn(),
   ...overrides,
 });
 
@@ -82,16 +83,25 @@ describe("TasksScreenContent", () => {
     expect(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para a prova de Cálculo" }).props.accessibilityState.checked).toBe(true);
     expect(screen.getByRole("button", { name: TASKS_COPY["action.pin"] })).toBeTruthy();
 
+    const editButton = screen.getByRole("button", { name: TASKS_COPY["action.edit"] });
+    expect(editButton.props.accessibilityState.disabled).toBe(false);
+    await fireEvent.press(editButton);
+    expect(props.cancelSelection).toHaveBeenCalledTimes(1);
+    expect(props.onEditTask).toHaveBeenCalledWith("a");
+
     await fireEvent.press(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para PDM" }));
     expect(props.toggleSelected).toHaveBeenCalledWith("b");
 
     await fireEvent.press(screen.getByRole("button", { name: "Excluir (1)" }));
     expect(props.requestDelete).toHaveBeenCalledTimes(1);
     await fireEvent.press(screen.getByRole("button", { name: "Cancelar seleção" }));
-    expect(props.cancelSelection).toHaveBeenCalledTimes(1);
+    expect(props.cancelSelection).toHaveBeenCalledTimes(2);
 
     await renderInSafeArea(<TasksScreenContent {...listProps({ selectionMode: true, selectedIds: ["a"], allSelectedPinned: true })} />);
     expect(screen.getByRole("button", { name: TASKS_COPY["action.unpin"] })).toBeTruthy();
+
+    await renderInSafeArea(<TasksScreenContent {...listProps({ selectionMode: true, selectedIds: ["a", "b"] })} />);
+    expect(screen.getByRole("button", { name: TASKS_COPY["action.edit"] }).props.accessibilityState.disabled).toBe(true);
   });
 
   it("a confirmação de exclusão mostra quantas tarefas e só confirma pela ação destrutiva", async () => {
@@ -186,5 +196,19 @@ describe("NewTaskScreenContent", () => {
     expect(screen.getByRole("header", { name: TASKS_COPY["created.title"] })).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["created.action"] }));
     expect(props.onFinish).toHaveBeenCalledTimes(1);
+  });
+
+  it("no modo de edição, exibe cabeçalho, botão e diálogo de atualização", async () => {
+    const props = formProps({ editing: true });
+    await renderInSafeArea(<NewTaskScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: TASKS_COPY["form.editTitle"] })).toBeTruthy();
+    expect(screen.getByRole("button", { name: TASKS_COPY["form.editClose"] })).toBeTruthy();
+    expect(screen.getByRole("button", { name: TASKS_COPY["form.editSubmit"] })).toBeTruthy();
+
+    await renderInSafeArea(<NewTaskScreenContent {...formProps({ editing: true, created: true })} />);
+    expect(screen.getByRole("header", { name: TASKS_COPY["updated.title"] })).toBeTruthy();
+    expect(screen.getByText(TASKS_COPY["updated.message"])).toBeTruthy();
+    expect(screen.getByRole("button", { name: TASKS_COPY["updated.action"] })).toBeTruthy();
   });
 });
