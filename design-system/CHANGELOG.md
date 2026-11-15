@@ -16,6 +16,13 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 - **Movimento reduzido:** hook `useReduceMotion` desliga a escala do toque na navbar e no botão.
 - **Documentação de componentes:** FilterChips em colunas de largura igual; CardTarefa com gradiente cósmico e prazo "19/10 · 08:00–09:00"; painel com alça, raio, fio e sombra definidos; PlanetStreakView com os parâmetros do spike. Novos: `ProgressBar`, `AchievementBadge`, `FormFields`, `ContextualActionBar` e `Modal` (documentados, ainda sem implementação).
 - **Padrões:** Progresso de hoje conta tarefas e rotinas concluídas ("1 / 25") em vez de minutos ("15 / 25 min"), com a porcentagem fora da barra; conquistas do painel sem rótulo de dias e com nome acessível de posição e estado; detalhe da conquista como modal com "✕"; seleção múltipla com cabeçalho de contador e barra de ações no lugar da navbar; telas sem barra de rolagem visível.
+- **Protótipo do Claude Design (D23, 15/11/2026):** a Tela Inicial passa a seguir as telas 1, 1.1 e 1.2 do canvas "Orbity · Protótipo Início e Tarefas".
+  - **Tokens novos:** `font.card-title` (16/24, 600) para títulos de card e `font.body-sm` (14/20, 400) para descrições, com contrato em `tests/ods-theme.test.cjs`. A marca do cabeçalho passa a usar `font.title` (24/32); `font.brand` continua exportado.
+  - **Ícones:** `material-symbol.tsx` ganha `whatshot`, `bolt`, `history`, `help_outline` e `expand_less`; os cards e o convite usam Material Symbols no lugar de `CosmicIcon`.
+  - **PrimaryButton:** aceita ícone opcional antes do rótulo (`play_arrow` em Iniciar foco), com `navbar.icon-size` até existir o token de tamanho.
+  - **PlanetStreakView:** novo desenho em grade de 280 × 280 (aspecto 1, antes 0,85). O planeta ocupa 320/390 da largura quando recolhido, encolhe para 190/320 no intermediário e some sob o painel no expandido; o painel intermediário fica a 35,4% da cena (antes 44%).
+  - **AchievementBadge:** a variante bloqueada mostra o símbolo da conquista esmaecido com selo de cadeado, em vez de só o cadeado.
+  - **Padrão F1/F2:** botão de Configurações no cabeçalho; card Modo Foco sem chips de duração (a escolha vai para a sessão de foco); cards Última sessão e Como funciona? presentes desde já, em estado vazio. A porcentagem do progresso continua fora da barra, ao lado do contador.
 - **Decisões abertas, registradas como lacunas:** tipos de conquista além de dias de sequência e se conquistas dão estrelas; carrossel automático com pausa ou rolagem pelo dedo; desenho da confirmação de exclusão em lote e da sessão de foco ativa; implementação dos gradientes, chips em grade, card com gradiente e dos novos componentes.
 
 ## 1.1.0 — em preparação

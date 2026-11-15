@@ -1,6 +1,6 @@
 # Tela inicial cósmica — protótipo para revisão
 
-> **Status (2026-11-14):** registro histórico do protótipo `feat/tela-principal-prototipo`. Os valores visuais passam a seguir os tokens do ODS 1.2.0, conforme a tabela de tokens aprovada no design [`tela-inicial-base.md`](../docs/designs/tela-inicial-base.md) (Etapa 0.2a). A variante `appearance="cosmic"` deu lugar a `theme={themes.cosmic}`, e a sessão de foco, a última sessão e os diálogos ficaram fora da primeira entrega. Onde este texto divergir de [02-tokens.md](02-tokens.md) ou de [05-padroes.md](05-padroes.md), valem esses documentos.
+> **Status (2026-11-15):** registro histórico do protótipo `feat/tela-principal-prototipo`. Desde a D23 do design, a Tela Inicial segue o protótipo do Claude Design ("Orbity · Protótipo Início e Tarefas", telas 1, 1.1 e 1.2); a tabela abaixo já reflete essa troca. Os valores visuais passam a seguir os tokens do ODS 1.2.0, conforme a tabela de tokens aprovada no design [`tela-inicial-base.md`](../docs/designs/tela-inicial-base.md) (Etapa 0.2a). A variante `appearance="cosmic"` deu lugar a `theme={themes.cosmic}`, e a sessão de foco, a última sessão e os diálogos ficaram fora da primeira entrega. Onde este texto divergir de [02-tokens.md](02-tokens.md) ou de [05-padroes.md](05-padroes.md), valem esses documentos.
 
 Direção visual autorizada pelo operador em 22/10/2026, baseada na referência de três telas fornecida na conversa. Para esta tela, esta especificação substitui as restrições anteriores de paleta, tipografia, geometria do planeta e comportamento de ocultação da navbar. Os componentes existentes continuam com seus temas claro e escuro; `PrimaryButton` e `NavBar` possuem a variante explícita `appearance="cosmic"`.
 
@@ -26,11 +26,11 @@ O protótipo usava `cosmicTokens`; a integração substitui esse objeto pelos to
 | Ação | Gradiente `action #7137F5` → `actionEnd #703BF6`; texto claro; hover `#8648FA` (`cosmicColors.actionHover`) e pressionado por escala e opacidade |
 | Acessibilidade | Foco `#D4A3FF`; texto escalável; nomes de controles e estados de seleção; modal nativo para detalhes |
 | Progresso | Trilha `#232052`; gradiente `#8A42FA` → `#8648FA`; altura `size.progress-height` (20 dp); preenchimento proporcional exato |
-| Conquistas | Aro ativo `#C47EFF`, ícones pendentes `#8C7BCB`, contorno pendente `#2B2654`; cadeado e descrição acessível |
-| Tipografia | Marca `font.brand` (28/36); sequência `font.streak` (64/64); título de card `font.label` (14/20); texto de apoio `font.caption` (12/16); botão `font.label`; navbar conforme `navbar.*` |
-| Forma | Botão `radius.md` (12 dp); card `radius.lg` (16 dp); painel `radius.sheet` (24 dp); medalhas circulares de `achievement.size` (60 dp) |
+| Conquistas | Aro ativo `#C47EFF`, ícones pendentes `#8C7BCB`, contorno pendente `#2B2654`; bloqueada mostra o símbolo esmaecido com selo de cadeado; descrição acessível |
+| Tipografia | Marca `font.title` (24/32); sequência `font.streak` (64/64); título de card `font.card-title` (16/24, 600); descrição e texto de apoio `font.body-sm` (14/20); contador e botão `font.label`; navbar conforme `navbar.*` |
+| Forma | Botão `radius.md` (12 dp); card `radius.lg` (16 dp); painel `radius.sheet` (24 dp); medalhas em caixa arredondada `achievement.size` (60 dp, `radius.lg`) |
 | Movimento | Painel `motion.duration.medium` (300 ms) com `motion.easing.standard`; atualização instantânea com movimento reduzido |
-| Visualizador | `planet.aspectRatio 0.85`; esfera e anéis em SVG; estrelas determinísticas; sequência como texto real |
+| Visualizador | Desenho do protótipo em grade de 280 × 280 (aspecto 1): brilho, anel, esfera com crateras, lua e asteroides; estrelas e estrela cadente nas posições do protótipo; sequência como texto real |
 | Paleta do planeta | Realce `#EBACFF`, luz `#BD6AFF`, superfície `#8840E9`, relevo `#5320B2`, sombra `#39149A`, noite `#17075B`, borda `#D08BFF`, anel `#A95BFA`, realce do anel `#E8B5FF` e brilho `#8236D9` |
 | Swipe | Ativação após 10 dp; movimento intencional de 48 dp ou velocidade de 0,55 dp/ms; projeção de 160 ms; limites nos três pontos de ancoragem |
 
@@ -40,7 +40,7 @@ No navegador, a tela é centralizada com largura máxima de 430 dp. No mobile, o
 
 O visualizador usa `react-native-svg`, já presente no projeto. `PlanetIllustration` desenha esfera, iluminação, relevo e anéis em camadas vetoriais. `PlanetStreakView` centraliza o contador e recebe a sequência da ViewModel, sem manter uma cópia independente. `CosmicStarfield` produz o campo de estrelas de forma determinística. O deslocamento do planeta acompanha o painel; não há imagem de fundo, textura raster ou contexto WebGL. A ilustração PNG da iteração anterior foi preservada como arte de referência e não é mais importada pela tela. Este protótipo não implementa rotação axial ou evolução visual por ponto de sequência.
 
-`HomeScreen` compõe a tela, `FocusBottomSheet` organiza os cards e `CosmicIcon` fornece os ícones. `useActivitySheetMotion` coordena arraste, limites, velocidade de soltura, rolagem e transições. O estado fica na ViewModel; dados e sessões usam o repositório em memória. Encerrar foco registra somente minutos efetivamente decorridos, sem adicionar os dez minutos fixos da versão anterior. Não há persistência entre recarregamentos. As outras abas permitem demonstrar a seleção, sem implementar seus módulos.
+`HomeScreen` liga a ViewModel a `HomeScreenContent`, `FocusBottomSheet` organiza os cards e `MaterialSymbol` fornece os ícones. `useActivitySheetMotionViewModel` coordena arraste, limites, velocidade de soltura, rolagem, transições e a pose do planeta. O registro diário fica no SQLite no Android e em memória na web. A sessão de foco ativa ainda não está implementada. As outras abas permitem demonstrar a seleção, sem implementar seus módulos.
 
 ## Revisão
 

@@ -17,7 +17,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (F1/F2 e F3), [modal.md](
 ## Anatomia
 
 1. Caixa: `achievement.size` (60 × 60 dp) no painel, cantos `achievement.radius` (`radius.lg`), alvo de toque mínimo de 48 dp garantido pela própria caixa.
-2. Ícone central de 24 dp: símbolo da conquista quando desbloqueada; cadeado quando bloqueada.
+2. Ícone central de 24 dp (`navbar.icon-size`): símbolo da conquista. Quando bloqueada, o símbolo usa `achievementPendingIcon` e ganha um selo de cadeado centrado na borda inferior (círculo de `space.lg` com contorno `achievementPendingBorder` sobre `color.surface-variant`).
 3. Sem rótulo visual de dias abaixo da caixa (1.2). O nome acessível carrega posição e estado.
 4. No detalhe, a medalha cresce para 120 dp com `radius.xl` (28 dp).
 
@@ -26,7 +26,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (F1/F2 e F3), [modal.md](
 | Variante | Uso | Tokens |
 | --- | --- | --- |
 | Desbloqueada | Conquista obtida | Preenchimento `achievement.unlocked-bg` (`color.action-subtle`), contorno de 1 dp `achievement.unlocked-border` (`#C47EFF` no cósmico), ícone `color.on-surface` |
-| Bloqueada | Conquista a obter | Sem preenchimento, contorno `achievement.locked-border` (`color.border-subtle`; cósmico pendente `#2B2654`), cadeado `achievementPendingIcon` (`#8C7BCB`) |
+| Bloqueada | Conquista a obter | Fundo `cosmicGradients.card` (fim, `#0D0E26`), contorno `achievement.locked-border` (`color.border-subtle`; cósmico pendente `#2B2654`), símbolo e selo de cadeado em `achievementPendingIcon` (`#8C7BCB`) |
 
 ## Estados
 

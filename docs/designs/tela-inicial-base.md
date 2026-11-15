@@ -141,7 +141,7 @@ Os rótulos "(era Qn)" apontam para as perguntas do brainstorm e do draft. As de
     *   tipografia nova no ODS: `font.card-title` (16/24/600) e `font.body-sm` (14/20/400); a marca usa `font.title`;
     *   o planeta e o fundo redesenham o componente "Planeta da sequência" do protótipo; no estágio intermediário o planeta encolhe para 190/320 e no expandido some sob o painel;
     *   espaçamentos de 12 dp do protótipo seguem a grade de 8 pontos do ODS (8 dp), e o alvo da alça continua com 48 dp.
-    O aviso de foco bloqueado (D7) continua visível, porque o protótipo só mostra o estado com dados.
+    O aviso de foco bloqueado (D7) continua visível, porque o protótipo só mostra o estado com dados. A porcentagem do progresso fica fora da barra, ao lado do contador, como manda o ODS 1.2, e não dentro dela como no protótipo. O texto da sequência acompanha o tamanho de fonte do sistema.
 
 ### Ainda em aberto
 

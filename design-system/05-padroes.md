@@ -45,8 +45,8 @@
 | Situação | O que vê | Tokens |
 | :--- | :--- | :--- |
 | **Recolhido** | Campo de estrelas vetorial, planeta centralizado, sequência no centro e convite Deslize para explorar; painel oculto e navbar visível | `cosmicTokens.color.background`, `cosmicTokens.planet`, `cosmicTokens.font.streak`, `cosmicTokens.font.streakLabel` |
-| **Intermediário — 1.1** | Planeta deslocado para cima; painel com alça e cards de Modo Foco, Progresso de hoje e Conquistas; navbar visível | `cosmicTokens.color.sheet`, `cosmicTokens.color.card`, `cosmicTokens.radius.sheet`, `cosmicTokens.radius.card` |
-| **Expandido — 1.2** | Painel abaixo do cabeçalho, com Última sessão e Como funciona? além dos cards anteriores; navbar visível | Os mesmos tokens do estágio intermediário e `cosmicTokens.font.title`, `cosmicTokens.font.body` |
+| **Intermediário — 1.1** | Planeta sobe e encolhe (190 de 320); painel a 35,4% da cena; painel com alça e cards de Modo Foco, Progresso de hoje e Conquistas; navbar visível | `cosmicTokens.color.sheet`, `cosmicTokens.color.card`, `cosmicTokens.radius.sheet`, `cosmicTokens.radius.card` |
+| **Expandido — 1.2** | Painel abaixo do cabeçalho, planeta oculto, com Última sessão e Como funciona? além dos cards anteriores; navbar visível | Os mesmos tokens do estágio intermediário e `cosmicTokens.font.title`, `cosmicTokens.font.body` |
 | **Sessão em andamento** | Contador regressivo, ação Encerrar foco e indicação textual de foco; navbar oculta | `cosmicTokens.color.action`, `cosmicTokens.color.text`, `cosmicTokens.font.button` |
 | **Carregando** | Esqueletos dos cards do painel e estado de carregamento anunciado | `cosmicTokens.color.card`, `cosmicTokens.color.track`, `cosmicTokens.radius.card` |
 | **Vazio** | Progresso zerado, ação Iniciar foco disponível e apresentação acolhedora da jornada | `cosmicTokens.font.title`, `cosmicTokens.font.body`, `cosmicTokens.color.muted` |
@@ -71,10 +71,10 @@ As cores e lacunas estão em [02-tokens.md](02-tokens.md#variante-cósmica). `th
 | Acessibilidade | Texto escalável; nomes de controles e estados de seleção; modal nativo para detalhes |
 | Progresso | Altura `size.progress-height` (20 dp); preenchimento proporcional exato |
 | Conquistas | Cadeado e descrição acessível |
-| Tipografia | Marca `font.brand` (28/36); sequência `font.streak` (64/64); título de card `font.label` (14/20); texto de apoio `font.caption` (12/16); botão `font.label`; navbar conforme `navbar.*` |
-| Forma | Botão `radius.md` (12 dp); card `radius.lg` (16 dp); painel `radius.sheet` (24 dp); medalhas circulares de `achievement.size` (60 dp) |
+| Tipografia | Marca `font.title` (24/32); sequência `font.streak` (64/64); título de card `font.card-title` (16/24, 600); descrição e texto de apoio `font.body-sm` (14/20); contador e botão `font.label`; navbar conforme `navbar.*` |
+| Forma | Botão `radius.md` (12 dp); card `radius.lg` (16 dp); painel `radius.sheet` (24 dp); medalhas em caixa arredondada `achievement.size` (60 dp, `radius.lg`) |
 | Movimento | Painel `motion.duration.medium` (300 ms) com `motion.easing.standard`; atualização instantânea com movimento reduzido |
-| Visualizador | `planet.aspectRatio 0.85`; esfera e anéis em SVG; estrelas determinísticas; sequência como texto real |
+| Visualizador | Desenho do protótipo em grade de 280 × 280 (aspecto 1); 320/390 da largura quando recolhido, 190/320 no intermediário e oculto sob o painel no expandido; sequência como texto real |
 | Swipe | Ativação após 10 dp; movimento intencional de 48 dp ou velocidade de 0,55 dp/ms; projeção de 160 ms; limites nos três pontos de ancoragem |
 
 No navegador, a tela é centralizada com largura máxima de 430 dp. No mobile, ocupa a largura disponível e respeita as áreas seguras. A barra de status ilustrativa “9:41” aparece apenas no preview web; Android/iOS usam a barra real do sistema.

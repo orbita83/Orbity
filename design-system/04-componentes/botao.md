@@ -23,7 +23,7 @@ Os mesmos papéis desta anatomia se aplicam em qualquer tema, inclusive `themes.
 
 1. Área interativa: fundo `button.bg`, cantos `button.radius`, altura mínima `button.min-height`, largura mínima `button.min-width`, `space.md` na horizontal e `space.sm` na vertical.
 2. Rótulo: `button.label` e `font.label`, centralizado, escalável e sem truncamento.
-3. Ícone opcional: Material Symbols `add`, antes do rótulo, separado por `space.sm`, na mesma cor do texto. O token de tamanho do ícone ainda é uma lacuna.
+3. Ícone opcional (prop `icon`): Material Symbols, como `add` em Nova tarefa e `play_arrow` em Iniciar foco, antes do rótulo, separado por `space.sm`, na mesma cor do texto. Enquanto falta o token de tamanho, a implementação usa `navbar.icon-size` (24 dp).
 4. Foco externo: cor `button.focus-color`, espessura `button.focus-width` e afastamento `button.focus-offset`. O espaço é reservado sem foco para evitar deslocamento do conteúdo.
 5. Alvo de toque: mínimo de 48 × 48 dp por meio de `button.min-height` e `button.min-width`. A altura cresce para acomodar texto ampliado.
 
