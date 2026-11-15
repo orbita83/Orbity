@@ -22,14 +22,14 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Fluxos F1 de Navegação
 
 Os papéis desta anatomia são compartilhados entre telas; consulte também o tema cósmico abaixo.
 
-1. **Container da barra:** largura total (100%), fundo `navbar.bg` (`color.surface`), elevação `navbar.elevation` (`elevation.card`), borda superior sutil em `neutral-200` (modo claro) ou `neutral-900` (modo escuro), preenchimento horizontal `space.md` e preenchimento vertical ajustado para manter alvos ergonômicos.
+1. **Container da barra:** largura total (100%), fundo `navbar.bg` (`color.surface`), elevação `navbar.elevation` (`elevation.card`) com sombra `navbar.shadow` (`shadow.bar`), fio superior de 1 dp em `navbar.border` (`color.border-subtle`, 1.2), preenchimento horizontal `space.md` e preenchimento vertical ajustado para manter alvos ergonômicos.
 2. **Destino de navegação (Tab Item):** largura flexível (`flex: 1`), centralizado, área interativa com altura mínima `navbar.min-height` (`target.min-size` de 48 dp) e largura mínima de 48 dp, assegurando alvo de toque contínuo de pelo menos 48 × 48 dp.
-3. **Indicador de aba ativa (Pill):** cápsula visual que delimita o ícone selecionado com fundo `navbar.indicator-bg` (`purple-200` no modo claro; `purple-600` no modo escuro) e cantos arredondados com `radius.lg`.
+3. **Indicador de aba ativa:** desde a 1.2, ocupa a aba inteira (ícone e rótulo), com fundo `navbar.indicator-bg` (`purple-200` no claro, `purple-600` no escuro, `#232052` no cósmico) e cantos `navbar.indicator-radius` (`radius.lg`). Antes, a cápsula envolvia só o ícone.
 4. **Ícones Material Symbols (24 dp):** dimensão `navbar.icon-size` (lacuna de token primitivo formalizada como 24 dp conforme [03-fundamentos.md](../03-fundamentos.md)). Variação preenchida (`FILL 1`) para o item ativo e contorno (`FILL 0`) para os itens inativos:
    - Início: glifo `home`
    - Tarefas: glifo `description` (folha de caderno / notas de estudo)
    - Rotinas: glifo `autorenew`
-   - Cosmos: glifo `auto_awesome`
+   - Cosmos: glifo `star` (1.2; antes `auto_awesome`)
    - Perfil: glifo `person`
    Cor do ícone: `navbar.item-inactive` (`color.on-surface`) no inativo e `navbar.item-active` (`color.action`) no ativo. Ocultado de leitores de tela para evitar redundância com o rótulo textual (`accessible={false}`).
 5. **Rótulo de texto:** rótulo sempre visível abaixo do ícone com tipografia `font.label` (12–14 px, peso 500 no inativo e peso 700 no ativo), com `allowFontScaling={true}` habilitado e sem truncamento rígido.
@@ -44,7 +44,7 @@ Os papéis desta anatomia são compartilhados entre telas; consulte também o te
 
 ### Tema cósmico global
 
-A navbar usa os papéis `navbar.*` do mesmo tema em todas as telas. No cósmico, fundo é `sheet`, indicador é `track`, item ativo é `text`, item inativo é `inactive` e foco é `focus`. A seleção mantém rótulo, ícone preenchido e indicador de forma. Em F1/F2, permanece visível nos três estágios do painel e é ocultada durante foco ativo.
+A navbar usa os papéis `navbar.*` do mesmo tema em todas as telas. No cósmico, fundo é `sheet`, indicador é `track`, item ativo é `text`, item inativo é `inactive`, foco é `focus` e o fio superior é `color.border-subtle` (branco a 6%). Na 1.1 o fio usava `focus` (`#D4A3FF`), que competia com o conteúdo; a 1.2 o substituiu por fio sutil e `shadow.bar`. A seleção mantém rótulo, ícone preenchido e indicador de forma. Em F1/F2, permanece visível nos três estágios do painel e é ocultada durante foco ativo.
 
 As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica está em [06-acessibilidade.md](../06-acessibilidade.md).
 
@@ -55,7 +55,7 @@ As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica
 | **Padrão (Inativo)** | Fundo `navbar.bg`, ícone e texto em `navbar.item-inactive` (`color.on-surface`), tipografia `font.label` | Navega para a aba correspondente ao receber toque ou clique | Expõe papel de aba (`tab`), rótulo e `{ selected: false }` |
 | **Ativo (Selecionado)** | Fundo do indicador `navbar.indicator-bg`, ícone preenchido e rótulo em negrito em `navbar.item-active` (`color.action`) | Indica a tela atual do estudante; toque repetido rola a tela ao topo | Expõe papel de aba (`tab`), rótulo e `{ selected: true }` |
 | **Hover** | Destaque sutil com leve realce no fundo do item; demais tokens mantidos | Realça o item sob o cursor em ambientes desktop/web; não se aplica a telas de toque | Não transmite informação exclusiva nem executa navegação |
-| **Pressionado** | Fundo comprimido ou transição imediata de opacidade durante o toque | Feedback tátil imediato em `motion.duration.short` (100 ms) | Mantém a área de toque intacta e legível |
+| **Pressionado** | Escala `motion.scale-pressed` (0,96) com opacidade `motion.opacity-pressed` (0,8) | Feedback imediato em `motion.duration.short` (100 ms); sem escala quando o sistema pede movimento reduzido | Mantém a área de toque intacta e legível |
 | **Foco** | Anel visível de 2 dp em `navbar.focus-color` com 2 dp de afastamento | Identifica a aba na navegação por teclado (Tab / Shift+Tab ou setas direcionais) | Razão de contraste de 6,29:1 no claro e 6,50:1 no escuro (acima dos 3:0 exigidos pela WCAG 1.4.11) |
 | **Desabilitado** | *Não aplicável* | Todas as abas principais permanecem acessíveis ao estudante | Evita desorientação; telas sem dados exibem estados vazios acolhedores em vez de abas bloqueadas |
 
@@ -81,7 +81,7 @@ As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica
 ## Faça e evite
 
 - **Faça:** Exiba simultaneamente ícone e rótulo de texto em todas as cinco abas para reforçar o reconhecimento cognitivo.
-- **Faça:** Respeite o mapeamento padronizado de glifos do Material Symbols (`home`, `description`, `autorenew`, `auto_awesome`, `person`).
+- **Faça:** Respeite o mapeamento padronizado de glifos do Material Symbols (`home`, `description`, `autorenew`, `star`, `person`).
 - **Faça:** Oculte ou substitua a barra inferior durante uma sessão de foco ativa (F2) ou seleção múltipla de tarefas (F6); mantenha-a visível nos três estágios do painel.
 - **Faça:** Preserve o foco acessível de 2 dp com offset de 2 dp e cores do tema ativo.
 - **Evite:** Ocultar rótulos das abas inativas (padrão de ícone isolado que compromete a usabilidade e a acessibilidade).
@@ -150,3 +150,12 @@ Trecho ilustrativo do componente:
   })}
 </View>
 ```
+
+## Mudanças da 1.2
+
+- Indicador ativo ocupando a aba inteira, com `radius.lg`.
+- Fio `color.border-subtle` e `shadow.bar` no lugar da linha lavanda do cósmico.
+- Glifo `star` para Cosmos. Rotinas mantém `autorenew`, que comunica repetição; o glifo de alvo do protótipo não foi adotado.
+- Estado pressionado com escala e opacidade dos tokens de movimento.
+
+Implementado em `nav-bar.tsx`; o ícone `star` foi adicionado a `material-symbol.tsx`.
