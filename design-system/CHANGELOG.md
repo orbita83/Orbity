@@ -2,9 +2,9 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
-## 1.2.0 — em preparação
+## 1.2.0 · 2026-11-15
 
-- **Issue #111:** incorporação das mudanças validadas no protótipo navegável de alta fidelidade das telas de Início e Tarefas (09/11/2026), construído a partir dos wireframes do Excalidraw e revisado pela equipe. Esta versão depende da 1.1.0, também em preparação; as duas podem ser publicadas em sequência ou consolidadas.
+- **Issue #111:** incorporação das mudanças validadas no protótipo navegável de alta fidelidade das telas de Início e Tarefas (09/11/2026), construído a partir dos wireframes do Excalidraw e revisado pela equipe. Esta versão foi publicada depois da 1.1.0 (`ds-v1.1.0`).
 - **Regra visual:** destaque por superfície, borda e cor sólida, nunca por brilho. O único brilho permitido é `shadow.glow-planet`, na ilustração do planeta.
 - **Tokens novos:** `color.border-subtle`, `color.scrim`, sombras `shadow.bar`, `shadow.bar-top`, `shadow.sheet`, `shadow.button`, `shadow.modal` e `shadow.glow-planet`, raios `radius.sheet` (24) e `radius.xl` (28), medidas `size.progress-height` (20), `size.handle-width` × `size.handle-height` (40 × 4) e `size.achievement-badge` (60), `font.streak` (64/64, 700), `motion.scale-pressed` (0,96), `motion.opacity-pressed` (0,8) e parâmetros do planeta (volta em 24 s, pulso em 4 s). Tokens de componente `sheet.*`, `progress.*` e `achievement.*`; gradientes cósmicos exportados em `cosmicGradients`.
 - **Tokens da Tela Inicial:** `font.brand` (28/36, 700), `font.caption` (12/16, 400), `size.header-height` (64), `size.icon-lg` (32), `border.width-thin` (1) e as cores cósmicas `iconAccent`, `streakFlame` e `streakFlameCore`. `achievementPendingIcon`, `achievementPendingBorder` e as camadas do planeta (`planetColors`) passam a ser exportados em `tokens.ts`. Contrastes de 3:1 dos ícones e da chama verificados em `tests/ods-theme.test.cjs`.
