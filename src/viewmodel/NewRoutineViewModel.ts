@@ -1,5 +1,8 @@
-import { useCallback, useState } from "react";
-import type { RoutineIcon } from "./RoutinesViewModel";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { container, resolveUseCase } from "@/DI/container";
+import { DEFAULT_ROUTINE_ICON, type RoutineIcon } from "@/model/entities/routine";
+import { ValidationError } from "@/model/errors/domain-error";
+import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
 
 export type NewRoutineState = {
   name: string;
@@ -11,6 +14,9 @@ export type NewRoutineState = {
   draft: string;
   nameError: boolean;
   daysError: boolean;
+  /** Falha ao salvar, com o formulário preservado. */
+  formError: string | null;
+  submitting: boolean;
   created: boolean;
 };
 
@@ -27,20 +33,32 @@ export type NewRoutineActions = {
   reset: () => void;
 };
 
+const SAVE_FAILED = "Não foi possível salvar a rotina agora. Tente de novo.";
+
 /**
  * Estado do formulário de Nova rotina (protótipo 3.1, RF-0007 e RF-0012): nome e pelo menos um dia
- * são obrigatórios; o que foi digitado nunca se perde num erro. A criação de verdade entra com o
- * caso de uso de Rotinas.
+ * são obrigatórios, e o que foi digitado nunca se perde num erro. Criar passa pelo `IRoutineUseCases`.
  */
-export const useNewRoutineViewModel = (): NewRoutineState & NewRoutineActions => {
+export const useNewRoutineViewModel = (routineUseCases?: IRoutineUseCases): NewRoutineState & NewRoutineActions => {
+  const useCases = resolveUseCase(routineUseCases, container.useCases.routines);
   const [name, setName] = useState("");
-  const [icon, setIcon] = useState<RoutineIcon>("track_changes");
+  const [icon, setIcon] = useState<RoutineIcon>(DEFAULT_ROUTINE_ICON);
   const [description, setDescription] = useState("");
   const [days, setDays] = useState<number[]>([]);
   const [tasks, setTasks] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
   const [showErrors, setShowErrors] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [created, setCreated] = useState(false);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const toggleDay = useCallback((day: number) => {
     setDays((current) => (current.includes(day) ? current.filter((item) => item !== day) : [...current, day].sort((a, b) => a - b)));
@@ -66,21 +84,37 @@ export const useNewRoutineViewModel = (): NewRoutineState & NewRoutineActions =>
   const nameMissing = name.trim() === "";
   const daysMissing = days.length === 0;
   const submit = useCallback(() => {
+    if (submitting) return;
     if (nameMissing || daysMissing) {
       setShowErrors(true);
       return;
     }
-    setCreated(true);
-  }, [daysMissing, nameMissing]);
+    setFormError(null);
+    setSubmitting(true);
+    useCases.createRoutine({ title: name, description, icon, days, tasks }).then(
+      () => {
+        if (!mounted.current) return;
+        setSubmitting(false);
+        setCreated(true);
+      },
+      (caught: unknown) => {
+        if (!mounted.current) return;
+        setSubmitting(false);
+        setFormError(caught instanceof ValidationError ? caught.message : SAVE_FAILED);
+      },
+    );
+  }, [days, daysMissing, description, icon, name, nameMissing, submitting, tasks, useCases]);
 
   const reset = useCallback(() => {
     setName("");
-    setIcon("track_changes");
+    setIcon(DEFAULT_ROUTINE_ICON);
     setDescription("");
     setDays([]);
     setTasks([]);
     setDraft("");
     setShowErrors(false);
+    setFormError(null);
+    setSubmitting(false);
     setCreated(false);
   }, []);
 
@@ -93,6 +127,8 @@ export const useNewRoutineViewModel = (): NewRoutineState & NewRoutineActions =>
     draft,
     nameError: showErrors && nameMissing,
     daysError: showErrors && daysMissing,
+    formError,
+    submitting,
     created,
     setName,
     setIcon,

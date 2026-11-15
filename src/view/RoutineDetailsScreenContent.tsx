@@ -33,8 +33,10 @@ const InfoChip = ({ icon, label }: { icon: MaterialSymbolName; label: string }) 
 export const RoutineDetailsScreenContent = ({
   routine,
   completedCount,
-  allDone,
+  doneToday,
   confirmDeleteVisible,
+  loading,
+  errorKey,
   toggleTask,
   moveTaskUp,
   completeAll,
@@ -45,6 +47,19 @@ export const RoutineDetailsScreenContent = ({
   onDeleted,
 }: RoutineDetailsScreenContentProps) => {
   const insets = useSafeAreaInsets();
+
+  if (!routine && loading) {
+    return (
+      <View style={[styles.screen, { paddingTop: insets.top }]}>
+        <ScreenHeader title={ROUTINES_COPY.title} backLabel={ROUTINES_COPY["details.back"]} onBack={onBack} />
+        <View style={styles.missing}>
+          <Text accessibilityLiveRegion="polite" allowFontScaling style={[styles.muted, styles.centered]}>
+            {ROUTINES_COPY.loading}
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   if (!routine) {
     return (
@@ -64,6 +79,8 @@ export const RoutineDetailsScreenContent = ({
 
   const total = routine.tasks.length;
   const percent = total === 0 ? 0 : (completedCount / total) * 100;
+  // Fora dos dias da rotina, concluir e marcar ficam bloqueados, com o motivo em texto (rotinas.md, R6; botao.md).
+  const inactive = !routine.activeToday;
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -141,6 +158,7 @@ export const RoutineDetailsScreenContent = ({
               <CheckCircle
                 checked={task.done}
                 onToggle={() => toggleTask(task.id)}
+                disabled={inactive}
                 accessibilityLabel={`${task.done ? "Desmarcar" : "Concluir"} ${task.title}`}
               />
               <Text allowFontScaling style={[styles.taskTitle, task.done && styles.taskDone]}>
@@ -149,7 +167,22 @@ export const RoutineDetailsScreenContent = ({
             </View>
           ))}
 
-          {allDone ? (
+          {total === 0 ? (
+            <Text allowFontScaling style={styles.muted}>
+              {ROUTINES_COPY["details.tasks.empty"]}
+            </Text>
+          ) : null}
+
+          {errorKey ? (
+            <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.alert}>
+              <MaterialSymbol name="error" filled color={theme.color.error} size={theme.navbar.iconSize} />
+              <Text allowFontScaling style={styles.alertText}>
+                {ROUTINES_COPY[errorKey]}
+              </Text>
+            </View>
+          ) : null}
+
+          {doneToday ? (
             <View accessible accessibilityRole="text" accessibilityLiveRegion="polite" style={styles.celebration}>
               <MaterialSymbol name="auto_awesome" filled color={cosmicColors.focus} size={theme.navbar.iconSize} />
               <Text allowFontScaling style={styles.celebrationText}>
@@ -173,10 +206,17 @@ export const RoutineDetailsScreenContent = ({
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
-        {allDone ? (
+        {inactive ? (
+          <Text allowFontScaling style={[styles.muted, styles.centered]}>
+            {ROUTINES_COPY["inactive.today"]}
+          </Text>
+        ) : null}
+        {doneToday ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={ROUTINES_COPY["details.undoAll"]}
+            accessibilityState={{ disabled: inactive }}
+            disabled={inactive}
             onPress={undoAll}
             style={({ pressed }) => [styles.secondary, pressed && styles.pressed]}
           >
@@ -189,8 +229,15 @@ export const RoutineDetailsScreenContent = ({
           <PrimaryButton
             theme={theme}
             label={ROUTINES_COPY["details.completeAll"]}
-            icon={<MaterialSymbol name="check" color={theme.button.label} size={theme.navbar.iconSize} />}
+            icon={
+              <MaterialSymbol
+                name="check"
+                color={inactive ? theme.button.labelDisabled : theme.button.label}
+                size={theme.navbar.iconSize}
+              />
+            }
             onPress={completeAll}
+            disabled={inactive}
           />
         )}
       </View>
@@ -306,6 +353,7 @@ const styles = StyleSheet.create({
   deleteLabel: { ...theme.font.label, color: theme.color["on-surface"] },
   pressed: { opacity: theme.motion.opacityPressed },
   footer: {
+    gap: theme.space.sm,
     paddingTop: theme.space.md,
     paddingHorizontal: theme.space.md,
     backgroundColor: theme.navbar.bg,
@@ -336,4 +384,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.navbar.bg,
   },
   noteText: { ...theme.font["body-sm"], color: theme.color["on-surface"], flex: 1 },
+  // Erro com ícone em color.error e texto em color.on-surface (05-padroes.md; WCAG 1.4.1).
+  alert: { flexDirection: "row", alignItems: "center", gap: theme.space.sm },
+  alertText: { ...theme.font.label, color: theme.color["on-surface"], flex: 1 },
 });

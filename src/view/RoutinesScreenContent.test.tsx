@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
+import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
 import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/view/NewRoutineScreenContent";
 import { RoutineDetailsScreenContent, type RoutineDetailsScreenContentProps } from "@/view/RoutineDetailsScreenContent";
 import { ROUTINES_COPY } from "@/view/routines-copy";
@@ -15,6 +15,9 @@ const listProps = (overrides: Partial<RoutinesScreenContentProps> = {}): Routine
   doneTodayCount: 1,
   query: "",
   lastDeleted: null,
+  loading: false,
+  errorKey: null,
+  reload: jest.fn(),
   setQuery: jest.fn(),
   toggleDoneToday: jest.fn(),
   deleteRoutine: jest.fn(),
@@ -66,6 +69,31 @@ describe("RoutinesScreenContent", () => {
     await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["deleted.undo"] }));
     expect(props.undoDelete).toHaveBeenCalledTimes(1);
   });
+
+  it("R6: fora do dia, o círculo fica desabilitado e o motivo aparece em texto", async () => {
+    const props = listProps({ visibleRoutines: [PROTOTYPE_INACTIVE_ROUTINE], totalCount: 0, doneTodayCount: 0 });
+    await inSafeArea(<RoutinesScreenContent {...props} />);
+
+    expect(screen.getByText(ROUTINES_COPY["inactive.today"])).toBeTruthy();
+    expect(screen.getByText(ROUTINES_COPY["summary.noneToday"])).toBeTruthy();
+    const circle = screen.getByRole("checkbox", { name: "Concluir rotina Revisão de fim de semana hoje" });
+    expect(circle.props.accessibilityState).toMatchObject({ disabled: true });
+    await fireEvent.press(circle);
+    expect(props.toggleDoneToday).not.toHaveBeenCalled();
+  });
+
+  it("carregando não mostra o estado vazio, e um erro aparece com texto", async () => {
+    const view = await inSafeArea(<RoutinesScreenContent {...listProps({ visibleRoutines: [], totalCount: 0, loading: true })} />);
+    expect(screen.getByText(ROUTINES_COPY.loading)).toBeTruthy();
+    expect(screen.queryByText(ROUTINES_COPY["empty.title"])).toBeNull();
+
+    await view.rerender(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <RoutinesScreenContent {...listProps({ errorKey: "error.load" })} />
+      </SafeAreaProvider>,
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent(ROUTINES_COPY["error.load"]);
+  });
 });
 
 const formProps = (overrides: Partial<NewRoutineScreenContentProps> = {}): NewRoutineScreenContentProps => ({
@@ -77,6 +105,8 @@ const formProps = (overrides: Partial<NewRoutineScreenContentProps> = {}): NewRo
   draft: "",
   nameError: false,
   daysError: false,
+  formError: null,
+  submitting: false,
   created: false,
   setName: jest.fn(),
   setIcon: jest.fn(),
@@ -114,6 +144,16 @@ describe("NewRoutineScreenContent", () => {
     expect(props.submit).toHaveBeenCalledTimes(1);
   });
 
+  it("falha ao salvar: mostra o aviso e bloqueia o envio enquanto salva", async () => {
+    const props = formProps({ formError: "Não foi possível salvar a rotina agora. Tente de novo.", submitting: true });
+    await inSafeArea(<NewRoutineScreenContent {...props} />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Não foi possível salvar a rotina agora. Tente de novo.");
+    expect(screen.getByRole("button", { name: ROUTINES_COPY["form.submit"] }).props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+  });
+
   it("com erros, mostra as duas mensagens", async () => {
     await inSafeArea(<NewRoutineScreenContent {...formProps({ nameError: true, daysError: true })} />);
     const alerts = screen.getAllByRole("alert");
@@ -125,14 +165,17 @@ describe("NewRoutineScreenContent", () => {
 const detailsProps = (overrides: Partial<RoutineDetailsScreenContentProps> = {}): RoutineDetailsScreenContentProps => ({
   routine: PROTOTYPE_ROUTINE_DETAILS,
   completedCount: 1,
-  allDone: false,
+  doneToday: false,
   confirmDeleteVisible: false,
+  loading: false,
+  errorKey: null,
   toggleTask: jest.fn(),
   moveTaskUp: jest.fn(),
   completeAll: jest.fn(),
   undoAll: jest.fn(),
   requestDelete: jest.fn(),
   cancelDelete: jest.fn(),
+  reload: jest.fn(),
   onBack: jest.fn(),
   onDeleted: jest.fn(),
   ...overrides,
@@ -155,13 +198,41 @@ describe("RoutineDetailsScreenContent", () => {
     expect(props.requestDelete).toHaveBeenCalledTimes(1);
   });
 
-  it("tudo concluído: comemora e troca o rodapé por Desmarcar todos", async () => {
-    const props = detailsProps({ completedCount: 3, allDone: true });
+  it("rotina concluída hoje: comemora e troca o rodapé por Desmarcar todos", async () => {
+    const props = detailsProps({ completedCount: 3, doneToday: true });
     await inSafeArea(<RoutineDetailsScreenContent {...props} />);
 
     expect(screen.getByText(ROUTINES_COPY["details.allDone"])).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["details.undoAll"] }));
     expect(props.undoAll).toHaveBeenCalledTimes(1);
+  });
+
+  it("R3: com todas as tarefas marcadas mas a rotina não concluída, o rodapé continua em Marcar como concluída", async () => {
+    await inSafeArea(<RoutineDetailsScreenContent {...detailsProps({ completedCount: 3, doneToday: false })} />);
+    expect(screen.getByRole("button", { name: ROUTINES_COPY["details.completeAll"] })).toBeTruthy();
+    expect(screen.queryByText(ROUTINES_COPY["details.allDone"])).toBeNull();
+  });
+
+  it("R6: fora do dia, concluir e marcar ficam desabilitados com o motivo em texto", async () => {
+    const props = detailsProps({ routine: { ...PROTOTYPE_ROUTINE_DETAILS, activeToday: false } });
+    await inSafeArea(<RoutineDetailsScreenContent {...props} />);
+
+    expect(screen.getByText(ROUTINES_COPY["inactive.today"])).toBeTruthy();
+    const complete = screen.getByRole("button", { name: ROUTINES_COPY["details.completeAll"] });
+    expect(complete.props.accessibilityState).toMatchObject({ disabled: true });
+    const circle = screen.getByRole("checkbox", { name: "Concluir Resolver a lista de exercícios" });
+    expect(circle.props.accessibilityState).toMatchObject({ disabled: true });
+    await fireEvent.press(complete);
+    await fireEvent.press(circle);
+    expect(props.completeAll).not.toHaveBeenCalled();
+    expect(props.toggleTask).not.toHaveBeenCalled();
+  });
+
+  it("F8: sem tarefas, mostra o estado vazio do ODS", async () => {
+    await inSafeArea(
+      <RoutineDetailsScreenContent {...detailsProps({ completedCount: 0, routine: { ...PROTOTYPE_ROUTINE_DETAILS, tasks: [] } })} />,
+    );
+    expect(screen.getByText(ROUTINES_COPY["details.tasks.empty"])).toBeTruthy();
   });
 
   it("3.3: confirmar a exclusão volta para a lista com a rotina excluída", async () => {

@@ -1,20 +1,27 @@
-import { useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback } from "react";
 import { useRoutineDetailsViewModel } from "../viewmodel/RoutineDetailsViewModel";
 import { RoutineDetailsScreenContent } from "./RoutineDetailsScreenContent";
 
-/**
- * Tela Detalhe da rotina. Sem o domínio de Rotinas ainda não há de onde carregar a rotina pelo `id`
- * da rota, então a tela mostra o estado "Rotina indisponível" até o caso de uso ser ligado.
- */
+/** Tela Detalhe da rotina: carrega a rotina pelo `id` da rota e volta para a lista ao sair ou excluir. */
 const RoutineDetailsScreen = () => {
-  const vm = useRoutineDetailsViewModel();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const vm = useRoutineDetailsViewModel(id);
   const router = useRouter();
+  const { reload } = vm;
+
+  // Recarrega ao ganhar foco: a ocorrência de hoje pode ter mudado pela lista.
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
 
   return (
     <RoutineDetailsScreenContent
       {...vm}
       onBack={() => router.navigate("/routines")}
-      onDeleted={(id) => router.navigate({ pathname: "/routines", params: { deleted: id } })}
+      onDeleted={(routineId) => router.navigate({ pathname: "/routines", params: { deleted: routineId } })}
     />
   );
 };

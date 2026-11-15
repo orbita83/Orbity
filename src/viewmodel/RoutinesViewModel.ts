@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { container, resolveUseCase } from "@/DI/container";
+import { ROUTINE_ICONS, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
+import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
+
+export { ROUTINE_ICONS, type RoutineIcon };
 
 /** Tempo (ms) em que o "Desfazer" fica disponível depois de excluir. Regra de comportamento, não token visual. */
 export const UNDO_WINDOW_MS = 8000;
 
-/** Ícones que o estudante pode escolher para uma rotina (Nova rotina). */
-export const ROUTINE_ICONS = ["track_changes", "menu_book", "calculate", "translate", "science", "code", "music_note"] as const;
-export type RoutineIcon = (typeof ROUTINE_ICONS)[number];
+export type RoutinesErrorKey = "error.load" | "error.save";
 
-/**
- * Rotina como a lista a apresenta. Provisório: vira o resultado do caso de uso de Rotinas
- * (RF-0008) quando o domínio existir; por enquanto a lista começa vazia em produção.
- */
+/** Rotina como a lista a apresenta (view data preparada pela ViewModel). */
 export type RoutineListItem = {
   id: string;
   title: string;
@@ -18,17 +18,22 @@ export type RoutineListItem = {
   /** Dias da semana ativos, 0 = domingo (RF-0012). */
   days: number[];
   taskCount: number;
+  /** Hoje é um dos dias da rotina; fora deles, a conclusão fica bloqueada (rotinas.md, R6). */
+  activeToday: boolean;
   /** Ocorrência de hoje concluída (RF-0011). */
   doneToday: boolean;
 };
 
 export type RoutinesState = {
   visibleRoutines: RoutineListItem[];
+  /** Rotinas de hoje: base do resumo "X de Y concluídas" (R6). */
   totalCount: number;
   doneTodayCount: number;
   query: string;
   /** Última rotina excluída, enquanto o aviso com "Desfazer" está na tela. */
   lastDeleted: RoutineListItem | null;
+  loading: boolean;
+  errorKey: RoutinesErrorKey | null;
 };
 
 export type RoutinesActions = {
@@ -37,25 +42,102 @@ export type RoutinesActions = {
   deleteRoutine: (id: string) => void;
   undoDelete: () => void;
   dismissDeleted: () => void;
+  reload: () => Promise<void>;
 };
 
+const toListItem = ({ routine, taskCount, activeToday, doneToday }: RoutineOverview): RoutineListItem => ({
+  id: routine.id,
+  title: routine.title,
+  icon: routine.icon,
+  days: [...routine.days],
+  taskCount,
+  activeToday,
+  doneToday,
+});
+
 /**
- * Estado de apresentação da lista de Rotinas: busca, conclusão do dia e exclusão com desfazer.
- * As mudanças ficam só em memória até o caso de uso de Rotinas ser ligado aqui.
+ * Estado da lista de Rotinas: busca, conclusão do dia e exclusão com desfazer, pelo `IRoutineUseCases`.
+ * Com um array, funciona só em memória (histórias do Storybook e testes de apresentação).
  */
-export const useRoutinesViewModel = (initialRoutines: readonly RoutineListItem[] = []): RoutinesState & RoutinesActions => {
-  const [routines, setRoutines] = useState<RoutineListItem[]>(() => [...initialRoutines]);
+export const useRoutinesViewModel = (
+  source?: IRoutineUseCases | readonly RoutineListItem[],
+): RoutinesState & RoutinesActions => {
+  const isPrototypeMode = Array.isArray(source);
+  const injectedUseCases = isPrototypeMode ? undefined : (source as IRoutineUseCases | undefined);
+  const useCases = resolveUseCase(injectedUseCases, container.useCases.routines);
+
+  const [routines, setRoutines] = useState<RoutineListItem[]>(() => (isPrototypeMode ? [...source] : []));
   const [query, setQuery] = useState("");
   const [lastDeleted, setLastDeleted] = useState<{ item: RoutineListItem; index: number } | null>(null);
+  const [loading, setLoading] = useState(!isPrototypeMode);
+  const [errorKey, setErrorKey] = useState<RoutinesErrorKey | null>(null);
+  const mounted = useRef(true);
+  const latestRequest = useRef(0);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  // Os setState ficam só nos callbacks da promessa; a resposta mais nova vence.
+  const reload = useCallback((): Promise<void> => {
+    if (isPrototypeMode) return Promise.resolve();
+    const request = ++latestRequest.current;
+    const isCurrent = () => mounted.current && request === latestRequest.current;
+    return useCases.listRoutines().then(
+      (loaded) => {
+        if (!isCurrent()) return;
+        setRoutines(loaded.map(toListItem));
+        setErrorKey(null);
+        setLoading(false);
+      },
+      () => {
+        if (!isCurrent()) return;
+        setErrorKey("error.load");
+        setLoading(false);
+      },
+    );
+  }, [isPrototypeMode, useCases]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  /** Roda uma ação do caso de uso; em falha, mostra o aviso e recarrega o estado verdadeiro. */
+  const runAction = useCallback(
+    (action: () => Promise<unknown>) => {
+      void action().then(
+        () => reload(),
+        () => {
+          if (!mounted.current) return;
+          setErrorKey("error.save");
+          return reload().then(() => {
+            if (mounted.current) setErrorKey("error.save");
+          });
+        },
+      );
+    },
+    [reload],
+  );
 
   const visibleRoutines = useMemo(() => {
     const term = query.trim().toLocaleLowerCase("pt-BR");
     return term === "" ? routines : routines.filter((routine) => routine.title.toLocaleLowerCase("pt-BR").includes(term));
   }, [query, routines]);
 
-  const toggleDoneToday = useCallback((id: string) => {
-    setRoutines((current) => current.map((routine) => (routine.id === id ? { ...routine, doneToday: !routine.doneToday } : routine)));
-  }, []);
+  const toggleDoneToday = useCallback(
+    (id: string) => {
+      const target = routines.find((routine) => routine.id === id);
+      if (!target || !target.activeToday) return;
+      // Resposta imediata na tela; o caso de uso confirma em seguida.
+      setRoutines((current) => current.map((routine) => (routine.id === id ? { ...routine, doneToday: !routine.doneToday } : routine)));
+      if (isPrototypeMode) return;
+      runAction(() => (target.doneToday ? useCases.reopenOccurrence(id) : useCases.completeOccurrence(id)));
+    },
+    [isPrototypeMode, routines, runAction, useCases],
+  );
 
   const deleteRoutine = useCallback(
     (id: string) => {
@@ -63,8 +145,10 @@ export const useRoutinesViewModel = (initialRoutines: readonly RoutineListItem[]
       if (index < 0) return;
       setLastDeleted({ item: routines[index], index });
       setRoutines(routines.filter((routine) => routine.id !== id));
+      if (isPrototypeMode) return;
+      runAction(() => useCases.deleteRoutine(id));
     },
-    [routines],
+    [isPrototypeMode, routines, runAction, useCases],
   );
 
   const undoDelete = useCallback(() => {
@@ -75,7 +159,9 @@ export const useRoutinesViewModel = (initialRoutines: readonly RoutineListItem[]
       return next;
     });
     setLastDeleted(null);
-  }, [lastDeleted]);
+    if (isPrototypeMode) return;
+    runAction(() => useCases.restoreRoutine(lastDeleted.item.id));
+  }, [isPrototypeMode, lastDeleted, runAction, useCases]);
 
   const dismissDeleted = useCallback(() => setLastDeleted(null), []);
 
@@ -86,16 +172,20 @@ export const useRoutinesViewModel = (initialRoutines: readonly RoutineListItem[]
     return () => clearTimeout(timer);
   }, [lastDeleted]);
 
+  const today = routines.filter((routine) => routine.activeToday);
   return {
     visibleRoutines,
-    totalCount: routines.length,
-    doneTodayCount: routines.filter((routine) => routine.doneToday).length,
+    totalCount: today.length,
+    doneTodayCount: today.filter((routine) => routine.doneToday).length,
     query,
     lastDeleted: lastDeleted?.item ?? null,
+    loading,
+    errorKey,
     setQuery,
     toggleDoneToday,
     deleteRoutine,
     undoDelete,
     dismissDeleted,
+    reload,
   };
 };

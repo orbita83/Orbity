@@ -19,8 +19,9 @@ export type RoutinesScreenContentProps = RoutinesState &
     onOpenRoutine: (id: string) => void;
   };
 
-const summaryOf = (done: number, total: number) => {
-  if (total === 0) return ROUTINES_COPY["summary.empty"];
+/** Resumo do dia: conta só as rotinas de hoje (rotinas.md, R6). */
+const summaryOf = (done: number, total: number, hasRoutines: boolean) => {
+  if (total === 0) return hasRoutines ? ROUTINES_COPY["summary.noneToday"] : ROUTINES_COPY["summary.empty"];
   return done === total ? ROUTINES_COPY["summary.allDone"] : formatRoutinesCopy("summary.progress", { done, total });
 };
 
@@ -30,9 +31,13 @@ type RoutineCardProps = {
   onToggle: () => void;
 };
 
-/** Card da rotina (protótipo 3): abrir pelo card e concluir o dia pelo círculo, em toques separados. */
+/**
+ * Card da rotina (protótipo 3): abrir pelo card e concluir o dia pelo círculo, em toques separados.
+ * Fora dos dias da rotina, o círculo fica desabilitado e o motivo aparece em texto (rotinas.md, R6).
+ */
 const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
   const detail = `${taskCountLabel(routine.taskCount)} · ${formatDays(routine.days)}`;
+  const inactive = !routine.activeToday;
   return (
     <View style={styles.card}>
       <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
@@ -50,11 +55,17 @@ const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
           <Text allowFontScaling style={styles.muted}>
             {detail}
           </Text>
+          {inactive ? (
+            <Text allowFontScaling style={styles.muted}>
+              {ROUTINES_COPY["inactive.today"]}
+            </Text>
+          ) : null}
         </View>
       </Pressable>
       <CheckCircle
         checked={routine.doneToday}
         onToggle={onToggle}
+        disabled={inactive}
         accessibilityLabel={formatRoutinesCopy(routine.doneToday ? "card.uncomplete" : "card.complete", { name: routine.title })}
       />
     </View>
@@ -68,6 +79,8 @@ export const RoutinesScreenContent = ({
   doneTodayCount,
   query,
   lastDeleted,
+  loading,
+  errorKey,
   setQuery,
   toggleDoneToday,
   undoDelete,
@@ -119,9 +132,22 @@ export const RoutinesScreenContent = ({
               {ROUTINES_COPY.today}
             </Text>
             <Text allowFontScaling style={styles.muted}>
-              {summaryOf(doneTodayCount, totalCount)}
+              {summaryOf(doneTodayCount, totalCount, visibleRoutines.length > 0 || searching)}
             </Text>
           </View>
+          {errorKey ? (
+            <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.alert}>
+              <MaterialSymbol name="error" filled color={theme.color.error} size={theme.navbar.iconSize} />
+              <Text allowFontScaling style={styles.alertText}>
+                {ROUTINES_COPY[errorKey]}
+              </Text>
+            </View>
+          ) : null}
+          {loading ? (
+            <Text accessibilityLiveRegion="polite" allowFontScaling style={styles.muted}>
+              {ROUTINES_COPY.loading}
+            </Text>
+          ) : null}
           {visibleRoutines.map((routine) => (
             <RoutineCard
               key={routine.id}
@@ -130,7 +156,7 @@ export const RoutinesScreenContent = ({
               onToggle={() => toggleDoneToday(routine.id)}
             />
           ))}
-          {visibleRoutines.length === 0 ? (
+          {visibleRoutines.length === 0 && !loading ? (
             <View style={styles.empty}>
               <Text allowFontScaling style={styles.emptyTitle}>
                 {searching ? ROUTINES_COPY["noResults.title"] : ROUTINES_COPY["empty.title"]}
@@ -209,4 +235,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: { ...theme.font["card-title"], color: theme.color["on-surface"], textAlign: "center" },
   snackbar: { position: "absolute", left: theme.space.md, right: theme.space.md, bottom: theme.space.md },
+  // Erro com ícone em color.error e texto em color.on-surface (05-padroes.md, F4/F7; WCAG 1.4.1).
+  alert: { flexDirection: "row", alignItems: "center", gap: theme.space.sm },
+  alertText: { ...theme.font.label, color: theme.color["on-surface"], flex: 1 },
 });

@@ -14,7 +14,7 @@ const NewRoutineScreen = () => {
     router.navigate("/routines");
   };
 
-  // Sem o domínio de Rotinas, criar só valida e volta para a lista (protótipo 3.1 → 3).
+  // Depois de salvar pelo caso de uso, volta para a lista, que recarrega ao ganhar foco (protótipo 3.1 → 3).
   useEffect(() => {
     if (!created) return;
     reset();

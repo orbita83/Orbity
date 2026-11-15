@@ -43,6 +43,8 @@ export const NewRoutineScreenContent = ({
   draft,
   nameError,
   daysError,
+  formError,
+  submitting,
   setName,
   setIcon,
   setDescription,
@@ -186,7 +188,9 @@ export const NewRoutineScreenContent = ({
         </View>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
-        <PrimaryButton theme={theme} label={ROUTINES_COPY["form.submit"]} onPress={submit} />
+        {/* Falha ao salvar: texto e ícone, e o formulário continua preenchido (05-padroes.md, F7). */}
+        {formError ? <FieldError message={formError} /> : null}
+        <PrimaryButton theme={theme} label={ROUTINES_COPY["form.submit"]} onPress={submit} disabled={submitting} />
       </View>
     </View>
   );
@@ -262,6 +266,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color["action-subtle"],
   },
   footer: {
+    gap: theme.space.sm,
     paddingTop: theme.space.md,
     paddingHorizontal: theme.space.md,
     backgroundColor: theme.navbar.bg,

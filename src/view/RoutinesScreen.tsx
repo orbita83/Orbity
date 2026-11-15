@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect } from "react";
 import { useRoutinesViewModel } from "../viewmodel/RoutinesViewModel";
 import { RoutinesScreenContent } from "./RoutinesScreenContent";
 
@@ -11,7 +11,14 @@ const RoutinesScreen = () => {
   const vm = useRoutinesViewModel();
   const router = useRouter();
   const { deleted } = useLocalSearchParams<{ deleted?: string }>();
-  const { deleteRoutine } = vm;
+  const { deleteRoutine, reload } = vm;
+
+  // Recarrega ao voltar para a aba, para refletir o que mudou no detalhe ou em Nova rotina.
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
 
   useEffect(() => {
     if (!deleted) return;
