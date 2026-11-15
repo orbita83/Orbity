@@ -1,0 +1,126 @@
+import { fireEvent, render, screen } from "@testing-library/react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { PROTOTYPE_TASKS } from "@/view/__fixtures__/task-list.fixture";
+import { NewTaskScreenContent, type NewTaskScreenContentProps } from "@/view/NewTaskScreenContent";
+import { TASKS_COPY } from "@/view/tasks-copy";
+import { TasksScreenContent, type TasksScreenContentProps } from "@/view/TasksScreenContent";
+
+const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
+
+const listProps = (overrides: Partial<TasksScreenContentProps> = {}): TasksScreenContentProps => ({
+  visibleTasks: [...PROTOTYPE_TASKS],
+  pendingCount: 3,
+  totalCount: 4,
+  filter: "all",
+  selectionMode: false,
+  selectedIds: [],
+  confirmDeleteVisible: false,
+  selectFilter: jest.fn(),
+  toggleCompleted: jest.fn(),
+  startSelection: jest.fn(),
+  toggleSelected: jest.fn(),
+  cancelSelection: jest.fn(),
+  selectAll: jest.fn(),
+  pinSelected: jest.fn(),
+  requestDelete: jest.fn(),
+  cancelDelete: jest.fn(),
+  confirmDelete: jest.fn(),
+  onCreateTask: jest.fn(),
+  ...overrides,
+});
+
+const renderInSafeArea = (node: React.ReactElement) => render(<SafeAreaProvider initialMetrics={metrics}>{node}</SafeAreaProvider>);
+
+describe("TasksScreenContent", () => {
+  it("2: mostra título, resumo, filtros em grupo de rádio, Nova tarefa e os cards", async () => {
+    const props = listProps();
+    await renderInSafeArea(<TasksScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: TASKS_COPY.title })).toBeTruthy();
+    expect(screen.getByText("3 tarefas pendentes")).toBeTruthy();
+    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    expect(screen.getByText("Estudar para a prova de Cálculo")).toBeTruthy();
+
+    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY.new }));
+    expect(props.onCreateTask).toHaveBeenCalledTimes(1);
+
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Concluir tarefa: Estudar para PDM" }));
+    expect(props.toggleCompleted).toHaveBeenCalledWith("b");
+  });
+
+  it("sem tarefas, mostra o estado vazio acolhedor", async () => {
+    await renderInSafeArea(<TasksScreenContent {...listProps({ visibleTasks: [], pendingCount: 0, totalCount: 0 })} />);
+    expect(screen.getByText(TASKS_COPY["empty.title"])).toBeTruthy();
+    expect(screen.getByText(TASKS_COPY["summary.empty"])).toBeTruthy();
+  });
+
+  it("2.3: na seleção, troca o cabeçalho, mostra a barra de ações e seleciona pelo card", async () => {
+    const props = listProps({ selectionMode: true, selectedIds: ["a"] });
+    await renderInSafeArea(<TasksScreenContent {...props} />);
+
+    expect(screen.getByText("1 selecionada")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: TASKS_COPY.new })).toBeNull();
+    expect(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para a prova de Cálculo" }).props.accessibilityState.checked).toBe(true);
+
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para PDM" }));
+    expect(props.toggleSelected).toHaveBeenCalledWith("b");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Excluir (1)" }));
+    expect(props.requestDelete).toHaveBeenCalledTimes(1);
+    await fireEvent.press(screen.getByRole("button", { name: "Cancelar seleção" }));
+    expect(props.cancelSelection).toHaveBeenCalledTimes(1);
+  });
+
+  it("a confirmação de exclusão mostra quantas tarefas e só confirma pela ação destrutiva", async () => {
+    const props = listProps({ selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true });
+    await renderInSafeArea(<TasksScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: "Excluir 2 tarefas?" })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["delete.cancel"] }));
+    expect(props.cancelDelete).toHaveBeenCalledTimes(1);
+    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["delete.confirm"] }));
+    expect(props.confirmDelete).toHaveBeenCalledTimes(1);
+  });
+});
+
+const formProps = (overrides: Partial<NewTaskScreenContentProps> = {}): NewTaskScreenContentProps => ({
+  fields: { title: "", description: "", startDate: "", startTime: "", endDate: "", endTime: "" },
+  titleError: false,
+  created: false,
+  setField: jest.fn(),
+  submit: jest.fn(),
+  reset: jest.fn(),
+  onClose: jest.fn(),
+  onFinish: jest.fn(),
+  ...overrides,
+});
+
+describe("NewTaskScreenContent", () => {
+  it("2.1: campos com rótulo, fechar sem criar e criar pelo rodapé", async () => {
+    const props = formProps();
+    await renderInSafeArea(<NewTaskScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: TASKS_COPY["form.title"] })).toBeTruthy();
+    await fireEvent.changeText(screen.getByLabelText("Título da tarefa, (obrigatório)"), "Revisar SOLID");
+    expect(props.setField).toHaveBeenCalledWith("title", "Revisar SOLID");
+
+    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["form.submit"] }));
+    expect(props.submit).toHaveBeenCalledTimes(1);
+    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["form.close"] }));
+    expect(props.onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("com erro, mostra a mensagem do título", async () => {
+    await renderInSafeArea(<NewTaskScreenContent {...formProps({ titleError: true })} />);
+    expect(screen.getByRole("alert")).toHaveTextContent(TASKS_COPY["form.name.error"]);
+  });
+
+  it("2.2: depois de criar, mostra a confirmação e volta para a lista", async () => {
+    const props = formProps({ created: true });
+    await renderInSafeArea(<NewTaskScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: TASKS_COPY["created.title"] })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["created.action"] }));
+    expect(props.onFinish).toHaveBeenCalledTimes(1);
+  });
+});
