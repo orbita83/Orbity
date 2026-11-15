@@ -132,7 +132,16 @@ Os rótulos "(era Qn)" apontam para as perguntas do brainstorm e do draft. As de
     *   Verificado em 2026-11-14: o ODS 1.2.0 da branch de integração é idêntico ao commit `2d787eb` do #113.
     *   O PR desta mudança é aberto **como rascunho contra a `development`** (E8). Ele só sai de rascunho depois do merge de #113, #119 e #121, porque até lá o diff dele inclui os commits desses três.
 *   **D21 (revisão):** a ViewModel usa o `AppState` do React Native diretamente, como exceção aceita ao [ARCHITECTURE.md](../../ARCHITECTURE.md) §3.1, que só lista hooks do React. Uma porta de ciclo de vida seria código sem segundo uso.
-*   **D22 (revisão, E9):** os textos da interface são os da tabela da Etapa 7, aprovados pelo autor. Nenhum texto pode conter termos da lista `PUNITIVE_TERMS`.
+*   **D22 (revisão, E9):** os textos da interface são os da tabela da Etapa 7, aprovados pelo autor. Nenhum texto pode conter termos da lista `PUNITIVE_TERMS`. Substituída em parte pela D23.
+*   **D23 (pós-implementação, 2026-11-15):** a Tela Inicial passa a seguir o protótipo do Claude Design ("Orbity · Protótipo Início e Tarefas", telas 1, 1.1 e 1.2), e não mais o protótipo da branch `feat/tela-principal-prototipo`. Decisões do autor:
+    *   o card Modo Foco perde os chips de duração; a escolha da duração (RF-0019) fica para a tela da sessão de foco;
+    *   Conquistas, Última sessão e Como funciona? aparecem com o layout do protótipo em estado vazio: medalhas bloqueadas, texto de vazio e setas desabilitadas até existirem as telas de destino (atualiza a D16);
+    *   o cabeçalho ganha o botão de Configurações, desabilitado até existir a tela;
+    *   os textos são os do protótipo e ficam em `src/view/home-copy.ts`, que passa a ser a fonte da tabela de textos;
+    *   tipografia nova no ODS: `font.card-title` (16/24/600) e `font.body-sm` (14/20/400); a marca usa `font.title`;
+    *   o planeta e o fundo redesenham o componente "Planeta da sequência" do protótipo; no estágio intermediário o planeta encolhe para 190/320 e no expandido some sob o painel;
+    *   espaçamentos de 12 dp do protótipo seguem a grade de 8 pontos do ODS (8 dp), e o alvo da alça continua com 48 dp.
+    O aviso de foco bloqueado (D7) continua visível, porque o protótipo só mostra o estado com dados.
 
 ### Ainda em aberto
 
