@@ -164,10 +164,18 @@ export const FocusBottomSheet = ({
                 title={HOME_COPY["progress.title"]}
                 description={HOME_COPY["progress.description"]}
                 trailing={
-                  <View style={styles.progressBadge}>
-                    <Text allowFontScaling style={styles.badgeLabel}>
-                      {progressLabel}
-                    </Text>
+                  <View style={styles.progressCounter}>
+                    <View style={styles.progressBadge}>
+                      <Text allowFontScaling style={styles.badgeLabel}>
+                        {progressLabel}
+                      </Text>
+                    </View>
+                    {/* ODS 1.2: a porcentagem fica fora da barra; RN-0007: sem atividades não há porcentagem. */}
+                    {percent !== null ? (
+                      <Text allowFontScaling style={styles.badgeLabel}>
+                        {formatCopy("progress.percent", { percent })}
+                      </Text>
+                    ) : null}
                   </View>
                 }
               />
@@ -186,14 +194,6 @@ export const FocusBottomSheet = ({
                 {progressRatio !== null && progressRatio > 0 ? (
                   <View style={[styles.progressFill, { width: `${progressRatio * 100}%` }]}>
                     <GradientSurface from={cosmicGradients.progress[0]} to={cosmicGradients.progress[1]} horizontal />
-                  </View>
-                ) : null}
-                {/* RN-0007: sem atividades não há porcentagem. */}
-                {percent !== null ? (
-                  <View pointerEvents="none" style={styles.progressPercent}>
-                    <Text allowFontScaling={false} style={styles.badgeLabel}>
-                      {formatCopy("progress.percent", { percent })}
-                    </Text>
                   </View>
                 ) : null}
               </View>
@@ -215,7 +215,7 @@ export const FocusBottomSheet = ({
                     style={styles.badgeSlot}
                   >
                     <View style={styles.badge}>
-                      <MaterialSymbol name={icon} color={cosmicColors.achievementPendingIcon} size={theme.size.iconLg} />
+                      <MaterialSymbol name={icon} color={cosmicColors.achievementPendingIcon} size={theme.navbar.iconSize} />
                       <View style={styles.lockBubble}>
                         <MaterialSymbol name="lock" filled color={cosmicColors.achievementPendingIcon} size={theme.space.md} />
                       </View>
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   progressFill: { height: "100%", borderRadius: theme.progress.height / 2, overflow: "hidden" },
-  progressPercent: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, alignItems: "center", justifyContent: "center" },
+  progressCounter: { flexDirection: "row", alignItems: "center", gap: theme.space.sm },
   badges: { flexDirection: "row", gap: theme.space.sm },
   badgeSlot: { flex: 1, alignItems: "center", paddingVertical: theme.primitive["space-4"] },
   badge: {

@@ -49,11 +49,12 @@ describe("FocusBottomSheet", () => {
     expect(bar.props.accessibilityValue).toMatchObject({ now: 0, max: 0, text: "0 de 0 atividades concluídas" });
   });
 
-  it("com atividades, mostra a porcentagem dentro da barra", async () => {
+  it("ODS 1.2: com atividades, mostra a porcentagem ao lado do contador, fora da barra", async () => {
     await render(<FocusBottomSheet {...propsWith({ progressLabel: "1/25", progressRatio: 1 / 25, progressCompleted: 1, progressTotal: 25 })} />);
 
     expect(screen.getByText("1/25")).toBeTruthy();
     expect(screen.getByText("4%")).toBeTruthy();
+    expect(screen.getByRole("progressbar")).not.toHaveTextContent("4%");
   });
 
   it("estado vazio: as quatro conquistas aparecem bloqueadas", async () => {

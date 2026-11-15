@@ -26,10 +26,10 @@ export const PlanetStreakView = ({ days, size }: PlanetStreakViewProps) => {
       <View style={[styles.artboard, { left: offset, top: offset, transform: [{ scale: size / PLANET_ARTBOARD }] }]}>
         <PlanetIllustration />
         <View pointerEvents="none" style={styles.sequence}>
-          <Text allowFontScaling={false} style={styles.count}>
+          <Text allowFontScaling style={styles.count}>
             {days}
           </Text>
-          <Text allowFontScaling={false} style={styles.label}>
+          <Text allowFontScaling style={styles.label}>
             {streakUnit(days)}
           </Text>
         </View>
