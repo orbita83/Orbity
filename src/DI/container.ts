@@ -9,15 +9,17 @@
  * View -> ViewModel -> Use Cases -> Domínio (Model) <- Infraestrutura
  */
 
-import { EmptyActivityCatalog } from "@/infra/repositories/empty-activity-catalog";
 import { SystemClockService } from "@/infra/services/system-clock-service";
 import type { IActivityCatalog } from "@/model/repositories/i-activity-catalog";
 import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
+import type { ITaskRepository } from "@/model/repositories/i-task-repository";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { HomeUseCases } from "@/usecase/home-use-cases";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
 import type { IStreakUseCases } from "@/usecase/i-streak-use-cases";
+import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 import { StreakUseCases } from "@/usecase/streak-use-cases";
+import { TaskUseCases } from "@/usecase/task-use-cases";
 // Resolvido pelo Metro: persistence.ts no Android e persistence.web.ts na web (D8).
 import { createPersistence } from "./persistence";
 
@@ -165,6 +167,7 @@ export function createContainer<
 /** Repositórios da aplicação. */
 export type AppRepositories = {
   dailyActivity: IDailyActivityRepository;
+  tasks: ITaskRepository;
   activityCatalog: IActivityCatalog;
 };
 
@@ -177,6 +180,7 @@ export type AppServices = {
 export type AppUseCases = {
   streak: IStreakUseCases;
   home: IHomeUseCases;
+  tasks: ITaskUseCases;
 };
 
 /**
@@ -185,10 +189,7 @@ export type AppUseCases = {
  */
 export const appContainerDefinition: ContainerDefinition<AppRepositories, AppServices, AppUseCases> =
   Object.freeze({
-    repositories: () => ({
-      ...createPersistence(),
-      activityCatalog: new EmptyActivityCatalog(),
-    }),
+    repositories: () => createPersistence(),
     services: () => ({ clock: new SystemClockService() }),
     useCases: ({ repositories, services }: InfrastructureDependencies<AppRepositories, AppServices>) => ({
       streak: composeUseCase(
@@ -202,6 +203,15 @@ export const appContainerDefinition: ContainerDefinition<AppRepositories, AppSer
         {
           dailyActivity: repositories.dailyActivity,
           activityCatalog: repositories.activityCatalog,
+          clock: services.clock,
+        },
+      ),
+      tasks: composeUseCase(
+        (deps: { tasks: ITaskRepository; dailyActivity: IDailyActivityRepository; clock: IClockService }) =>
+          new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock),
+        {
+          tasks: repositories.tasks,
+          dailyActivity: repositories.dailyActivity,
           clock: services.clock,
         },
       ),
