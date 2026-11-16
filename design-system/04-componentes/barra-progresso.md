@@ -2,11 +2,11 @@
 
 Origem no sistema base: Material 3, Linear progress indicator. Situação: Novo (1.2). Motivo da adaptação: mostrar o avanço do dia com contador textual e porcentagem legível, sem depender da cor nem do contraste do preenchimento.
 
-Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-f1-f2) (card Progresso de hoje), [painel-deslizante.md](painel-deslizante.md), [02-tokens.md](../02-tokens.md) e [06-acessibilidade.md](../06-acessibilidade.md).
+Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-f1-f2) (card Seu progresso), [painel-deslizante.md](painel-deslizante.md), [02-tokens.md](../02-tokens.md) e [06-acessibilidade.md](../06-acessibilidade.md).
 
 ## Quando usar
 
-- Use no card "Progresso de hoje" para mostrar tarefas e rotinas concluídas sobre o total do dia ("1 / 25").
+- Use no card "Seu progresso" para mostrar as atividades concluídas sobre o total ("1 / 25"): tarefas avulsas pelo total geral e cada rotina de hoje como uma unidade ([RN-0007](../../docs/02-requirements/business-rules/RN-0007.md)).
 - Use quando o total for conhecido e o progresso puder ser expresso como proporção.
 
 ## Quando não usar
@@ -17,7 +17,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-
 
 ## Anatomia
 
-1. Linha de texto: rótulo ("Progresso de hoje") à esquerda; contador "concluídas / total" e porcentagem à direita, em `font.label` com `color.on-surface`. **A porcentagem fica fora da barra**, nunca sobre o preenchimento.
+1. Linha de texto: rótulo ("Seu progresso") à esquerda; contador "concluídas / total" e porcentagem à direita, em `font.label` com `color.on-surface`. **A porcentagem fica fora da barra**, nunca sobre o preenchimento.
 2. Trilha: altura `progress.height` (20 dp), fundo `progress.track` (`color.action-subtle`; cósmico `#232052`), cantos totalmente arredondados (metade da altura).
 3. Preenchimento: largura proporcional exata ao valor, `progress.fill` (cósmico `cosmicGradients.progress`, `#8A42FA` → `#8648FA`; legados `color.action`), mesmos cantos.
 
@@ -25,7 +25,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-
 
 | Variante | Uso | Tokens |
 | --- | --- | --- |
-| Padrão | Progresso de hoje no painel | `progress.height`, `progress.track`, `progress.fill`, `font.label`, `color.on-surface`, `space.sm` |
+| Padrão | Seu progresso no painel | `progress.height`, `progress.track`, `progress.fill`, `font.label`, `color.on-surface`, `space.sm` |
 | Compacta | Futuro uso em listas; não validada | Mesmos tokens com altura menor ainda não definida (lacuna) |
 
 ## Estados

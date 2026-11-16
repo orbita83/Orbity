@@ -43,7 +43,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 
 ### Ainda em aberto
 
-- **Q1:** O card "Progresso de hoje" da Início conta todas as tarefas já criadas (`getProgressCounts`), não só as do dia. A RN-0007 fala em progresso geral, mas o rótulo diz "de hoje". A equipe precisa decidir se muda o rótulo ou a contagem.
+- **Q1 (resolvida na issue #138):** o rótulo mudou para "Seu progresso", e a contagem das tarefas avulsas continua pelo total geral (RN-0007). Ver `rotinas.md`, R10.
 - **Q2:** Excluir uma tarefa concluída mantém o dia na sequência (o registro diário é independente). Confirmar se é o comportamento esperado.
 
 ## Critical User Journeys (CUJs)

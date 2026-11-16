@@ -27,7 +27,6 @@ Concluir a rotina do dia registra o dia na sequência (RN-0002). As tarefas de u
 ## Non-Goals
 
 - Editar rotina (RF-0009). A tela e os campos ainda dependem do refinamento do UC-0007/FL-0007 (issue #137). O "Editar" continua desabilitado.
-- Contar rotinas na barra de progresso da Início. As pendências da RN-0007 ficam na issue #138, e o progresso continua contando só as tarefas avulsas.
 - Horário da rotina. Nenhum requisito define o horário, e o formulário não tem esse campo. O `timeLabel` do detalhe fica vazio.
 - Arraste de verdade das tarefas. A alça continua subindo uma posição por toque, como no #130, mas a nova ordem passa a ser salva.
 - Apagar fisicamente as rotinas excluídas (ver R1).
@@ -52,12 +51,12 @@ Concluir a rotina do dia registra o dia na sequência (RN-0002). As tarefas de u
   - A remoção física fica para depois.
 - **R8 — Ícone:** o UC-0005 fala em "categoria (opcional)", e o protótipo 3.1 usa o ícone, com "Geral" como padrão. A rotina guarda o ícone (`ROUTINE_ICONS`, que passa da ViewModel para o domínio). Ela não usa `TASK_CATEGORIES`: as categorias de tarefa têm seis ids e não têm "Geral". Unir as duas listas fica como questão em aberto (Q1).
 - **R9 — Modo Foco:** há alvo quando existe ao menos uma tarefa avulsa **ou** uma rotina não excluída (RN-0001). O `TaskActivityCatalog` passa a receber o repositório de rotinas.
-- **R10 — Progresso da Início:** continua contando só as tarefas avulsas, sem rotinas e sem as tarefas delas, até a decisão da issue #138.
+- **R10 — Progresso da Início (RN-0007, issue #138):** o card passa a se chamar "Seu progresso". `concluídas = tarefas avulsas concluídas + rotinas de hoje concluídas hoje` e `total = tarefas avulsas + rotinas de hoje`. As tarefas de rotina não contam sozinhas, e uma rotina fora do dia não entra no total. `IActivityCatalog.getProgressCounts(today)` recebe o dia do `HomeUseCases`, que o lê do relógio.
 
 ### Ainda em aberto
 
 - **Q1:** Unir ou não os ícones de rotina com as categorias de tarefa (R8).
-- **Q2:** As pendências da RN-0007 (issue #138). O ODS 1.2 (`05-padroes.md`, F1/F2) diz que o progresso conta "tarefas e rotinas concluídas sobre o total do dia", e a RN-0007 diz "sem recorte por dia". As duas fontes precisam ser alinhadas.
+- **Q2 (resolvida):** as pendências da RN-0007 foram decididas na issue #138 (opção A, ver R10). A RN-0007 e o ODS (F1/F2, `barra-progresso.md`) agora dizem a mesma coisa.
 
 ## Critical User Journeys (CUJs)
 

@@ -1,10 +1,13 @@
-/**
- * Leitura de tarefas e rotinas para a Home. Provisório até a mudança de Tarefas e Rotinas:
- * o contrato de `getProgressCounts` pode mudar quando os pontos pendentes da RN-0007 forem decididos.
- */
+import type { LocalDate } from "@/model/entities/local-date";
+
+/** Leitura de tarefas e rotinas para a Home (RN-0007, issue #138). */
 export interface IActivityCatalog {
-  /** Concluídas e total, lidos juntos para não ficarem inconsistentes entre si. */
-  getProgressCounts(): Promise<{ completed: number; total: number }>;
+  /**
+   * Concluídas e total, lidos juntos para não ficarem inconsistentes entre si. Tarefas avulsas
+   * contam pelo total geral; cada rotina de `today` conta como uma unidade, concluída quando a
+   * ocorrência do dia está concluída. As tarefas de rotina não contam sozinhas.
+   */
+  getProgressCounts(today: LocalDate): Promise<{ completed: number; total: number }>;
   /** Se existe ao menos uma tarefa ou rotina que o Modo Foco possa usar como alvo. */
   hasFocusTargets(): Promise<boolean>;
 }

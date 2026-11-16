@@ -51,7 +51,7 @@ describe("container da aplicação", () => {
     expect((await isolated.useCases.home.loadHome()).streak.currentDays).toBe(1);
   });
 
-  it("rotinas.md: concluir uma rotina no container libera o foco e sobe a sequência, sem mexer no progresso", async () => {
+  it("rotinas.md: concluir uma rotina no container libera o foco e sobe a sequência e conta no progresso como uma unidade (RN-0007)", async () => {
     const monday: IClockService = {
       now: () => "2026-11-16T10:00:00-03:00",
       todayLocal: () => LocalDate.parse("2026-11-16"),
@@ -61,7 +61,7 @@ describe("container da aplicação", () => {
     const routine = await isolated.useCases.routines.createRoutine({ title: "Matemática", days: [1], tasks: ["Revisar"] });
     expect(await isolated.useCases.home.loadHome()).toMatchObject({
       focus: { canStart: true },
-      progress: { completed: 0, total: 0 },
+      progress: { completed: 0, total: 1 },
       streak: { currentDays: 0 },
     });
     expect(await isolated.useCases.tasks.listTasks()).toEqual([]);
@@ -69,7 +69,7 @@ describe("container da aplicação", () => {
     await isolated.useCases.routines.completeOccurrence(routine.id);
 
     expect(await isolated.useCases.home.loadHome()).toMatchObject({
-      progress: { completed: 0, total: 0 },
+      progress: { completed: 1, total: 1 },
       streak: { currentDays: 1 },
     });
   });
