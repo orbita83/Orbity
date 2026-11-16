@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import { HOME_COPY, streakUnit } from "../home-copy";
 import { planetColors, themes } from "../theme/tokens";
-import { PLANET_ARTBOARD, PLANET_SPHERE, PlanetIllustration } from "./PlanetIllustration";
+import { OrbityPlanet } from "./OrbityPlanet";
+import { PLANET_ARTBOARD, PLANET_SPHERE } from "./PlanetIllustration";
 
 const theme = themes.cosmic;
 
@@ -24,15 +25,17 @@ export const PlanetStreakView = ({ days, size }: PlanetStreakViewProps) => {
       style={{ width: size, height: size }}
     >
       <View style={[styles.artboard, { left: offset, top: offset, transform: [{ scale: size / PLANET_ARTBOARD }] }]}>
-        <PlanetIllustration />
-        <View pointerEvents="none" style={styles.sequence}>
-          <Text allowFontScaling style={styles.count}>
-            {days}
-          </Text>
-          <Text allowFontScaling style={styles.label}>
-            {streakUnit(days)}
-          </Text>
-        </View>
+        {/* O contador flutua junto com a arte, para continuar centrado no planeta. */}
+        <OrbityPlanet>
+          <View pointerEvents="none" style={styles.sequence}>
+            <Text allowFontScaling style={styles.count}>
+              {days}
+            </Text>
+            <Text allowFontScaling style={styles.label}>
+              {streakUnit(days)}
+            </Text>
+          </View>
+        </OrbityPlanet>
       </View>
     </View>
   );
