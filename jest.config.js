@@ -12,4 +12,5 @@ module.exports = {
   ],
   clearMocks: true,
   globalSetup: '<rootDir>/tests/setup/timezone.cjs',
+  setupFiles: ['<rootDir>/tests/setup/reanimated.cjs'],
 };
