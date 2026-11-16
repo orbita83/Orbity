@@ -24,10 +24,10 @@ export const PlanetStreakView = ({ days, size }: PlanetStreakViewProps) => {
       accessibilityLabel={days === 0 ? `${label}. ${HOME_COPY["streak.empty"]}` : label}
       style={{ width: size, height: size }}
     >
-      <View style={[styles.artboard, { left: offset, top: offset, transform: [{ scale: size / PLANET_ARTBOARD }] }]}>
-        {/* O contador flutua junto com a arte, para continuar centrado no planeta. */}
-        <OrbityPlanet>
-          <View pointerEvents="none" style={styles.sequence}>
+      {/* O contador flutua junto com o planeta, para continuar centrado na esfera. */}
+      <OrbityPlanet size={size}>
+        <View pointerEvents="none" style={[styles.artboard, { left: offset, top: offset, transform: [{ scale: size / PLANET_ARTBOARD }] }]}>
+          <View style={styles.sequence}>
             <Text allowFontScaling style={styles.count}>
               {days}
             </Text>
@@ -35,8 +35,8 @@ export const PlanetStreakView = ({ days, size }: PlanetStreakViewProps) => {
               {streakUnit(days)}
             </Text>
           </View>
-        </OrbityPlanet>
-      </View>
+        </View>
+      </OrbityPlanet>
     </View>
   );
 };
