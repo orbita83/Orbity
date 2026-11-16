@@ -105,5 +105,41 @@ export function runRoutineRepositoryContractTests(createHarness: () => Promise<R
       expect(await routines.listCompletedOn(TUESDAY)).toEqual(["routine-1"]);
       expect(await routines.listTaskChecks("routine-1", TUESDAY)).toEqual(["t1"]);
     });
+
+    it("#137: editar grava a rotina e cria, altera e remove as tarefas de uma vez", async () => {
+      const { routines, tasks } = await createHarness();
+      await routines.create(createRoutineFixture(), routineTasks());
+      await routines.setTaskCheck("routine-1", "t1", MONDAY, true);
+      await routines.completeOccurrence("routine-1", MONDAY, ["t1", "t2"], AT);
+      const edited = createRoutineFixture({ title: "Cálculo", description: undefined, days: [0, 6], updatedAt: AT });
+      const [t1] = routineTasks();
+
+      await routines.update(edited, {
+        created: [createTaskFixture({ id: "t3", title: "Ler", routineId: "routine-1", position: 0 })],
+        updated: [{ ...t1, title: "Revisar tudo", position: 1, updatedAt: AT }],
+        deletedIds: ["t2"],
+      });
+
+      expect(await routines.findById("routine-1")).toEqual(edited);
+      expect((await tasks.listByRoutine("routine-1")).map((task) => [task.id, task.title, task.position])).toEqual([
+        ["t3", "Ler", 0],
+        ["t1", "Revisar tudo", 1],
+      ]);
+      // A tarefa removida leva a marcação; a renomeada mantém a dela, e a ocorrência continua concluída.
+      expect(await routines.listTaskChecks("routine-1", MONDAY)).toEqual(["t1"]);
+      expect(await routines.listCompletedOn(MONDAY)).toEqual(["routine-1"]);
+    });
+
+    it("#137: editar uma rotina excluída não muda nada", async () => {
+      const { routines } = await createHarness();
+      const routine = createRoutineFixture();
+      await routines.create(routine, []);
+      await routines.markDeleted(routine.id, AT);
+
+      await routines.update({ ...routine, title: "Outra" }, { created: [], updated: [], deletedIds: [] });
+      await routines.restore(routine.id);
+
+      expect(await routines.findById(routine.id)).toEqual(routine);
+    });
   });
 }

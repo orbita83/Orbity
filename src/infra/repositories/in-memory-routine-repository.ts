@@ -1,7 +1,7 @@
 import type { LocalDate } from "@/model/entities/local-date";
 import type { Routine } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
-import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
+import type { IRoutineRepository, RoutineTaskChanges } from "@/model/repositories/i-routine-repository";
 import type { ITaskRepository } from "@/model/repositories/i-task-repository";
 
 type StoredRoutine = { readonly order: number; readonly routine: Routine; readonly deletedAt: string | null };
@@ -39,6 +39,25 @@ export class InMemoryRoutineRepository implements IRoutineRepository {
     this.routines.set(routine.id, { order: this.sequence, routine: Object.freeze({ ...routine }), deletedAt: null });
     for (const task of tasks) {
       await this.tasks.create(task);
+    }
+  }
+
+  async update(routine: Routine, changes: RoutineTaskChanges): Promise<void> {
+    const entry = this.routines.get(routine.id);
+    if (!entry || entry.deletedAt !== null) {
+      return;
+    }
+    this.routines.set(routine.id, { ...entry, routine: Object.freeze({ ...routine }) });
+    for (const task of changes.created) {
+      await this.tasks.create(task);
+    }
+    await this.tasks.updateMany(changes.updated);
+    await this.tasks.deleteMany(changes.deletedIds);
+    const removed = new Set(changes.deletedIds);
+    for (const entryKey of [...this.checks.keys()]) {
+      if (removed.has(entryKey.split("|")[0])) {
+        this.checks.delete(entryKey);
+      }
     }
   }
 

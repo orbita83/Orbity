@@ -2,9 +2,17 @@ import type { LocalDate } from "@/model/entities/local-date";
 import type { Routine } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
 
+/** Mudanças nas tarefas de uma rotina editada (#137), gravadas junto com a rotina. */
+export type RoutineTaskChanges = {
+  readonly created: readonly Task[];
+  readonly updated: readonly Task[];
+  /** Saem da rotina, com as marcações delas. */
+  readonly deletedIds: readonly string[];
+};
+
 /**
  * Persistência de rotinas, ocorrências e marcações por dia (rotinas.md, ADR-0001).
- * As tarefas da rotina são `Task` com `routineId`; só a criação delas passa por aqui, para
+ * As tarefas da rotina são `Task` com `routineId`; só a criação e a edição delas passam por aqui, para
  * entrar na mesma transação da rotina. A leitura e a reordenação usam o `ITaskRepository`.
  */
 export interface IRoutineRepository {
@@ -14,6 +22,8 @@ export interface IRoutineRepository {
   findById(id: string): Promise<Routine | null>;
   /** Cria a rotina e as tarefas dela de uma vez: ou tudo, ou nada. */
   create(routine: Routine, tasks: readonly Task[]): Promise<void>;
+  /** Atualiza a rotina e as tarefas dela de uma vez: ou tudo, ou nada (#137). */
+  update(routine: Routine, changes: RoutineTaskChanges): Promise<void>;
   /** Exclusão reversível (R7). */
   markDeleted(id: string, deletedAt: string): Promise<void>;
   restore(id: string): Promise<void>;

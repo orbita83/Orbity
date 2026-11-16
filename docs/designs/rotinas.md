@@ -26,7 +26,6 @@ Concluir a rotina do dia registra o dia na sequência (RN-0002). As tarefas de u
 
 ## Non-Goals
 
-- Editar rotina (RF-0009). A tela e os campos ainda dependem do refinamento do UC-0007/FL-0007 (issue #137). O "Editar" continua desabilitado.
 - Horário da rotina. Nenhum requisito define o horário, e o formulário não tem esse campo. O `timeLabel` do detalhe fica vazio.
 - Arraste de verdade das tarefas. A alça continua subindo uma posição por toque, como no #130, mas a nova ordem passa a ser salva.
 - Apagar fisicamente as rotinas excluídas (ver R1).
@@ -52,6 +51,7 @@ Concluir a rotina do dia registra o dia na sequência (RN-0002). As tarefas de u
 - **R8 — Ícone:** o UC-0005 fala em "categoria (opcional)", e o protótipo 3.1 usa o ícone, com "Geral" como padrão. A rotina guarda o ícone (`ROUTINE_ICONS`, que passa da ViewModel para o domínio). Ela não usa `TASK_CATEGORIES`: as categorias de tarefa têm seis ids e não têm "Geral". Unir as duas listas fica como questão em aberto (Q1).
 - **R9 — Modo Foco:** há alvo quando existe ao menos uma tarefa avulsa **ou** uma rotina não excluída (RN-0001). O `TaskActivityCatalog` passa a receber o repositório de rotinas.
 - **R10 — Progresso da Início (RN-0007, issue #138):** o card passa a se chamar "Seu progresso". `concluídas = tarefas avulsas concluídas + rotinas de hoje concluídas hoje` e `total = tarefas avulsas + rotinas de hoje`. As tarefas de rotina não contam sozinhas, e uma rotina fora do dia não entra no total. `IActivityCatalog.getProgressCounts(today)` recebe o dia do `HomeUseCases`, que o lê do relógio.
+- **R11 — Editar rotina (RF-0009, UC-0007, FL-0007, issue #137):** reaproveita o formulário de Nova rotina (`new-routine?id=<id>`), como a edição de tarefas. As tarefas chegam ao caso de uso na ordem final, com `id` quando já existem. As que têm `id` são mantidas (renomear ou reordenar preserva a marcação de hoje), as novas entram desmarcadas, e as ausentes são removidas com as marcações delas. A ocorrência do dia e a sequência nunca mudam por uma edição, e a edição vale em qualquer dia. Sair com alterações pergunta "Descartar alterações?". O estado vazio do detalhe ganha o atalho "Adicionar tarefas", que abre a edição.
 
 ### Ainda em aberto
 
@@ -75,16 +75,19 @@ Num sábado, "Matemática" aparece na lista com o círculo desabilitado e o text
 ### CUJ 5: Excluir e desfazer
 No detalhe, o estudante toca em "Excluir rotina" e confirma. A lista mostra "Rotina Matemática excluída." com "Desfazer". Desfazer devolve a rotina com as tarefas e o estado do dia.
 
+### CUJ 6: Editar a rotina
+No detalhe, o estudante toca em "Editar", troca o nome, remove uma tarefa e adiciona outra, e toca em "Salvar alterações". Aparece "Rotina atualizada!", e "Ver rotina" mostra o detalhe já atualizado. Se a rotina estava concluída hoje, continua concluída, e a tarefa nova aparece desmarcada.
+
 ## Technical Plan (Architecture)
 
 ### 1. Domínio (`src/model/`)
 - `entities/routine.ts`:
   - tipos: `Routine`, `RoutineIcon`, `ROUTINE_ICONS`, `DEFAULT_ROUTINE_ICON`, `Weekday` (0 = domingo), `CreateRoutineInput`, `RoutineOverview` (lista) e `RoutineDetails` (detalhe);
-  - funções: `validateCreateRoutineInput`, `weekdayOf(LocalDate)` e `isRoutineActiveOn(routine, date)`.
+  - funções: `validateCreateRoutineInput`, `validateUpdateRoutineInput` (mesmas regras; tarefas como `RoutineTaskDraft { id?, title }`), `weekdayOf(LocalDate)` e `isRoutineActiveOn(routine, date)`.
 - `entities/task.ts`: `routineId?` e `position?`, mais `isStandaloneTask`.
 - `repositories/i-routine-repository.ts`:
   - consulta: `listActive`, `findById` e `listCompletedOn(date)`;
-  - criação e exclusão: `create(routine, tasks)` (transação) e `markDeleted`/`restore`;
+  - criação, edição e exclusão: `create(routine, tasks)` e `update(routine, { created, updated, deletedIds })` (transações) e `markDeleted`/`restore`;
   - ocorrência do dia: `completeOccurrence(id, date, taskIds, at)` (transação) e `reopenOccurrence(id, date)`;
   - marcações: `listTaskChecks(id, date)` e `setTaskCheck(id, taskId, date, checked)`.
 - `repositories/i-task-repository.ts`: ganha `listByRoutine(routineId)`, em ordem de posição.
@@ -92,7 +95,7 @@ No detalhe, o estudante toca em "Excluir rotina" e confirma. A lista mostra "Rot
 ### 2. Casos de uso (`src/usecase/`)
 - `IRoutineUseCases` e `RoutineUseCases`, que dependem de `IRoutineRepository`, `ITaskRepository`, `IDailyActivityRepository` e `IClockService`:
   - `listRoutines` e `getRoutine` (devolve `null` se não existir);
-  - `createRoutine`, `deleteRoutine` e `restoreRoutine`;
+  - `createRoutine`, `updateRoutine` (R11), `deleteRoutine` e `restoreRoutine`;
   - `completeOccurrence`, `reopenOccurrence`, `toggleRoutineTask` e `moveRoutineTaskUp`.
 - `TaskUseCases.listTasks` passa a devolver só as tarefas avulsas.
 
@@ -112,7 +115,8 @@ No detalhe, o estudante toca em "Excluir rotina" e confirma. A lista mostra "Rot
 - As três ViewModels usam `IRoutineUseCases` e ganham `loading` e `errorKey`. Elas aceitam um array de protótipo, como o `useTasksViewModel`, para o Storybook e as fixtures continuarem sem `@/DI`.
 - `RoutineListItem` e `RoutineDetails` ganham `activeToday`, e o detalhe ganha `doneToday`, vindo da ocorrência e não de "todas as tarefas marcadas".
 - `RoutineDetailsScreen` lê o `id` da rota. As telas recarregam ao ganhar foco (`useFocusEffect`), como em Tarefas (T6).
-- **ODS 1.2.0:** depois de criar, "Rotina criada!" (`SuccessDialog`, passo 4 do F7); esqueleto dos cards ao carregar (`SkeletonCards`, F8); barra de progresso do detalhe com contador e porcentagem fora da barra (`barra-progresso.md`); estado vazio "Nenhuma tarefa nesta rotina" (F8), ainda sem o atalho para adicionar, que depende da edição (#137).
+- **ODS 1.2.0:** depois de criar, "Rotina criada!" (`SuccessDialog`, passo 4 do F7); esqueleto dos cards ao carregar (`SkeletonCards`, F8); barra de progresso do detalhe com contador e porcentagem fora da barra (`barra-progresso.md`); estado vazio "Nenhuma tarefa nesta rotina" (F8), com o atalho "Adicionar tarefas" para a edição (R11).
+- **Edição (R11):** `useNewRoutineViewModel(useCases, routineId)` carrega a rotina e ganha `editing`, `loading`, `discardVisible`, `requestLeave` e `cancelLeave`. O formulário troca o título, o botão e a mensagem de sucesso ("Rotina atualizada!"), e usa a variante Confirmação do modal para "Descartar alterações?". `NewRoutineScreen` volta para o detalhe ao sair ou salvar.
 
 ## Alternatives Considered
 

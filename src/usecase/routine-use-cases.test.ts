@@ -184,6 +184,96 @@ describe("RoutineUseCases", () => {
     expect((await useCases.getRoutine(routine.id))!.tasks.map((item) => item.task.position)).toEqual([0, 1, 2]);
   });
 
+  describe("#137: editar rotina (RF-0009, UC-0007)", () => {
+    const draftsOf = (details: RoutineDetails) => details.tasks.map(({ task }) => ({ id: task.id, title: task.title }));
+
+    it("altera os dados e as tarefas: renomeia, reordena, adiciona e remove", async () => {
+      const { useCases, setDay } = setup();
+      const routine = await createMath(useCases);
+      const [revisar, resolver, anotar] = draftsOf((await useCases.getRoutine(routine.id))!);
+      setDay(TUESDAY);
+
+      const details = await useCases.updateRoutine({
+        id: routine.id,
+        title: "  Cálculo ",
+        description: "Derivadas",
+        icon: "science",
+        days: [2, 4],
+        tasks: [anotar, { ...revisar, title: "Revisar teoria" }, { title: "Listar dúvidas" }],
+      });
+
+      expect(details.routine).toMatchObject({
+        title: "Cálculo",
+        description: "Derivadas",
+        icon: "science",
+        days: [2, 4],
+        createdAt: routine.createdAt,
+        updatedAt: `${TUESDAY}T08:00:00-03:00`,
+      });
+      expect(details.tasks.map(({ task }) => [task.title, task.position])).toEqual([
+        ["Anotar", 0],
+        ["Revisar teoria", 1],
+        ["Listar dúvidas", 2],
+      ]);
+      expect(details.tasks.some(({ task }) => task.id === resolver.id)).toBe(false);
+      expect((await useCases.listRoutines())[0]).toMatchObject({ taskCount: 3, routine: { title: "Cálculo" } });
+    });
+
+    it("rotina concluída hoje continua concluída: a tarefa nova entra desmarcada e a sequência não muda", async () => {
+      const { useCases, dailyActivity } = setup();
+      const routine = await createMath(useCases);
+      const before = await useCases.completeOccurrence(routine.id);
+      const [revisar, resolver] = draftsOf(before);
+
+      const details = await useCases.updateRoutine({
+        id: routine.id,
+        title: "Matemática",
+        days: [1, 2, 3, 4, 5],
+        tasks: [{ ...revisar, title: "Revisar tudo" }, resolver, { title: "Nova" }],
+      });
+
+      expect(details.doneToday).toBe(true);
+      expect(checked(details)).toEqual(["Revisar tudo", "Resolver"]);
+      expect(await days(dailyActivity)).toEqual([MONDAY]);
+    });
+
+    it("tirar o dia de hoje de uma rotina concluída mantém a conclusão de hoje", async () => {
+      const { useCases } = setup();
+      const routine = await createMath(useCases);
+      const before = await useCases.completeOccurrence(routine.id);
+
+      const details = await useCases.updateRoutine({ id: routine.id, title: "Matemática", days: [6], tasks: draftsOf(before) });
+
+      expect(details).toMatchObject({ activeToday: false, doneToday: true });
+    });
+
+    it("pode editar fora dos dias da rotina", async () => {
+      const { useCases } = setup(SATURDAY);
+      const routine = await createMath(useCases);
+
+      const details = await useCases.updateRoutine({ id: routine.id, title: "Fim de semana", days: [0, 6], tasks: [] });
+
+      expect(details).toMatchObject({ activeToday: true, taskCount: 0 });
+    });
+
+    it("recusa nome vazio, nenhum dia, tarefa de outra rotina e rotina inexistente, sem gravar nada", async () => {
+      const { useCases } = setup();
+      const routine = await createMath(useCases);
+      const other = await useCases.createRoutine({ title: "Inglês", days: [1], tasks: ["Ler"] });
+      const [foreign] = draftsOf((await useCases.getRoutine(other.id))!);
+      const base = { id: routine.id, title: "Matemática", days: [1], tasks: [] };
+
+      await expect(useCases.updateRoutine({ ...base, title: " " })).rejects.toThrow(new ValidationError("Dê um nome para a rotina."));
+      await expect(useCases.updateRoutine({ ...base, days: [] })).rejects.toThrow(new ValidationError("Escolha pelo menos um dia."));
+      await expect(useCases.updateRoutine({ ...base, tasks: [foreign] })).rejects.toThrow(
+        new ValidationError("Tarefa não encontrada nesta rotina."),
+      );
+      await expect(useCases.updateRoutine({ ...base, id: "nada" })).rejects.toThrow(new ValidationError("Rotina não encontrada."));
+      expect((await useCases.getRoutine(routine.id))!.tasks).toHaveLength(3);
+      expect((await useCases.getRoutine(other.id))!.tasks).toHaveLength(1);
+    });
+  });
+
   it("rotina inexistente: o detalhe é nulo e as ações avisam", async () => {
     const { useCases } = setup();
     expect(await useCases.getRoutine("nada")).toBeNull();

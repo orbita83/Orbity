@@ -17,6 +17,8 @@ const theme = themes.cosmic;
 export type RoutineDetailsScreenContentProps = RoutineDetailsState &
   RoutineDetailsActions & {
     onBack: () => void;
+    /** Abre a edição da rotina (RF-0009, UC-0007, #137). */
+    onEdit: (id: string) => void;
     /** Exclusão confirmada: volta para a lista, que exclui e oferece "Desfazer". */
     onDeleted: (id: string) => void;
   };
@@ -45,6 +47,7 @@ export const RoutineDetailsScreenContent = ({
   requestDelete,
   cancelDelete,
   onBack,
+  onEdit,
   onDeleted,
 }: RoutineDetailsScreenContentProps) => {
   const insets = useSafeAreaInsets();
@@ -110,14 +113,13 @@ export const RoutineDetailsScreenContent = ({
                 </Text>
               ) : null}
             </View>
-            {/* A edição reaproveita o formulário de Nova rotina quando houver dados para carregar. */}
+            {/* A edição reaproveita o formulário de Nova rotina (#137); vale em qualquer dia. */}
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={ROUTINES_COPY["details.edit"]}
-              accessibilityHint={ROUTINES_COPY["details.edit.soon"]}
-              accessibilityState={{ disabled: true }}
-              disabled
-              style={styles.edit}
+              accessibilityHint={ROUTINES_COPY["details.edit.hint"]}
+              onPress={() => onEdit(routine.id)}
+              style={({ pressed }) => [styles.edit, pressed && styles.pressed]}
             >
               <MaterialSymbol name="edit" color={theme.color["on-surface"]} size={theme.space.md} />
               <Text allowFontScaling style={styles.editLabel}>
@@ -177,10 +179,24 @@ export const RoutineDetailsScreenContent = ({
             </View>
           ))}
 
+          {/* F8, Vazio: texto e atalho para adicionar tarefas, que abre a edição. */}
           {total === 0 ? (
-            <Text allowFontScaling style={styles.muted}>
-              {ROUTINES_COPY["details.tasks.empty"]}
-            </Text>
+            <View style={styles.emptyTasks}>
+              <Text allowFontScaling style={styles.muted}>
+                {ROUTINES_COPY["details.tasks.empty"]}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={ROUTINES_COPY["details.tasks.add"]}
+                onPress={() => onEdit(routine.id)}
+                style={({ pressed }) => [styles.edit, pressed && styles.pressed]}
+              >
+                <MaterialSymbol name="add" color={theme.color["on-surface"]} size={theme.space.md} />
+                <Text allowFontScaling style={styles.editLabel}>
+                  {ROUTINES_COPY["details.tasks.add"]}
+                </Text>
+              </Pressable>
+            </View>
           ) : null}
 
           {errorKey ? (
@@ -305,8 +321,8 @@ const styles = StyleSheet.create({
     borderWidth: theme.border.widthThin,
     borderColor: theme.color.action,
     backgroundColor: theme.color["action-subtle"],
-    opacity: theme.button.opacityDisabled,
   },
+  emptyTasks: { alignItems: "flex-start", gap: theme.space.sm },
   editLabel: { ...theme.font.label, color: theme.color["on-surface"] },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: theme.space.sm },
   chip: {

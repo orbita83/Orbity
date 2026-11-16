@@ -4,8 +4,10 @@ import {
   type Routine,
   type RoutineDetails,
   type RoutineOverview,
+  type UpdateRoutineInput,
   isRoutineActiveOn,
   validateCreateRoutineInput,
+  validateUpdateRoutineInput,
 } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors/domain-error";
@@ -24,6 +26,7 @@ const defaultGenerateId = (): string => {
 
 const NOT_FOUND = "Rotina não encontrada.";
 const NOT_TODAY = "Esta rotina não é de hoje.";
+const TASK_NOT_FOUND = "Tarefa não encontrada nesta rotina.";
 
 /** Regras de Rotinas (rotinas.md). Depende só dos contratos do domínio (ARCHITECTURE.md §3.1). */
 export class RoutineUseCases implements IRoutineUseCases {
@@ -70,20 +73,48 @@ export class RoutineUseCases implements IRoutineUseCases {
       updatedAt: now,
     });
     // As tarefas da rotina são Task com routineId (R1); `completed` não é usado por elas (R2).
-    const tasks: Task[] = normalized.tasks.map((title, position) =>
-      Object.freeze({
-        id: this.generateId(),
-        title,
-        completed: false,
-        pinned: false,
-        createdAt: now,
-        updatedAt: now,
-        routineId: routine.id,
-        position,
-      }),
-    );
+    const tasks = normalized.tasks.map((title, position) => this.newRoutineTask(routine.id, title, position, now));
     await this.routineRepository.create(routine, tasks);
     return routine;
+  }
+
+  async updateRoutine(input: UpdateRoutineInput): Promise<RoutineDetails> {
+    const normalized = validateUpdateRoutineInput(input);
+    const current = await this.requireRoutine(normalized.id);
+    const existing = new Map((await this.taskRepository.listByRoutine(current.id)).map((task) => [task.id, task]));
+    const now = this.clock.now();
+
+    const kept = new Set<string>();
+    const created: Task[] = [];
+    const updated: Task[] = [];
+    normalized.tasks.forEach((draft, position) => {
+      const task = draft.id === undefined ? undefined : existing.get(draft.id);
+      if (draft.id !== undefined && (!task || kept.has(draft.id))) {
+        throw new ValidationError(TASK_NOT_FOUND);
+      }
+      if (!task) {
+        // Tarefa nova: entra desmarcada, mesmo com a rotina já concluída hoje (RN-0004).
+        created.push(this.newRoutineTask(current.id, draft.title, position, now));
+        return;
+      }
+      kept.add(task.id);
+      // Renomear ou reordenar mantém a mesma tarefa e, com ela, a marcação de hoje.
+      if (task.title !== draft.title || task.position !== position) {
+        updated.push(Object.freeze({ ...task, title: draft.title, position, updatedAt: now }));
+      }
+    });
+    const deletedIds = [...existing.keys()].filter((id) => !kept.has(id));
+
+    const routine: Routine = Object.freeze({
+      ...current,
+      title: normalized.title,
+      description: normalized.description,
+      icon: normalized.icon,
+      days: Object.freeze([...normalized.days]),
+      updatedAt: now,
+    });
+    await this.routineRepository.update(routine, { created, updated, deletedIds });
+    return this.loadDetails(routine, this.clock.todayLocal());
   }
 
   async deleteRoutine(id: string): Promise<void> {
@@ -122,7 +153,7 @@ export class RoutineUseCases implements IRoutineUseCases {
     const routine = await this.requireActiveToday(routineId, today);
     const tasks = await this.taskRepository.listByRoutine(routineId);
     if (!tasks.some((task) => task.id === taskId)) {
-      throw new ValidationError("Tarefa não encontrada nesta rotina.");
+      throw new ValidationError(TASK_NOT_FOUND);
     }
     const checked = (await this.routineRepository.listTaskChecks(routineId, today)).includes(taskId);
     // Só a marcação do dia: não registra atividade (RN-0002, D1) nem mexe na ocorrência (R3).
@@ -145,6 +176,19 @@ export class RoutineUseCases implements IRoutineUseCases {
       await this.taskRepository.updateMany(changed);
     }
     return this.loadDetails(routine, today);
+  }
+
+  private newRoutineTask(routineId: string, title: string, position: number, now: string): Task {
+    return Object.freeze({
+      id: this.generateId(),
+      title,
+      completed: false,
+      pinned: false,
+      createdAt: now,
+      updatedAt: now,
+      routineId,
+      position,
+    });
   }
 
   private async requireRoutine(id: string): Promise<Routine> {

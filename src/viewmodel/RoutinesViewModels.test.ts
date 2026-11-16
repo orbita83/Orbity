@@ -173,6 +173,98 @@ describe("useNewRoutineViewModel", () => {
   });
 });
 
+describe("useNewRoutineViewModel (edição, #137)", () => {
+  const createMath = async (useCases: RoutineUseCases) => {
+    const routine = await useCases.createRoutine({
+      title: "Matemática",
+      icon: "calculate",
+      description: "Diária",
+      days: [1, 3],
+      tasks: ["Revisar", "Resolver"],
+    });
+    return routine.id;
+  };
+
+  it("RF-0009 CA-02: abre com as informações atuais da rotina", async () => {
+    const { useCases } = createUseCases();
+    const id = await createMath(useCases);
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases, id));
+
+    expect(result.current.editing).toBe(true);
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current).toMatchObject({
+      name: "Matemática",
+      icon: "calculate",
+      description: "Diária",
+      days: [1, 3],
+      tasks: ["Revisar", "Resolver"],
+    });
+    // Sem alterações, sai sem perguntar.
+    expect(result.current.requestLeave()).toBe(true);
+  });
+
+  it("RF-0009 CA-03 a CA-06: salva mantendo as tarefas existentes e a marcação delas", async () => {
+    const { useCases } = createUseCases();
+    const id = await createMath(useCases);
+    const [revisar] = (await useCases.getRoutine(id))!.tasks;
+    await useCases.toggleRoutineTask(id, revisar.task.id);
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases, id));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => result.current.setName("Cálculo"));
+    await act(async () => result.current.removeTask(1));
+    await act(async () => result.current.setDraft("Anotar"));
+    await act(async () => result.current.addTask());
+    await act(async () => result.current.moveTaskUp(1));
+    await act(async () => result.current.submit());
+    await waitFor(() => expect(result.current.created).toBe(true));
+
+    const details = (await useCases.getRoutine(id))!;
+    expect(details.routine.title).toBe("Cálculo");
+    expect(details.tasks.map(({ task, checkedToday }) => [task.title, checkedToday])).toEqual([
+      ["Anotar", false],
+      ["Revisar", true],
+    ]);
+    expect(details.tasks[1].task.id).toBe(revisar.task.id);
+  });
+
+  it("sair com alterações pede confirmação, e continuar editando mantém o que foi digitado", async () => {
+    const { useCases } = createUseCases();
+    const id = await createMath(useCases);
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases, id));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(async () => result.current.toggleDay(5));
+
+    let canLeave = true;
+    await act(async () => {
+      canLeave = result.current.requestLeave();
+    });
+    expect(canLeave).toBe(false);
+    expect(result.current.discardVisible).toBe(true);
+
+    await act(async () => result.current.cancelLeave());
+    expect(result.current.discardVisible).toBe(false);
+    expect(result.current.days).toEqual([1, 3, 5]);
+  });
+
+  it("rotina que não existe mais: avisa e não deixa salvar", async () => {
+    const { useCases } = createUseCases();
+    const update = jest.spyOn(useCases, "updateRoutine");
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases, "nada"));
+
+    await waitFor(() => expect(result.current.formError).toBe("Esta rotina não está mais na sua lista."));
+    await act(async () => result.current.submit());
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it("a criação não pergunta ao sair, mesmo com algo digitado", async () => {
+    const { useCases } = createUseCases();
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
+    await act(async () => result.current.setName("Inglês"));
+    expect(result.current.requestLeave()).toBe(true);
+  });
+});
+
 describe("useRoutineDetailsViewModel (protótipo)", () => {
   it("F8: concluir tudo e desmarcar todos", async () => {
     const { result } = await renderHook(() => useRoutineDetailsViewModel(PROTOTYPE_ROUTINE_DETAILS));

@@ -108,6 +108,9 @@ const formProps = (overrides: Partial<NewRoutineScreenContentProps> = {}): NewRo
   formError: null,
   submitting: false,
   created: false,
+  editing: false,
+  loading: false,
+  discardVisible: false,
   setName: jest.fn(),
   setIcon: jest.fn(),
   setDescription: jest.fn(),
@@ -118,6 +121,8 @@ const formProps = (overrides: Partial<NewRoutineScreenContentProps> = {}): NewRo
   moveTaskUp: jest.fn(),
   submit: jest.fn(),
   reset: jest.fn(),
+  requestLeave: jest.fn(() => true),
+  cancelLeave: jest.fn(),
   onBack: jest.fn(),
   onFinish: jest.fn(),
   ...overrides,
@@ -164,6 +169,44 @@ describe("NewRoutineScreenContent", () => {
     expect(props.onFinish).toHaveBeenCalledTimes(1);
   });
 
+  it("#137: na edição, mostra Editar rotina e Salvar alterações, e confirma antes de descartar", async () => {
+    const props = formProps({ editing: true, requestLeave: jest.fn(() => false) });
+    const view = await inSafeArea(<NewRoutineScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: ROUTINES_COPY["form.editTitle"] })).toBeTruthy();
+    expect(screen.getByRole("button", { name: ROUTINES_COPY["form.editSubmit"] })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["form.editBack"] }));
+    expect(props.requestLeave).toHaveBeenCalledTimes(1);
+    expect(props.onBack).not.toHaveBeenCalled();
+
+    await view.rerender(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <NewRoutineScreenContent {...props} discardVisible />
+      </SafeAreaProvider>,
+    );
+    expect(screen.getByRole("header", { name: ROUTINES_COPY["discard.title"] })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["discard.confirm"] }));
+    expect(props.cancelLeave).toHaveBeenCalled();
+    expect(props.onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("#137: depois de salvar, mostra Rotina atualizada! e volta para a rotina", async () => {
+    const props = formProps({ editing: true, created: true });
+    await inSafeArea(<NewRoutineScreenContent {...props} />);
+
+    expect(screen.getByRole("header", { name: ROUTINES_COPY["updated.title"] })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["updated.action"] }));
+    expect(props.onFinish).toHaveBeenCalledTimes(1);
+  });
+
+  it("#137: carregando a rotina a editar, mostra o esqueleto e bloqueia o envio", async () => {
+    await inSafeArea(<NewRoutineScreenContent {...formProps({ editing: true, loading: true })} />);
+    expect(screen.getByLabelText(ROUTINES_COPY["details.loading"])).toBeTruthy();
+    expect(screen.getByRole("button", { name: ROUTINES_COPY["form.editSubmit"] }).props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+  });
+
   it("com erros, mostra as duas mensagens", async () => {
     await inSafeArea(<NewRoutineScreenContent {...formProps({ nameError: true, daysError: true })} />);
     const alerts = screen.getAllByRole("alert");
@@ -187,6 +230,7 @@ const detailsProps = (overrides: Partial<RoutineDetailsScreenContentProps> = {})
   cancelDelete: jest.fn(),
   reload: jest.fn(),
   onBack: jest.fn(),
+  onEdit: jest.fn(),
   onDeleted: jest.fn(),
   ...overrides,
 });
@@ -243,11 +287,20 @@ describe("RoutineDetailsScreenContent", () => {
     expect(props.toggleTask).not.toHaveBeenCalled();
   });
 
-  it("F8: sem tarefas, mostra o estado vazio do ODS", async () => {
-    await inSafeArea(
-      <RoutineDetailsScreenContent {...detailsProps({ completedCount: 0, routine: { ...PROTOTYPE_ROUTINE_DETAILS, tasks: [] } })} />,
-    );
+  it("#137: Editar abre a edição da rotina, mesmo fora do dia", async () => {
+    const props = detailsProps({ routine: { ...PROTOTYPE_ROUTINE_DETAILS, activeToday: false } });
+    await inSafeArea(<RoutineDetailsScreenContent {...props} />);
+
+    await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["details.edit"] }));
+    expect(props.onEdit).toHaveBeenCalledWith("mat");
+  });
+
+  it("F8: sem tarefas, mostra o estado vazio do ODS com o atalho para adicionar", async () => {
+    const props = detailsProps({ completedCount: 0, routine: { ...PROTOTYPE_ROUTINE_DETAILS, tasks: [] } });
+    await inSafeArea(<RoutineDetailsScreenContent {...props} />);
     expect(screen.getByText(ROUTINES_COPY["details.tasks.empty"])).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["details.tasks.add"] }));
+    expect(props.onEdit).toHaveBeenCalledWith("mat");
     // Sem tarefas não há porcentagem (barra-progresso.md, estado Vazio).
     expect(screen.getByText("0 / 0")).toBeTruthy();
   });

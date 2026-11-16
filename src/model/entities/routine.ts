@@ -38,6 +38,23 @@ export type NormalizedCreateRoutineInput = {
   readonly tasks: readonly string[];
 };
 
+/** Tarefa no formulário de edição: com `id`, é uma tarefa que já existe; sem, é nova (#137). */
+export type RoutineTaskDraft = {
+  readonly id?: string;
+  readonly title: string;
+};
+
+/** Edição de rotina (RF-0009, UC-0007): os mesmos campos da criação, e as tarefas na ordem final. */
+export type UpdateRoutineInput = Omit<CreateRoutineInput, "tasks"> & {
+  readonly id: string;
+  readonly tasks: readonly RoutineTaskDraft[];
+};
+
+export type NormalizedUpdateRoutineInput = Omit<NormalizedCreateRoutineInput, "tasks"> & {
+  readonly id: string;
+  readonly tasks: readonly RoutineTaskDraft[];
+};
+
 /** Rotina como a lista a apresenta: o estado de hoje já calculado. */
 export type RoutineOverview = {
   readonly routine: Routine;
@@ -77,8 +94,11 @@ export function isRoutineActiveOn(routine: Pick<Routine, "days">, date: LocalDat
   return routine.days.includes(weekdayOf(date));
 }
 
-/** Valida e normaliza a criação de rotina: nome e pelo menos um dia são obrigatórios (RF-0007, RF-0012). */
-export function validateCreateRoutineInput(input: CreateRoutineInput): NormalizedCreateRoutineInput {
+type RoutineFields = Omit<CreateRoutineInput, "tasks">;
+type NormalizedRoutineFields = Omit<NormalizedCreateRoutineInput, "tasks">;
+
+/** Nome e pelo menos um dia são obrigatórios; ícone e dias precisam ser válidos (RF-0007, RF-0012). */
+function validateRoutineFields(input: RoutineFields): NormalizedRoutineFields {
   const title = input.title.trim();
   if (title.length === 0) {
     throw new ValidationError("Dê um nome para a rotina.");
@@ -98,7 +118,19 @@ export function validateCreateRoutineInput(input: CreateRoutineInput): Normalize
   }
 
   const description = input.description?.trim() || undefined;
-  const tasks = input.tasks.map((task) => task.trim()).filter((task) => task.length > 0);
+  return { title, description, icon, days };
+}
 
-  return { title, description, icon, days, tasks };
+/** Valida e normaliza a criação de rotina (RF-0007, RF-0012). Tarefas vazias são ignoradas. */
+export function validateCreateRoutineInput(input: CreateRoutineInput): NormalizedCreateRoutineInput {
+  const tasks = input.tasks.map((task) => task.trim()).filter((task) => task.length > 0);
+  return { ...validateRoutineFields(input), tasks };
+}
+
+/** Valida e normaliza a edição de rotina com as mesmas regras da criação (RF-0009 CA-03 e CA-04). */
+export function validateUpdateRoutineInput(input: UpdateRoutineInput): NormalizedUpdateRoutineInput {
+  const tasks = input.tasks
+    .map((task) => ({ ...(task.id ? { id: task.id } : {}), title: task.title.trim() }))
+    .filter((task) => task.title.length > 0);
+  return { ...validateRoutineFields(input), id: input.id, tasks };
 }

@@ -84,6 +84,9 @@ export const insertTaskStatement = (task: Task): SqlStatement => ({
   ],
 });
 
+/** Comando de atualização de uma tarefa; o repositório de rotinas o usa na edição da rotina. */
+export const updateTaskStatement = (task: Task): SqlStatement => ({ sql: UPDATE_SQL, params: toUpdateParams(task) });
+
 /** Persistência local de tarefas no SQLite do aparelho (ADR-0001). */
 export class SqliteTaskRepository implements ITaskRepository {
   constructor(private readonly db: DatabaseProvider) {}

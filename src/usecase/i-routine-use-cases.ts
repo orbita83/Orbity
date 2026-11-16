@@ -1,4 +1,10 @@
-import type { CreateRoutineInput, Routine, RoutineDetails, RoutineOverview } from "@/model/entities/routine";
+import type {
+  CreateRoutineInput,
+  Routine,
+  RoutineDetails,
+  RoutineOverview,
+  UpdateRoutineInput,
+} from "@/model/entities/routine";
 
 /** Casos de uso de Rotinas (rotinas.md). O "hoje" é sempre a data local do relógio. */
 export interface IRoutineUseCases {
@@ -8,6 +14,12 @@ export interface IRoutineUseCases {
   getRoutine(id: string): Promise<RoutineDetails | null>;
   /** Cria a rotina e as tarefas dela (RF-0007, RF-0012). */
   createRoutine(input: CreateRoutineInput): Promise<Routine>;
+  /**
+   * Edita a rotina e as tarefas dela (RF-0009, UC-0007, #137). Tarefas com `id` são mantidas, as
+   * novas entram desmarcadas, e as ausentes saem com a marcação de hoje. A ocorrência e a sequência
+   * não mudam. Pode ser feita em qualquer dia.
+   */
+  updateRoutine(input: UpdateRoutineInput): Promise<RoutineDetails>;
   /** Exclusão reversível por `restoreRoutine` (RF-0010, R7). */
   deleteRoutine(id: string): Promise<void>;
   restoreRoutine(id: string): Promise<void>;

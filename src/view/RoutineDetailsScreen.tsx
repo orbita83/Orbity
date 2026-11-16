@@ -10,7 +10,7 @@ const RoutineDetailsScreen = () => {
   const router = useRouter();
   const { reload } = vm;
 
-  // Recarrega ao ganhar foco: a ocorrência de hoje pode ter mudado pela lista.
+  // Recarrega ao ganhar foco: a ocorrência de hoje pode ter mudado pela lista, e a rotina pela edição.
   useFocusEffect(
     useCallback(() => {
       void reload();
@@ -21,6 +21,7 @@ const RoutineDetailsScreen = () => {
     <RoutineDetailsScreenContent
       {...vm}
       onBack={() => router.navigate("/routines")}
+      onEdit={(routineId) => router.navigate({ pathname: "/new-routine", params: { id: routineId } })}
       onDeleted={(routineId) => router.navigate({ pathname: "/routines", params: { deleted: routineId } })}
     />
   );

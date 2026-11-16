@@ -1,11 +1,11 @@
 import type { DatabaseProvider } from "@/infra/database/database-provider";
 import type { SqlStatement } from "@/infra/database/i-sql-executor";
 import { toDomainError } from "@/infra/database/persistence-error";
-import { insertTaskStatement } from "@/infra/repositories/sqlite-task-repository";
+import { insertTaskStatement, updateTaskStatement } from "@/infra/repositories/sqlite-task-repository";
 import type { LocalDate } from "@/model/entities/local-date";
 import { DEFAULT_ROUTINE_ICON, isRoutineIcon, isWeekday, type Routine, type Weekday } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
-import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
+import type { IRoutineRepository, RoutineTaskChanges } from "@/model/repositories/i-routine-repository";
 
 type RoutineRow = {
   id: string;
@@ -86,6 +86,41 @@ export class SqliteRoutineRepository implements IRoutineRepository {
         },
         ...tasks.map(insertTaskStatement),
       ];
+      await executor.runInTransaction(statements);
+    } catch (error) {
+      throw toDomainError(error);
+    }
+  }
+
+  async update(routine: Routine, changes: RoutineTaskChanges): Promise<void> {
+    try {
+      const executor = await this.db.get();
+      const statements: SqlStatement[] = [
+        {
+          sql: "UPDATE routines SET title = ?, description = ?, icon = ?, days = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL",
+          params: [
+            routine.title,
+            routine.description ?? null,
+            routine.icon,
+            serializeDays(routine.days),
+            routine.updatedAt,
+            routine.id,
+          ],
+        },
+        ...changes.created.map(insertTaskStatement),
+        ...changes.updated.map(updateTaskStatement),
+      ];
+      if (changes.deletedIds.length > 0) {
+        const placeholders = changes.deletedIds.map(() => "?").join(", ");
+        // A tarefa removida leva as marcações dela; a ocorrência e a sequência não mudam (#137).
+        statements.push(
+          { sql: `DELETE FROM routine_task_checks WHERE task_id IN (${placeholders})`, params: [...changes.deletedIds] },
+          {
+            sql: `DELETE FROM tasks WHERE routine_id = ? AND id IN (${placeholders})`,
+            params: [routine.id, ...changes.deletedIds],
+          },
+        );
+      }
       await executor.runInTransaction(statements);
     } catch (error) {
       throw toDomainError(error);
