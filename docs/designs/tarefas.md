@@ -39,7 +39,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 - **T4:** Fixar em lote alterna: se todas as selecionadas já estão fixadas, a ação desafixa (o rótulo vira "Desafixar").
 - **T5:** O `TaskActivityCatalog` substitui o `EmptyActivityCatalog` na composição. Há Modo Foco disponível quando existe ao menos uma tarefa.
 - **T6:** A Início e a lista de Tarefas recarregam ao ganhar foco (`useFocusEffect`), para refletir mudanças feitas em outra aba.
-- **T7:** Datas e horas aceitam digitação direta e também um seletor em modal (`TaskPickerModal`, ver `design-system/04-componentes/seletor-opcoes.md`).
+- **T7:** Datas e horas aceitam digitação direta (com máscara automática na ViewModel para `dd/mm/aaaa` e `hh:mm` e normalização de entradas equivalentes no domínio) e também um seletor em modal (`TaskPickerModal`, ver `design-system/04-componentes/seletor-opcoes.md`).
 
 ### Ainda em aberto
 
