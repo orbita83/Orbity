@@ -20,6 +20,7 @@ export type TextFieldProps = {
   multiline?: boolean;
   onSubmitEditing?: () => void;
   keyboardType?: TextInputProps["keyboardType"];
+  maxLength?: TextInputProps["maxLength"];
   testID?: string;
   /** Botão acessório à direita do campo (ex.: abrir seletor de data/hora sem impedir digitação). */
   trailingIcon?: MaterialSymbolName;
@@ -41,6 +42,7 @@ export const TextField = ({
   multiline = false,
   onSubmitEditing,
   keyboardType,
+  maxLength,
   testID,
   trailingIcon,
   trailingLabel,
@@ -66,6 +68,7 @@ export const TextField = ({
       textAlignVertical={multiline ? "top" : "center"}
       onSubmitEditing={onSubmitEditing}
       keyboardType={keyboardType}
+      maxLength={maxLength}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={[
