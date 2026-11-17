@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { RoutineDetailsActions, RoutineDetailsState } from "../viewmodel/RoutineDetailsViewModel";
+import type { RoutineDetailsActions, RoutineDetailsState } from "../viewmodel/useRoutineDetailsViewModel";
 import { CheckCircle } from "./components/CheckCircle";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { GradientSurface } from "./components/GradientSurface";

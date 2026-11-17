@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { RoutineListItem, RoutinesActions, RoutinesState } from "../viewmodel/RoutinesViewModel";
+import type { RoutineListItem, RoutinesActions, RoutinesState } from "../viewmodel/useRoutinesViewModel";
 import { CheckCircle } from "./components/CheckCircle";
 import { IconTile } from "./components/IconTile";
 import { MaterialSymbol } from "./components/MaterialSymbol";

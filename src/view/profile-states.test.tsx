@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react-native";
 import ProfileScreen from "./profile";
-import type { ProfileState, ProfileActions } from "@/viewmodel/ProfileViewModel";
+import type { ProfileState, ProfileActions } from "@/viewmodel/useProfileViewModel";
 import { createStudentProfileFixture } from "@/model/__fixtures__/student-profile.fixture";
 
 // Isola apresentação; os destinos são validados com Expo Router real na integração.

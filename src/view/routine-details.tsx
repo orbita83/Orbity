@@ -1,6 +1,6 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
-import { useRoutineDetailsViewModel } from "../viewmodel/RoutineDetailsViewModel";
+import { useRoutineDetailsViewModel } from "../viewmodel/useRoutineDetailsViewModel";
 import { RoutineDetailsScreenContent } from "./routine-details-content";
 
 /** Tela Detalhe da rotina: carrega a rotina pelo `id` da rota e volta para a lista ao sair ou excluir. */

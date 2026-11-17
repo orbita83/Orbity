@@ -6,7 +6,7 @@ import type {
   NewTaskPickerField,
   NewTaskState,
   NewTaskTextField,
-} from "../viewmodel/NewTaskViewModel";
+} from "../viewmodel/useNewTaskViewModel";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";

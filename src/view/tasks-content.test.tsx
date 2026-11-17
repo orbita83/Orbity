@@ -9,7 +9,7 @@ import {
   CATEGORY_PICKER_OPTIONS,
   TIME_PICKER_OPTIONS,
   buildDatePickerOptions,
-} from "@/viewmodel/NewTaskViewModel";
+} from "@/viewmodel/useNewTaskViewModel";
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 

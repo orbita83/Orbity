@@ -8,7 +8,7 @@ import type { IClockService } from "@/model/services/i-clock-service";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 import { TaskUseCases } from "@/usecase/task-use-cases";
 import { PROTOTYPE_TASKS } from "@/view/__fixtures__/task-list.fixture";
-import { useTasksViewModel } from "@/viewmodel/TasksViewModel";
+import { useTasksViewModel } from "@/viewmodel/useTasksViewModel";
 
 const ids = (tasks: { id: string }[]) => tasks.map((task) => task.id);
 

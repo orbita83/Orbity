@@ -4,7 +4,7 @@ import { LocalDate } from "@/model/entities/local-date";
 import type { HomeSummary } from "@/model/entities/home-summary";
 import { DomainError } from "@/model/errors/domain-error";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
-import { useHomeViewModel } from "@/viewmodel/HomeViewModel";
+import { useHomeViewModel } from "@/viewmodel/useHomeViewModel";
 
 const today = LocalDate.parse("2026-11-14");
 

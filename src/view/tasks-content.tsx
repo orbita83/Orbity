@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/TasksViewModel";
+import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/useTasksViewModel";
 import { TaskCard } from "./components/TaskCard";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "./components/ContextualActionBar";

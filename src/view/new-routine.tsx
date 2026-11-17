@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useNewRoutineViewModel } from "../viewmodel/NewRoutineViewModel";
+import { useNewRoutineViewModel } from "../viewmodel/useNewRoutineViewModel";
 import { NewRoutineScreenContent } from "./new-routine-content";
 
 /**

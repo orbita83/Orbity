@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useLayoutEffect } from "react";
 import { BackHandler } from "react-native";
-import { useTasksViewModel } from "../viewmodel/TasksViewModel";
+import { useTasksViewModel } from "../viewmodel/useTasksViewModel";
 import { TasksScreenContent } from "./tasks-content";
 
 /** Tela Tarefas: liga a ViewModel à apresentação e esconde a barra de abas na seleção múltipla. */

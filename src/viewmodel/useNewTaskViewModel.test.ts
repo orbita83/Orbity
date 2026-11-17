@@ -6,7 +6,7 @@ import { DomainError } from "@/model/errors/domain-error";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 import { TaskUseCases } from "@/usecase/task-use-cases";
-import { useNewTaskViewModel } from "@/viewmodel/NewTaskViewModel";
+import { useNewTaskViewModel } from "@/viewmodel/useNewTaskViewModel";
 
 const fixedClock: IClockService = {
   now: () => "2026-11-15T10:00:00-03:00",
