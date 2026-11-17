@@ -8,20 +8,22 @@ import AchievementsScreen from "./achievements";
 import CategoriesScreen from "./categories";
 import SettingsScreen from "./settings";
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
+import type { IProfileUseCases } from "@/usecase/profile-use-cases";
+import { useProfileViewModel } from "@/viewmodel/useProfileViewModel";
 
-const profileState = {
-  profile: mockStudentProfile, loading: false, saving: false, error: null, validationError: null,
-  isEditingName: false, nameInput: "Alex", loadProfile: async () => { }, openEditNameModal: () => { },
-  closeEditNameModal: () => { }, setNameInput: () => { }, saveName: async () => true, clearError: () => { },
+// ViewModel real com um Use Case falso: os atalhos navegam pelas ações da ViewModel.
+const profileUseCases: IProfileUseCases = {
+  getProfile: async () => mockStudentProfile,
+  updateName: async (name) => ({ ...mockStudentProfile, name }),
 };
-const Profile = () => <ProfileScreen viewModel={profileState} />;
+const Profile = () => <ProfileScreen viewModel={useProfileViewModel(profileUseCases)} />;
 const Path = () => <Text>{usePathname()}</Text>;
 const routes = { _layout: RootLayout, index: Path, tasks: Path, routines: Path, cosmos: Path, profile: Profile, achievements: AchievementsScreen, categories: CategoriesScreen, settings: SettingsScreen };
 
 describe("Navegação integrada do perfil", () => {
   it.each(["Conquistas", "Categorias", "Configurações"])("abre %s pelo atalho, preserva abas e retorna ao perfil", async (title) => {
     await renderRouter(routes, { initialUrl: "/profile" });
-    await fireEvent.press(screen.getByRole("link", { name: title }));
+    await fireEvent.press(await screen.findByRole("link", { name: title }));
     await waitFor(() => expect(screen.getByRole("header", { name: title })).toBeTruthy());
     expect(screen.getAllByRole("tab")).toHaveLength(5);
     expect(screen.getByRole("tab", { name: /Aba Perfil/ }).props.accessibilityState.selected).toBe(true);

@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { router, useFocusEffect, useNavigation } from "expo-router";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { BackHandler } from "react-native";
 import { container, resolveUseCase } from "@/DI/container";
 import {
   type Task,
@@ -51,6 +53,10 @@ export type TasksActions = {
   cancelDelete: () => void;
   confirmDelete: () => void;
   reload: () => Promise<void>;
+  /** Abre o formulário de Nova tarefa. */
+  handleCreateTask: () => void;
+  /** Abre o formulário de edição da tarefa. */
+  handleEditTask: (id: string) => void;
 };
 
 const toTaskListItem = (task: Task): TaskListItem => ({
@@ -72,6 +78,8 @@ const resolveErrorKey = (caught: unknown, fallback: "error.load" | "error.save")
 /**
  * Estado da tela Tarefas. Usa `ITaskUseCases` em produção/testes e aceita uma lista inicial
  * em memória quando chamada com um array (compatível com histórias isoladas do Storybook).
+ * Cuida também da navegação da tela: recarrega ao ganhar foco, esconde a barra de abas na
+ * seleção múltipla, trata o voltar do Android e abre o formulário de tarefa.
  */
 export const useTasksViewModel = (
   source?: ITaskUseCases | readonly TaskListItem[],
@@ -252,12 +260,45 @@ export const useTasksViewModel = (
     })();
   }, [isPrototypeMode, selectedIds, useCases]);
 
+  const selectionMode = selectedIds !== null;
+  const navigation = useNavigation();
+
+  // Recarrega ao voltar para a aba, para refletir o que mudou em Nova tarefa.
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
+
+  // A barra de abas some durante a seleção múltipla, para dar lugar à barra de ações.
+  useLayoutEffect(() => {
+    navigation.setOptions({ tabBarStyle: selectionMode ? { display: "none" } : undefined });
+  }, [navigation, selectionMode]);
+
+  // No Android, o voltar do sistema sai da seleção antes de sair da tela.
+  useEffect(() => {
+    if (!selectionMode) return;
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      cancelSelection();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [cancelSelection, selectionMode]);
+
+  const handleCreateTask = useCallback(() => {
+    router.navigate({ pathname: "/new-task", params: { id: "" } });
+  }, []);
+
+  const handleEditTask = useCallback((id: string) => {
+    router.navigate({ pathname: "/new-task", params: { id } });
+  }, []);
+
   return {
     visibleTasks,
     pendingCount: items.filter((task) => !task.completed).length,
     totalCount: items.length,
     filter,
-    selectionMode: selectedIds !== null,
+    selectionMode,
     selectedIds: selectedIds ?? [],
     allSelectedPinned,
     confirmDeleteVisible,
@@ -274,5 +315,7 @@ export const useTasksViewModel = (
     cancelDelete,
     confirmDelete,
     reload,
+    handleCreateTask,
+    handleEditTask,
   };
 };

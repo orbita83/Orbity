@@ -9,6 +9,39 @@ import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
 import { RoutineUseCases } from "@/usecase/routine-use-cases";
 import { useNewRoutineViewModel } from "@/viewmodel/useNewRoutineViewModel";
 
+// Navegação do Expo Router isolada.
+const mockNavigate = jest.fn();
+const mockSetParams = jest.fn();
+let mockParams: Record<string, string | undefined> = {};
+const mockFocusCallbacks = new Set<() => void>();
+jest.mock("expo-router", () => ({
+  router: {
+    navigate: (...args: unknown[]) => mockNavigate(...args),
+    setParams: (...args: unknown[]) => mockSetParams(...args),
+  },
+  // Registra o efeito de foco enquanto o hook está montado; `focusScreen()` simula a tela ganhando foco.
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = jest.requireActual<typeof import("react")>("react");
+    const latest = React.useRef(callback);
+    latest.current = callback;
+    React.useEffect(() => {
+      const run = () => {
+        latest.current();
+      };
+      mockFocusCallbacks.add(run);
+      return () => {
+        mockFocusCallbacks.delete(run);
+      };
+    }, []);
+  },
+  useLocalSearchParams: () => mockParams,
+}));
+
+beforeEach(() => {
+  mockParams = {};
+  mockFocusCallbacks.clear();
+});
+
 /** Segunda-feira: a rotina de Seg a Sex é de hoje. */
 const monday: IClockService = {
   now: () => "2026-11-16T08:00:00-03:00",
@@ -171,5 +204,35 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
     await act(async () => result.current.setName("Inglês"));
     expect(result.current.requestLeave()).toBe(true);
+  });
+});
+
+describe("useNewRoutineViewModel (navegação)", () => {
+  it("lê o id da rota e abre a edição", async () => {
+    const { useCases } = createUseCases();
+    const routine = await useCases.createRoutine({ title: "Matemática", days: [1], tasks: [] });
+    mockParams = { id: routine.id };
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
+    expect(result.current.editing).toBe(true);
+    await waitFor(() => expect(result.current.name).toBe("Matemática"));
+  });
+
+  it("sair da criação limpa o formulário e volta para a lista", async () => {
+    const { useCases } = createUseCases();
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
+    await act(async () => result.current.setName("Inglês"));
+    await act(async () => result.current.handleLeave());
+    expect(result.current.name).toBe("");
+    expect(mockSetParams).toHaveBeenCalledWith({ id: "" });
+    expect(mockNavigate).toHaveBeenCalledWith("/routines");
+  });
+
+  it("sair da edição volta para o detalhe da rotina", async () => {
+    const { useCases } = createUseCases();
+    const routine = await useCases.createRoutine({ title: "Matemática", days: [1], tasks: [] });
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases, routine.id));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(async () => result.current.handleLeave());
+    expect(mockNavigate).toHaveBeenCalledWith({ pathname: "/routine-details", params: { id: routine.id } });
   });
 });

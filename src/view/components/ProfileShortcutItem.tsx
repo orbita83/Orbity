@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { GradientSurface } from "./GradientSurface";
 import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
@@ -9,13 +8,14 @@ export type ProfileShortcutItemProps = {
   readonly icon: MaterialSymbolName;
   readonly title: string;
   readonly description: string;
-  readonly href: "/achievements" | "/categories" | "/settings";
+  /** Ação da ViewModel que abre o destino do atalho. */
+  readonly onPress: () => void;
   readonly loading?: boolean;
   readonly theme?: OrbityTheme;
 };
 
 /** Atalho do Perfil (protótipo, tela 5): quadro de ícone, título, descrição e seta. */
-export const ProfileShortcutItem = ({ icon, title, description, href, loading = false, theme = themes.cosmic }: ProfileShortcutItemProps) => {
+export const ProfileShortcutItem = ({ icon, title, description, onPress, loading = false, theme = themes.cosmic }: ProfileShortcutItemProps) => {
   const styles = createStyles(theme);
   if (loading) {
     return (
@@ -30,44 +30,42 @@ export const ProfileShortcutItem = ({ icon, title, description, href, loading = 
     );
   }
 
-  return <ProfileShortcutLink icon={icon} title={title} description={description} href={href} theme={theme} />;
+  return <ProfileShortcutLink icon={icon} title={title} description={description} onPress={onPress} theme={theme} />;
 };
 
 // O skeleton desmonta este controle: seu foco local não sobrevive ao carregamento.
-const ProfileShortcutLink = ({ icon, title, description, href, theme = themes.cosmic }: Omit<ProfileShortcutItemProps, "loading">) => {
+const ProfileShortcutLink = ({ icon, title, description, onPress, theme = themes.cosmic }: Omit<ProfileShortcutItemProps, "loading">) => {
   const [focused, setFocused] = useState(false);
   const styles = createStyles(theme);
   return (
     <View style={[styles.focusRing, focused && styles.focused]}>
-      <Link href={href} asChild>
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel={title}
-          accessibilityHint={description}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          // O Link com asChild não repassa estilo em função: o pressionado fica no conteúdo.
-          style={styles.link}
-        >
-          {({ pressed }) => (
-            <View style={[styles.item, pressed && styles.pressed]}>
-              <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
-              <View style={styles.tile} accessible={false} importantForAccessibility="no-hide-descendants">
-                <MaterialSymbol name={icon} filled color={theme.color.focus} size={theme.navbar.iconSize} />
-              </View>
-              <View style={styles.content}>
-                <Text allowFontScaling style={styles.title}>
-                  {title}
-                </Text>
-                <Text allowFontScaling style={styles.description}>
-                  {description}
-                </Text>
-              </View>
-              <MaterialSymbol name="chevron_right" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={title}
+        accessibilityHint={description}
+        onPress={onPress}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={styles.link}
+      >
+        {({ pressed }) => (
+          <View style={[styles.item, pressed && styles.pressed]}>
+            <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
+            <View style={styles.tile} accessible={false} importantForAccessibility="no-hide-descendants">
+              <MaterialSymbol name={icon} filled color={theme.color.focus} size={theme.navbar.iconSize} />
             </View>
-          )}
-        </Pressable>
-      </Link>
+            <View style={styles.content}>
+              <Text allowFontScaling style={styles.title}>
+                {title}
+              </Text>
+              <Text allowFontScaling style={styles.description}>
+                {description}
+              </Text>
+            </View>
+            <MaterialSymbol name="chevron_right" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+          </View>
+        )}
+      </Pressable>
     </View>
   );
 };

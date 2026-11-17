@@ -5,8 +5,8 @@ import { themes } from "../theme/tokens";
 const shortcutProps = {
   title: "Conquistas",
   description: "Acompanhe suas conquistas",
-  href: "/achievements",
   icon: "star",
+  onPress: () => {},
 } as const;
 const theme = themes.cosmic;
 
@@ -26,6 +26,13 @@ describe("ProfileShortcutItem", () => {
     expect(link.props.accessibilityHint).toBe(shortcutProps.description);
     expect(link).toHaveStyle({ minHeight: theme.target.minSize, borderRadius: theme.radius.lg });
     expect(screen.getByText("Acompanhe suas conquistas")).toBeTruthy();
+  });
+
+  it("chama a ação da ViewModel ao tocar no atalho", async () => {
+    const onPress = jest.fn();
+    await render(<ProfileShortcutItem {...shortcutProps} onPress={onPress} />);
+    await fireEvent.press(screen.getByRole("link", { name: "Conquistas" }));
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it("mostra e remove o contorno de foco com a geometria do ODS", async () => {

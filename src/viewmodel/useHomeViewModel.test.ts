@@ -6,6 +6,43 @@ import { DomainError } from "@/model/errors/domain-error";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
 import { useHomeViewModel } from "@/viewmodel/useHomeViewModel";
 
+// Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
+const mockNavigate = jest.fn();
+const mockSetParams = jest.fn();
+const mockSetOptions = jest.fn();
+const mockNavigation = { setOptions: (...args: unknown[]) => mockSetOptions(...args) };
+let mockParams: Record<string, string | undefined> = {};
+const mockFocusCallbacks = new Set<() => void>();
+jest.mock("expo-router", () => ({
+  router: {
+    navigate: (...args: unknown[]) => mockNavigate(...args),
+    setParams: (...args: unknown[]) => mockSetParams(...args),
+  },
+  // Registra o efeito de foco enquanto o hook está montado; `focusScreen()` simula a tela ganhando foco.
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = jest.requireActual<typeof import("react")>("react");
+    const latest = React.useRef(callback);
+    latest.current = callback;
+    React.useEffect(() => {
+      const run = () => {
+        latest.current();
+      };
+      mockFocusCallbacks.add(run);
+      return () => {
+        mockFocusCallbacks.delete(run);
+      };
+    }, []);
+  },
+  useLocalSearchParams: () => mockParams,
+  useNavigation: () => mockNavigation,
+}));
+const focusScreen = () => mockFocusCallbacks.forEach((run) => run());
+
+beforeEach(() => {
+  mockParams = {};
+  mockFocusCallbacks.clear();
+});
+
 const today = LocalDate.parse("2026-11-14");
 
 const summaryWith = (currentDays: number, completed = 0, total = 0): HomeSummary => ({
@@ -151,5 +188,18 @@ describe("useHomeViewModel", () => {
     expect(result.current.sheetStage).toBe("stage1_1");
     await act(async () => result.current.handleCollapseSheet());
     expect(result.current.sheetStage).toBe("collapsed");
+  });
+});
+
+describe("useHomeViewModel (navegação)", () => {
+  it("recalcula a Home quando a aba ganha foco", async () => {
+    const useCases = useCasesFrom(summaryWith(1), summaryWith(2));
+    const { result } = await renderHook(() => useHomeViewModel(useCases));
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+    await act(async () => {
+      focusScreen();
+    });
+    await waitFor(() => expect(result.current.summary?.streak.currentDays).toBe(2));
+    expect(useCases.loadHome).toHaveBeenCalledTimes(2);
   });
 });

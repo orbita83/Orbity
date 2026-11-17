@@ -1,3 +1,4 @@
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/DI/container";
 import { DEFAULT_ROUTINE_ICON, type RoutineIcon, type RoutineTaskDraft } from "@/model/entities/routine";
@@ -42,6 +43,8 @@ export type NewRoutineActions = {
   requestLeave: () => boolean;
   /** "Continuar editando": fecha a confirmação. */
   cancelLeave: () => void;
+  /** Limpa o formulário e sai: para o detalhe na edição, para a lista na criação (FL-0007, passo 4). */
+  handleLeave: () => void;
 };
 
 type FormFields = {
@@ -70,7 +73,11 @@ export const useNewRoutineViewModel = (
   routineId?: string,
 ): NewRoutineState & NewRoutineActions => {
   const useCases = resolveUseCase(routineUseCases, container.useCases.routines);
-  const editingId = routineId && routineId.trim().length > 0 ? routineId.trim() : undefined;
+  // O `id` vem da rota (`/new-routine?id=...`); o parâmetro `routineId` substitui a rota em testes e histórias.
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const routeId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const requestedId = routineId ?? routeId;
+  const editingId = requestedId && requestedId.trim().length > 0 ? requestedId.trim() : undefined;
   const editing = Boolean(editingId);
 
   const [trackedId, setTrackedId] = useState(editingId);
@@ -233,6 +240,16 @@ export const useNewRoutineViewModel = (
 
   const tasks = useMemo(() => fields.items.map((item) => item.title), [fields.items]);
 
+  const handleLeave = useCallback(() => {
+    reset();
+    router.setParams({ id: "" });
+    if (editingId) {
+      router.navigate({ pathname: "/routine-details", params: { id: editingId } });
+    } else {
+      router.navigate("/routines");
+    }
+  }, [editingId, reset]);
+
   return {
     name: fields.name,
     icon: fields.icon,
@@ -260,5 +277,6 @@ export const useNewRoutineViewModel = (
     reset,
     requestLeave,
     cancelLeave,
+    handleLeave,
   };
 };

@@ -1,24 +1,20 @@
-import { useCallback } from "react";
-import { useFocusEffect, useRouter } from "expo-router";
-import { BackHandler, Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PlaceholderScreen } from "./PlaceholderScreen";
 import { themes, type OrbityTheme } from "../theme/tokens";
 
-export const ProfilePlaceholderScreen = ({ title, theme = themes.cosmic }: { readonly title: string; readonly theme?: OrbityTheme }) => {
+type ProfilePlaceholderScreenProps = {
+  readonly title: string;
+  /** Ação da ViewModel da tela que volta para Meu perfil. */
+  readonly onReturn: () => void;
+  readonly theme?: OrbityTheme;
+};
+
+/** Destino provisório dos atalhos do Perfil. A navegação fica na ViewModel de cada tela. */
+export const ProfilePlaceholderScreen = ({ title, onReturn, theme = themes.cosmic }: ProfilePlaceholderScreenProps) => {
   const styles = createStyles(theme);
-  const router = useRouter();
-  const returnToProfile = useCallback(() => router.replace("/profile"), [router]);
-  useFocusEffect(useCallback(() => {
-    if (Platform.OS !== "android") return;
-    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
-      returnToProfile();
-      return true;
-    });
-    return () => subscription.remove();
-  }, [returnToProfile]));
   return <SafeAreaView style={styles.screen}>
-    <PlaceholderScreen title={title} message="Esta seção estará disponível em breve." theme={theme} onReturn={returnToProfile} />
+    <PlaceholderScreen title={title} message="Esta seção estará disponível em breve." theme={theme} onReturn={onReturn} />
   </SafeAreaView>;
 };
 
