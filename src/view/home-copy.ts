@@ -16,7 +16,7 @@ export const HOME_COPY = {
   "focus.details": "Detalhes do Modo Foco",
   "focus.start": "Iniciar foco",
   "focus.blocked": "Para iniciar o foco, crie uma tarefa ou rotina primeiro.",
-  "progress.title": "Progresso de hoje",
+  "progress.title": "Seu progresso",
   "progress.description": "Conquiste sua estrela estudando.",
   "progress.value": "{completed} de {total} atividades concluídas",
   "progress.percent": "{percent}%",

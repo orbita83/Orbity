@@ -13,7 +13,14 @@
 
 Permite ao estudante iniciar a edição de uma rotina pela ação **Editar** exibida no detalhe da rotina.
 
-*Ponto pendente de refinamento:* a tela de edição não está representada no protótipo; os campos editáveis e a forma de confirmação devem ser definidos.
+A edição reaproveita o formulário de Nova rotina (protótipo 3.1), com o título **Editar rotina** e os campos já preenchidos: nome, ícone, descrição, dias da semana e tarefas (adicionar, remover e reordenar). A confirmação é a ação **Salvar alterações**, seguida da mensagem **Rotina atualizada!**. A edição vale em qualquer dia, inclusive fora dos dias da rotina.
+
+As alterações não punem o estudante (decisão de refinamento da issue #137):
+
+- Remover uma tarefa descarta a marcação dela de hoje. A conclusão da rotina e a sequência não mudam.
+- Uma tarefa adicionada a uma rotina já concluída hoje entra desmarcada, e a rotina continua concluída ([RN-0004](../../02-requirements/business-rules/RN-0004.md) só marca tarefas no momento da conclusão).
+- Tirar o dia de hoje dos dias de uma rotina já concluída hoje mantém a conclusão de hoje.
+- Renomear ou reordenar uma tarefa mantém a marcação dela, porque continua sendo a mesma tarefa.
 
 ## 3. Pré-condições
 

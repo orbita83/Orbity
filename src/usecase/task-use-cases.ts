@@ -2,6 +2,7 @@ import {
   type CreateTaskInput,
   type Task,
   type UpdateTaskInput,
+  isStandaloneTask,
   isValidTaskCategoryId,
   validateCreateTaskInput,
   validateDateTimeFields,
@@ -39,8 +40,9 @@ export class TaskUseCases implements ITaskUseCases {
     private readonly generateId: () => string = defaultGenerateId,
   ) {}
 
-  listTasks(): Promise<Task[]> {
-    return this.taskRepository.listAll();
+  /** Só as tarefas avulsas: as de rotina ficam na aba Rotinas (rotinas.md, R1). */
+  async listTasks(): Promise<Task[]> {
+    return (await this.taskRepository.listAll()).filter(isStandaloneTask);
   }
 
   async createTask(input: CreateTaskInput): Promise<Task> {

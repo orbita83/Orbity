@@ -35,7 +35,19 @@ export type Task = {
   readonly pinned: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
+  /**
+   * Rotina a que a tarefa pertence (rotinas.md, R1). Sem rotina, a tarefa é avulsa e aparece na
+   * aba Tarefas. Uma tarefa de rotina não usa `completed`: a marcação dela vale por dia (R2).
+   */
+  readonly routineId?: string;
+  /** Ordem dentro da rotina, começando em 0. */
+  readonly position?: number;
 };
+
+/** Tarefa sem rotina associada (RN-0002): a única que aparece na aba Tarefas e conta sozinha. */
+export function isStandaloneTask(task: Pick<Task, "routineId">): boolean {
+  return task.routineId === undefined;
+}
 
 export type CreateTaskInput = {
   readonly title: string;
