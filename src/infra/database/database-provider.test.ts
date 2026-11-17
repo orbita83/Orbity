@@ -1,6 +1,6 @@
 import { DatabaseProvider } from "@/infra/database/database-provider";
 import type { ISqlExecutor } from "@/infra/database/i-sql-executor";
-import type { Migration } from "@/infra/database/migrations";
+import { MIGRATIONS, type Migration } from "@/infra/database/migrations";
 import { DomainError } from "@/model/errors/domain-error";
 import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
 
@@ -22,15 +22,35 @@ describe("DatabaseProvider", () => {
     executor.close();
   });
 
-  it("aplica a v1 e a v2 num banco novo e grava user_version = 2", async () => {
+  it("aplica a v1, a v2 e a v3 num banco novo e grava user_version = 3", async () => {
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(2);
+    expect(userVersion(executor)).toBe(3);
     expect(tableExists(executor, "daily_activity")).toBe(true);
     expect(tableExists(executor, "tasks")).toBe(true);
+    expect(tableExists(executor, "routines")).toBe(true);
+    expect(tableExists(executor, "routine_occurrences")).toBe(true);
+    expect(tableExists(executor, "routine_task_checks")).toBe(true);
   });
 
-  it("atualiza um banco na v1 para a v2 preservando os registros anteriores", async () => {
+  it("rotinas.md: atualiza um banco na v2 para a v3 e as tarefas existentes continuam avulsas", async () => {
+    const v1AndV2 = new DatabaseProvider(async () => executor, MIGRATIONS.filter((migration) => migration.version <= 2));
+    await v1AndV2.get();
+    executor.database
+      .prepare(
+        "INSERT INTO tasks (id, title, completed, pinned, created_at, updated_at) VALUES ('t1', 'Revisar', 1, 0, 'a', 'a')",
+      )
+      .run();
+
+    await new DatabaseProvider(async () => executor).get();
+
+    expect(userVersion(executor)).toBe(3);
+    expect(executor.database.prepare("SELECT id, completed, routine_id, position FROM tasks").all()).toEqual([
+      { id: "t1", completed: 1, routine_id: null, position: null },
+    ]);
+  });
+
+  it("atualiza um banco na v1 para a última versão preservando os registros anteriores", async () => {
     executor.database.exec(`
       CREATE TABLE daily_activity (
         local_date  TEXT PRIMARY KEY
@@ -43,7 +63,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(2);
+    expect(userVersion(executor)).toBe(3);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(executor.database.prepare("SELECT local_date FROM daily_activity").all()).toEqual([
       { local_date: "2026-11-14" },
@@ -57,7 +77,7 @@ describe("DatabaseProvider", () => {
     await provider.get();
     await provider.get();
 
-    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(MIGRATIONS.length);
   });
 
   it("D14: banco mais novo que o app dá SCHEMA_VERSION_UNSUPPORTED sem mexer nas tabelas", async () => {

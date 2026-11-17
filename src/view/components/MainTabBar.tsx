@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import type { Tabs } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NavBar, type NavTabId } from "./nav-bar";
+import { NavBar, type NavTabId } from "./NavBar";
 import { themes } from "../theme/tokens";
 
 const routeByTab: Record<NavTabId, string> = {
@@ -14,6 +14,9 @@ const routeByTab: Record<NavTabId, string> = {
 };
 
 const tabByRoute: Record<string, NavTabId> = {
+  achievements: "perfil",
+  categories: "perfil",
+  settings: "perfil",
   index: "inicio",
   tasks: "tarefas",
   routines: "rotinas",

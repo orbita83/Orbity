@@ -5,8 +5,8 @@ import type { FocusSheetStage } from "../../viewmodel/ActivitySheetGeometry";
 import { HOME_COPY, formatCopy } from "../home-copy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "../theme/tokens";
 import { GradientSurface } from "./GradientSurface";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
-import { PrimaryButton } from "./primary-button";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
+import { PrimaryButton } from "./PrimaryButton";
 
 const theme = themes.cosmic;
 

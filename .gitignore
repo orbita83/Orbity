@@ -57,5 +57,8 @@ example
 # Agents
 .agents
 
+# Documentos de revisao local
+/.revisao-local/
+
 # EGM (artefatos de trabalho; o design final fica em docs/designs/)
 .dev/

@@ -55,7 +55,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 
 ## Código
 
-A implementação está em [filter-chips.tsx](../../src/view/components/filter-chips.tsx), o catálogo interativo em [filter-chips.stories.tsx](../../src/view/components/filter-chips.stories.tsx) e os tokens utilizados vêm de [tokens.ts](../../src/view/theme/tokens.ts).
+A implementação está em [FilterChips.tsx](../../src/view/components/FilterChips.tsx), o catálogo interativo em [FilterChips.stories.tsx](../../src/view/components/FilterChips.stories.tsx) e os tokens utilizados vêm de [tokens.ts](../../src/view/theme/tokens.ts).
 
 ## Mudanças da 1.2
 

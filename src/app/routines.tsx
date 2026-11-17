@@ -1,3 +1,3 @@
-import RoutinesScreen from "../view/RoutinesScreen";
+import RoutinesScreen from "../view/routines";
 
 export default RoutinesScreen;

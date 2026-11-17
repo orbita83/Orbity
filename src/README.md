@@ -16,7 +16,7 @@ Fluxo atual: `app/<rota>.tsx` re-exporta uma tela de `view/` (`HomeScreen`, `Tas
 
 - `app`: [./app/README.md](./app/README.md) — módulos de rota sem lógica. O `RootLayout` define as cinco abas (Início, Tarefas, Rotinas, Cosmos, Perfil), a rota inicial `index`, `headerShown: false` e a `StatusBar` `light`.
 - `view`: [./view/README.md](./view/README.md) — as cinco telas placeholder, mais:
-  - `components`: [./view/components/README.md](./view/components/README.md) — `MainTabBar`, `NavBar`, `CardTarefa`, `FilterChips`/`FilterChipItem`, `PrimaryButton`, `MaterialSymbol` e `PlaceholderScreen`.
+  - `components`: [./view/components/README.md](./view/components/README.md) — `MainTabBar`, `NavBar`, `TaskCard`, `FilterChips`/`FilterChipItem`, `PrimaryButton`, `MaterialSymbol` e `PlaceholderScreen`.
   - `theme`: [./view/theme/README.md](./view/theme/README.md) — `tokens.ts`, com `primitives`, `cosmicColors`, `accessibilityTokens`, `sharedTokens` e `themes` (`light`, `dark`, `cosmic`).
 - `DI`: [./DI/README.md](./DI/README.md) — `createContainer`, `createAppContainer`, `composeUseCase`, `resolveUseCase`, `appContainerDefinition` e o singleton `container`.
 

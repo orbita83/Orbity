@@ -65,4 +65,12 @@ describe("MainTabBar", () => {
     await fireEvent.press(screen.getByRole("tab", { name: /Aba Perfil/ }));
     expect(navigate).not.toHaveBeenCalled();
   });
+  it.each(["achievements", "categories", "settings"])("mantém cinco abas e seleciona Perfil na rota %s", async (name) => {
+    const { props } = createProps(5);
+    const hiddenRoutes = [...routes, { key: `${name}-key`, name }];
+    await render(<MainTabBar {...props} state={{ ...props.state, routes: hiddenRoutes, index: hiddenRoutes.length - 1 }} />);
+    expect(screen.getAllByRole("tab")).toHaveLength(5);
+    expect(screen.getByRole("tab", { name: /Aba Perfil/ }).props.accessibilityState.selected).toBe(true);
+  });
+
 });

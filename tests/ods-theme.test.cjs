@@ -115,3 +115,17 @@ const chipTextPressed = mix(themes.cosmic.color.surface, themes.cosmic.color['on
 const pressedContrast = contrast(chipTextPressed, chipBackgroundPressed);
 console.log(`Chip selecionado pressionado, modelo sRGB: ${pressedContrast.toFixed(4)}:1`);
 assert.ok(pressedContrast >= 4.5, 'Texto do chip pressionado abaixo de 4,5:1');
+
+// Perfil: texto e foco não recebem opacidade no estado pressionado.
+for (const [name, theme] of Object.entries(themes)) {
+  assert.equal(theme.divider.width, 1);
+  assert.equal(theme.feedback.pressedOpacity, 0.8);
+  for (const [foreground, background] of [
+    [theme.color['on-action'], theme.color.action],
+    [theme.color['on-surface'], theme.color['surface-variant']],
+  ]) {
+    assert.ok(contrast(foreground, background) >= 4.5, `Texto do perfil em ${name}`);
+  }
+  assert.ok(contrast(theme.color.focus, theme.color['surface-variant']) >= 3, `Foco do perfil em ${name}`);
+}
+console.log('Métricas, atalhos e foco do perfil nos três temas: OK');

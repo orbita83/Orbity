@@ -1,6 +1,12 @@
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as SystemUI from "expo-system-ui";
+import { cosmicColors } from "@/view/theme/tokens";
 import { MainTabBar } from "@/view/components/MainTabBar";
+
+// Fundo da janela raiz no tom cósmico: é o que aparece atrás das barras do sistema (Android) e
+// nas bordas antes do primeiro desenho, em vez do branco padrão.
+void SystemUI.setBackgroundColorAsync(cosmicColors.background);
 
 const RootLayout = () => (
   <>
@@ -16,6 +22,9 @@ const RootLayout = () => (
       <Tabs.Screen name="routines" options={{ title: "Rotinas" }} />
       <Tabs.Screen name="cosmos" options={{ title: "Cosmos" }} />
       <Tabs.Screen name="profile" options={{ title: "Perfil" }} />
+      <Tabs.Screen name="achievements" options={{ href: null }} />
+      <Tabs.Screen name="categories" options={{ href: null }} />
+      <Tabs.Screen name="settings" options={{ href: null }} />
       {/* Telas empilhadas sobre as abas: sem item na barra, que fica escondida nelas. */}
       <Tabs.Screen name="new-task" options={{ title: "Nova tarefa", href: null }} />
       <Tabs.Screen name="new-routine" options={{ title: "Nova rotina", href: null }} />

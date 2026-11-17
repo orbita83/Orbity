@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { cosmicBorders, cosmicColors, themes } from "../theme/tokens";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 
 const theme = themes.cosmic;
 

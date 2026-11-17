@@ -18,7 +18,7 @@ export class HomeUseCases implements IHomeUseCases {
   async loadHome(): Promise<HomeSummary> {
     const [days, counts, hasFocusTargets] = await Promise.all([
       this.dailyActivity.listDays(),
-      this.activityCatalog.getProgressCounts(),
+      this.activityCatalog.getProgressCounts(this.clock.todayLocal()),
       this.activityCatalog.hasFocusTargets(),
     ]);
     return {

@@ -1,7 +1,7 @@
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { themes } from "../theme/tokens";
-import { MaterialSymbol } from "./material-symbol";
-import { PrimaryButton } from "./primary-button";
+import { MaterialSymbol } from "./MaterialSymbol";
+import { PrimaryButton } from "./PrimaryButton";
 
 const theme = themes.cosmic;
 
