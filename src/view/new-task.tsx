@@ -1,20 +1,11 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
 import { useNewTaskViewModel } from "../viewmodel/useNewTaskViewModel";
 import { NewTaskScreenContent } from "./new-task-content";
 
-/** Tela Nova/Editar tarefa: abre por cima de Tarefas e volta para a lista ao fechar ou depois de salvar. */
+/** Tela Nova/Editar tarefa: abre por cima de Tarefas. A ViewModel lê o `id` da rota e volta para a lista. */
 const NewTaskScreen = () => {
-  const { id } = useLocalSearchParams<{ id?: string }>();
-  const taskId = Array.isArray(id) ? id[0] : id;
-  const vm = useNewTaskViewModel(undefined, undefined, taskId);
-  const router = useRouter();
-  const backToTasks = () => {
-    vm.reset();
-    router.setParams({ id: "" });
-    router.navigate("/tasks");
-  };
+  const vm = useNewTaskViewModel();
 
-  return <NewTaskScreenContent {...vm} onClose={backToTasks} onFinish={backToTasks} />;
+  return <NewTaskScreenContent {...vm} onClose={vm.handleClose} onFinish={vm.handleClose} />;
 };
 
 export default NewTaskScreen;

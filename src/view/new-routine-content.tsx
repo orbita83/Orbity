@@ -17,7 +17,7 @@ const theme = themes.cosmic;
 const WEEK = [0, 1, 2, 3, 4, 5, 6] as const;
 
 export type NewRoutineScreenContentProps = NewRoutineState &
-  NewRoutineActions & {
+  Omit<NewRoutineActions, "handleLeave"> & {
     /** Sai sem salvar: volta para a lista (criação) ou para o detalhe (edição). */
     onBack: () => void;
     /** Fecha o "Rotina criada!"/"Rotina atualizada!" e volta (05-padroes.md, F7, passo 4). */

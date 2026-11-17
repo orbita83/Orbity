@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { container, resolveUseCase } from "@/DI/container";
 import type { StudentProfile } from "@/model/entities/student-profile";
@@ -27,6 +28,12 @@ export type ProfileActions = {
   readonly setNameInput: (name: string) => void;
   readonly saveName: () => Promise<boolean>;
   readonly clearError: () => void;
+  /** Abre o atalho Conquistas. */
+  readonly handleOpenAchievements: () => void;
+  /** Abre o atalho Categorias. */
+  readonly handleOpenCategories: () => void;
+  /** Abre o atalho Configurações. */
+  readonly handleOpenSettings: () => void;
 };
 
 /**
@@ -137,6 +144,18 @@ export function useProfileViewModel(
     setError(null);
   }, []);
 
+  const handleOpenAchievements = useCallback((): void => {
+    router.navigate("/achievements");
+  }, []);
+
+  const handleOpenCategories = useCallback((): void => {
+    router.navigate("/categories");
+  }, []);
+
+  const handleOpenSettings = useCallback((): void => {
+    router.navigate("/settings");
+  }, []);
+
   return {
     profile,
     loading,
@@ -151,5 +170,8 @@ export function useProfileViewModel(
     setNameInput: handleSetNameInput,
     saveName,
     clearError,
+    handleOpenAchievements,
+    handleOpenCategories,
+    handleOpenSettings,
   };
 }

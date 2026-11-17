@@ -10,6 +10,40 @@ import { RoutineUseCases } from "@/usecase/routine-use-cases";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
 import { UNDO_WINDOW_MS, useRoutinesViewModel } from "@/viewmodel/useRoutinesViewModel";
 
+// Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
+const mockNavigate = jest.fn();
+const mockSetParams = jest.fn();
+let mockParams: Record<string, string | undefined> = {};
+const mockFocusCallbacks = new Set<() => void>();
+jest.mock("expo-router", () => ({
+  router: {
+    navigate: (...args: unknown[]) => mockNavigate(...args),
+    setParams: (...args: unknown[]) => mockSetParams(...args),
+  },
+  // Registra o efeito de foco enquanto o hook está montado; `focusScreen()` simula a tela ganhando foco.
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = jest.requireActual<typeof import("react")>("react");
+    const latest = React.useRef(callback);
+    latest.current = callback;
+    React.useEffect(() => {
+      const run = () => {
+        latest.current();
+      };
+      mockFocusCallbacks.add(run);
+      return () => {
+        mockFocusCallbacks.delete(run);
+      };
+    }, []);
+  },
+  useLocalSearchParams: () => mockParams,
+}));
+const focusScreen = () => mockFocusCallbacks.forEach((run) => run());
+
+beforeEach(() => {
+  mockParams = {};
+  mockFocusCallbacks.clear();
+});
+
 const ids = (items: { id: string }[]) => items.map((item) => item.id);
 
 /** Segunda-feira: a rotina de Seg a Sex é de hoje. */
@@ -111,5 +145,38 @@ describe("useRoutinesViewModel (caso de uso)", () => {
     const { result } = await renderHook(() => useRoutinesViewModel(failing));
     await waitFor(() => expect(result.current.errorKey).toBe("error.load"));
     expect(result.current.loading).toBe(false);
+  });
+});
+
+describe("useRoutinesViewModel (navegação)", () => {
+  it("abre Nova rotina e o detalhe pela ViewModel", async () => {
+    const { result } = await renderHook(() => useRoutinesViewModel(PROTOTYPE_ROUTINES));
+    result.current.handleCreateRoutine();
+    expect(mockNavigate).toHaveBeenLastCalledWith("/new-routine");
+    result.current.handleOpenRoutine(PROTOTYPE_ROUTINES[0].id);
+    expect(mockNavigate).toHaveBeenLastCalledWith({ pathname: "/routine-details", params: { id: PROTOTYPE_ROUTINES[0].id } });
+  });
+
+  it("conclui a exclusão confirmada no detalhe (?deleted=) e limpa o parâmetro da rota", async () => {
+    const target = PROTOTYPE_ROUTINES[0];
+    mockParams = { deleted: target.id };
+    const { result } = await renderHook(() => useRoutinesViewModel(PROTOTYPE_ROUTINES));
+    await act(async () => {
+      focusScreen();
+    });
+    await waitFor(() => expect(result.current.lastDeleted?.id).toBe(target.id));
+    expect(ids(result.current.visibleRoutines)).not.toContain(target.id);
+    expect(mockSetParams).toHaveBeenCalledWith({ deleted: undefined });
+  });
+
+  it("recarrega a lista quando a aba ganha foco", async () => {
+    const { useCases } = createUseCases();
+    const { result } = await renderHook(() => useRoutinesViewModel(useCases));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await useCases.createRoutine({ title: "Inglês", days: [1], tasks: [] });
+    await act(async () => {
+      focusScreen();
+    });
+    await waitFor(() => expect(result.current.visibleRoutines.map((routine) => routine.title)).toEqual(["Inglês"]));
   });
 });

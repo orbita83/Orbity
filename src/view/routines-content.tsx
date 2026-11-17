@@ -15,7 +15,7 @@ import { GradientSurface } from "./components/GradientSurface";
 const theme = themes.cosmic;
 
 export type RoutinesScreenContentProps = RoutinesState &
-  RoutinesActions & {
+  Omit<RoutinesActions, "handleCreateRoutine" | "handleOpenRoutine"> & {
     onCreateRoutine: () => void;
     onOpenRoutine: (id: string) => void;
   };

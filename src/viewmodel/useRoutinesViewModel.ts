@@ -1,3 +1,4 @@
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/DI/container";
 import { ROUTINE_ICONS, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
@@ -43,6 +44,10 @@ export type RoutinesActions = {
   undoDelete: () => void;
   dismissDeleted: () => void;
   reload: () => Promise<void>;
+  /** Abre o formulário de Nova rotina. */
+  handleCreateRoutine: () => void;
+  /** Abre o detalhe da rotina. */
+  handleOpenRoutine: (id: string) => void;
 };
 
 const toListItem = ({ routine, taskCount, activeToday, doneToday }: RoutineOverview): RoutineListItem => ({
@@ -58,6 +63,8 @@ const toListItem = ({ routine, taskCount, activeToday, doneToday }: RoutineOverv
 /**
  * Estado da lista de Rotinas: busca, conclusão do dia e exclusão com desfazer, pelo `IRoutineUseCases`.
  * Com um array, funciona só em memória (histórias do Storybook e testes de apresentação).
+ * Cuida também da navegação: recarrega ao ganhar foco, conclui a exclusão confirmada no detalhe
+ * (`/routines?deleted=<id>`, com "Desfazer" do protótipo 3.4) e abre o detalhe e a Nova rotina.
  */
 export const useRoutinesViewModel = (
   source?: IRoutineUseCases | readonly RoutineListItem[],
@@ -172,6 +179,32 @@ export const useRoutinesViewModel = (
     return () => clearTimeout(timer);
   }, [lastDeleted]);
 
+  // Recarrega ao voltar para a aba, para refletir o que mudou no detalhe ou em Nova rotina.
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
+
+  // A exclusão confirmada no detalhe volta para cá com `?deleted=<id>`: ao ganhar foco, exclui,
+  // mostra o aviso com "Desfazer" e tira o parâmetro da rota.
+  const { deleted } = useLocalSearchParams<{ deleted?: string }>();
+  useFocusEffect(
+    useCallback(() => {
+      if (!deleted) return;
+      deleteRoutine(deleted);
+      router.setParams({ deleted: undefined });
+    }, [deleteRoutine, deleted]),
+  );
+
+  const handleCreateRoutine = useCallback(() => {
+    router.navigate("/new-routine");
+  }, []);
+
+  const handleOpenRoutine = useCallback((id: string) => {
+    router.navigate({ pathname: "/routine-details", params: { id } });
+  }, []);
+
   const today = routines.filter((routine) => routine.activeToday);
   return {
     visibleRoutines,
@@ -187,5 +220,7 @@ export const useRoutinesViewModel = (
     undoDelete,
     dismissDeleted,
     reload,
+    handleCreateRoutine,
+    handleOpenRoutine,
   };
 };

@@ -41,6 +41,9 @@ const ProfileContent = ({
     setNameInput,
     saveName,
     clearError,
+    handleOpenAchievements,
+    handleOpenCategories,
+    handleOpenSettings,
   } = viewModel;
 
   const styles = createStyles(theme);
@@ -95,9 +98,9 @@ const ProfileContent = ({
           <Text allowFontScaling accessibilityRole="header" style={styles.sectionTitle}>
             Atalhos
           </Text>
-          <ProfileShortcutItem icon="star" title="Conquistas" description="Acompanhe suas conquistas" href="/achievements" loading={loading} theme={theme} />
-          <ProfileShortcutItem icon="category" title="Categorias" description="Organize suas categorias de estudo" href="/categories" loading={loading} theme={theme} />
-          <ProfileShortcutItem icon="settings" title="Configurações" description="Tema, notificações e conta" href="/settings" loading={loading} theme={theme} />
+          <ProfileShortcutItem icon="star" title="Conquistas" description="Acompanhe suas conquistas" onPress={handleOpenAchievements} loading={loading} theme={theme} />
+          <ProfileShortcutItem icon="category" title="Categorias" description="Organize suas categorias de estudo" onPress={handleOpenCategories} loading={loading} theme={theme} />
+          <ProfileShortcutItem icon="settings" title="Configurações" description="Tema, notificações e conta" onPress={handleOpenSettings} loading={loading} theme={theme} />
         </View>
       </ScrollView>
 
