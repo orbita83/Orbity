@@ -18,11 +18,11 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
   | Componente de **tela** em `src/view/` | `kebab-case.tsx`, **idêntico** ao do módulo de rota em `src/app/` que o re-exporta | `src/view/tasks.tsx` ↔ `src/app/tasks.tsx` |
   | Parte de apresentação de uma tela em `src/view/` (usada só por ela) | `kebab-case.tsx`: nome da tela + `-content` | `src/view/tasks-content.tsx` |
   | Componente **reutilizável** em `src/view/components/` | `PascalCase.tsx` | `src/view/components/PrimaryButton.tsx` |
-  | Arquivo da ViewModel em `src/viewmodel/` | `PascalCase.ts` com sufixo `ViewModel` | `src/viewmodel/TasksViewModel.ts` |
+  | Arquivo da ViewModel em `src/viewmodel/` | `camelCase.ts` com o **mesmo nome** do hook exportado (`useNomeViewModel.ts`) | `src/viewmodel/useTasksViewModel.ts` |
 
   - **Telas na View (`src/view/`):** só o **arquivo** segue o nome da rota; o identificador do componente continua em `PascalCase` com sufixo `Screen` (ex.: `src/view/tasks.tsx` exporta `TasksScreen`; `src/view/index.tsx` exporta `HomeScreen`, a tela da rota inicial `src/app/index.tsx`). Histórias e testes da tela usam o mesmo nome (`tasks-content.stories.tsx`, `tasks-content.test.tsx`).
   - **Componentes de UI na View (`src/view/components/`):** Identificador do componente e arquivo em `PascalCase.tsx` (ex: `src/view/components/UserProfile.tsx`, `src/view/components/PrimaryButton.tsx`). Histórias e testes usam o mesmo nome (`PrimaryButton.stories.tsx`, `PrimaryButton.test.tsx`).
-  - **Arquivos da ViewModel (`src/viewmodel/`):** Arquivo em `PascalCase.ts` com sufixo `ViewModel` (ex: `src/viewmodel/HomeViewModel.ts`, `src/viewmodel/LoginViewModel.ts`, `src/viewmodel/TimestampViewModel.ts`).
+  - **Arquivos da ViewModel (`src/viewmodel/`):** Arquivo em `camelCase.ts` com o mesmo nome do hook que exporta, no formato `useNomeViewModel.ts` (ex: `src/viewmodel/useHomeViewModel.ts` exporta `useHomeViewModel`; `src/viewmodel/useLoginViewModel.ts` exporta `useLoginViewModel`; `src/viewmodel/useTimestampViewModel.ts` exporta `useTimestampViewModel`). Testes usam o mesmo nome (`useHomeViewModel.test.ts`), um por arquivo de ViewModel.
   - **Hooks da ViewModel:** Função exportada em `camelCase` com prefixo `use` seguido do nome da tela em PascalCase e sufixo `ViewModel` (ex: `useHomeViewModel()`, `useTimestampViewModel()`).
 - **Módulos de rota em `src/app/`:** Arquivos em `kebab-case.tsx` (ex: `src/app/index.tsx`, `src/app/tasks.tsx`, `src/app/new-task.tsx`) que determinam a rota no Expo Router, importam como `default` a tela da `view` **de mesmo nome** e a exportam novamente como `default`.
 
