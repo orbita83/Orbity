@@ -11,5 +11,8 @@ module.exports = {
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
   clearMocks: true,
+  // O primeiro teste de cada arquivo de tela monta a tela inteira pela primeira vez e, no runner do
+  // CI, pode passar dos 5 s padrão do Jest sem nenhuma falha real (ex.: tasks-content.test.tsx).
+  testTimeout: 15000,
   globalSetup: '<rootDir>/tests/setup/timezone.cjs',
 };
