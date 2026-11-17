@@ -16,7 +16,7 @@ import {
   useProfileViewModel,
   type ProfileActions,
   type ProfileState,
-} from "@/viewmodel/ProfileViewModel";
+} from "@/viewmodel/useProfileViewModel";
 
 export type ProfileScreenProps = {
   readonly theme?: OrbityTheme;

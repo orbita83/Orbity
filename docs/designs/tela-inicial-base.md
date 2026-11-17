@@ -72,7 +72,7 @@ Os pontos de entrada que Tarefas e Rotinas vão usar ficam definidos desde já. 
     | CA-03 | não soma mais de uma vez no mesmo dia | `calculateStreak` + chave única por data |
     | CA-04 | mantém o valor no dia seguinte à última atividade | `calculateStreak` |
     | CA-05 | zera depois de um dia inteiro sem atividade | `calculateStreak` |
-    | CA-06 | recalcula ao abrir o app | `HomeViewModel` (D17) |
+    | CA-06 | recalcula ao abrir o app | `useHomeViewModel` (D17) |
     | CA-07 | recomeça em 1 depois de uma interrupção | `calculateStreak` |
     | CA-08 | o dia é o calendário local do estudante | `IClockService.todayLocal()` |
 
@@ -227,7 +227,7 @@ Regras de resolução:
                                           ▼
                                    src/view/HomeScreenContent.tsx (props puras; testes e histórias)
                                           ▲ estado e ações
-                     src/viewmodel/HomeViewModel.ts ── ActivitySheetMotionViewModel.ts / ActivitySheetGeometry.ts
+                     src/viewmodel/useHomeViewModel.ts ── useActivitySheetMotionViewModel.ts / ActivitySheetGeometry.ts
                                           │ resolveUseCase(container.useCases.home)
                                           ▼
                      src/usecase/  i-home-use-cases · home-use-cases · i-streak-use-cases · streak-use-cases
@@ -313,14 +313,14 @@ Correções obrigatórias de camada no protótipo:
 *   o hook de gesto para de importar `view/theme/tokens`. A geometria e o `reduceMotion` passam a chegar por parâmetro.
 
 Os arquivos:
-*   **`HomeViewModel.ts` → `useHomeViewModel(homeUseCases = resolveUseCase(undefined, container.useCases.home))`:**
+*   **`useHomeViewModel.ts` → `useHomeViewModel(homeUseCases = resolveUseCase(undefined, container.useCases.home))`:**
     *   estado: `status: 'loading' | 'error' | 'ready'`, `error: { messageKey; retryable } | null`, `summary: HomeSummary | null`, `progressLabel`, `selectedDuration` e `sheetStage`;
     *   ações: `retry()`, `selectDuration(d)` e as ações do painel do protótipo;
     *   recalcula ao montar e quando o `AppState` volta para `active` (D17, D21);
     *   um recálculo em segundo plano **não** volta para `loading`, e um erro depois de `ready` não apaga o que já está na tela;
     *   na camada de apresentação, só esta ViewModel usa `try/catch` ([ARCHITECTURE.md](../../ARCHITECTURE.md) §5).
 *   **`ActivitySheetGeometry.ts`:** funções puras de geometria do painel e o tipo `FocusSheetStage` (`'collapsed' | 'stage1_1' | 'stage1_2'`). É um auxiliar da camada ViewModel.
-*   **`ActivitySheetMotionViewModel.ts`:** a lógica de gesto do protótipo, que recebe `SheetGeometryConfig` e `reduceMotion` como parâmetros.
+*   **`useActivitySheetMotionViewModel.ts`:** a lógica de gesto do protótipo, que recebe `SheetGeometryConfig` e `reduceMotion` como parâmetros.
 *   **`HomeScreen.tsx`** (`default`): chama `useHomeViewModel()` e `useReduceMotion()`, monta o `SheetGeometryConfig` a partir de `themes.cosmic` e renderiza o `HomeScreenContent`.
 *   **`HomeScreenContent.tsx`:** a tela do protótipo refatorada, só de apresentação, que recebe estado e ações por props. Testes e histórias renderizam este componente e nunca importam `@/DI`. Ela:
     *   não tem `NavBar` própria;
@@ -651,13 +651,13 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 
 ### Etapa 6 — ViewModel (`src/viewmodel/`)
 
-*   **`src/viewmodel/HomeViewModel.ts` (Rename de `use-home-view-model.ts`, depois Modify):** o estado e as ações do Technical Plan §7. Mapeia `DomainError.code` para as chaves `error.persistence` e `error.schema`. Remove do protótipo:
+*   **`src/viewmodel/useHomeViewModel.ts` (Rename de `use-home-view-model.ts`, depois Modify):** o estado e as ações do Technical Plan §7. Mapeia `DomainError.code` para as chaves `error.persistence` e `error.schema`. Remove do protótipo:
     *   `activeTab` e `handleSelectTab`;
     *   `selectedAchievement`;
     *   `isFocusMode`, `focusStartedAt`, `elapsedSeconds` e `focusTimerLabel`;
     *   `handleToggleFocusMode`;
     *   o import de `PROTOTYPE_HOME_DASHBOARD` e de `NavTabId`.
-*   **`src/viewmodel/HomeViewModel.test.ts` (Create):** `renderHook` do RNTL, com um `IHomeUseCases` falso:
+*   **`src/viewmodel/useHomeViewModel.test.ts` (Create):** `renderHook` do RNTL, com um `IHomeUseCases` falso:
     *   `loading` → `ready`;
     *   rejeição com `PERSISTENCE_FAILURE` → `status: 'error'`, `retryable: true` e `summary: null`;
     *   `retry()` com sucesso → `ready`;
@@ -668,7 +668,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   `jest.restoreAllMocks()` no `afterEach`.
 *   **`src/viewmodel/ActivitySheetGeometry.ts` (Rename de `activity-sheet-geometry.ts`, depois Modify):** recebe um `SheetGeometryConfig { sceneHeight; expandedTop; collapsedHeight }` por parâmetro e passa a declarar o `FocusSheetStage`.
 *   **`src/viewmodel/ActivitySheetGeometry.test.ts` (Create):** os pontos de parada para três alturas de cena, mais a decisão de soltar acima e abaixo da metade.
-*   **`src/viewmodel/ActivitySheetMotionViewModel.ts` (Rename de `use-activity-sheet-motion.ts`, depois Modify):** exporta `useActivitySheetMotionViewModel({ stage, geometry, reduceMotion, onStageChange })`, sem importar `view/`.
+*   **`src/viewmodel/useActivitySheetMotionViewModel.ts` (Rename de `use-activity-sheet-motion.ts`, depois Modify):** exporta `useActivitySheetMotionViewModel({ stage, geometry, reduceMotion, onStageChange })`, sem importar `view/`.
 *   **Delete:** `src/viewmodel/use-reduced-motion.ts` (protótipo) e `src/viewmodel/.gitkeep`.
 
 ### Etapa 7 — View, textos e rotas

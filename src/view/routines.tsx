@@ -1,6 +1,6 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
-import { useRoutinesViewModel } from "../viewmodel/RoutinesViewModel";
+import { useRoutinesViewModel } from "../viewmodel/useRoutinesViewModel";
 import { RoutinesScreenContent } from "./routines-content";
 
 /**

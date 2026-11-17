@@ -1,4 +1,4 @@
-import type { RoutineIcon } from "../viewmodel/RoutinesViewModel";
+import type { RoutineIcon } from "../viewmodel/useRoutinesViewModel";
 
 /**
  * Textos das telas de Rotinas (protótipo do Claude Design, telas 3 a 3.4).

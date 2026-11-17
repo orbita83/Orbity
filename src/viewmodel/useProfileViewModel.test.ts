@@ -3,7 +3,7 @@ import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture
 import type { StudentProfile } from "@/model/entities/student-profile";
 import { DomainError, ValidationError } from "@/model/errors/domain-error";
 import type { IProfileUseCases } from "@/usecase/profile-use-cases";
-import { useProfileViewModel } from "./ProfileViewModel";
+import { useProfileViewModel } from "./useProfileViewModel";
 
 describe("useProfileViewModel", () => {
   let fakeUseCases: IProfileUseCases;

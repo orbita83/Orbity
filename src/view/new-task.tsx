@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useNewTaskViewModel } from "../viewmodel/NewTaskViewModel";
+import { useNewTaskViewModel } from "../viewmodel/useNewTaskViewModel";
 import { NewTaskScreenContent } from "./new-task-content";
 
 /** Tela Nova/Editar tarefa: abre por cima de Tarefas e volta para a lista ao fechar ou depois de salvar. */

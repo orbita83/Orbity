@@ -82,8 +82,8 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 | Camada (`src/`) | Responsabilidade e Limite Estrito | Dependências Permitidas | Dependências Proibidas |
 | :--- | :--- | :--- | :--- |
 | **`app/`** | Módulos de rota do Expo Router. Apenas importam e re-exportam como `default` as telas de `src/view/`. | `src/view/`, `expo-router` | `viewmodel/`, `usecase/`, `model/`, `infra/`, `DI/` |
-| **`view/`** | Componentes visuais (`components/`), telas (`*Screen.tsx`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System | `usecase/`, `model/` (regras/serviços), `infra/`, `DI/` |
-| **`viewmodel/`** | Custom Hooks em arquivos PascalCase (`*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/DI/container.ts`, React hooks | Classes concretas de `usecase/`, `model/repositories/`, `model/services/`, `infra/` |
+| **`view/`** | Componentes visuais (`components/`), telas (`kebab-case.tsx`, com o mesmo nome da rota em `src/app/`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System | `usecase/`, `model/` (regras/serviços), `infra/`, `DI/` |
+| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/DI/container.ts`, React hooks | Classes concretas de `usecase/`, `model/repositories/`, `model/services/`, `infra/` |
 | **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors/`, `repositories/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `DI/`, React Native, Expo, SDKs externos |
 | **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors/`) e contratos (`repositories/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `DI`) ou biblioteca externa |
 | **`infra/`** | Repositórios/DataSources (`repositories/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `DI/` |
@@ -178,7 +178,7 @@ export class SystemClockService implements IClockService {
 ```
 
 ```typescript
-// 4. ViewModel — Tipos State/Actions e Resolução de Abstração (src/viewmodel/TimestampViewModel.ts)
+// 4. ViewModel — Tipos State/Actions e Resolução de Abstração (src/viewmodel/useTimestampViewModel.ts)
 import { useState } from "react";
 import { resolveUseCase } from "@/DI/container";
 import { DomainError } from "@/model/errors/domain-error";
@@ -234,7 +234,7 @@ import {
   useTimestampViewModel,
   type TimestampActions,
   type TimestampState,
-} from "@/viewmodel/TimestampViewModel";
+} from "@/viewmodel/useTimestampViewModel";
 
 const theme = themes.light;
 

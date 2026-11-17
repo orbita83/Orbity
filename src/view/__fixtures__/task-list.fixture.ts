@@ -1,4 +1,4 @@
-import type { TaskListItem } from "@/viewmodel/TasksViewModel";
+import type { TaskListItem } from "@/viewmodel/useTasksViewModel";
 
 /** Tarefas do protótipo 2 (Claude Design), só para histórias e testes; o app começa sem tarefas. */
 export const PROTOTYPE_TASKS: readonly TaskListItem[] = [

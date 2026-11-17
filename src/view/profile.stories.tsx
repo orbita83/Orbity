@@ -3,7 +3,7 @@ import { fn } from "storybook/test";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ProfileScreen from "./profile";
 import { themes } from "./theme/tokens";
-import type { ProfileState, ProfileActions } from "@/viewmodel/ProfileViewModel";
+import type { ProfileState, ProfileActions } from "@/viewmodel/useProfileViewModel";
 
 const viewModel: ProfileState & ProfileActions = {
   profile: { id: "preview", name: "Alex Silva", streakDays: 12, achievementsCount: 5, studyHours: 42 },

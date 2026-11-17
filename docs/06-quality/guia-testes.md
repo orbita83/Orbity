@@ -49,7 +49,7 @@ src/
 │   │   ├── PrimaryButton.tsx
 │   │   └── PrimaryButton.test.tsx
 │   └── ...                                   # Testes *Screen.test.tsx junto das telas
-└── viewmodel/                                # Testes *ViewModel.test.ts junto dos hooks
+└── viewmodel/                                # Testes use*ViewModel.test.ts junto dos hooks
 tests/
 ├── fixtures/                                 # Quando necessárias, fixtures compartilhadas
 └── pure-logic.test.ts                         # Exemplo sem módulo de produção associado
@@ -59,7 +59,7 @@ A árvore indica a organização dos testes e dos arquivos de apoio quando neces
 
 ### Convenções de Nomenclatura de Arquivos
 - **Lógica Pura, Use Cases e Infraestrutura:** Arquivos TypeScript em `kebab-case` sob a extensão `*.test.ts` (ex.: `timestamp-use-case.test.ts`, `system-clock-service.test.ts`).
-- **ViewModels (Hooks de Apresentação):** Arquivos TypeScript em `PascalCase` sob a extensão `*ViewModel.test.ts`, espelhando o módulo `*ViewModel.ts` (ex.: `TimestampViewModel.test.ts` para testar o hook `useTimestampViewModel`).
+- **ViewModels (Hooks de Apresentação):** Arquivos TypeScript em `camelCase` com o mesmo nome do hook testado, sob a extensão `use*ViewModel.test.ts`, espelhando o módulo `use*ViewModel.ts` (ex.: `useTimestampViewModel.test.ts` para testar o hook `useTimestampViewModel`). Um arquivo de teste por ViewModel.
 - **Componentes e Telas React Native:** Arquivos TSX sob a extensão `*.test.tsx` (ex.: `TimestampScreen.test.tsx`, `PrimaryButton.test.tsx`).
 - **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestamp-record.fixture.ts`); fixtures compartilhadas entre camadas podem ficar em `tests/fixtures/`.
 
@@ -208,7 +208,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 - Não utilize React, React Native Testing Library ou instâncias do container global para testes unitários de Use Cases.
 
 ### 6.2. Como Testar ViewModels (`src/viewmodel/`)
-- ViewModels são implementadas em arquivos `*ViewModel.ts` (ex.: `TimestampViewModel.ts`) e expostas como Custom Hooks (`use*ViewModel`).
+- ViewModels são implementadas em arquivos `use*ViewModel.ts` com o mesmo nome do hook (ex.: `useTimestampViewModel.ts`) e expostas como Custom Hooks (`use*ViewModel`).
 - Devem ser testadas utilizando o utilitário `renderHook` de `@testing-library/react-native`.
 - Devem receber a interface do Use Case (`I*UseCase` / `I*UseCases`) via injeção por parâmetro opcional (resolvido internamente com `resolveUseCase` de `src/DI/container.ts`), passando um dublê da abstração.
 - Verifique as transições de estado:
@@ -311,11 +311,11 @@ describe("TimestampUseCase", () => {
 ### 8.2. Exemplo: Teste de Hook de ViewModel com Dublê de Use Case
 
 ```typescript
-// src/viewmodel/TimestampViewModel.test.ts
+// src/viewmodel/useTimestampViewModel.test.ts
 import { renderHook, act } from "@testing-library/react-native";
 import { ValidationError } from "@/model/errors/domain-error";
 import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
-import { useTimestampViewModel } from "@/viewmodel/TimestampViewModel";
+import { useTimestampViewModel } from "@/viewmodel/useTimestampViewModel";
 
 describe("useTimestampViewModel", () => {
   it("deve gerenciar estado de loading e atualizar label com sucesso", async () => {
