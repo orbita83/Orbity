@@ -31,7 +31,7 @@ Camada de apresentação do Orbity. Contém os componentes de tela exportados co
 ## Side Effects
 
 - As telas não têm efeitos colaterais.
-- Efeitos dos subdiretórios: navegação via `navigation.emit`/`navigation.navigate` em `MainTabBar`; manipulação de foco/clique no DOM (somente web) em `FilterChips`; estado local de foco via `useState`. Detalhes em [components](./components/README.md).
+- Efeitos dos subdiretórios: navegação via `navigation.emit`/`navigation.navigate` em `MainTabBar`; estado local de foco via `useState`. Detalhes em [components](./components/README.md).
 
 ## Verification
 

@@ -109,7 +109,7 @@ No detalhe, o estudante toca em "Editar", troca o nome, remove uma tarefa e adic
 - `TaskActivityCatalog(tasks, routines)`, conforme R9 e R10.
 
 ### 4. Composição (`src/DI/`)
-- `createPersistence()` devolve `routines` nas duas plataformas, e o container registra `useCases.routines`.
+- `createPersistence()` devolve `routines`, e o container registra `useCases.routines`.
 
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)
 - As três ViewModels usam `IRoutineUseCases` e ganham `loading` e `errorKey`. Elas aceitam um array de protótipo, como o `useTasksViewModel`, para o Storybook e as fixtures continuarem sem `@/DI`.

@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 export type MaterialSymbolName =
@@ -346,28 +346,6 @@ export const MaterialSymbol = ({
   const pathData = filled
     ? SYMBOL_PATHS[name]?.filled ?? SYMBOL_PATHS[name]?.outlined
     : SYMBOL_PATHS[name]?.outlined;
-
-  if (Platform.OS === "web") {
-    return (
-      <View
-        accessible={false}
-        aria-hidden={true}
-        style={[styles.container, { width: size, height: size }]}
-      >
-        <svg
-          aria-hidden="true"
-          focusable="false"
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
-          fill={color}
-          style={{ display: "block" }}
-        >
-          <path d={pathData} />
-        </svg>
-      </View>
-    );
-  }
 
   // Renderização nativa no Android e iOS via react-native-svg
   return (

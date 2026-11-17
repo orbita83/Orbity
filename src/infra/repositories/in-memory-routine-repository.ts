@@ -9,7 +9,7 @@ type StoredRoutine = { readonly order: number; readonly routine: Routine; readon
 const key = (...parts: string[]) => parts.join("|");
 
 /**
- * Mesma semântica do SQLite, em memória. Usado na web (D8) e em testes. Recebe o repositório de
+ * Mesma semântica do SQLite, em memória. Usado em testes. Recebe o repositório de
  * tarefas para criar as tarefas da rotina junto com ela, como a transação do SQLite.
  */
 export class InMemoryRoutineRepository implements IRoutineRepository {

@@ -54,7 +54,6 @@ As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica
 | :--- | :--- | :--- | :--- |
 | **Padrão (Inativo)** | Fundo `navbar.bg`, ícone e texto em `navbar.item-inactive` (`color.on-surface`), tipografia `font.caption` com peso de `font.label` | Navega para a aba correspondente ao receber toque ou clique | Expõe papel de aba (`tab`), rótulo e `{ selected: false }` |
 | **Ativo (Selecionado)** | Fundo do indicador `navbar.indicator-bg`, ícone preenchido e rótulo em negrito em `navbar.item-active` (`color.action`) | Indica a tela atual do estudante; toque repetido rola a tela ao topo | Expõe papel de aba (`tab`), rótulo e `{ selected: true }` |
-| **Hover** | Destaque sutil com leve realce no fundo do item; demais tokens mantidos | Realça o item sob o cursor em ambientes desktop/web; não se aplica a telas de toque | Não transmite informação exclusiva nem executa navegação |
 | **Pressionado** | Escala `motion.scale-pressed` (0,96) com opacidade `motion.opacity-pressed` (0,8) | Feedback imediato em `motion.duration.short` (100 ms); sem escala quando o sistema pede movimento reduzido | Mantém a área de toque intacta e legível |
 | **Foco** | Anel visível de 2 dp em `navbar.focus-color` com 2 dp de afastamento | Identifica a aba na navegação por teclado (Tab / Shift+Tab ou setas direcionais) | Razão de contraste de 6,29:1 no claro e 6,50:1 no escuro (acima dos 3:0 exigidos pela WCAG 1.4.11) |
 | **Desabilitado** | *Não aplicável* | Todas as abas principais permanecem acessíveis ao estudante | Evita desorientação; telas sem dados exibem estados vazios acolhedores em vez de abas bloqueadas |
@@ -68,7 +67,7 @@ As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica
   - Item inativo: `color.on-surface` sobre `color.surface` atinge **17,17:1** tanto no tema claro quanto no escuro (muito acima do limiar de 4,5:1).
   - Item ativo: `color.action` sobre `color.surface` atinge **6,29:1** no tema claro e **6,50:1** no escuro, superando a exigência de 4,5:1 para texto normal e 3,0:1 para elementos de interface.
   - Indicador de foco: `color.focus` sobre `color.surface` atinge **6,29:1** (claro) e **6,50:1** (escuro), acima dos 3,0:1 exigidos pela WCAG 2.4.11.
-- **Leitor de tela (TalkBack, VoiceOver e Web):**
+- **Leitor de tela (TalkBack e VoiceOver):**
   - O container da barra declara `accessibilityRole="tablist"`.
   - Cada item declara `accessibilityRole="tab"`.
   - O estado dinâmico é exposto via `accessibilityState={{ selected: isActive }}`.

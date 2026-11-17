@@ -29,7 +29,6 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 | Estado | Aparência (tokens) | Comportamento | Acessibilidade |
 | --- | --- | --- | --- |
 | Padrão | Conforme a anatomia | Ações aplicam-se aos selecionados | Papel `toolbar`; contador anunciado ao mudar |
-| Hover | Fundo `color.action-subtle` na ação (Web) | — | — |
 | Pressionado | `motion.scale-pressed` + `motion.opacity-pressed` | Feedback curto | Mantém área de 48 dp |
 | Foco | Anel `color.focus` | Teclado | Contraste ≥ 3:1 |
 | Desabilitado | Opacidade 0,6 quando nada está selecionado | Bloqueia a ação | `{ disabled: true }` |

@@ -96,7 +96,6 @@ Os pontos de entrada que Tarefas e Rotinas vão usar ficam definidos desde já. 
 *   Teste manual no aparelho: ainda não há como testar manualmente (E6).
 *   Build de dev client ou EAS. O autor faz o build quando quiser (E7).
 *   Sincronização, backup, conta de usuário ou backend.
-*   Persistência na web: os dados ficam só em memória e se perdem ao recarregar (D8).
 
 ## Decisions & Open Questions
 
@@ -109,7 +108,7 @@ Os rótulos "(era Qn)" apontam para as perguntas do brainstorm e do draft. As de
 *   **D5 — retirada (E1):** a marcação "sessão ativa" do RN-0006 sai junto com o motor.
 *   **D6 (era Q9):** a constelação **não volta** quando a sequência zera. O RN-0003 CA-02 é atualizado nesta mudança. A constelação em si fica fora do código.
 *   **D7 (era Q11):** o botão Iniciar fica desabilitado, com o texto de apoio sempre visível.
-*   **D8 (era Q5):** na web, os dados ficam só em memória e se perdem ao recarregar.
+*   **D8 — retirada:** o suporte exclusivo à web foi removido por o projeto ser unicamente mobile.
 *   **D9 (era Q6, corrigida na revisão):** os nomes de arquivo seguem o [`RULES.md`](../../RULES.md):
     *   **PascalCase** em `src/view/` e `src/viewmodel/`;
     *   **kebab-case** em `src/model/`, `src/usecase/`, `src/infra/` e `src/app/`;
@@ -241,7 +240,7 @@ Regras de resolução:
                                    services/ (system-clock-service) · database/ (i-sql-executor,
                                    expo-sql-executor, database-provider, migrations)
                                           ▲ compõe: o único ponto de composição
-                     src/DI/container.ts + src/DI/persistence.ts (Android) / persistence.web.ts (web)
+                     src/DI/container.ts + src/DI/persistence.ts (Android)
 ```
 
 ### 3. Domínio (`src/model/`)
@@ -296,12 +295,7 @@ O domínio não depende de React, Expo nem de SDKs ([ARCHITECTURE.md](../../ARCH
 ### 6. Composição (`src/DI/`)
 
 *   O `container.ts` troca os registros genéricos `Record<string, unknown>` pelos tipos `AppRepositories` (`dailyActivity`, `activityCatalog`), `AppServices` (`clock`) e `AppUseCases` (`streak`, `home`).
-*   **Troca por plataforma dentro do DI** (ADR-0001 §5):
-    *   `src/DI/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos repositórios SQLite;
-    *   `src/DI/persistence.web.ts` devolve os repositórios em memória (D8);
-    *   o Metro escolhe o `.web.ts` na web, inclusive na renderização estática.
-
-    Os dois arquivos só são importados pelo `container.ts`. É o único mecanismo para manter o `expo-sqlite` fora da web, dos testes e do Storybook. A F11 verifica isso com `npm test` e `build-storybook`.
+*   `src/DI/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos repositórios SQLite e só é importado pelo `container.ts` (ADR-0001 §5).
 *   O `createContainer` congela (`Object.freeze`) cada registro, para nenhuma camada trocar uma dependência em tempo de execução. Os testes substituem repositórios ou o relógio por `ContainerOverrides`. O `resolveUseCase(override, padrão)` devolve o override quando ele é passado e, se não, o use case do container.
 *   O `src/di/home-factory.ts` do protótipo é removido (Technical Plan §1).
 
@@ -408,13 +402,7 @@ Os arquivos:
 
 *   **Pros**: Mantém a infraestrutura autocontida.
 *   **Cons**: Cria um segundo ponto de composição, contra o ADR-0001 §5 e o ARCHITECTURE §6.1.
-*   **Reason for Rejection**: Rejected na revisão: a troca fica em `src/DI/persistence(.web).ts`.
-
-### Alternative M: Web com `expo-sqlite` (WASM) ou IndexedDB
-
-*   **Pros**: Os dados sobreviveriam a recarregar a página.
-*   **Cons**: Exige cabeçalhos COOP/COEP e configuração de bundler na web e no Storybook, e o alvo do produto é o Android.
-*   **Reason for Rejection**: Rejected by author: na web, só memória (D8).
+*   **Reason for Rejection**: Rejected na revisão: a composição fica em `src/DI/persistence.ts`.
 
 ### Alternative N: Construir Tarefas e Rotinas mínimas, ou semear dados fictícios para teste manual
 
@@ -642,12 +630,10 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 
 *   **`src/DI/container.ts` (Modify):** os tipos `AppRepositories { dailyActivity; activityCatalog }`, `AppServices { clock }` e `AppUseCases { streak; home }`. O `appContainerDefinition` usa `createPersistence()` de `./persistence`, `EmptyActivityCatalog` e `SystemClockService`. A API pública não muda.
 *   **`src/DI/persistence.ts` (Create):** `createPersistence(): { dailyActivity: IDailyActivityRepository }`, com `DatabaseProvider(() => ExpoSqlExecutor.open('orbity.db'))`.
-*   **`src/DI/persistence.web.ts` (Create):** a mesma assinatura, com `InMemoryDailyActivityRepository`.
 *   **`src/DI/container.test.ts` (Create):**
     *   com `jest.isolateModules` e `jest.spyOn(DatabaseProvider.prototype, 'get')` antes de `require('@/DI/container')`, importar o módulo não abre o banco (0 chamadas);
     *   `container.useCases.streak` usa o `dailyActivity` em memória passado em `overrides`;
     *   o container está congelado.
-*   **`src/DI/persistence.web.test.ts` (Create):** `createPersistence()` devolve um `InMemoryDailyActivityRepository`.
 
 ### Etapa 6 — ViewModel (`src/viewmodel/`)
 
@@ -719,7 +705,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   nomes `IDailyActivityRepository`, com prefixo `I`, e arquivos kebab-case;
     *   esquema v1 só com `daily_activity`;
     *   `ISqlExecutor` com transação em lote e `better-sqlite3` nos testes (D15);
-    *   troca por plataforma em `src/DI/persistence(.web).ts` (D8);
+    *   composição em `src/DI/persistence.ts`;
     *   o motor do foco e a sessão saem do contexto.
 *   **`docs/05-architecture/decisions/README.md` (Modify):** o status do ADR-0001 passa a `Accepted`.
 *   **`docs/02-requirements/business-rules/RN-0003.md` (Modify):** o CA-02 passa a ser "o progresso da constelação acompanha cada incremento da sequência e não volta quando a sequência zera" (D6).
@@ -729,7 +715,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 *   **`docs/02-requirements/functional/RF-0015.md` (Modify):** um critério novo, CA-09: "A sequência deve ser recalculada quando o aplicativo volta do segundo plano, e registros com data posterior à data local atual não devem ser contabilizados (D17)." Não há critério sobre meia-noite (E3).
 *   **`docs/02-requirements/functional/RF-0019.md` (Modify):** o ponto pendente vira o CA-05: "A duração selecionada por padrão deve ser de 15 minutos (D12)."
 *   **`docs/04-specifications/use-cases/UC-0011-atualizar-sequencia-estudos.md` e `docs/04-specifications/flows/FL-0011.md` (Modify):** "incrementa o contador" vira "registra o dia; a sequência é recalculada na leitura", com links para o RF-0014 e o RF-0015. Fica anotado que a parte de constelação e conquistas não é entregue nesta mudança.
-*   **`ARCHITECTURE.md` (Modify):** a árvore do §3 ganha `infra/database/` e os arquivos `DI/persistence(.web).ts`.
+*   **`ARCHITECTURE.md` (Modify):** a árvore do §3 ganha `infra/database/` e o arquivo `DI/persistence.ts`.
 *   **`design-system/README.md` (Modify):** o índice registra o `08-home-cosmica.md` (Etapa 0.2a).
 
 ### Verification Plan
@@ -738,7 +724,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 *   **Lint:** `npm run lint`, com as regras novas de importação proibida.
 *   **Testes:** `npm test`. Inclui as suítes de contrato, que executam o SQL real no `better-sqlite3`, a tabela-verdade do RF-0015, a ViewModel e a tela.
 *   **Contraste dos tokens:** `node tests/ods-theme.test.cjs`.
-*   **Storybook:** `npm run build-storybook`, que também mostra que o bundle web usa o `persistence.web.ts`.
+*   **Storybook:** `npm run build-storybook`.
 *   **Cobertura por requisito:** cada teste ligado a um critério traz o ID no nome, por exemplo `RF-0015 CA-05: …`.
 *   **Build e checagem no aparelho:** não fazem parte desta mudança (E6, E7).
 *   **Hooks:** não se aplica. `.husky/`, `scripts/` e `commitlint.config.cjs` não mudam.
@@ -752,12 +738,12 @@ O que mudou em relação ao plano acima, e por quê:
 *   **Arquivo a mais na infraestrutura.** `src/infra/database/persistence-error.ts` (`toDomainError`) concentra a conversão de falhas do driver em `PERSISTENCE_FAILURE`, usada pelo `DatabaseProvider` e pelo repositório SQLite.
 *   **Fila no executor do Expo.** O `ExpoSqlExecutor` passa as operações por uma fila, para nada se intercalar dentro de uma transação em lote.
 *   **Tempo da animação por parâmetro.** `useActivitySheetMotionViewModel` recebe também `timing` (`motion.durationMedium` e `motion.easingStandard`), para a ViewModel não importar tokens da View.
-*   **Durações com o `FilterChips`.** O seletor de duração reaproveita o `FilterChips` (`radiogroup`, setas do teclado na web). O componente ganhou a prop opcional `itemAccessibilityLabel`, para o nome acessível ser "15 minutos" e não "Filtrar por 15 minutos".
+*   **Durações com o `FilterChips`.** O seletor de duração reaproveita o `FilterChips` (`radiogroup`). O componente ganhou a prop opcional `itemAccessibilityLabel`, para o nome acessível ser "15 minutos" e não "Filtrar por 15 minutos".
 *   **Textos de apoio.** Além da tabela da Etapa 7, entraram no `home-copy.ts` os textos aprovados pelo autor na implementação ("dia/dias de sequência", "Seu progresso", "Seu próximo passo começa aqui.", "Cada atividade concluída conta.", "Modo Foco", "Concentre-se no que importa.", "Iniciar foco", "Deslize para explorar") e três nomes acessíveis: "Duração do foco", "{completed} de {total} atividades concluídas" e "Carregando seu progresso".
 *   **Engrenagem removida.** Sem o diálogo de configurações (D16), o botão do cabeçalho saiu até existir a tela de Ajustes. A tela segue só a preferência de movimento reduzido do sistema.
 *   **Falha num recálculo depois de pronto.** A tela mantém o valor anterior, sem aviso; a próxima volta ao app tenta de novo.
 *   **Tokens (Etapa 0.2a).** Tabela aprovada com a regra da grade de 8 pontos: alça do painel 40 × 4 dp (antes 40 × 5), tokens novos `font.brand`, `font.caption`, `size.header-height`, `size.icon-lg`, `border.width-thin` e as cores `iconAccent`, `streakFlame` e `streakFlameCore`; botão desabilitado sólido só no tema cósmico (7,80:1). A sombra escura do número da sequência usa os raios `space.md` e `space.sm`, porque o ODS não tem token de sombra de texto.
-*   **Verificações não executadas localmente.** O `npm run build-storybook` foi bloqueado pela permissão da sessão e fica para o CI. O passo condicional do `ci.yml` (`build-essential` para o `better-sqlite3`) não foi adicionado, porque não deu para testar o `npm ci` no Linux; o `better-sqlite3` 13.2.0 publica binário pronto para linux-x64 no Node 22.
+*   **Verificações não executadas localmente.** O passo condicional do `ci.yml` (`build-essential` para o `better-sqlite3`) não foi adicionado, porque não deu para testar o `npm ci` no Linux; o `better-sqlite3` 13.2.0 publica binário pronto para linux-x64 no Node 22.
 
 --------------------------------------------------------------------------------
 

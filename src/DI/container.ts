@@ -1,6 +1,7 @@
 import { InMemoryProfileRepository } from "@/infra/repositories/in-memory-profile-repository";
 import type { IProfileRepository } from "@/model/repositories/profile-repository";
-import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-cases";
+import type { IProfileUseCases } from "@/usecase/i-profile-use-cases";
+import { ProfileUseCases } from "@/usecase/profile-use-cases";
 
 /**
  * Composition Root e Container de Injeção de Dependências (`src/DI/container.ts`).
@@ -27,7 +28,6 @@ import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 import { RoutineUseCases } from "@/usecase/routine-use-cases";
 import { StreakUseCases } from "@/usecase/streak-use-cases";
 import { TaskUseCases } from "@/usecase/task-use-cases";
-// Resolvido pelo Metro: persistence.ts no Android e persistence.web.ts na web (D8).
 import { createPersistence } from "./persistence";
 
 /**

@@ -18,7 +18,7 @@ export type Persistence = {
 
 /**
  * Android/iOS: dados no SQLite do aparelho (ADR-0001). O banco só abre no primeiro uso.
- * Na web, o Metro escolhe `persistence.web.ts` (D8). Só o `container.ts` importa este módulo.
+ * Só o `container.ts` importa este módulo.
  */
 export function createPersistence(): Persistence {
   const provider = new DatabaseProvider(() => ExpoSqlExecutor.open("orbity.db"));

@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     padding: theme.space.lg,
   },
   surface: {
-    // Ocupa a largura entre as margens do véu; sem isso, o Modal da Web encolhe a superfície ao texto.
+    // Ocupa a largura disponível entre as margens do véu.
     width: "100%",
     gap: theme.space.md,
     padding: theme.space.lg,

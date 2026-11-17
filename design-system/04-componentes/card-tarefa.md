@@ -55,14 +55,14 @@ O estilo atual ainda usa `focus.ring-width` (2 dp) como espessura do contorno do
 
 ## Elevação e plataformas
 
-O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Native. Essa propriedade fornece elevação nativa no Android. React Native Web ignora `elevation`, e não foram adicionadas propriedades de sombra para iOS ou Web porque não há especificação de sombra equivalente no Design System. A aparência de elevação nesses ambientes requer validação e uma decisão específica, sem inventar parâmetros de sombra.
+O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Native. Essa propriedade fornece elevação nativa no Android. Não foram adicionadas propriedades de sombra para iOS porque não há especificação de sombra equivalente no Design System. A aparência de elevação nesse ambiente requer validação e uma decisão específica, sem inventar parâmetros de sombra.
 
 ## Lacunas registradas
 
 - Não há token próprio ou decisão aprovada para a espessura do contorno do checkbox; a definição permanece pendente.
 - `motion.duration.short` (100 ms) está exposto no tema desde a 1.2, mas o tachado continua instantâneo; o feedback sutil animado permanece pendente.
 - O protótipo mostra um contorno arredondado externo, mas esta implementação não adiciona contorno, conforme escopo aprovado.
-- `elevation.card` não tem representação visual uniforme entre Android, iOS e Web. A 1.2 não criou sombra para o card: no cósmico, a separação vem do gradiente e do contorno `cosmicBorders.card`.
+- `elevation.card` não tem representação visual uniforme entre Android e iOS. A 1.2 não criou sombra para o card: no cósmico, a separação vem do gradiente e do contorno `cosmicBorders.card`.
 - A tipografia manuscrita aparente no protótipo não tem fonte ou token aprovado; o título usa `font.body`.
 - O tratamento tipográfico do prazo, prazos vencidos e formatação de datas não foi definido além de receber texto do chamador.
 - O conteúdo do menu e as ações disponíveis não estão especificados; a abertura é delegada a `onOptionsPress`.

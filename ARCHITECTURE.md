@@ -71,8 +71,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     ├── viewmodel/            # Custom Hooks de estado e apresentação (use*ViewModel.ts)
     └── DI/                   # Ponto de composição e Injeção de Dependências
         ├── container.ts      # Composition Root mínimo e fábricas de composição
-        ├── persistence.ts    # Persistência no Android: SQLite (ADR-0001)
-        └── persistence.web.ts # Persistência na web: em memória, escolhida pelo Metro
+        └── persistence.ts    # Persistência no Android: SQLite (ADR-0001)
 ```
 
 ### 3.1. Limites Arquiteturais e Regras de Dependência
