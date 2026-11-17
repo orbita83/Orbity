@@ -1,5 +1,3 @@
-@RULES
-
 # Guias e Convenções de Código: React Native, Expo Router e MVVM
 
 Este documento estabelece as convenções oficiais de código e arquitetura para o desenvolvimento de aplicativos mobile com **React Native**, **TypeScript**, **Expo Router** e **MVVM**, baseadas na estrutura adotada no livro *Tutoriais de PDM: Desenvolvimento Mobile com React Native e Expo*.

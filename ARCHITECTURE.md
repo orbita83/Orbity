@@ -1,9 +1,7 @@
-##@ARCHITECTURE
-
 # Guia Completo: MVVM Sofisticado (Capítulo 10)
 
 > **Fonte:** *Tutoriais de PDM: Desenvolvimento Mobile com React Native e Expo*  
-> **Capítulo 10:** *MVVM Sofisticado com React Native, TypeScript e Expo* (pp. 127–143)
+> **Capítulo 10:** *MVVM Sofisticado com React Native, TypeScript e Expo* (versão V5, pp. 135–171)
 
 ---
 
@@ -82,8 +80,8 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 | Camada (`src/`) | Responsabilidade e Limite Estrito | Dependências Permitidas | Dependências Proibidas |
 | :--- | :--- | :--- | :--- |
 | **`app/`** | Módulos de rota do Expo Router. Apenas importam e re-exportam como `default` as telas de `src/view/`. | `src/view/`, `expo-router` | `viewmodel/`, `usecase/`, `model/`, `infra/`, `DI/` |
-| **`view/`** | Componentes visuais (`components/`), telas (`kebab-case.tsx`, com o mesmo nome da rota em `src/app/`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System | `usecase/`, `model/` (regras/serviços), `infra/`, `DI/` |
-| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/DI/container.ts`, React hooks | Classes concretas de `usecase/`, `model/repositories/`, `model/services/`, `infra/` |
+| **`view/`** | Componentes visuais (`components/`), telas (`kebab-case.tsx`, com o mesmo nome da rota em `src/app/`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System, **tipos** de entidade de `src/model/entities/` usados no estado (`import type`; testes e histórias podem usar o domínio para montar dados) | `usecase/`, funções, contratos e erros de `model/`, `infra/`, `DI/` |
+| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/model/errors/` (para tratar `DomainError` e `ValidationError`), `src/DI/container.ts`, React hooks | Classes concretas de `usecase/`, `model/repositories/`, `model/services/`, `infra/` |
 | **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors/`, `repositories/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `DI/`, React Native, Expo, SDKs externos |
 | **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors/`) e contratos (`repositories/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `DI`) ou biblioteca externa |
 | **`infra/`** | Repositórios/DataSources (`repositories/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `DI/` |
@@ -105,42 +103,59 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 
 ### 4.2. Fluxo entre Camadas (Exemplo Técnico Neutro)
 
-Os trechos abaixo ilustram a comunicação ponta a ponta entre as camadas respeitando o mecanismo de composição de `src/DI/container.ts`, sem antecipar regras de negócio de produto:
+Os trechos abaixo ilustram a comunicação ponta a ponta entre as camadas com o mecanismo de composição de `src/DI/container.ts`, sem antecipar regras de negócio de produto. A entidade `TimestampRecord`, o caso de uso `TimestampUseCase`, a ViewModel `useTimestampViewModel` e a tela `timestamp` são didáticos e não existem no código. Os demais trechos (`DomainError`, `IClockService`, `SystemClockService`, `toDomainError` e o container) reproduzem o código real.
 
 ```typescript
 // 1. Domínio Puro — Entidade, Erro e Contrato (src/model/)
-// src/model/entities/timestamp-record.ts
+// src/model/entities/timestamp-record.ts (didático)
 export interface TimestampRecord {
   readonly label: string;
   readonly isoDate: string;
 }
 
-// src/model/errors/domain-error.ts
+// src/model/errors/domain-error.ts (real)
+export type DomainErrorCode =
+  | "VALIDATION_ERROR"
+  | "PERSISTENCE_FAILURE"
+  | "SCHEMA_VERSION_UNSUPPORTED";
+
+// Só PERSISTENCE_FAILURE admite nova tentativa.
 export class DomainError extends Error {
-  constructor(message: string, readonly code: string = "DOMAIN_ERROR") {
+  readonly retryable: boolean;
+
+  constructor(
+    readonly code: DomainErrorCode,
+    message: string = code,
+  ) {
     super(message);
     this.name = "DomainError";
+    this.retryable = code === "PERSISTENCE_FAILURE";
   }
 }
 
 export class ValidationError extends DomainError {
   constructor(message: string) {
-    super(message, "VALIDATION_ERROR");
+    super("VALIDATION_ERROR", message);
     this.name = "ValidationError";
   }
 }
 
-// src/model/services/clock-service.ts
+// src/model/services/i-clock-service.ts (real)
+import type { LocalDate } from "@/model/entities/local-date";
+
 export interface IClockService {
-  nowIso(): Promise<string>;
+  /** Instante atual em ISO-8601 com o deslocamento do fuso (ex.: 2026-11-14T23:59:00-03:00). */
+  now(): string;
+  /** Data de calendário local do aparelho. */
+  todayLocal(): LocalDate;
 }
 ```
 
 ```typescript
-// 2. Caso de Uso — Contrato e Implementação (src/usecase/timestamp-use-case.ts)
+// 2. Caso de Uso — Contrato e Implementação (src/usecase/timestamp-use-case.ts, didático)
 import type { TimestampRecord } from "@/model/entities/timestamp-record";
 import { ValidationError } from "@/model/errors/domain-error";
-import type { IClockService } from "@/model/services/clock-service";
+import type { IClockService } from "@/model/services/i-clock-service";
 
 export interface ITimestampUseCase {
   createRecord(prefix: string): Promise<TimestampRecord>;
@@ -154,33 +169,61 @@ export class TimestampUseCase implements ITimestampUseCase {
     if (!normalized) {
       throw new ValidationError("O prefixo de identificação é obrigatório.");
     }
-    const isoDate = await this.clockService.nowIso();
+    const isoDate = this.clockService.now();
     return { label: `${normalized}:${isoDate}`, isoDate };
   }
 }
 ```
 
 ```typescript
-// 3. Infraestrutura — Adapter Concreto (src/infra/services/system-clock-service.ts)
-import { DomainError } from "@/model/errors/domain-error";
-import type { IClockService } from "@/model/services/clock-service";
+// 3. Infraestrutura — Adapters Concretos (src/infra/)
+// O relógio do aparelho já existe: src/infra/services/system-clock-service.ts implementa IClockService.
 
-export class SystemClockService implements IClockService {
-  async nowIso(): Promise<string> {
-    try {
-      return new Date().toISOString();
-    } catch {
-      // A Infra nunca propaga exceções nativas/SDK; converte para erro puro do domínio
-      throw new DomainError("Não foi possível consultar o relógio do dispositivo.", "CLOCK_FAILURE");
-    }
+// src/infra/database/persistence-error.ts (real)
+// A Infra nunca propaga exceções nativas ou de SDK: converte para um erro puro do domínio.
+import { DomainError } from "@/model/errors/domain-error";
+
+/** Converte qualquer falha do driver em erro de domínio (ARCHITECTURE.md §5). */
+export function toDomainError(error: unknown): DomainError {
+  if (error instanceof DomainError) {
+    return error;
   }
+  return new DomainError("PERSISTENCE_FAILURE", "Falha ao acessar o armazenamento local.");
 }
+
+// Uso em um adapter (trecho de src/infra/repositories/sqlite-task-repository.ts, real):
+//   async listAll(): Promise<Task[]> {
+//     try {
+//       const executor = await this.db.get();
+//       const rows = await executor.all<TaskRow>(`SELECT ... FROM tasks ...`);
+//       return rows.map(mapRowToTask);
+//     } catch (error) {
+//       throw toDomainError(error);
+//     }
+//   }
 ```
 
 ```typescript
-// 4. ViewModel — Tipos State/Actions e Resolução de Abstração (src/viewmodel/useTimestampViewModel.ts)
+// 4. Composição — Registro no Container (trechos a acrescentar em src/DI/container.ts)
+import { TimestampUseCase, type ITimestampUseCase } from "@/usecase/timestamp-use-case";
+
+/** Casos de uso expostos às ViewModels. */
+export type AppUseCases = {
+  // ...casos de uso existentes
+  timestamp: ITimestampUseCase;
+};
+
+// Dentro de appContainerDefinition.useCases({ repositories, services }):
+//   timestamp: composeUseCase(
+//     ({ clock }: { clock: IClockService }) => new TimestampUseCase(clock),
+//     { clock: services.clock },
+//   ),
+```
+
+```typescript
+// 5. ViewModel — Tipos State/Actions e Resolução de Abstração (src/viewmodel/useTimestampViewModel.ts, didático)
 import { useState } from "react";
-import { resolveUseCase } from "@/DI/container";
+import { container, resolveUseCase } from "@/DI/container";
 import { DomainError } from "@/model/errors/domain-error";
 import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
 
@@ -197,10 +240,7 @@ export type TimestampActions = {
 export function useTimestampViewModel(
   overrideUseCase?: ITimestampUseCase,
 ): TimestampState & TimestampActions {
-  const useCase = resolveUseCase(
-    overrideUseCase,
-    defaultContainer.useCases.timestamp,
-  );
+  const useCase = resolveUseCase(overrideUseCase, container.useCases.timestamp);
   const [label, setLabel] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -227,7 +267,7 @@ export function useTimestampViewModel(
 ```
 
 ```tsx
-// 5. View (src/view/TimestampScreen.tsx) e Rota (src/app/timestampScreen.tsx)
+// 6. View (src/view/timestamp.tsx, didático) e Rota (src/app/timestamp.tsx)
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { themes } from "@/view/theme/tokens";
 import {
@@ -275,8 +315,8 @@ const styles = StyleSheet.create({
   errorText: { ...theme.font.body, color: theme.color.error },
 });
 
-// Módulo de Rota no App (src/app/timestamp-screen.tsx):
-// import TimestampScreen from "@/view/TimestampScreen";
+// Módulo de rota no app, com o mesmo nome da tela (src/app/timestamp.tsx):
+// import TimestampScreen from "../view/timestamp";
 // export default TimestampScreen;
 ```
 
@@ -332,7 +372,8 @@ import {
   type ContainerDefinition,
 } from "@/DI/container";
 import { SystemClockService } from "@/infra/services/system-clock-service";
-import type { IClockService } from "@/model/services/clock-service";
+import { LocalDate } from "@/model/entities/local-date";
+import type { IClockService } from "@/model/services/i-clock-service";
 import {
   TimestampUseCase,
   type ITimestampUseCase,
@@ -367,13 +408,14 @@ const defaultContainer = createContainer(definition);
 
 // Nível 1 — Teste unitário direto do Use Case (sem container e sem infraestrutura real)
 const fakeClockService: IClockService = {
-  nowIso: async () => "2026-11-04T12:00:00.000Z",
+  now: () => "2026-11-04T12:00:00-03:00",
+  todayLocal: () => LocalDate.parse("2026-11-04"),
 };
 const isolatedUseCase = composeUseCase(
   (clock) => new TimestampUseCase(clock),
   fakeClockService,
 );
-// await isolatedUseCase.createRecord("sync") -> { label: "sync:2026-11-04T12:00:00.000Z", ... }
+// await isolatedUseCase.createRecord("sync") -> { label: "sync:2026-11-04T12:00:00-03:00", ... }
 
 // Nível 2 — Substituição da Infra por Test Double via Container Overrides
 const testContainer = createContainer(definition, {
@@ -385,7 +427,7 @@ const testContainer = createContainer(definition, {
 const stubTimestampUseCase: ITimestampUseCase = {
   createRecord: async (prefix) => ({
     label: `${prefix}:stubbed`,
-    isoDate: "2026-11-04T00:00:00.000Z",
+    isoDate: "2026-11-04T00:00:00-03:00",
   }),
 };
 const resolvedForViewModel = resolveUseCase(
