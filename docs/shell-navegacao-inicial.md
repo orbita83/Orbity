@@ -4,11 +4,11 @@ O layout `src/app/_layout.tsx` registra os cinco destinos em `Tabs` do Expo Rout
 
 | Destino | Módulo de rota (`src/app/`) | Tela (`src/view/`) |
 | --- | --- | --- |
-| Início | `index.tsx` | `HomeScreen.tsx` |
-| Tarefas | `tasks.tsx` | `TasksScreen.tsx` |
-| Rotinas | `routines.tsx` | `RoutinesScreen.tsx` |
-| Cosmos | `cosmos.tsx` | `CosmosScreen.tsx` |
-| Perfil | `profile.tsx` | `ProfileScreen.tsx` |
+| Início | `index.tsx` | `index.tsx` |
+| Tarefas | `tasks.tsx` | `tasks.tsx` |
+| Rotinas | `routines.tsx` | `routines.tsx` |
+| Cosmos | `cosmos.tsx` | `cosmos.tsx` |
+| Perfil | `profile.tsx` | `profile.tsx` |
 
 Cada tela usa `PlaceholderScreen` para apresentar título e mensagem provisória. Os próximos épicos podem substituir o conteúdo de cada tela da View sem modificar os módulos de rota ou a barra compartilhada. Não há dados, ViewModels ou contratos de negócio simulados.
 

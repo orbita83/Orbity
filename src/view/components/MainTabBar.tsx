@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import type { Tabs } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NavBar, type NavTabId } from "./nav-bar";
+import { NavBar, type NavTabId } from "./NavBar";
 import { themes } from "../theme/tokens";
 
 const routeByTab: Record<NavTabId, string> = {
@@ -14,6 +14,9 @@ const routeByTab: Record<NavTabId, string> = {
 };
 
 const tabByRoute: Record<string, NavTabId> = {
+  achievements: "perfil",
+  categories: "perfil",
+  settings: "perfil",
   index: "inicio",
   tasks: "tarefas",
   routines: "rotinas",
@@ -23,10 +26,15 @@ const tabByRoute: Record<string, NavTabId> = {
 
 export type MainTabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0];
 
-export const MainTabBar = ({ state, navigation }: MainTabBarProps) => {
+export const MainTabBar = ({ state, navigation, descriptors }: MainTabBarProps) => {
   const insets = useSafeAreaInsets();
   const activeRoute = state.routes[state.index];
   const activeTab = tabByRoute[activeRoute.name];
+  // Formulários e detalhes abrem por cima das abas e não mostram a barra (protótipo 2.1, 3.1 e 3.2).
+  if (!activeTab) return null;
+  // Uma tela pode esconder a barra por um tempo, como a seleção múltipla de Tarefas (padrão F6).
+  const tabBarStyle = descriptors?.[activeRoute.key]?.options.tabBarStyle as { display?: string } | undefined;
+  if (tabBarStyle?.display === "none") return null;
 
   const handleSelectTab = (tabId: NavTabId) => {
     const route = state.routes.find((item) => item.name === routeByTab[tabId]);

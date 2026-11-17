@@ -46,4 +46,4 @@ Origem no sistema base: Material 3, Snackbar. Situação: Novo (1.2). Motivo: co
 
 ## Código
 
-Ainda não implementado. O posicionamento e o tempo de exibição ficam com a tela e a ViewModel.
+Implementado em [Snackbar.tsx](../../src/view/components/Snackbar.tsx). O posicionamento e o tempo de exibição ficam com a tela e a ViewModel.

@@ -56,6 +56,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     │   ├── _layout.tsx
     │   └── index.tsx
     ├── infra/                # Implementações concretas (Infraestrutura)
+    │   ├── database/         # Porta ISqlExecutor, executor do expo-sqlite, migrações e DatabaseProvider (ADR-0001)
     │   ├── repositories/     # Repositórios / DataSources concretos (ex.: Memory, SQLite, Firestore)
     │   └── services/         # Serviços concretos de integração externa
     ├── model/                # Camada de Domínio Puro (zero dependências externas)
@@ -64,12 +65,14 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     │   ├── repositories/     # Contratos (interfaces) de repositórios / DataSources
     │   └── services/         # Contratos (interfaces) de serviços externos
     ├── usecase/              # Casos de Uso (contratos I*UseCases e implementações)
-    ├── view/                 # Componentes de tela (*Screen.tsx) e UI em PascalCase
-    │   ├── components/       # Componentes reutilizáveis de interface
+    ├── view/                 # Telas em kebab-case.tsx, com o mesmo nome da rota em app/
+    │   ├── components/       # Componentes reutilizáveis de interface (PascalCase.tsx)
     │   └── theme/            # Tokens visuais e temas do Design System
     ├── viewmodel/            # Custom Hooks de estado e apresentação (use*ViewModel.ts)
     └── DI/                   # Ponto de composição e Injeção de Dependências
-        └── container.ts      # Composition Root mínimo e fábricas de composição
+        ├── container.ts      # Composition Root mínimo e fábricas de composição
+        ├── persistence.ts    # Persistência no Android: SQLite (ADR-0001)
+        └── persistence.web.ts # Persistência na web: em memória, escolhida pelo Metro
 ```
 
 ### 3.1. Limites Arquiteturais e Regras de Dependência

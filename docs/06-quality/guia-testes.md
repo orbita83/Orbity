@@ -46,8 +46,8 @@ src/
 │   │   ├── MainTabBar.test.tsx
 │   │   ├── PlaceholderScreen.tsx
 │   │   ├── PlaceholderScreen.test.tsx
-│   │   ├── primary-button.tsx
-│   │   └── primary-button.test.tsx
+│   │   ├── PrimaryButton.tsx
+│   │   └── PrimaryButton.test.tsx
 │   └── ...                                   # Testes *Screen.test.tsx junto das telas
 └── viewmodel/                                # Testes *ViewModel.test.ts junto dos hooks
 tests/
@@ -60,7 +60,7 @@ A árvore indica a organização dos testes e dos arquivos de apoio quando neces
 ### Convenções de Nomenclatura de Arquivos
 - **Lógica Pura, Use Cases e Infraestrutura:** Arquivos TypeScript em `kebab-case` sob a extensão `*.test.ts` (ex.: `timestamp-use-case.test.ts`, `system-clock-service.test.ts`).
 - **ViewModels (Hooks de Apresentação):** Arquivos TypeScript em `PascalCase` sob a extensão `*ViewModel.test.ts`, espelhando o módulo `*ViewModel.ts` (ex.: `TimestampViewModel.test.ts` para testar o hook `useTimestampViewModel`).
-- **Componentes e Telas React Native:** Arquivos TSX sob a extensão `*.test.tsx` (ex.: `TimestampScreen.test.tsx`, `primary-button.test.tsx`).
+- **Componentes e Telas React Native:** Arquivos TSX sob a extensão `*.test.tsx` (ex.: `TimestampScreen.test.tsx`, `PrimaryButton.test.tsx`).
 - **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestamp-record.fixture.ts`); fixtures compartilhadas entre camadas podem ficar em `tests/fixtures/`.
 
 ### Estrutura Interna das Suítes (Padrão AAA)
@@ -369,10 +369,10 @@ describe("useTimestampViewModel", () => {
 ### 8.3. Exemplo: Teste de Componente Visual com Testing Library
 
 ```typescript
-// src/view/components/primary-button.test.tsx
+// src/view/components/PrimaryButton.test.tsx
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
-import { PrimaryButton } from "@/view/components/primary-button";
+import { PrimaryButton } from "@/view/components/PrimaryButton";
 
 describe("PrimaryButton", () => {
   it("renderiza o rotulo do botao corretamente de forma assincrona", async () => {

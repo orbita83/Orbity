@@ -19,8 +19,10 @@ Sempre que o estudante conclui uma rotina ou tarefa, o sistema avalia automatica
 
 ## 4. Pós-condições
 
-- O contador de sequência e a constelação devem refletir o resultado da apuração.
+- O dia local da conclusão fica registrado uma vez; a sequência é recalculada na leitura a partir dos dias registrados ([RF-0014](../../02-requirements/functional/RF-0014.md), [RF-0015](../../02-requirements/functional/RF-0015.md)). A constelação acompanha a sequência ([RN-0003](../../02-requirements/business-rules/RN-0003.md)).
 - Conclusões adicionais no mesmo dia não devem gerar novo incremento ([EC-0004](../edge-cases/EC-0004-multiplas-conclusoes-no-mesmo-dia.md)).
+
+> **Entrega parcial (2026-11-14):** o design [`tela-inicial-base.md`](../../designs/tela-inicial-base.md) entrega o registro diário e o cálculo da sequência. A parte de constelação e conquistas não é entregue nessa mudança.
 
 ## 5. Fluxos relacionados
 

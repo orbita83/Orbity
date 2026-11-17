@@ -10,18 +10,19 @@ Este catálogo reúne as regras de negócio (`RN`) do Orbity e relaciona cada re
 | RN-0004 | Marcação automática das tarefas associadas ao concluir uma rotina | — | [RN-0004](RN-0004.md) |
 | RN-0005 | Alcance de conquistas pelo progresso da constelação do usuário | — | [RN-0005](RN-0005.md) |
 | RN-0006 | Evolução do visualizador de sequência durante o modo foco | — | [RN-0006](RN-0006.md) |
+| RN-0007 | Contabilização da barra de progresso da tela inicial | — | [RN-0007](RN-0007.md) |
 
 ## Como adicionar uma regra de negócio
 
 1. Escolha o próximo identificador sequencial disponível no formato `RN-0001`, `RN-0002` e assim por diante, sempre com quatro dígitos. Identificadores são únicos e estáveis e não devem ser reutilizados caso uma regra seja descontinuada.
-2. Crie a especificação em um arquivo com o mesmo identificador dentro de `docs/02-requirements/business-rules/`, por exemplo, `RN-0007.md`, utilizando o template [`RN.template.md`](../../07-templates/RN.template.md).
+2. Crie a especificação em um arquivo com o mesmo identificador dentro de `docs/02-requirements/business-rules/`, por exemplo, `RN-0008.md`, utilizando o template [`RN.template.md`](../../07-templates/RN.template.md).
 3. Especifique **apenas uma regra de negócio por documento**, evitando misturar condições, restrições ou políticas independentes no mesmo arquivo.
 4. Preencha exclusivamente as seções definidas no template:
    - **1. Contexto:** finalidade da regra, sua necessidade e as situações em que deve ser aplicada.
    - **2. Regra de negócio:** condição, restrição ou política formulada de maneira objetiva e inequívoca.
    - **3. Critérios de aceite:** condições verificáveis identificadas como `CA-01`, `CA-02` etc., abrangendo o atendimento e, quando aplicável, a violação da regra, na quantidade necessária para validá-la (os itens do template são apenas exemplos editáveis, sem quantidade fixa obrigatória).
 5. Não invente limites, fórmulas, penalidades, restrições ou comportamentos que não tenham sido previamente definidos e aprovados para o produto.
-6. Adicione uma linha à tabela acima com o identificador, o título, os requisitos funcionais relacionados (quando houver vínculo validado) e o link relativo para a especificação, por exemplo: `[RN-0007](RN-0007.md)`.
+6. Adicione uma linha à tabela acima com o identificador, o título, os requisitos funcionais relacionados (quando houver vínculo validado) e o link relativo para a especificação, por exemplo: `[RN-0008](RN-0008.md)`.
 
 ## Vínculos entre regras de negócio e requisitos funcionais
 

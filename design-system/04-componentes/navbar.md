@@ -32,14 +32,14 @@ Os papéis desta anatomia são compartilhados entre telas; consulte também o te
    - Cosmos: glifo `star` (1.2; antes `auto_awesome`)
    - Perfil: glifo `person`
    Cor do ícone: `navbar.item-inactive` (`color.on-surface`) no inativo e `navbar.item-active` (`color.action`) no ativo. Ocultado de leitores de tela para evitar redundância com o rótulo textual (`accessible={false}`).
-5. **Rótulo de texto:** rótulo sempre visível abaixo do ícone com tipografia `font.label` (12–14 px, peso 500 no inativo e peso 700 no ativo), com `allowFontScaling={true}` habilitado e sem truncamento rígido.
+5. **Rótulo de texto:** rótulo sempre visível abaixo do ícone com o tamanho de `font.caption` (12/16) e o peso de `font.label` (500 no inativo e 700 no ativo), como no protótipo do Claude Design, com `allowFontScaling={true}` habilitado e sem truncamento rígido. As abas ficam lado a lado, sem espaço entre elas e sem padding lateral, para que o rótulo mais largo ("Cosmos") caiba numa linha em telas de 360 dp.
 6. **Indicador externo de foco:** anel sólido em `navbar.focus-color` (`color.focus`), espessura `navbar.focus-width` (`focus.ring-width` de 2 dp) e afastamento `navbar.focus-offset` (`focus.ring-offset` de 2 dp), com raio acompanhando `radius.md`.
 
 ## Variantes
 
 | Variante | Uso | Tokens |
 | :--- | :--- | :--- |
-| **Fixa padrão (5 abas)** | Navegação padrão no rodapé de todas as telas primárias | `navbar.bg`, `navbar.item-active`, `navbar.item-inactive`, `navbar.indicator-bg`, `navbar.min-height`, `navbar.elevation`, `font.label`, `space.sm`, `space.md`, `radius.md`, `radius.lg` |
+| **Fixa padrão (5 abas)** | Navegação padrão no rodapé de todas as telas primárias | `navbar.bg`, `navbar.item-active`, `navbar.item-inactive`, `navbar.indicator-bg`, `navbar.min-height`, `navbar.elevation`, `font.caption`, `font.label` (peso), `space.sm`, `space.md`, `radius.md`, `radius.lg` |
 | **Oculta / Suspensa** | Ocultação durante o Modo Foco ativo (F2) ou substituída pela barra contextual CAB (F6) | Comportamento condicional de renderização / animação via `motion.duration.short` |
 
 ### Tema cósmico global
@@ -52,7 +52,7 @@ As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica
 
 | Estado | Aparência (tokens) | Comportamento | Acessibilidade |
 | :--- | :--- | :--- | :--- |
-| **Padrão (Inativo)** | Fundo `navbar.bg`, ícone e texto em `navbar.item-inactive` (`color.on-surface`), tipografia `font.label` | Navega para a aba correspondente ao receber toque ou clique | Expõe papel de aba (`tab`), rótulo e `{ selected: false }` |
+| **Padrão (Inativo)** | Fundo `navbar.bg`, ícone e texto em `navbar.item-inactive` (`color.on-surface`), tipografia `font.caption` com peso de `font.label` | Navega para a aba correspondente ao receber toque ou clique | Expõe papel de aba (`tab`), rótulo e `{ selected: false }` |
 | **Ativo (Selecionado)** | Fundo do indicador `navbar.indicator-bg`, ícone preenchido e rótulo em negrito em `navbar.item-active` (`color.action`) | Indica a tela atual do estudante; toque repetido rola a tela ao topo | Expõe papel de aba (`tab`), rótulo e `{ selected: true }` |
 | **Hover** | Destaque sutil com leve realce no fundo do item; demais tokens mantidos | Realça o item sob o cursor em ambientes desktop/web; não se aplica a telas de toque | Não transmite informação exclusiva nem executa navegação |
 | **Pressionado** | Escala `motion.scale-pressed` (0,96) com opacidade `motion.opacity-pressed` (0,8) | Feedback imediato em `motion.duration.short` (100 ms); sem escala quando o sistema pede movimento reduzido | Mantém a área de toque intacta e legível |
@@ -91,7 +91,7 @@ As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica
 
 ## Código
 
-A implementação está em [src/view/components/nav-bar.tsx](../../src/view/components/nav-bar.tsx) e pode ser visualizada e inspecionada nas [histórias do Storybook](../../src/view/components/nav-bar.stories.tsx). Execute `npm run storybook`, abra o navegador e utilize as teclas `Tab` e `Shift+Tab` para testar o foco, ou alterne o tema na barra de ferramentas.
+A implementação está em [src/view/components/NavBar.tsx](../../src/view/components/NavBar.tsx) e pode ser visualizada e inspecionada nas [histórias do Storybook](../../src/view/components/NavBar.stories.tsx). Execute `npm run storybook`, abra o navegador e utilize as teclas `Tab` e `Shift+Tab` para testar o foco, ou alterne o tema na barra de ferramentas.
 
 Trecho ilustrativo do componente:
 
@@ -158,4 +158,4 @@ Trecho ilustrativo do componente:
 - Glifo `star` para Cosmos. Rotinas mantém `autorenew`, que comunica repetição; o glifo de alvo do protótipo não foi adotado.
 - Estado pressionado com escala e opacidade dos tokens de movimento.
 
-Implementado em `nav-bar.tsx`; o ícone `star` foi adicionado a `material-symbol.tsx`.
+Implementado em `NavBar.tsx`; o ícone `star` foi adicionado a `MaterialSymbol.tsx`.

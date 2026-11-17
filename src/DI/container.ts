@@ -1,3 +1,7 @@
+import { InMemoryProfileRepository } from "@/infra/repositories/in-memory-profile-repository";
+import type { IProfileRepository } from "@/model/repositories/profile-repository";
+import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-cases";
+
 /**
  * Composition Root e Container de Injeção de Dependências (`src/DI/container.ts`).
  *
@@ -8,6 +12,23 @@
  * Direção de dependências assegurada por este módulo:
  * View -> ViewModel -> Use Cases -> Domínio (Model) <- Infraestrutura
  */
+
+import { SystemClockService } from "@/infra/services/system-clock-service";
+import type { IActivityCatalog } from "@/model/repositories/i-activity-catalog";
+import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
+import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
+import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { IClockService } from "@/model/services/i-clock-service";
+import { HomeUseCases } from "@/usecase/home-use-cases";
+import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
+import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
+import type { IStreakUseCases } from "@/usecase/i-streak-use-cases";
+import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
+import { RoutineUseCases } from "@/usecase/routine-use-cases";
+import { StreakUseCases } from "@/usecase/streak-use-cases";
+import { TaskUseCases } from "@/usecase/task-use-cases";
+// Resolvido pelo Metro: persistence.ts no Android e persistence.web.ts na web (D8).
+import { createPersistence } from "./persistence";
 
 /**
  * Registro de contratos de repositórios de domínio (`src/model/repositories/`).
@@ -150,32 +171,93 @@ export function createContainer<
   });
 }
 
+/** Repositórios da aplicação. */
+export type AppRepositories = {
+  dailyActivity: IDailyActivityRepository;
+  tasks: ITaskRepository;
+  routines: IRoutineRepository;
+  activityCatalog: IActivityCatalog;
+  profile: IProfileRepository;
+};
+
+/** Serviços da aplicação. */
+export type AppServices = {
+  clock: IClockService;
+};
+
+/** Casos de uso expostos às ViewModels. */
+export type AppUseCases = {
+  streak: IStreakUseCases;
+  home: IHomeUseCases;
+  tasks: ITaskUseCases;
+  profile: IProfileUseCases;
+  routines: IRoutineUseCases;
+};
+
 /**
- * Definição base do composition root da aplicação.
- * Implementações concretas de infraestrutura (`src/infra/`) e casos de uso (`src/usecase/`)
- * são registrados aqui conforme os épicos funcionais são implementados.
+ * Definição do composition root da aplicação. Criar o container não abre o banco:
+ * o `DatabaseProvider` só abre no primeiro uso.
  */
-export const appContainerDefinition: ContainerDefinition<
-  RepositoryRegistry,
-  ServiceRegistry,
-  UseCaseRegistry
-> = Object.freeze({
-  repositories: () => ({}),
-  services: () => ({}),
-  useCases: () => ({}),
-});
+export const appContainerDefinition: ContainerDefinition<AppRepositories, AppServices, AppUseCases> =
+  Object.freeze({
+    repositories: () => ({
+      ...createPersistence(),
+      // Perfil ainda sem persistência: memória em todas as plataformas.
+      profile: new InMemoryProfileRepository(),
+    }),
+    services: () => ({ clock: new SystemClockService() }),
+    useCases: ({ repositories, services }: InfrastructureDependencies<AppRepositories, AppServices>) => ({
+      streak: composeUseCase(
+        ({ dailyActivity, clock }: { dailyActivity: IDailyActivityRepository; clock: IClockService }) =>
+          new StreakUseCases(dailyActivity, clock),
+        { dailyActivity: repositories.dailyActivity, clock: services.clock },
+      ),
+      home: composeUseCase(
+        (deps: { dailyActivity: IDailyActivityRepository; activityCatalog: IActivityCatalog; clock: IClockService }) =>
+          new HomeUseCases(deps.dailyActivity, deps.activityCatalog, deps.clock),
+        {
+          dailyActivity: repositories.dailyActivity,
+          activityCatalog: repositories.activityCatalog,
+          clock: services.clock,
+        },
+      ),
+      tasks: composeUseCase(
+        (deps: { tasks: ITaskRepository; dailyActivity: IDailyActivityRepository; clock: IClockService }) =>
+          new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock),
+        {
+          tasks: repositories.tasks,
+          dailyActivity: repositories.dailyActivity,
+          clock: services.clock,
+        },
+      ),
+      profile: composeUseCase(
+        ({ profile }: { profile: IProfileRepository }) => new ProfileUseCases(profile),
+        { profile: repositories.profile },
+      ),
+      routines: composeUseCase(
+        (deps: {
+          routines: IRoutineRepository;
+          tasks: ITaskRepository;
+          dailyActivity: IDailyActivityRepository;
+          clock: IClockService;
+        }) => new RoutineUseCases(deps.routines, deps.tasks, deps.dailyActivity, deps.clock),
+        {
+          routines: repositories.routines,
+          tasks: repositories.tasks,
+          dailyActivity: repositories.dailyActivity,
+          clock: services.clock,
+        },
+      ),
+    }),
+  });
 
 /**
  * Cria um container isolado da aplicação, permitindo a substituição parcial de
  * repositórios, serviços ou Use Cases por test doubles.
  */
 export function createAppContainer(
-  overrides: ContainerOverrides<
-    RepositoryRegistry,
-    ServiceRegistry,
-    UseCaseRegistry
-  > = {},
-): DependencyContainer<RepositoryRegistry, ServiceRegistry, UseCaseRegistry> {
+  overrides: ContainerOverrides<AppRepositories, AppServices, AppUseCases> = {},
+): DependencyContainer<AppRepositories, AppServices, AppUseCases> {
   return createContainer(appContainerDefinition, overrides);
 }
 

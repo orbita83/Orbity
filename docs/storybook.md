@@ -34,8 +34,8 @@ da branch `development`.
 
 1. Especifique o componente em `design-system/04-componentes/`.
 2. Implemente-o em `src/view/components/`, usando os tokens de `src/view/theme/`.
-3. Adicione um arquivo `nome-do-componente.stories.tsx` ao lado do componente,
-   usando `kebab-case` (por exemplo, `primary-button.stories.tsx`).
+3. Adicione um arquivo `NomeDoComponente.stories.tsx` ao lado do componente,
+   com o mesmo nome do arquivo do componente (por exemplo, `PrimaryButton.stories.tsx`).
 4. Declare `title`, `component`, `args` e `tags: ["autodocs"]`, seguindo o botão.
 5. Documente variantes e limitações; exponha propriedades editáveis em Controls.
 
@@ -46,7 +46,7 @@ a integração nativa deverá carregar a fonte com Expo Font.
 
 ## Catálogo atual
 
-O catálogo possui histórias para `PrimaryButton`, `CardTarefa`, `FilterChips`,
+O catálogo possui histórias para `PrimaryButton`, `TaskCard`, `FilterChips`,
 `NavBar` e a composição global do ODS. Elas demonstram variantes, estados
 interativos e os temas claro, escuro ou cósmico quando aplicáveis. Os valores de
 cor, espaço, tipografia e raio implementados vêm de

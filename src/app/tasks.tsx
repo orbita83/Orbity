@@ -1,3 +1,3 @@
-import TasksScreen from "../view/TasksScreen";
+import TasksScreen from "../view/tasks";
 
 export default TasksScreen;

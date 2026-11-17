@@ -19,6 +19,7 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 | **Escrever ou refatorar código TS/React Native** | `RULES.md` |
 | **Criar/editar telas, UI, estilos ou componentes** | `design-system/README.md` (Seção 9), `01-principios.md`, `02-tokens.md`, `03-fundamentos.md`, `04-componentes/`, `05-padroes.md` e `06-acessibilidade.md` |
 | **Criar testes ou validar qualidade/CI/hooks** | `CONTRIBUTING.md` (Seções 2.4 e 3), `docs/06-quality/guia-testes.md`, `.github/workflows/ci.yml` e `scripts/verify-local-hooks.mjs` |
+| **Escrever, revisar ou implementar um design técnico (skills `/egm:*`)** | `docs/designs/README.md` e o design da funcionalidade em `docs/designs/` |
 | **Configurar identidade, build, assinatura ou distribuição Android** | `CONTRIBUTING.md` (Seção 4), `docs/08-distribution/README.md`, `docs/08-distribution/identidade-e-propriedade.md` e `docs/08-distribution/versionamento-do-app.md` |
 
 ---
@@ -40,12 +41,20 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 - **Bloqueio em Placeholders e `TODO`s:** Se um documento consultado contiver apenas um placeholder (`@ARCHITECTURE`, `@RULES`, `@README`) ou `TODO` na seção necessária para a decisão atual, **não invente padrões ou arquiteturas** — pare e pergunte ao operador.
 - **Fonte de verdade visual:** Nunca utilize valores literais (*hardcoded*) de cor, espaçamento, tipografia ou raio. Utilize exclusivamente os tokens definidos em `design-system/02-tokens.md`.
 - **Princípios de produto:** Preserve a personalização do estudante, garanta acessibilidade (contraste ≥ 4,5:1, múltiplos indicadores perceptíveis além de cor) e nunca introduza mecânicas ou mensagens punitivas (`design-system/01-principios.md`).
-- **Estrutura de diretórios:** Respeite a divisão `src/app/` (módulos de rota Expo Router em `kebab-case.tsx` que importam e re-exportam como `default` os componentes de tela da `view`), `src/view/` (componentes de tela e UI em `PascalCase.tsx`, exportando as telas como `default` e os componentes reutilizáveis de forma nomeada, além de `theme/`), `src/viewmodel/` (arquivos em `PascalCase.ts` como `*ViewModel.ts` que exportam hooks de apresentação/estado `use*ViewModel`), `src/usecase/` (contratos e implementações de casos de uso), `src/model/` (domínio puro: `entities/`, `errors/`, `repositories/` e `services/`), `src/infra/` (implementações concretas: `repositories/` e `services/`) e `src/DI/` (composição e injeção de dependências) conforme `ARCHITECTURE.md` e as convenções em `RULES.md`.
+- **Estrutura de diretórios:** Respeite a divisão `src/app/` (módulos de rota Expo Router em `kebab-case.tsx` que importam e re-exportam como `default` os componentes de tela da `view`), `src/view/` (componentes de tela em `kebab-case.tsx` com o mesmo nome do módulo de rota em `src/app/`, exportados como `default`; componentes reutilizáveis em `src/view/components/` em `PascalCase.tsx`, exportados de forma nomeada; além de `theme/`), `src/viewmodel/` (arquivos em `PascalCase.ts` como `*ViewModel.ts` que exportam hooks de apresentação/estado `use*ViewModel`), `src/usecase/` (contratos e implementações de casos de uso), `src/model/` (domínio puro: `entities/`, `errors/`, `repositories/` e `services/`), `src/infra/` (implementações concretas: `repositories/` e `services/`) e `src/DI/` (composição e injeção de dependências) conforme `ARCHITECTURE.md` e as convenções em `RULES.md`.
 - **Segurança:** Nunca inclua segredos, tokens, chaves de API ou credenciais no código ou nos commits.
 
 ---
 
-## 4. Checklist de Validação Local (Antes de Concluir ou Commitar)
+## 4. Designs Técnicos (EGM)
+
+EGM artifact directory: .dev/egm
+
+- **Design final:** `docs/designs/<funcionalidade>.md`, um por funcionalidade, registrado no índice `docs/designs/README.md`. É o único artefato EGM versionado.
+- **Artefatos de trabalho** (`concepts_brief.md`, `design_draft.md`, relatórios de revisão e de drift): ficam em `.dev/egm/`, fora do Git. A pasta comporta uma tarefa por vez. Limpe-a antes de iniciar outra.
+- Antes de implementar, o design deve estar em `docs/designs/` e ter passado por `/egm:egm-review`.
+
+## 5. Checklist de Validação Local (Antes de Concluir ou Commitar)
 
 Sempre que modificar código, tipos ou configurações, execute:
 

@@ -55,7 +55,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 
 ## Código
 
-A implementação está em [filter-chips.tsx](../../src/view/components/filter-chips.tsx), o catálogo interativo em [filter-chips.stories.tsx](../../src/view/components/filter-chips.stories.tsx) e os tokens utilizados vêm de [tokens.ts](../../src/view/theme/tokens.ts).
+A implementação está em [FilterChips.tsx](../../src/view/components/FilterChips.tsx), o catálogo interativo em [FilterChips.stories.tsx](../../src/view/components/FilterChips.stories.tsx) e os tokens utilizados vêm de [tokens.ts](../../src/view/theme/tokens.ts).
 
 ## Mudanças da 1.2
 
@@ -63,4 +63,4 @@ A implementação está em [filter-chips.tsx](../../src/view/components/filter-c
 - Selecionado sem brilho: o destaque vem do fundo sólido `color.action`, do contorno e do peso do rótulo.
 - A opacidade de 0,85 no pressionado continua coberta pelo teste de contraste do chip em `tests/ods-theme.test.cjs`.
 
-**Implementação pendente:** `filter-chips.tsx` ainda usa `flexWrap: "wrap"` com largura de conteúdo. A tela de Tarefas pede que cada chip ocupe uma coluna de largura igual (`flex: 1` com `minWidth: 0`), sem `flexWrap`, com padding horizontal `space.sm` para caber "Concluídas" a 390 dp.
+Implementado na tela de Tarefas: cada chip ocupa uma coluna de largura igual (`flex: 1` com `minWidth: 0`), sem `flexWrap`; o padding horizontal passa a `space.sm` para caber "Concluídas" a 390 dp.
