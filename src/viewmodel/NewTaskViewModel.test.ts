@@ -154,4 +154,33 @@ describe("useNewTaskViewModel", () => {
       pinned: true,
     });
   });
+
+  it("formata datas e horários digitados apenas com números ou separadores parciais e cria a tarefa", async () => {
+    const { taskRepo, useCases } = createVmDependencies();
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+
+    await act(async () => result.current.setField("title", "Praticar redação"));
+    await act(async () => result.current.setField("startDate", "15112026"));
+    await act(async () => result.current.setField("startTime", "830"));
+    await act(async () => result.current.setField("endDate", "5/12/2026"));
+    await act(async () => result.current.setField("endTime", "8:30"));
+
+    expect(result.current.fields.startDate).toBe("15/11/2026");
+    expect(result.current.fields.startTime).toBe("08:30");
+    expect(result.current.fields.endDate).toBe("05/12/2026");
+    expect(result.current.fields.endTime).toBe("08:30");
+
+    await act(async () => result.current.submit());
+    await waitFor(() => expect(result.current.created).toBe(true));
+
+    const stored = await taskRepo.listAll();
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({
+      title: "Praticar redação",
+      startDate: "15/11/2026",
+      startTime: "08:30",
+      endDate: "05/12/2026",
+      endTime: "08:30",
+    });
+  });
 });
