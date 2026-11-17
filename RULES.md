@@ -22,6 +22,13 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
   - **Componentes de UI na View (`src/view/components/`):** Identificador do componente e arquivo em `PascalCase.tsx` (ex: `src/view/components/UserProfile.tsx`, `src/view/components/PrimaryButton.tsx`). Histórias e testes usam o mesmo nome (`PrimaryButton.stories.tsx`, `PrimaryButton.test.tsx`).
   - **Arquivos da ViewModel (`src/viewmodel/`):** Arquivo em `camelCase.ts` com o mesmo nome do hook que exporta, no formato `useNomeViewModel.ts` (ex: `src/viewmodel/useHomeViewModel.ts` exporta `useHomeViewModel`; `src/viewmodel/useLoginViewModel.ts` exporta `useLoginViewModel`; `src/viewmodel/useTimestampViewModel.ts` exporta `useTimestampViewModel`). Testes usam o mesmo nome (`useHomeViewModel.test.ts`), um por arquivo de ViewModel.
   - **Hooks da ViewModel:** Função exportada em `camelCase` com prefixo `use` seguido do nome da tela em PascalCase e sufixo `ViewModel` (ex: `useHomeViewModel()`, `useTimestampViewModel()`).
+  - **Retorno da ViewModel:** dois tipos exportados, `NomeState` e `NomeActions`, e retorno em tupla `[state, actions]`, como no livro (Cap. 10, Seção 10.10). A tela desestrutura `const [state, actions] = useNomeViewModel();` e repassa estado e ações à apresentação. Uma ViewModel sem estado próprio declara `NomeState = Record<never, never>` e retorna `[{}, { ...ações }]`.
+    ```ts
+    export function useTimestampViewModel(): [TimestampState, TimestampActions] {
+      // ...
+      return [{ label, loading, error }, { handleGenerate }];
+    }
+    ```
 - **Módulos de rota em `src/app/`:** Arquivos em `kebab-case.tsx` (ex: `src/app/index.tsx`, `src/app/tasks.tsx`, `src/app/new-task.tsx`) que determinam a rota no Expo Router, importam como `default` a tela da `view` **de mesmo nome** e a exportam novamente como `default`.
 
 ---
