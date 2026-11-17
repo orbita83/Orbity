@@ -119,6 +119,8 @@ export const borderTokens = {
 } as const;
 
 export const sharedTokens = {
+  divider: { width: 1 },
+  feedback: { pressedOpacity: 0.8 },
   target: accessibilityTokens.target,
   focus: accessibilityTokens.focus,
   radius: { md: 12, lg: 16, sheet: 24, xl: 28 },
@@ -151,6 +153,8 @@ function createTheme(mode: ThemeMode, cosmic = false) {
 
   return {
     color,
+    divider: sharedTokens.divider,
+    feedback: sharedTokens.feedback,
     space: {
       sm: primitives["space-8"],
       md: primitives["space-16"],

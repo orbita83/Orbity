@@ -16,6 +16,9 @@ const RootLayout = () => (
       <Tabs.Screen name="routines" options={{ title: "Rotinas" }} />
       <Tabs.Screen name="cosmos" options={{ title: "Cosmos" }} />
       <Tabs.Screen name="profile" options={{ title: "Perfil" }} />
+      <Tabs.Screen name="achievements" options={{ href: null }} />
+      <Tabs.Screen name="categories" options={{ href: null }} />
+      <Tabs.Screen name="settings" options={{ href: null }} />
       {/* Telas empilhadas sobre as abas: sem item na barra, que fica escondida nelas. */}
       <Tabs.Screen name="new-task" options={{ title: "Nova tarefa", href: null }} />
       <Tabs.Screen name="new-routine" options={{ title: "Nova rotina", href: null }} />

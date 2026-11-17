@@ -8,6 +8,8 @@ export type PrimaryButtonProps = {
   onPress: () => void;
   accessibilityHint?: string;
   disabled?: boolean;
+  /** Ação em andamento (ex.: "Salvando..."): anuncia `busy` ao leitor de tela. */
+  busy?: boolean;
   theme?: OrbityTheme;
   /** Ícone decorativo antes do rótulo (ex.: play no Iniciar foco). */
   icon?: ReactNode;
@@ -18,6 +20,7 @@ export const PrimaryButton = ({
   onPress,
   accessibilityHint,
   disabled = false,
+  busy = false,
   theme = themes.light,
   icon,
 }: PrimaryButtonProps) => {
@@ -31,7 +34,7 @@ export const PrimaryButton = ({
         accessibilityRole="button"
         accessibilityLabel={label}
         accessibilityHint={accessibilityHint}
-        accessibilityState={{ disabled }}
+        accessibilityState={{ disabled, busy }}
         disabled={disabled}
         onPress={onPress}
         onFocus={() => setIsFocused(true)}

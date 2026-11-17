@@ -2,6 +2,8 @@ import { Platform, StyleSheet, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 export type MaterialSymbolName =
+  | "category"
+  | "info"
   | "home"
   | "check_circle"
   | "description"
@@ -61,6 +63,9 @@ const SYMBOL_PATHS: Record<
   MaterialSymbolName,
   { outlined: string; filled: string }
 > = {
+  info: { outlined: "M11 7h2v2h-2zm0 4h2v6h-2zm1-9a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z", filled: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2zm0-8h-2V7h2z" },
+  category: { outlined: "M12 2 6.5 11h11L12 2zM3 13h8v8H3v-8zm14.5 0a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z", filled: "M12 2 6.5 11h11L12 2zM3 13h8v8H3v-8zm14.5 0a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z" },
+
   home: {
     outlined:
       "M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z",

@@ -1,3 +1,7 @@
+import { InMemoryProfileRepository } from "@/infra/repositories/in-memory-profile-repository";
+import type { IProfileRepository } from "@/model/repositories/profile-repository";
+import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-cases";
+
 /**
  * Composition Root e Container de Injeção de Dependências (`src/DI/container.ts`).
  *
@@ -173,6 +177,7 @@ export type AppRepositories = {
   tasks: ITaskRepository;
   routines: IRoutineRepository;
   activityCatalog: IActivityCatalog;
+  profile: IProfileRepository;
 };
 
 /** Serviços da aplicação. */
@@ -185,6 +190,7 @@ export type AppUseCases = {
   streak: IStreakUseCases;
   home: IHomeUseCases;
   tasks: ITaskUseCases;
+  profile: IProfileUseCases;
   routines: IRoutineUseCases;
 };
 
@@ -194,7 +200,11 @@ export type AppUseCases = {
  */
 export const appContainerDefinition: ContainerDefinition<AppRepositories, AppServices, AppUseCases> =
   Object.freeze({
-    repositories: () => createPersistence(),
+    repositories: () => ({
+      ...createPersistence(),
+      // Perfil ainda sem persistência: memória em todas as plataformas.
+      profile: new InMemoryProfileRepository(),
+    }),
     services: () => ({ clock: new SystemClockService() }),
     useCases: ({ repositories, services }: InfrastructureDependencies<AppRepositories, AppServices>) => ({
       streak: composeUseCase(
@@ -219,6 +229,10 @@ export const appContainerDefinition: ContainerDefinition<AppRepositories, AppSer
           dailyActivity: repositories.dailyActivity,
           clock: services.clock,
         },
+      ),
+      profile: composeUseCase(
+        ({ profile }: { profile: IProfileRepository }) => new ProfileUseCases(profile),
+        { profile: repositories.profile },
       ),
       routines: composeUseCase(
         (deps: {

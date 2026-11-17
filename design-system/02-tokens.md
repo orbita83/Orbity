@@ -113,6 +113,15 @@ Tamanhos, espaços e raios novos usam múltiplos de 4. Cantos de pílula não t�
 
 No código, os valores ficam em `shadowTokens` como strings `boxShadow`; `elevation.card` continua como alternativa no Android.
 
+### Divisores e feedback do perfil
+
+| Token | Valor | Uso | Origem |
+| --- | --- | --- | --- |
+| `divider.width` | 1 dp | Divisores sutis entre métricas | Novo |
+| `feedback.pressedOpacity` | 0.8 | Feedback imediato de toque em atalhos | Adaptado |
+
+Os temas exportam `divider.width` e `feedback.pressedOpacity`. Validar o contraste da composição pressionada nos três temas; manter rótulo e foco independentes da opacidade.
+
 ### Movimento
 
 | Token                    | Valor                        | Uso                     | Origem   |
