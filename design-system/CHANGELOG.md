@@ -2,10 +2,6 @@
 
 Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex.: 2.4.1 → 3.0.0).
 
-## Não publicado
-
-- **NavBar (issue #146):** o rótulo passa a usar o tamanho de `font.caption` (12/16, antes 14/20 de `font.label`), mantendo os pesos 500 e 700, e as abas perdem o espaço entre si e o padding lateral, como no protótipo. Assim "Cosmos" não quebra mais em duas linhas em telas de 360 dp. Implementado em `NavBar.tsx`.
-
 ## 1.2.0 · 2026-11-15
 
 - **Issue #111:** incorporação das mudanças validadas no protótipo navegável de alta fidelidade das telas de Início e Tarefas (09/11/2026), construído a partir dos wireframes do Excalidraw e revisado pela equipe. Esta versão foi publicada depois da 1.1.0 (`ds-v1.1.0`).

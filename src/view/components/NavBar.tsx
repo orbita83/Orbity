@@ -149,7 +149,7 @@ const createStyles = (theme: OrbityTheme) =>
     tabRow: {
       flexDirection: "row",
       alignItems: "center",
-      // Sem espaço entre as abas, como no protótipo: o indicador de cada aba já as separa.
+      gap: theme.space.sm,
       minHeight: theme.navbar.minHeight,
       paddingVertical: theme.space.sm,
     },
@@ -171,6 +171,7 @@ const createStyles = (theme: OrbityTheme) =>
       justifyContent: "center",
       minHeight: theme.navbar.minHeight,
       minWidth: theme.target.minSize,
+      paddingHorizontal: theme.primitive["space-4"],
       paddingVertical: theme.primitive["space-4"],
     },
     tabItemActive: {
@@ -189,9 +190,7 @@ const createStyles = (theme: OrbityTheme) =>
       minWidth: theme.target.minSize,
     },
     label: {
-      // 12/16 de font.caption (navbar.md: rótulo de 12 a 14 px), para "Cosmos" caber numa linha
-      // em telas de 360 dp; o peso continua o de font.label (500) e o de font.title na aba ativa (700).
-      ...theme.font.caption,
+      ...theme.font.label,
       marginTop: theme.primitive["space-4"],
       textAlign: "center",
     },
