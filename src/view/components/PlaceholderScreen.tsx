@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { PrimaryButton } from "./primary-button";
+import { PrimaryButton } from "./PrimaryButton";
 import { themes, type OrbityTheme } from "../theme/tokens";
 
 type PlaceholderScreenProps = {

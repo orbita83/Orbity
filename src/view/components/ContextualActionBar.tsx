@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { themes } from "../theme/tokens";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 
 const theme = themes.cosmic;
 

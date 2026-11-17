@@ -6,8 +6,8 @@ import {
   FilterChips,
   type TaskFilter,
   DEFAULT_TASK_FILTERS,
-} from "./filter-chips";
-import { CardTarefa } from "./card-tarefa";
+} from "./FilterChips";
+import { TaskCard } from "./TaskCard";
 import { themes, type OrbityTheme } from "../theme/tokens";
 
 const meta = {
@@ -146,7 +146,7 @@ export const ListaDeTarefasFiltrada: Story = {
         ) : (
           <View style={styles.taskList}>
             {filteredTasks.map((task) => (
-              <CardTarefa
+              <TaskCard
                 key={task.id}
                 title={task.title}
                 dueDate={task.dueDate}

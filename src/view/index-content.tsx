@@ -17,9 +17,9 @@ import { useActivitySheetMotionViewModel } from "../viewmodel/ActivitySheetMotio
 import type { HomeState } from "../viewmodel/HomeViewModel";
 import { CosmicStarfield } from "./components/CosmicStarfield";
 import { FocusBottomSheet } from "./components/FocusBottomSheet";
-import { MaterialSymbol } from "./components/material-symbol";
+import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PlanetStreakView } from "./components/PlanetStreakView";
-import { PrimaryButton } from "./components/primary-button";
+import { PrimaryButton } from "./components/PrimaryButton";
 import { HOME_COPY } from "./home-copy";
 import { cosmicBorders, cosmicColors, themes } from "./theme/tokens";
 

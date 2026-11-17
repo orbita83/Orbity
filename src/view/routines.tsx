@@ -1,7 +1,7 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useRoutinesViewModel } from "../viewmodel/RoutinesViewModel";
-import { RoutinesScreenContent } from "./RoutinesScreenContent";
+import { RoutinesScreenContent } from "./routines-content";
 
 /**
  * Tela Rotinas: liga a ViewModel à apresentação. A exclusão confirmada no detalhe volta para cá com

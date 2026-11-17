@@ -1,4 +1,4 @@
-# Card de tarefa (CardTarefa)
+# Card de tarefa (TaskCard)
 
 > Em `themes.cosmic`, o card usa `color.surface-variant` e a marca do checkbox usa `color.on-action`. Os temas legados mantêm sua superfície anterior. Os contrastes legados citados abaixo não se aplicam automaticamente ao tema cósmico.
 
@@ -71,7 +71,7 @@ O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Na
 
 ## Código
 
-A implementação está em [card-tarefa.tsx](../../src/view/components/card-tarefa.tsx), as histórias em [card-tarefa.stories.tsx](../../src/view/components/card-tarefa.stories.tsx), e os tokens consumidos vêm de [tokens.ts](../../src/view/theme/tokens.ts).
+A implementação está em [TaskCard.tsx](../../src/view/components/TaskCard.tsx), as histórias em [TaskCard.stories.tsx](../../src/view/components/TaskCard.stories.tsx), e os tokens consumidos vêm de [tokens.ts](../../src/view/theme/tokens.ts).
 
 Desde a tela de Tarefas (protótipo 2 e 2.3):
 
@@ -87,4 +87,4 @@ Desde a tela de Tarefas (protótipo 2 e 2.3):
 - No cósmico, o alvo é gradiente `cosmicGradients.card` (`#141332` → `#0D0E26`) com contorno de 1 dp `cosmicBorders.card` (`#232044`), sem brilho em volta do card nem do checkbox.
 - Formato de prazo "19/10 · 08:00–09:00".
 
-**Implementação pendente:** `card-tarefa.tsx` continua com superfície sólida `color.surface-variant` até existir um componente de gradiente.
+**Implementação pendente:** `TaskCard.tsx` continua com superfície sólida `color.surface-variant` até existir um componente de gradiente.

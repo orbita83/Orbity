@@ -9,11 +9,11 @@ Camada de roteamento do Orbity baseada em Expo Router (o `package.json` declara 
 | Arquivo | Export `default` | Origem | Rota / aba |
 | :--- | :--- | :--- | :--- |
 | `_layout.tsx` | `RootLayout` | local | Layout raiz (`Tabs`) |
-| `index.tsx` | `HomeScreen` | `../view/HomeScreen` | `index` — título "Início" |
-| `tasks.tsx` | `TasksScreen` | `../view/TasksScreen` | `tasks` — título "Tarefas" |
-| `routines.tsx` | `RoutinesScreen` | `../view/RoutinesScreen` | `routines` — título "Rotinas" |
-| `cosmos.tsx` | `CosmosScreen` | `../view/CosmosScreen` | `cosmos` — título "Cosmos" |
-| `profile.tsx` | `ProfileScreen` | `../view/ProfileScreen` | `profile` — título "Perfil" |
+| `index.tsx` | `HomeScreen` | `../view/index` | `index` — título "Início" |
+| `tasks.tsx` | `TasksScreen` | `../view/tasks` | `tasks` — título "Tarefas" |
+| `routines.tsx` | `RoutinesScreen` | `../view/routines` | `routines` — título "Rotinas" |
+| `cosmos.tsx` | `CosmosScreen` | `../view/cosmos` | `cosmos` — título "Cosmos" |
+| `profile.tsx` | `ProfileScreen` | `../view/profile` | `profile` — título "Perfil" |
 
 - `RootLayout` (`_layout.tsx`): renderiza `StatusBar` (`expo-status-bar`, `style="light"`) e `Tabs` com `initialRouteName="index"`, `backBehavior="firstRoute"`, `screenOptions={{ headerShown: false }}` e `tabBar={(props) => <MainTabBar {...props} />}`.
 - Dependência de UI: `MainTabBar` (export nomeado de `src/view/components/MainTabBar.tsx`, importado via alias `@/view/components/MainTabBar`).

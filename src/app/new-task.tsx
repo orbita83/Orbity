@@ -1,3 +1,3 @@
-import NewTaskScreen from "../view/NewTaskScreen";
+import NewTaskScreen from "../view/new-task";
 
 export default NewTaskScreen;

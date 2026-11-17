@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
-import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/view/NewRoutineScreenContent";
-import { RoutineDetailsScreenContent, type RoutineDetailsScreenContentProps } from "@/view/RoutineDetailsScreenContent";
+import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/view/new-routine-content";
+import { RoutineDetailsScreenContent, type RoutineDetailsScreenContentProps } from "@/view/routine-details-content";
 import { ROUTINES_COPY } from "@/view/routines-copy";
-import { RoutinesScreenContent, type RoutinesScreenContentProps } from "@/view/RoutinesScreenContent";
+import { RoutinesScreenContent, type RoutinesScreenContentProps } from "@/view/routines-content";
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const inSafeArea = (node: React.ReactElement) => render(<SafeAreaProvider initialMetrics={metrics}>{node}</SafeAreaProvider>);

@@ -1,11 +1,11 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
-import ProfileScreen from "./ProfileScreen";
+import ProfileScreen from "./profile";
 
-// A navegação real é exercitada em ProfileNavigation.test.tsx.
+// A navegação real é exercitada em profile-navigation.test.tsx.
 // A renderização SVG real permanece nos testes dos componentes e da navegação.
-jest.mock("./components/material-symbol", () => ({ MaterialSymbol: () => null }));
+jest.mock("./components/MaterialSymbol", () => ({ MaterialSymbol: () => null }));
 
 jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: jest.requireActual<typeof import("react-native")>("react-native").View,

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { GradientSurface } from "./GradientSurface";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
 
 export type ProfileShortcutItemProps = {

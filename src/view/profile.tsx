@@ -5,8 +5,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PrimaryButton } from "./components/primary-button";
-import { MaterialSymbol } from "./components/material-symbol";
+import { PrimaryButton } from "./components/PrimaryButton";
+import { MaterialSymbol } from "./components/MaterialSymbol";
 import { ProfileMetricsCard } from "./components/ProfileMetricsCard";
 import { ProfileShortcutItem } from "./components/ProfileShortcutItem";
 import { EditProfileNameModal } from "./components/EditProfileNameModal";

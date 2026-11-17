@@ -1,6 +1,6 @@
 import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { MaterialSymbol } from "./material-symbol";
-import { PrimaryButton } from "./primary-button";
+import { MaterialSymbol } from "./MaterialSymbol";
+import { PrimaryButton } from "./PrimaryButton";
 import { TextField } from "./TextField";
 import { cosmicBorders, themes, type OrbityTheme } from "../theme/tokens";
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { fn } from "storybook/test";
-import { NavBar, type NavTabId } from "./nav-bar";
+import { NavBar, type NavTabId } from "./NavBar";
 import { themes } from "../theme/tokens";
 
 const meta = {

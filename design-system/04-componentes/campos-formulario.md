@@ -26,7 +26,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 | --- | --- | --- |
 | Texto | Título, descrição | Anatomia acima |
 | Data e hora | Prazo e intervalo | Mesmos tokens, grade de colunas iguais |
-| Seleção | Categoria, repetição | Mesmos tokens com ícone `expand_more` (glifo pendente em `material-symbol.tsx`) |
+| Seleção | Categoria, repetição | Mesmos tokens com ícone `expand_more` (glifo pendente em `MaterialSymbol.tsx`) |
 
 ## Estados
 

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useNewRoutineViewModel } from "../viewmodel/NewRoutineViewModel";
-import { NewRoutineScreenContent } from "./NewRoutineScreenContent";
+import { NewRoutineScreenContent } from "./new-routine-content";
 
 /**
  * Tela Nova/Editar rotina. Sem `id`, cria e volta para a lista; com `id`, edita (RF-0009, #137) e

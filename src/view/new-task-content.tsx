@@ -7,8 +7,8 @@ import type {
   NewTaskState,
   NewTaskTextField,
 } from "../viewmodel/NewTaskViewModel";
-import { MaterialSymbol } from "./components/material-symbol";
-import { PrimaryButton } from "./components/primary-button";
+import { MaterialSymbol } from "./components/MaterialSymbol";
+import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TaskPickerModal } from "./components/TaskPickerModal";

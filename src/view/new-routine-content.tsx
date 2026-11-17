@@ -4,8 +4,8 @@ import type { NewRoutineActions, NewRoutineState } from "../viewmodel/NewRoutine
 import { ROUTINE_ICONS } from "../viewmodel/RoutinesViewModel";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { GradientSurface } from "./components/GradientSurface";
-import { MaterialSymbol } from "./components/material-symbol";
-import { PrimaryButton } from "./components/primary-button";
+import { MaterialSymbol } from "./components/MaterialSymbol";
+import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { SuccessDialog } from "./components/SuccessDialog";

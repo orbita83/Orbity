@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 import { themes, type OrbityTheme } from "../theme/tokens";
 import { useReduceMotion } from "../theme/use-reduce-motion";
 

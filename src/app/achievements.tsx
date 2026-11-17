@@ -1,3 +1,3 @@
-import AchievementsScreen from "@/view/AchievementsScreen";
+import AchievementsScreen from "@/view/achievements";
 
 export default AchievementsScreen;

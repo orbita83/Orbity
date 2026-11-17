@@ -1,3 +1,3 @@
-import NewRoutineScreen from "../view/NewRoutineScreen";
+import NewRoutineScreen from "../view/new-routine";
 
 export default NewRoutineScreen;

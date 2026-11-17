@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react-native";
-import ProfileScreen from "./ProfileScreen";
+import ProfileScreen from "./profile";
 import type { ProfileState, ProfileActions } from "@/viewmodel/ProfileViewModel";
 import { createStudentProfileFixture } from "@/model/__fixtures__/student-profile.fixture";
 
 // Isola apresentação; os destinos são validados com Expo Router real na integração.
 // A renderização SVG real permanece nos testes dos componentes e da navegação.
-jest.mock("./components/material-symbol", () => ({ MaterialSymbol: () => null }));
+jest.mock("./components/MaterialSymbol", () => ({ MaterialSymbol: () => null }));
 
 jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: jest.requireActual<typeof import("react-native")>("react-native").View,
