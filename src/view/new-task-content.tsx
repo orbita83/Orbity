@@ -48,7 +48,8 @@ const DateTimeGroup = ({ legend, dateField, timeField, fields, setField, openPic
           value={fields[dateField]}
           onChangeText={(value) => setField(dateField, value)}
           placeholder={TASKS_COPY["form.date.placeholder"]}
-          keyboardType="numbers-and-punctuation"
+          keyboardType="numeric"
+          maxLength={10}
           trailingIcon="calendar_today"
           trailingLabel={formatTasksCopy("picker.openDate", { field: legend })}
           onTrailingPress={() => openPicker(dateField)}
@@ -60,7 +61,8 @@ const DateTimeGroup = ({ legend, dateField, timeField, fields, setField, openPic
           value={fields[timeField]}
           onChangeText={(value) => setField(timeField, value)}
           placeholder={TASKS_COPY["form.time.placeholder"]}
-          keyboardType="numbers-and-punctuation"
+          keyboardType="numeric"
+          maxLength={5}
           trailingIcon="schedule"
           trailingLabel={formatTasksCopy("picker.openTime", { field: legend })}
           onTrailingPress={() => openPicker(timeField)}

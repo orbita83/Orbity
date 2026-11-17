@@ -3,6 +3,8 @@ import { container, resolveUseCase } from "@/DI/container";
 import type { LocalDate } from "@/model/entities/local-date";
 import {
   TASK_CATEGORIES,
+  formatDisplayDateInput,
+  formatDisplayTimeInput,
   getTaskCategoryOption,
   isValidTaskCategoryId,
   type TaskCategoryIcon,
@@ -208,7 +210,13 @@ export const useNewTaskViewModel = (
   const dateOptions = useMemo(() => buildDatePickerOptions(clock.todayLocal()), [clock]);
 
   const setField = useCallback((field: NewTaskTextField, value: string) => {
-    setFields((current) => ({ ...current, [field]: value }));
+    const formatted =
+      field === "startDate" || field === "endDate"
+        ? formatDisplayDateInput(value)
+        : field === "startTime" || field === "endTime"
+          ? formatDisplayTimeInput(value)
+          : value;
+    setFields((current) => ({ ...current, [field]: formatted }));
     setFormError(null);
   }, []);
 

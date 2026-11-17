@@ -157,6 +157,19 @@ describe("NewTaskScreenContent", () => {
     await fireEvent.changeText(screen.getByLabelText("Título da tarefa, (obrigatório)"), "Revisar SOLID");
     expect(props.setField).toHaveBeenCalledWith("title", "Revisar SOLID");
 
+    const dateInputs = screen.getAllByLabelText(TASKS_COPY["form.date"]);
+    const timeInputs = screen.getAllByLabelText(TASKS_COPY["form.time"]);
+    expect(dateInputs[0].props.maxLength).toBe(10);
+    expect(dateInputs[0].props.keyboardType).toBe("numeric");
+    expect(timeInputs[0].props.maxLength).toBe(5);
+    expect(timeInputs[0].props.keyboardType).toBe("numeric");
+
+    await fireEvent.changeText(dateInputs[0], "16112026");
+    expect(props.setField).toHaveBeenCalledWith("startDate", "16112026");
+
+    await fireEvent.changeText(timeInputs[0], "0830");
+    expect(props.setField).toHaveBeenCalledWith("startTime", "0830");
+
     await fireEvent.press(screen.getByRole("button", { name: "Escolher data de Início na lista" }));
     expect(props.openPicker).toHaveBeenCalledWith("startDate");
 

@@ -125,6 +125,100 @@ function toIsoDateKey(displayDate: string): string {
   return `${year}-${month}-${day}`;
 }
 
+function extractDigitsFromSegments(value: string, separatorPattern: RegExp, maxPadIndex: number): string {
+  const rawSegments = value.split(separatorPattern);
+  return rawSegments
+    .map((segment, index) => {
+      const digits = segment.replace(/\D/g, "");
+      const hasFollowingSeparator = index < rawSegments.length - 1;
+      if (index <= maxPadIndex && hasFollowingSeparator && digits.length === 1) {
+        return `0${digits}`;
+      }
+      return digits;
+    })
+    .join("");
+}
+
+/** Formata progressivamente a digitação de uma data para o padrão brasileiro `dd/mm/aaaa`. */
+export function formatDisplayDateInput(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return "";
+  }
+
+  const trailingSeparator = /[/.-]$/.test(trimmed);
+  const digits = extractDigitsFromSegments(trimmed, /[/.-]+/, 1).slice(0, 8);
+  if (digits.length === 0) {
+    return "";
+  }
+  if (digits.length <= 2) {
+    return digits.length === 2 && trailingSeparator ? `${digits}/` : digits;
+  }
+  if (digits.length <= 4) {
+    const formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return digits.length === 4 && trailingSeparator ? `${formatted}/` : formatted;
+  }
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+}
+
+/** Formata progressivamente a digitação de um horário 24h para o padrão `hh:mm`. */
+export function formatDisplayTimeInput(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return "";
+  }
+
+  const trailingSeparator = /[:hH.-]$/.test(trimmed);
+  const hasSeparator = /[:hH.-]/.test(trimmed);
+  let digits = extractDigitsFromSegments(trimmed, /[:hH.-]+/, 0);
+  if (digits.length === 0) {
+    return "";
+  }
+  if (!hasSeparator && digits.length >= 2 && digits[0] >= "3") {
+    digits = `0${digits}`;
+  }
+  digits = digits.slice(0, 4);
+
+  if (digits.length <= 2) {
+    return digits.length === 2 && trailingSeparator ? `${digits}:` : digits;
+  }
+  return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
+}
+
+/** Normaliza uma data digitada (ex.: `15112026`, `5/3/2026`, `15-11-2026`) para `dd/mm/aaaa`. */
+export function normalizeDisplayDate(value?: string | null): string | undefined {
+  const trimmed = normalizeOptionalText(value);
+  if (!trimmed) {
+    return undefined;
+  }
+  const separatedMatch = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(trimmed);
+  if (separatedMatch) {
+    return `${separatedMatch[1].padStart(2, "0")}/${separatedMatch[2].padStart(2, "0")}/${separatedMatch[3]}`;
+  }
+  const digitsMatch = /^(\d{2})(\d{2})(\d{4})$/.exec(trimmed);
+  if (digitsMatch) {
+    return `${digitsMatch[1]}/${digitsMatch[2]}/${digitsMatch[3]}`;
+  }
+  return trimmed;
+}
+
+/** Normaliza um horário digitado (ex.: `0830`, `830`, `8:30`, `8:5`, `08h30`) para `hh:mm`. */
+export function normalizeDisplayTime(value?: string | null): string | undefined {
+  const trimmed = normalizeOptionalText(value);
+  if (!trimmed) {
+    return undefined;
+  }
+  const separatedMatch = /^(\d{1,2})[:hH.-](\d{1,2})$/.exec(trimmed);
+  if (separatedMatch) {
+    return `${separatedMatch[1].padStart(2, "0")}:${separatedMatch[2].padStart(2, "0")}`;
+  }
+  const digitsMatch = /^(\d{1,2})(\d{2})$/.exec(trimmed);
+  if (digitsMatch) {
+    return `${digitsMatch[1].padStart(2, "0")}:${digitsMatch[2]}`;
+  }
+  return trimmed;
+}
+
 function normalizeOptionalText(value?: string | null): string | undefined {
   if (typeof value !== "string") {
     return undefined;
@@ -141,10 +235,10 @@ export function validateCreateTaskInput(input: CreateTaskInput): NormalizedCreat
   }
 
   const description = normalizeOptionalText(input.description);
-  const startDate = normalizeOptionalText(input.startDate);
-  const startTime = normalizeOptionalText(input.startTime);
-  const endDate = normalizeOptionalText(input.endDate);
-  const endTime = normalizeOptionalText(input.endTime);
+  const startDate = normalizeDisplayDate(input.startDate);
+  const startTime = normalizeDisplayTime(input.startTime);
+  const endDate = normalizeDisplayDate(input.endDate);
+  const endTime = normalizeDisplayTime(input.endTime);
 
   validateDateTimeFields({ startDate, startTime, endDate, endTime });
 

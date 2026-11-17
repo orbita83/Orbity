@@ -109,4 +109,37 @@ describe("TaskUseCases", () => {
     await useCases.deleteTasks(["b"]);
     expect((await useCases.listTasks()).map((task) => task.id)).toEqual(["a"]);
   });
+
+  it("aceita e normaliza datas e horários digitados sem formatação na criação e edição", async () => {
+    const taskRepo = new InMemoryTaskRepository();
+    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock(), () => "t-digits");
+
+    const created = await useCases.createTask({
+      title: "Revisar física",
+      startDate: "16112026",
+      startTime: "830",
+      endDate: "5/12/2026",
+      endTime: "9:5",
+    });
+
+    expect(created).toMatchObject({
+      startDate: "16/11/2026",
+      startTime: "08:30",
+      endDate: "05/12/2026",
+      endTime: "09:05",
+    });
+
+    const updated = await useCases.updateTask({
+      id: "t-digits",
+      startDate: "17-11-2026",
+      startTime: "08h45",
+    });
+
+    expect(updated).toMatchObject({
+      startDate: "17/11/2026",
+      startTime: "08:45",
+      endDate: "05/12/2026",
+      endTime: "09:05",
+    });
+  });
 });
