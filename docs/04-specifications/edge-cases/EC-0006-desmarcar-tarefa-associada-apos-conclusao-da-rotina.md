@@ -12,10 +12,10 @@ Após uma rotina ter sido completada e todas as suas tarefas associadas terem re
 
 O sistema deve retornar apenas a tarefa desmarcada ao estado pendente, mantendo o estado concluído (`check`) das demais tarefas associadas à rotina.
 
-*Ponto pendente de refinamento:* definir se a reabertura individual de uma tarefa associada reabre automaticamente a ocorrência da rotina no dia ou se a ocorrência da rotina permanece marcada como concluída.
+Desmarcar uma tarefa associada **não** reabre a ocorrência da rotina no dia, que continua concluída. Para reabrir a ocorrência, o estudante usa **Desmarcar todos** (FL-0008, 2b). Decisão R3 de [`rotinas.md`](../../designs/rotinas.md), 2026-11-15.
 
 ## 4. Critérios de aceite
 
 - **CA-01:** Ao desmarcar uma tarefa pertencente a uma rotina concluída, a tarefa selecionada deve voltar ao estado pendente.
 - **CA-02:** As demais tarefas associadas à mesma rotina não devem perder sua marcação de conclusão (`check`).
-- **CA-03:** O tratamento do estado da ocorrência da rotina após a reabertura de uma tarefa associada deve seguir a definição validada no refinamento do fluxo correspondente.
+- **CA-03:** Depois de desmarcar uma tarefa associada, a ocorrência da rotina no dia deve continuar concluída.

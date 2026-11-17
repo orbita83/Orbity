@@ -12,12 +12,15 @@
 import { SystemClockService } from "@/infra/services/system-clock-service";
 import type { IActivityCatalog } from "@/model/repositories/i-activity-catalog";
 import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
+import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
 import type { ITaskRepository } from "@/model/repositories/i-task-repository";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { HomeUseCases } from "@/usecase/home-use-cases";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
+import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
 import type { IStreakUseCases } from "@/usecase/i-streak-use-cases";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
+import { RoutineUseCases } from "@/usecase/routine-use-cases";
 import { StreakUseCases } from "@/usecase/streak-use-cases";
 import { TaskUseCases } from "@/usecase/task-use-cases";
 // Resolvido pelo Metro: persistence.ts no Android e persistence.web.ts na web (D8).
@@ -168,6 +171,7 @@ export function createContainer<
 export type AppRepositories = {
   dailyActivity: IDailyActivityRepository;
   tasks: ITaskRepository;
+  routines: IRoutineRepository;
   activityCatalog: IActivityCatalog;
 };
 
@@ -181,6 +185,7 @@ export type AppUseCases = {
   streak: IStreakUseCases;
   home: IHomeUseCases;
   tasks: ITaskUseCases;
+  routines: IRoutineUseCases;
 };
 
 /**
@@ -210,6 +215,20 @@ export const appContainerDefinition: ContainerDefinition<AppRepositories, AppSer
         (deps: { tasks: ITaskRepository; dailyActivity: IDailyActivityRepository; clock: IClockService }) =>
           new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock),
         {
+          tasks: repositories.tasks,
+          dailyActivity: repositories.dailyActivity,
+          clock: services.clock,
+        },
+      ),
+      routines: composeUseCase(
+        (deps: {
+          routines: IRoutineRepository;
+          tasks: ITaskRepository;
+          dailyActivity: IDailyActivityRepository;
+          clock: IClockService;
+        }) => new RoutineUseCases(deps.routines, deps.tasks, deps.dailyActivity, deps.clock),
+        {
+          routines: repositories.routines,
           tasks: repositories.tasks,
           dailyActivity: repositories.dailyActivity,
           clock: services.clock,

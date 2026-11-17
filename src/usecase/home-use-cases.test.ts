@@ -46,6 +46,15 @@ describe("HomeUseCases", () => {
 
     expect((await useCases.loadHome()).progress.ratio).toBe(0.1);
   });
+  it("RN-0007: pede ao catálogo o progresso do dia de hoje", async () => {
+    const catalog = catalogWith({ completed: 1, total: 2 });
+    const spy = jest.spyOn(catalog, "getProgressCounts");
+    const useCases = new HomeUseCases(repositoryWith([]), catalog, clock);
+
+    await useCases.loadHome();
+
+    expect(spy).toHaveBeenCalledWith(today);
+  });
 
   it("calcula a sequência a partir dos dias registrados", async () => {
     const useCases = new HomeUseCases(

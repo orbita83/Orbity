@@ -10,7 +10,7 @@
 - O progresso usa `cosmicTokens.color.track` e gradiente `cosmicTokens.color.progress` → `cosmicTokens.color.progressEnd`, acompanhado de valor textual. A ação principal segue [botao.md](botao.md).
 - Alça e controles possuem alvo mínimo de 48 × 48 dp. Desde a 1.2, a alça visual mede `size.handle-width` × `size.handle-height` (40 × 4 dp) na cor `sheet.handle` (`cosmicColors.inactive`), dentro de uma área de toque de 48 dp.
 - Desde a 1.2, o painel usa cantos superiores `radius.sheet` (24 dp), fio superior `color.border-subtle` e sombra `shadow.sheet`, sem brilho colorido.
-- O "Progresso de hoje" usa a [barra de progresso](barra-progresso.md) e conta tarefas e rotinas concluídas sobre o total do dia ("1 / 25"), não minutos de foco.
+- O card "Seu progresso" usa a [barra de progresso](barra-progresso.md) e conta tarefas avulsas e rotinas de hoje concluídas sobre o total ("1 / 25"), conforme a RN-0007, não minutos de foco.
 - Os cartões de conquista seguem [cartao-conquista.md](cartao-conquista.md), sem rótulo de dias abaixo das caixas.
 
 ## Estágios e estados
@@ -18,7 +18,7 @@
 | Estado | Comportamento e aparência |
 | --- | --- |
 | Recolhido | Painel oculto, planeta e convite visíveis; navbar visível. |
-| Intermediário (1.1) | Revela Modo Foco, Progresso de hoje e Conquistas; navbar visível. |
+| Intermediário (1.1) | Revela Modo Foco, Seu progresso e Conquistas; navbar visível. |
 | Expandido (1.2) | Acrescenta Última sessão e Como funciona?; navbar visível. |
 | Sessão de foco ativa | Exibe cronômetro e ação de encerramento; navbar oculta. |
 | Carregando | Esqueletos em `cosmicTokens.color.card` e `cosmicTokens.color.track`; anuncie carregamento. |

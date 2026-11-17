@@ -45,6 +45,16 @@ describe("TaskUseCases", () => {
     expect(await useCases.listTasks()).toEqual([created]);
   });
 
+  it("rotinas.md R1: a aba Tarefas não lista as tarefas de rotina", async () => {
+    const taskRepo = new InMemoryTaskRepository([
+      createTaskFixture({ id: "avulsa" }),
+      createTaskFixture({ id: "da-rotina", routineId: "routine-1", position: 0 }),
+    ]);
+    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock());
+
+    expect((await useCases.listTasks()).map((task) => task.id)).toEqual(["avulsa"]);
+  });
+
   it("rejeita criação com título vazio ou datas inválidas sem gravar nada", async () => {
     const taskRepo = new InMemoryTaskRepository();
     const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock());

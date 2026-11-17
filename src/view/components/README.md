@@ -18,6 +18,7 @@ Os arquivos `*.stories.tsx` (`card-tarefa`, `filter-chips`, `nav-bar`, `primary-
 - `ContextualActionBar.tsx`: `ContextualHeader({ countLabel, onCancel })` e `ContextualActionBar({ actions })` para a seleção múltipla; `ContextualAction` = `{ id, label, icon, onPress, destructive?, disabled? }`.
 - `IconTile.tsx`: `IconTile({ icon })`, quadro decorativo com o ícone de uma rotina.
 - `ScreenHeader.tsx`: `ScreenHeader({ title, onBack, variant?, backLabel })`, cabeçalho das telas empilhadas (seta ou ✕).
+- `SkeletonCards.tsx`: `SkeletonCards({ count?, accessibilityLabel })`, esqueleto estático dos cards enquanto os dados carregam (padrões F5 e F8), com os tokens do esqueleto da Início.
 - `Snackbar.tsx`: `Snackbar({ message, actionLabel?, onAction? })`, aviso curto com ação opcional.
 - `TextField.tsx`: `TextField(props)`, campo de texto com rótulo visível, `requirement`, `helper`, `error` e `multiline`.
 - `PlaceholderScreen.tsx`
