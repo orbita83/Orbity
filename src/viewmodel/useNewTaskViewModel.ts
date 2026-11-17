@@ -1,3 +1,4 @@
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/DI/container";
 import type { LocalDate } from "@/model/entities/local-date";
@@ -61,6 +62,8 @@ export type NewTaskActions = {
   closePicker: () => void;
   submit: () => void;
   reset: () => void;
+  /** Limpa o formulário e volta para a lista de Tarefas (fechar ou depois de salvar). */
+  handleClose: () => void;
 };
 
 const EMPTY_FIELDS: NewTaskFields = {
@@ -140,7 +143,12 @@ export const useNewTaskViewModel = (
 ): NewTaskState & NewTaskActions => {
   const useCases = resolveUseCase(taskUseCases, container.useCases.tasks);
   const clock = resolveUseCase(clockService, container.services.clock);
-  const normalizedTaskId = taskId && taskId.trim().length > 0 ? taskId.trim() : undefined;
+  // O `id` vem da rota (`/new-task?id=...`); o parâmetro `taskId` substitui a rota em testes e histórias.
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const routeTaskId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const requestedTaskId = taskId ?? routeTaskId;
+  const normalizedTaskId =
+    requestedTaskId && requestedTaskId.trim().length > 0 ? requestedTaskId.trim() : undefined;
   const editing = Boolean(normalizedTaskId);
 
   const [trackedTaskId, setTrackedTaskId] = useState<string | undefined>(normalizedTaskId);
@@ -293,6 +301,12 @@ export const useNewTaskViewModel = (
     setCreated(false);
   }, []);
 
+  const handleClose = useCallback(() => {
+    reset();
+    router.setParams({ id: "" });
+    router.navigate("/tasks");
+  }, [reset]);
+
   return {
     fields,
     titleError: showErrors && titleMissing,
@@ -311,5 +325,6 @@ export const useNewTaskViewModel = (
     closePicker,
     submit,
     reset,
+    handleClose,
   };
 };

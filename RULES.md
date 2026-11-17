@@ -77,25 +77,28 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 4. **`(grupo)` (Parênteses)**: Organiza rotas e aplica layouts específicos sem adicionar o nome do grupo à URL.
 5. **`+not-found.tsx`**: Rota tratadora de endereços inexistentes (404).
 
-### Boas Práticas de Navegação
-* **Navegação Declarativa (`<Link>`)**:
-  * Usar quando a navegação é uma consequência direta de um toque na interface.
-  * Utilizar a propriedade `asChild` ao envolver componentes customizados como `<Pressable>`.
-  * Passar rotas dinâmicas como objeto para garantir validação de *typed routes*:
-    ```tsx
-    <Link 
-      href={{ pathname: '/ifpimons/[id]', params: { id: String(item.id) } }} 
-      asChild
-    >
-      <Pressable style={styles.item}>
-        <Text>{item.nome}</Text>
-      </Pressable>
-    </Link>
+### Navegação na ViewModel
+Seguindo o livro de referência (Cap. 10, Seções 10.3, 10.10 e 10.11), **quem navega é a ViewModel**. A View recebe apenas estado e ações e **não chama hooks de navegação**.
+
+* **Na ViewModel (`src/viewmodel/`)**:
+  * Navegar com o objeto `router` do `expo-router` dentro de ações expostas à tela (ex.: `handleCreateTask`, `handleOpenRoutine(id)`, `handleClose`).
+  * Métodos comuns: `router.navigate()`, `router.push()`, `router.replace()`, `router.back()`, `router.setParams()`, `router.dismissTo()`.
+  * Usar `router.replace()` para fluxos lineares onde não faz sentido retornar (ex.: tela de Login para Home).
+  * Ler os parâmetros da rota com `useLocalSearchParams` na própria ViewModel. Quando a ViewModel também aceita o valor por parâmetro (para testes e histórias), o parâmetro substitui a rota.
+  * Reagir à tela ganhando foco (`useFocusEffect`), ajustar opções do navegador (`useNavigation().setOptions`) e tratar o voltar do Android (`BackHandler`) também na ViewModel.
+  * Passar rotas dinâmicas como objeto, para manter a validação de *typed routes*:
+    ```ts
+    const handleOpenRoutine = useCallback((id: string) => {
+      router.navigate({ pathname: "/routine-details", params: { id } });
+    }, []);
     ```
-* **Navegação Pragmática (`router`)**:
-  * Usar o objeto `router` (de `expo-router`) quando houver execução de lógica prévia (validação, requisição de API, verificação de permissão).
-  * Métodos comuns: `router.push()`, `router.replace()`, `router.back()`, `router.canGoBack()`, `router.dismissTo()`.
-  * Usar `router.replace()` para fluxos lineares onde não faz sentido retornar (ex: tela de Login para Home).
+* **Na View (`src/view/`)**:
+  * Não importar `useRouter`, `useLocalSearchParams`, `useNavigation`, `useFocusEffect` nem `<Link>`. Um toque que navega chama uma ação da ViewModel (ex.: `onPress={handleOpenSettings}`).
+  * Componentes reutilizáveis que levam a outro lugar recebem a ação por props (ex.: `onPress`, `onReturn`), sem conhecer a rota.
+  * **Exceção:** a `MainTabBar` é a barra de abas do próprio navegador. Ela recebe `navigation` e `state` por props do `<Tabs />` (em `src/app/_layout.tsx`) e não chama hooks de navegação.
+* **Testes e histórias**:
+  * Nos testes de ViewModel, mockar o `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) e verificar as ações de navegação.
+  * O Storybook substitui o `expo-router` por `.storybook/mocks/expo-router.ts`, que registra a navegação no painel *Actions*.
 
 ---
 

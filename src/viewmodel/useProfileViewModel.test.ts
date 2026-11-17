@@ -5,6 +5,42 @@ import { DomainError, ValidationError } from "@/model/errors/domain-error";
 import type { IProfileUseCases } from "@/usecase/profile-use-cases";
 import { useProfileViewModel } from "./useProfileViewModel";
 
+// Navegação do Expo Router isolada.
+const mockNavigate = jest.fn();
+const mockSetParams = jest.fn();
+const mockSetOptions = jest.fn();
+const mockNavigation = { setOptions: (...args: unknown[]) => mockSetOptions(...args) };
+let mockParams: Record<string, string | undefined> = {};
+const mockFocusCallbacks = new Set<() => void>();
+jest.mock("expo-router", () => ({
+  router: {
+    navigate: (...args: unknown[]) => mockNavigate(...args),
+    setParams: (...args: unknown[]) => mockSetParams(...args),
+  },
+  // Registra o efeito de foco enquanto o hook está montado; `focusScreen()` simula a tela ganhando foco.
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = jest.requireActual<typeof import("react")>("react");
+    const latest = React.useRef(callback);
+    latest.current = callback;
+    React.useEffect(() => {
+      const run = () => {
+        latest.current();
+      };
+      mockFocusCallbacks.add(run);
+      return () => {
+        mockFocusCallbacks.delete(run);
+      };
+    }, []);
+  },
+  useLocalSearchParams: () => mockParams,
+  useNavigation: () => mockNavigation,
+}));
+
+beforeEach(() => {
+  mockParams = {};
+  mockFocusCallbacks.clear();
+});
+
 describe("useProfileViewModel", () => {
   let fakeUseCases: IProfileUseCases;
   let currentProfile: StudentProfile;
@@ -228,4 +264,21 @@ describe("useProfileViewModel", () => {
     expect(result.current.error).toBe("Não foi possível salvar.");
   });
 
+});
+
+describe("useProfileViewModel (navegação)", () => {
+  it.each([
+    ["handleOpenAchievements", "/achievements"],
+    ["handleOpenCategories", "/categories"],
+    ["handleOpenSettings", "/settings"],
+  ] as const)("%s abre %s", async (action, path) => {
+    const useCases: IProfileUseCases = {
+      getProfile: jest.fn(async () => ({ ...mockStudentProfile })),
+      updateName: jest.fn(async (name: string) => ({ ...mockStudentProfile, name })),
+    };
+    const { result } = await renderHook(() => useProfileViewModel(useCases));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    result.current[action]();
+    expect(mockNavigate).toHaveBeenCalledWith(path);
+  });
 });

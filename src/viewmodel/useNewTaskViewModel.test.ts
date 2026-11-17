@@ -8,6 +8,42 @@ import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 import { TaskUseCases } from "@/usecase/task-use-cases";
 import { useNewTaskViewModel } from "@/viewmodel/useNewTaskViewModel";
 
+// Navegação do Expo Router isolada.
+const mockNavigate = jest.fn();
+const mockSetParams = jest.fn();
+const mockSetOptions = jest.fn();
+const mockNavigation = { setOptions: (...args: unknown[]) => mockSetOptions(...args) };
+let mockParams: Record<string, string | undefined> = {};
+const mockFocusCallbacks = new Set<() => void>();
+jest.mock("expo-router", () => ({
+  router: {
+    navigate: (...args: unknown[]) => mockNavigate(...args),
+    setParams: (...args: unknown[]) => mockSetParams(...args),
+  },
+  // Registra o efeito de foco enquanto o hook está montado; `focusScreen()` simula a tela ganhando foco.
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = jest.requireActual<typeof import("react")>("react");
+    const latest = React.useRef(callback);
+    latest.current = callback;
+    React.useEffect(() => {
+      const run = () => {
+        latest.current();
+      };
+      mockFocusCallbacks.add(run);
+      return () => {
+        mockFocusCallbacks.delete(run);
+      };
+    }, []);
+  },
+  useLocalSearchParams: () => mockParams,
+  useNavigation: () => mockNavigation,
+}));
+
+beforeEach(() => {
+  mockParams = {};
+  mockFocusCallbacks.clear();
+});
+
 const fixedClock: IClockService = {
   now: () => "2026-11-15T10:00:00-03:00",
   todayLocal: () => LocalDate.parse("2026-11-15"),
@@ -182,5 +218,35 @@ describe("useNewTaskViewModel", () => {
       endDate: "05/12/2026",
       endTime: "08:30",
     });
+  });
+});
+
+describe("useNewTaskViewModel (navegação)", () => {
+  it("lê o id da tarefa na rota e abre a edição", async () => {
+    const taskRepo = new InMemoryTaskRepository([
+      {
+        id: "t1",
+        title: "Estudar Cálculo",
+        completed: false,
+        pinned: false,
+        createdAt: "2026-11-15T08:00:00-03:00",
+        updatedAt: "2026-11-15T08:00:00-03:00",
+      },
+    ]);
+    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), fixedClock);
+    mockParams = { id: "t1" };
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    expect(result.current.editing).toBe(true);
+    await waitFor(() => expect(result.current.fields.title).toBe("Estudar Cálculo"));
+  });
+
+  it("fechar limpa o formulário, tira o id da rota e volta para Tarefas", async () => {
+    const { useCases } = createVmDependencies();
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    await act(async () => result.current.setField("title", "Ler capítulo 3"));
+    await act(async () => result.current.handleClose());
+    expect(result.current.fields.title).toBe("");
+    expect(mockSetParams).toHaveBeenCalledWith({ id: "" });
+    expect(mockNavigate).toHaveBeenCalledWith("/tasks");
   });
 });

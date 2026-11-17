@@ -19,7 +19,7 @@ import { cosmicColors, themes } from "./theme/tokens";
 const theme = themes.cosmic;
 
 export type NewTaskScreenContentProps = NewTaskState &
-  NewTaskActions & {
+  Omit<NewTaskActions, "handleClose"> & {
     /** Fecha o formulário sem criar e volta para Tarefas. */
     onClose: () => void;
     /** Depois do sucesso: limpa o formulário e volta para a lista. */

@@ -11,15 +11,12 @@ jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: jest.requireActual<typeof import("react-native")>("react-native").View,
 }));
 
-jest.mock("expo-router", () => ({
-  Link: ({ children }: { children: import("react").ReactNode }) => children,
-}));
-
 const state: ProfileState & ProfileActions = {
   profile: createStudentProfileFixture(), loading: false, saving: false, error: null,
   validationError: null, isEditingName: false, nameInput: "Alex Silva",
   loadProfile: async () => { }, openEditNameModal: () => { }, closeEditNameModal: () => { },
   setNameInput: () => { }, saveName: async () => true, clearError: () => { },
+  handleOpenAchievements: () => { }, handleOpenCategories: () => { }, handleOpenSettings: () => { },
 };
 
 describe("Estados integrados do perfil", () => {

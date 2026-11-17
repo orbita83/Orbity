@@ -11,10 +11,6 @@ jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: jest.requireActual<typeof import("react-native")>("react-native").View,
 }));
 
-jest.mock("expo-router", () => ({
-  Link: ({ children }: { children: import("react").ReactNode }) => children,
-}));
-
 describe("ProfileScreen", () => {
   // A montagem a frio dos controles nativos levou cerca de 25 s neste ambiente Windows.
   // O limite maior vale só para esta montagem; os demais testes mantêm o padrão do Jest.
@@ -34,6 +30,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: jest.fn(async () => true),
       clearError: jest.fn(),
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     // Act
@@ -63,6 +62,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: jest.fn(async () => true),
       clearError: jest.fn(),
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     await render(<ProfileScreen viewModel={mockViewModel} />);
@@ -92,6 +94,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: saveNameMock,
       clearError: jest.fn(),
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     await render(<ProfileScreen viewModel={mockViewModel} />);
@@ -126,6 +131,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: jest.fn(async () => false),
       clearError: clearErrorMock,
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     await render(<ProfileScreen viewModel={mockViewModel} />);

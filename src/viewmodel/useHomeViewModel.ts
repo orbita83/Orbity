@@ -1,3 +1,4 @@
+import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { container, resolveUseCase } from "@/DI/container";
@@ -88,6 +89,13 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): HomeState & Home
       subscription.remove();
     };
   }, [fetchHome]);
+
+  // Recalcula ao voltar para a aba, para refletir o que mudou em Tarefas e Rotinas.
+  useFocusEffect(
+    useCallback(() => {
+      void fetchHome();
+    }, [fetchHome]),
+  );
 
   const retry = useCallback((): Promise<void> => {
     setStatus("loading");

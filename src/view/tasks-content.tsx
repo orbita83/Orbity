@@ -19,7 +19,7 @@ const FILTERS: readonly FilterChipOption<TaskFilter>[] = [
 ];
 
 export type TasksScreenContentProps = TasksState &
-  TasksActions & {
+  Omit<TasksActions, "handleCreateTask" | "handleEditTask"> & {
     onCreateTask: () => void;
     onEditTask?: (id: string) => void;
   };

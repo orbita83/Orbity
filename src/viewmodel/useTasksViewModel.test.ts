@@ -10,6 +10,43 @@ import { TaskUseCases } from "@/usecase/task-use-cases";
 import { PROTOTYPE_TASKS } from "@/view/__fixtures__/task-list.fixture";
 import { useTasksViewModel } from "@/viewmodel/useTasksViewModel";
 
+// Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
+const mockNavigate = jest.fn();
+const mockSetParams = jest.fn();
+const mockSetOptions = jest.fn();
+const mockNavigation = { setOptions: (...args: unknown[]) => mockSetOptions(...args) };
+let mockParams: Record<string, string | undefined> = {};
+const mockFocusCallbacks = new Set<() => void>();
+jest.mock("expo-router", () => ({
+  router: {
+    navigate: (...args: unknown[]) => mockNavigate(...args),
+    setParams: (...args: unknown[]) => mockSetParams(...args),
+  },
+  // Registra o efeito de foco enquanto o hook está montado; `focusScreen()` simula a tela ganhando foco.
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = jest.requireActual<typeof import("react")>("react");
+    const latest = React.useRef(callback);
+    latest.current = callback;
+    React.useEffect(() => {
+      const run = () => {
+        latest.current();
+      };
+      mockFocusCallbacks.add(run);
+      return () => {
+        mockFocusCallbacks.delete(run);
+      };
+    }, []);
+  },
+  useLocalSearchParams: () => mockParams,
+  useNavigation: () => mockNavigation,
+}));
+const focusScreen = () => mockFocusCallbacks.forEach((run) => run());
+
+beforeEach(() => {
+  mockParams = {};
+  mockFocusCallbacks.clear();
+});
+
 const ids = (tasks: { id: string }[]) => tasks.map((task) => task.id);
 
 const clock: IClockService = {
@@ -166,5 +203,42 @@ describe("useTasksViewModel", () => {
     });
     expect(result.current.errorKey).toBeNull();
     expect(result.current.totalCount).toBe(1);
+  });
+});
+
+describe("useTasksViewModel (navegação)", () => {
+  it("abre Nova tarefa e a edição pela ViewModel", async () => {
+    const { result } = await renderHook(() => useTasksViewModel(PROTOTYPE_TASKS));
+    result.current.handleCreateTask();
+    expect(mockNavigate).toHaveBeenLastCalledWith({ pathname: "/new-task", params: { id: "" } });
+    result.current.handleEditTask("t1");
+    expect(mockNavigate).toHaveBeenLastCalledWith({ pathname: "/new-task", params: { id: "t1" } });
+  });
+
+  it("esconde a barra de abas durante a seleção múltipla e a mostra de novo ao sair", async () => {
+    const { result } = await renderHook(() => useTasksViewModel(PROTOTYPE_TASKS));
+    expect(mockSetOptions).toHaveBeenLastCalledWith({ tabBarStyle: undefined });
+    await act(async () => result.current.startSelection(PROTOTYPE_TASKS[0].id));
+    expect(mockSetOptions).toHaveBeenLastCalledWith({ tabBarStyle: { display: "none" } });
+    await act(async () => result.current.cancelSelection());
+    expect(mockSetOptions).toHaveBeenLastCalledWith({ tabBarStyle: undefined });
+  });
+
+  it("recarrega a lista quando a aba ganha foco", async () => {
+    const useCases: ITaskUseCases = {
+      listTasks: jest.fn(async () => []),
+      createTask: jest.fn(),
+      updateTask: jest.fn(),
+      toggleTaskCompletion: jest.fn(),
+      togglePinTasks: jest.fn(),
+      deleteTasks: jest.fn(),
+    };
+    const { result } = await renderHook(() => useTasksViewModel(useCases));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    const callsBefore = (useCases.listTasks as jest.Mock).mock.calls.length;
+    await act(async () => {
+      focusScreen();
+    });
+    expect(useCases.listTasks).toHaveBeenCalledTimes(callsBefore + 1);
   });
 });

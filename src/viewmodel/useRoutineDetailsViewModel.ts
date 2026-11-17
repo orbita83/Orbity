@@ -1,3 +1,4 @@
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/DI/container";
 import type { RoutineIcon, RoutineDetails as RoutineDetailsEntity } from "@/model/entities/routine";
@@ -41,6 +42,12 @@ export type RoutineDetailsActions = {
   requestDelete: () => void;
   cancelDelete: () => void;
   reload: () => Promise<void>;
+  /** Volta para a lista de Rotinas. */
+  handleBack: () => void;
+  /** Abre a edição da rotina. */
+  handleEdit: (id: string) => void;
+  /** Depois de confirmar a exclusão, volta para a lista, que exclui e oferece "Desfazer". */
+  handleDeleted: (id: string) => void;
 };
 
 const toDetails = (entity: RoutineDetailsEntity): RoutineDetails => ({
@@ -63,19 +70,22 @@ const swapUp = <T,>(items: T[], index: number): T[] => {
 
 /**
  * Estado do detalhe da rotina (protótipo 3.2 e 3.3, padrão F8 e RF-0011).
- * - `source` texto: id da rota, carregado pelo `IRoutineUseCases`.
+ * - `source` texto: id da rotina, carregado pelo `IRoutineUseCases`.
  * - `source` objeto: rotina de protótipo, só em memória (Storybook e testes de apresentação).
- * - sem `source`: rotina indisponível.
+ * - sem `source`: usa o `id` da rota (`/routine-details?id=...`); sem ele, a rotina fica indisponível.
  */
 export const useRoutineDetailsViewModel = (
   source?: string | RoutineDetails | null,
   routineUseCases?: IRoutineUseCases,
 ): RoutineDetailsState & RoutineDetailsActions => {
-  const isPrototypeMode = typeof source === "object" && source !== null;
-  const routineId = typeof source === "string" && source !== "" ? source : null;
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const routeId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const resolvedSource = source ?? routeId;
+  const isPrototypeMode = typeof resolvedSource === "object" && resolvedSource !== null;
+  const routineId = typeof resolvedSource === "string" && resolvedSource !== "" ? resolvedSource : null;
   const useCases = resolveUseCase(routineUseCases, container.useCases.routines);
 
-  const [routine, setRoutine] = useState<RoutineDetails | null>(isPrototypeMode ? source : null);
+  const [routine, setRoutine] = useState<RoutineDetails | null>(isPrototypeMode ? resolvedSource : null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [loading, setLoading] = useState(routineId !== null);
   const [errorKey, setErrorKey] = useState<RoutineDetailsErrorKey | null>(null);
@@ -178,6 +188,25 @@ export const useRoutineDetailsViewModel = (
     );
   }, [act, routine?.activeToday, useCases]);
 
+  // Recarrega ao ganhar foco: a ocorrência de hoje pode ter mudado pela lista, e a rotina pela edição.
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
+
+  const handleBack = useCallback(() => {
+    router.navigate("/routines");
+  }, []);
+
+  const handleEdit = useCallback((id: string) => {
+    router.navigate({ pathname: "/new-routine", params: { id } });
+  }, []);
+
+  const handleDeleted = useCallback((id: string) => {
+    router.navigate({ pathname: "/routines", params: { deleted: id } });
+  }, []);
+
   return {
     routine,
     completedCount: routine?.tasks.filter((task) => task.done).length ?? 0,
@@ -192,5 +221,8 @@ export const useRoutineDetailsViewModel = (
     requestDelete: useCallback(() => setConfirmDeleteVisible(true), []),
     cancelDelete: useCallback(() => setConfirmDeleteVisible(false), []),
     reload,
+    handleBack,
+    handleEdit,
+    handleDeleted,
   };
 };

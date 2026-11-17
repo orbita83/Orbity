@@ -15,7 +15,7 @@ import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/to
 const theme = themes.cosmic;
 
 export type RoutineDetailsScreenContentProps = RoutineDetailsState &
-  RoutineDetailsActions & {
+  Omit<RoutineDetailsActions, "handleBack" | "handleEdit" | "handleDeleted"> & {
     onBack: () => void;
     /** Abre a edição da rotina (RF-0009, UC-0007, #137). */
     onEdit: (id: string) => void;
