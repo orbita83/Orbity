@@ -83,7 +83,7 @@ const resolveErrorKey = (caught: unknown, fallback: "error.load" | "error.save")
  */
 export const useTasksViewModel = (
   source?: ITaskUseCases | readonly TaskListItem[],
-): TasksState & TasksActions => {
+): [TasksState, TasksActions] => {
   const isPrototypeMode = Array.isArray(source);
   const injectedUseCases = isPrototypeMode ? undefined : (source as ITaskUseCases | undefined);
   const useCases = resolveUseCase(injectedUseCases, container.useCases.tasks);
@@ -293,29 +293,33 @@ export const useTasksViewModel = (
     router.navigate({ pathname: "/new-task", params: { id } });
   }, []);
 
-  return {
-    visibleTasks,
-    pendingCount: items.filter((task) => !task.completed).length,
-    totalCount: items.length,
-    filter,
-    selectionMode,
-    selectedIds: selectedIds ?? [],
-    allSelectedPinned,
-    confirmDeleteVisible,
-    loading,
-    errorKey,
-    selectFilter: setFilter,
-    toggleCompleted,
-    startSelection,
-    toggleSelected,
-    cancelSelection,
-    selectAll,
-    pinSelected,
-    requestDelete,
-    cancelDelete,
-    confirmDelete,
-    reload,
-    handleCreateTask,
-    handleEditTask,
-  };
+  return [
+    {
+      visibleTasks,
+      pendingCount: items.filter((task) => !task.completed).length,
+      totalCount: items.length,
+      filter,
+      selectionMode,
+      selectedIds: selectedIds ?? [],
+      allSelectedPinned,
+      confirmDeleteVisible,
+      loading,
+      errorKey,
+    },
+    {
+      selectFilter: setFilter,
+      toggleCompleted,
+      startSelection,
+      toggleSelected,
+      cancelSelection,
+      selectAll,
+      pinSelected,
+      requestDelete,
+      cancelDelete,
+      confirmDelete,
+      reload,
+      handleCreateTask,
+      handleEditTask,
+    },
+  ];
 };

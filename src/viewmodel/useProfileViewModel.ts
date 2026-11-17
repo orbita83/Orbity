@@ -42,7 +42,7 @@ export type ProfileActions = {
  */
 export function useProfileViewModel(
   overrideUseCase?: IProfileUseCases,
-): ProfileState & ProfileActions {
+): [ProfileState, ProfileActions] {
   const useCase = resolveUseCase(overrideUseCase, container.useCases.profile);
 
   const [profile, setProfile] = useState<StudentProfile | null>(null);
@@ -156,22 +156,26 @@ export function useProfileViewModel(
     router.navigate("/settings");
   }, []);
 
-  return {
-    profile,
-    loading,
-    saving,
-    error,
-    validationError,
-    isEditingName,
-    nameInput,
-    loadProfile,
-    openEditNameModal,
-    closeEditNameModal,
-    setNameInput: handleSetNameInput,
-    saveName,
-    clearError,
-    handleOpenAchievements,
-    handleOpenCategories,
-    handleOpenSettings,
-  };
+  return [
+    {
+      profile,
+      loading,
+      saving,
+      error,
+      validationError,
+      isEditingName,
+      nameInput,
+    },
+    {
+      loadProfile,
+      openEditNameModal,
+      closeEditNameModal,
+      setNameInput: handleSetNameInput,
+      saveName,
+      clearError,
+      handleOpenAchievements,
+      handleOpenCategories,
+      handleOpenSettings,
+    },
+  ];
 }

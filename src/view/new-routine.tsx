@@ -7,9 +7,9 @@ import { NewRoutineScreenContent } from "./new-routine-content";
  * recarregam ao ganhar foco (05-padroes.md, F7; protótipo 3.1 → 3).
  */
 const NewRoutineScreen = () => {
-  const vm = useNewRoutineViewModel();
+  const [state, actions] = useNewRoutineViewModel();
 
-  return <NewRoutineScreenContent {...vm} onBack={vm.handleLeave} onFinish={vm.handleLeave} />;
+  return <NewRoutineScreenContent {...state} {...actions} onBack={actions.handleLeave} onFinish={actions.handleLeave} />;
 };
 
 export default NewRoutineScreen;

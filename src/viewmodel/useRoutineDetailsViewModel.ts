@@ -77,7 +77,7 @@ const swapUp = <T,>(items: T[], index: number): T[] => {
 export const useRoutineDetailsViewModel = (
   source?: string | RoutineDetails | null,
   routineUseCases?: IRoutineUseCases,
-): RoutineDetailsState & RoutineDetailsActions => {
+): [RoutineDetailsState, RoutineDetailsActions] => {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const routeId = Array.isArray(params.id) ? params.id[0] : params.id;
   const resolvedSource = source ?? routeId;
@@ -207,22 +207,26 @@ export const useRoutineDetailsViewModel = (
     router.navigate({ pathname: "/routines", params: { deleted: id } });
   }, []);
 
-  return {
-    routine,
-    completedCount: routine?.tasks.filter((task) => task.done).length ?? 0,
-    doneToday: routine?.doneToday ?? false,
-    confirmDeleteVisible,
-    loading,
-    errorKey,
-    toggleTask,
-    moveTaskUp,
-    completeAll,
-    undoAll,
-    requestDelete: useCallback(() => setConfirmDeleteVisible(true), []),
-    cancelDelete: useCallback(() => setConfirmDeleteVisible(false), []),
-    reload,
-    handleBack,
-    handleEdit,
-    handleDeleted,
-  };
+  return [
+    {
+      routine,
+      completedCount: routine?.tasks.filter((task) => task.done).length ?? 0,
+      doneToday: routine?.doneToday ?? false,
+      confirmDeleteVisible,
+      loading,
+      errorKey,
+    },
+    {
+      toggleTask,
+      moveTaskUp,
+      completeAll,
+      undoAll,
+      requestDelete: useCallback(() => setConfirmDeleteVisible(true), []),
+      cancelDelete: useCallback(() => setConfirmDeleteVisible(false), []),
+      reload,
+      handleBack,
+      handleEdit,
+      handleDeleted,
+    },
+  ];
 };

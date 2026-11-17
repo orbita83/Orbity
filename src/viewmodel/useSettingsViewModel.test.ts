@@ -14,7 +14,7 @@ jest.mock("expo-router", () => ({
 describe("useSettingsViewModel", () => {
   it("volta para Meu perfil pela ação da tela", async () => {
     const { result } = await renderHook(() => useSettingsViewModel());
-    result.current.handleReturnToProfile();
+    result.current[1].handleReturnToProfile();
     expect(mockReplace).toHaveBeenCalledWith("/profile");
   });
 

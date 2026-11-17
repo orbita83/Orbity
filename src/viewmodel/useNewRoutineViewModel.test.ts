@@ -63,31 +63,31 @@ describe("useNewRoutineViewModel", () => {
     const { useCases } = createUseCases();
     const create = jest.spyOn(useCases, "createRoutine");
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
-    await act(async () => result.current.setDescription("Estudos diários"));
-    await act(async () => result.current.submit());
+    await act(async () => result.current[1].setDescription("Estudos diários"));
+    await act(async () => result.current[1].submit());
 
-    expect(result.current.nameError).toBe(true);
-    expect(result.current.daysError).toBe(true);
-    expect(result.current.description).toBe("Estudos diários");
+    expect(result.current[0].nameError).toBe(true);
+    expect(result.current[0].daysError).toBe(true);
+    expect(result.current[0].description).toBe("Estudos diários");
     expect(create).not.toHaveBeenCalled();
   });
 
   it("cria a rotina com as tarefas na ordem escolhida", async () => {
     const { useCases } = createUseCases();
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
-    await act(async () => result.current.setName("Matemática"));
-    await act(async () => result.current.toggleDay(3));
-    await act(async () => result.current.toggleDay(1));
-    expect(result.current.days).toEqual([1, 3]);
+    await act(async () => result.current[1].setName("Matemática"));
+    await act(async () => result.current[1].toggleDay(3));
+    await act(async () => result.current[1].toggleDay(1));
+    expect(result.current[0].days).toEqual([1, 3]);
     for (const title of ["Revisar", "Resolver", "   "]) {
-      await act(async () => result.current.setDraft(title));
-      await act(async () => result.current.addTask());
+      await act(async () => result.current[1].setDraft(title));
+      await act(async () => result.current[1].addTask());
     }
-    await act(async () => result.current.moveTaskUp(1));
-    expect(result.current.tasks).toEqual(["Resolver", "Revisar"]);
+    await act(async () => result.current[1].moveTaskUp(1));
+    expect(result.current[0].tasks).toEqual(["Resolver", "Revisar"]);
 
-    await act(async () => result.current.submit());
-    await waitFor(() => expect(result.current.created).toBe(true));
+    await act(async () => result.current[1].submit());
+    await waitFor(() => expect(result.current[0].created).toBe(true));
     const details = await useCases.getRoutine("id-1");
     expect(details?.routine.days).toEqual([1, 3]);
     expect(details?.tasks.map((item) => item.task.title)).toEqual(["Resolver", "Revisar"]);
@@ -96,22 +96,22 @@ describe("useNewRoutineViewModel", () => {
   it("falha ao salvar mostra o aviso e preserva o formulário", async () => {
     const failing = { createRoutine: () => Promise.reject(new DomainError("PERSISTENCE_FAILURE")) } as unknown as IRoutineUseCases;
     const { result } = await renderHook(() => useNewRoutineViewModel(failing));
-    await act(async () => result.current.setName("Matemática"));
-    await act(async () => result.current.toggleDay(1));
-    await act(async () => result.current.submit());
+    await act(async () => result.current[1].setName("Matemática"));
+    await act(async () => result.current[1].toggleDay(1));
+    await act(async () => result.current[1].submit());
 
-    await waitFor(() => expect(result.current.formError).toBe("Não foi possível salvar a rotina agora. Tente de novo."));
-    expect(result.current.name).toBe("Matemática");
-    expect(result.current.submitting).toBe(false);
-    expect(result.current.created).toBe(false);
+    await waitFor(() => expect(result.current[0].formError).toBe("Não foi possível salvar a rotina agora. Tente de novo."));
+    expect(result.current[0].name).toBe("Matemática");
+    expect(result.current[0].submitting).toBe(false);
+    expect(result.current[0].created).toBe(false);
   });
 
   it("o ícone começa em Geral e pode ser trocado", async () => {
     const { useCases } = createUseCases();
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
-    expect(result.current.icon).toBe("track_changes");
-    await act(async () => result.current.setIcon("science"));
-    expect(result.current.icon).toBe("science");
+    expect(result.current[0].icon).toBe("track_changes");
+    await act(async () => result.current[1].setIcon("science"));
+    expect(result.current[0].icon).toBe("science");
   });
 });
 
@@ -132,9 +132,9 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
     const id = await createMath(useCases);
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases, id));
 
-    expect(result.current.editing).toBe(true);
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current).toMatchObject({
+    expect(result.current[0].editing).toBe(true);
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    expect(result.current[0]).toMatchObject({
       name: "Matemática",
       icon: "calculate",
       description: "Diária",
@@ -142,7 +142,7 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
       tasks: ["Revisar", "Resolver"],
     });
     // Sem alterações, sai sem perguntar.
-    expect(result.current.requestLeave()).toBe(true);
+    expect(result.current[1].requestLeave()).toBe(true);
   });
 
   it("RF-0009 CA-03 a CA-06: salva mantendo as tarefas existentes e a marcação delas", async () => {
@@ -151,15 +151,15 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
     const [revisar] = (await useCases.getRoutine(id))!.tasks;
     await useCases.toggleRoutineTask(id, revisar.task.id);
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases, id));
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
 
-    await act(async () => result.current.setName("Cálculo"));
-    await act(async () => result.current.removeTask(1));
-    await act(async () => result.current.setDraft("Anotar"));
-    await act(async () => result.current.addTask());
-    await act(async () => result.current.moveTaskUp(1));
-    await act(async () => result.current.submit());
-    await waitFor(() => expect(result.current.created).toBe(true));
+    await act(async () => result.current[1].setName("Cálculo"));
+    await act(async () => result.current[1].removeTask(1));
+    await act(async () => result.current[1].setDraft("Anotar"));
+    await act(async () => result.current[1].addTask());
+    await act(async () => result.current[1].moveTaskUp(1));
+    await act(async () => result.current[1].submit());
+    await waitFor(() => expect(result.current[0].created).toBe(true));
 
     const details = (await useCases.getRoutine(id))!;
     expect(details.routine.title).toBe("Cálculo");
@@ -174,19 +174,19 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
     const { useCases } = createUseCases();
     const id = await createMath(useCases);
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases, id));
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    await act(async () => result.current.toggleDay(5));
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    await act(async () => result.current[1].toggleDay(5));
 
     let canLeave = true;
     await act(async () => {
-      canLeave = result.current.requestLeave();
+      canLeave = result.current[1].requestLeave();
     });
     expect(canLeave).toBe(false);
-    expect(result.current.discardVisible).toBe(true);
+    expect(result.current[0].discardVisible).toBe(true);
 
-    await act(async () => result.current.cancelLeave());
-    expect(result.current.discardVisible).toBe(false);
-    expect(result.current.days).toEqual([1, 3, 5]);
+    await act(async () => result.current[1].cancelLeave());
+    expect(result.current[0].discardVisible).toBe(false);
+    expect(result.current[0].days).toEqual([1, 3, 5]);
   });
 
   it("rotina que não existe mais: avisa e não deixa salvar", async () => {
@@ -194,16 +194,16 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
     const update = jest.spyOn(useCases, "updateRoutine");
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases, "nada"));
 
-    await waitFor(() => expect(result.current.formError).toBe("Esta rotina não está mais na sua lista."));
-    await act(async () => result.current.submit());
+    await waitFor(() => expect(result.current[0].formError).toBe("Esta rotina não está mais na sua lista."));
+    await act(async () => result.current[1].submit());
     expect(update).not.toHaveBeenCalled();
   });
 
   it("a criação não pergunta ao sair, mesmo com algo digitado", async () => {
     const { useCases } = createUseCases();
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
-    await act(async () => result.current.setName("Inglês"));
-    expect(result.current.requestLeave()).toBe(true);
+    await act(async () => result.current[1].setName("Inglês"));
+    expect(result.current[1].requestLeave()).toBe(true);
   });
 });
 
@@ -213,16 +213,16 @@ describe("useNewRoutineViewModel (navegação)", () => {
     const routine = await useCases.createRoutine({ title: "Matemática", days: [1], tasks: [] });
     mockParams = { id: routine.id };
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
-    expect(result.current.editing).toBe(true);
-    await waitFor(() => expect(result.current.name).toBe("Matemática"));
+    expect(result.current[0].editing).toBe(true);
+    await waitFor(() => expect(result.current[0].name).toBe("Matemática"));
   });
 
   it("sair da criação limpa o formulário e volta para a lista", async () => {
     const { useCases } = createUseCases();
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
-    await act(async () => result.current.setName("Inglês"));
-    await act(async () => result.current.handleLeave());
-    expect(result.current.name).toBe("");
+    await act(async () => result.current[1].setName("Inglês"));
+    await act(async () => result.current[1].handleLeave());
+    expect(result.current[0].name).toBe("");
     expect(mockSetParams).toHaveBeenCalledWith({ id: "" });
     expect(mockNavigate).toHaveBeenCalledWith("/routines");
   });
@@ -231,8 +231,8 @@ describe("useNewRoutineViewModel (navegação)", () => {
     const { useCases } = createUseCases();
     const routine = await useCases.createRoutine({ title: "Matemática", days: [1], tasks: [] });
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases, routine.id));
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    await act(async () => result.current.handleLeave());
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    await act(async () => result.current[1].handleLeave());
     expect(mockNavigate).toHaveBeenCalledWith({ pathname: "/routine-details", params: { id: routine.id } });
   });
 });

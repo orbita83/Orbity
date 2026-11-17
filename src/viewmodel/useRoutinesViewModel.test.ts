@@ -65,47 +65,47 @@ const createUseCases = () => {
 describe("useRoutinesViewModel (protótipo)", () => {
   it("começa vazia quando a lista é vazia", async () => {
     const { result } = await renderHook(() => useRoutinesViewModel([]));
-    expect(result.current.visibleRoutines).toEqual([]);
-    expect(result.current.loading).toBe(false);
+    expect(result.current[0].visibleRoutines).toEqual([]);
+    expect(result.current[0].loading).toBe(false);
   });
 
   it("busca pelo nome sem diferenciar maiúsculas", async () => {
     const { result } = await renderHook(() => useRoutinesViewModel(PROTOTYPE_ROUTINES));
-    await act(async () => result.current.setQuery("ING"));
-    expect(ids(result.current.visibleRoutines)).toEqual(["ing"]);
+    await act(async () => result.current[1].setQuery("ING"));
+    expect(ids(result.current[0].visibleRoutines)).toEqual(["ing"]);
   });
 
   it("RF-0011: concluir e desmarcar a rotina do dia", async () => {
     const { result } = await renderHook(() => useRoutinesViewModel(PROTOTYPE_ROUTINES));
-    expect(result.current.doneTodayCount).toBe(1);
-    await act(async () => result.current.toggleDoneToday("ing"));
-    expect(result.current.doneTodayCount).toBe(2);
+    expect(result.current[0].doneTodayCount).toBe(1);
+    await act(async () => result.current[1].toggleDoneToday("ing"));
+    expect(result.current[0].doneTodayCount).toBe(2);
   });
 
   it("R6: o resumo conta só as rotinas de hoje, e a de outro dia não conclui", async () => {
     const { result } = await renderHook(() => useRoutinesViewModel([...PROTOTYPE_ROUTINES, PROTOTYPE_INACTIVE_ROUTINE]));
-    expect(result.current.totalCount).toBe(3);
-    await act(async () => result.current.toggleDoneToday("fds"));
-    expect(result.current.visibleRoutines.find((routine) => routine.id === "fds")?.doneToday).toBe(false);
+    expect(result.current[0].totalCount).toBe(3);
+    await act(async () => result.current[1].toggleDoneToday("fds"));
+    expect(result.current[0].visibleRoutines.find((routine) => routine.id === "fds")?.doneToday).toBe(false);
   });
 
   it("3.4: excluir mostra o aviso e desfazer devolve a rotina ao mesmo lugar", async () => {
     const { result } = await renderHook(() => useRoutinesViewModel(PROTOTYPE_ROUTINES));
-    await act(async () => result.current.deleteRoutine("ing"));
-    expect(result.current.totalCount).toBe(2);
-    expect(result.current.lastDeleted?.title).toBe("Inglês");
+    await act(async () => result.current[1].deleteRoutine("ing"));
+    expect(result.current[0].totalCount).toBe(2);
+    expect(result.current[0].lastDeleted?.title).toBe("Inglês");
 
-    await act(async () => result.current.undoDelete());
-    expect(ids(result.current.visibleRoutines)).toEqual(["mat", "ing", "leitura"]);
-    expect(result.current.lastDeleted).toBeNull();
+    await act(async () => result.current[1].undoDelete());
+    expect(ids(result.current[0].visibleRoutines)).toEqual(["mat", "ing", "leitura"]);
+    expect(result.current[0].lastDeleted).toBeNull();
   });
 
   it("o aviso de exclusão some sozinho", async () => {
     jest.useFakeTimers();
     const { result } = await renderHook(() => useRoutinesViewModel(PROTOTYPE_ROUTINES));
-    await act(async () => result.current.deleteRoutine("mat"));
+    await act(async () => result.current[1].deleteRoutine("mat"));
     await act(async () => jest.advanceTimersByTime(UNDO_WINDOW_MS));
-    expect(result.current.lastDeleted).toBeNull();
+    expect(result.current[0].lastDeleted).toBeNull();
     jest.useRealTimers();
   });
 });
@@ -116,13 +116,13 @@ describe("useRoutinesViewModel (caso de uso)", () => {
     await useCases.createRoutine({ title: "Matemática", days: [1, 2, 3, 4, 5], tasks: ["Revisar"] });
 
     const { result } = await renderHook(() => useRoutinesViewModel(useCases));
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.visibleRoutines).toEqual([
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    expect(result.current[0].visibleRoutines).toEqual([
       { id: "id-1", title: "Matemática", icon: "track_changes", days: [1, 2, 3, 4, 5], taskCount: 1, activeToday: true, doneToday: false },
     ]);
 
-    await act(async () => result.current.toggleDoneToday("id-1"));
-    await waitFor(() => expect(result.current.doneTodayCount).toBe(1));
+    await act(async () => result.current[1].toggleDoneToday("id-1"));
+    await waitFor(() => expect(result.current[0].doneTodayCount).toBe(1));
     expect((await dailyActivity.listDays()).map(String)).toEqual(["2026-11-16"]);
   });
 
@@ -130,30 +130,30 @@ describe("useRoutinesViewModel (caso de uso)", () => {
     const { useCases } = createUseCases();
     await useCases.createRoutine({ title: "Matemática", days: [1], tasks: [] });
     const { result } = await renderHook(() => useRoutinesViewModel(useCases));
-    await waitFor(() => expect(result.current.visibleRoutines).toHaveLength(1));
+    await waitFor(() => expect(result.current[0].visibleRoutines).toHaveLength(1));
 
-    await act(async () => result.current.deleteRoutine("id-1"));
+    await act(async () => result.current[1].deleteRoutine("id-1"));
     await waitFor(async () => expect(await useCases.listRoutines()).toEqual([]));
 
-    await act(async () => result.current.undoDelete());
+    await act(async () => result.current[1].undoDelete());
     await waitFor(async () => expect(await useCases.listRoutines()).toHaveLength(1));
-    expect(ids(result.current.visibleRoutines)).toEqual(["id-1"]);
+    expect(ids(result.current[0].visibleRoutines)).toEqual(["id-1"]);
   });
 
   it("falha ao carregar vira aviso, sem quebrar a tela", async () => {
     const failing = { listRoutines: () => Promise.reject(new DomainError("PERSISTENCE_FAILURE")) } as unknown as IRoutineUseCases;
     const { result } = await renderHook(() => useRoutinesViewModel(failing));
-    await waitFor(() => expect(result.current.errorKey).toBe("error.load"));
-    expect(result.current.loading).toBe(false);
+    await waitFor(() => expect(result.current[0].errorKey).toBe("error.load"));
+    expect(result.current[0].loading).toBe(false);
   });
 });
 
 describe("useRoutinesViewModel (navegação)", () => {
   it("abre Nova rotina e o detalhe pela ViewModel", async () => {
     const { result } = await renderHook(() => useRoutinesViewModel(PROTOTYPE_ROUTINES));
-    result.current.handleCreateRoutine();
+    result.current[1].handleCreateRoutine();
     expect(mockNavigate).toHaveBeenLastCalledWith("/new-routine");
-    result.current.handleOpenRoutine(PROTOTYPE_ROUTINES[0].id);
+    result.current[1].handleOpenRoutine(PROTOTYPE_ROUTINES[0].id);
     expect(mockNavigate).toHaveBeenLastCalledWith({ pathname: "/routine-details", params: { id: PROTOTYPE_ROUTINES[0].id } });
   });
 
@@ -164,19 +164,19 @@ describe("useRoutinesViewModel (navegação)", () => {
     await act(async () => {
       focusScreen();
     });
-    await waitFor(() => expect(result.current.lastDeleted?.id).toBe(target.id));
-    expect(ids(result.current.visibleRoutines)).not.toContain(target.id);
+    await waitFor(() => expect(result.current[0].lastDeleted?.id).toBe(target.id));
+    expect(ids(result.current[0].visibleRoutines)).not.toContain(target.id);
     expect(mockSetParams).toHaveBeenCalledWith({ deleted: undefined });
   });
 
   it("recarrega a lista quando a aba ganha foco", async () => {
     const { useCases } = createUseCases();
     const { result } = await renderHook(() => useRoutinesViewModel(useCases));
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
     await useCases.createRoutine({ title: "Inglês", days: [1], tasks: [] });
     await act(async () => {
       focusScreen();
     });
-    await waitFor(() => expect(result.current.visibleRoutines.map((routine) => routine.title)).toEqual(["Inglês"]));
+    await waitFor(() => expect(result.current[0].visibleRoutines.map((routine) => routine.title)).toEqual(["Inglês"]));
   });
 });

@@ -46,7 +46,7 @@ const toErrorState = (error: unknown): NonNullable<HomeState["error"]> => {
  * Um recálculo em segundo plano não volta para "carregando", e uma falha depois de pronto
  * não apaga o que já está na tela.
  */
-export const useHomeViewModel = (homeUseCases?: IHomeUseCases): HomeState & HomeActions => {
+export const useHomeViewModel = (homeUseCases?: IHomeUseCases): [HomeState, HomeActions] => {
   const useCases = resolveUseCase(homeUseCases, container.useCases.home);
   const [status, setStatus] = useState<HomeState["status"]>("loading");
   const [error, setError] = useState<HomeState["error"]>(null);
@@ -116,18 +116,22 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): HomeState & Home
   const handleSetSheetStage = useCallback((stage: FocusSheetStage) => setSheetStage(stage), []);
 
   const progress = summary?.progress;
-  return {
-    status,
-    error,
-    summary,
-    progressLabel: `${progress?.completed ?? 0}/${progress?.total ?? 0}`,
-    sheetStage,
-    retry,
-    refresh: fetchHome,
-    handleCycleSheetStage,
-    handleCollapseSheet,
-    handleExpandSheet,
-    handleReduceSheet,
-    handleSetSheetStage,
-  };
+  return [
+    {
+      status,
+      error,
+      summary,
+      progressLabel: `${progress?.completed ?? 0}/${progress?.total ?? 0}`,
+      sheetStage,
+    },
+    {
+      retry,
+      refresh: fetchHome,
+      handleCycleSheetStage,
+      handleCollapseSheet,
+      handleExpandSheet,
+      handleReduceSheet,
+      handleSetSheetStage,
+    },
+  ];
 };

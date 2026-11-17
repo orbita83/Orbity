@@ -16,7 +16,10 @@ const profileUseCases: IProfileUseCases = {
   getProfile: async () => mockStudentProfile,
   updateName: async (name) => ({ ...mockStudentProfile, name }),
 };
-const Profile = () => <ProfileScreen viewModel={useProfileViewModel(profileUseCases)} />;
+const Profile = () => {
+  const [state, actions] = useProfileViewModel(profileUseCases);
+  return <ProfileScreen viewModel={{ ...state, ...actions }} />;
+};
 const Path = () => <Text>{usePathname()}</Text>;
 const routes = { _layout: RootLayout, index: Path, tasks: Path, routines: Path, cosmos: Path, profile: Profile, achievements: AchievementsScreen, categories: CategoriesScreen, settings: SettingsScreen };
 

@@ -120,8 +120,8 @@ const ProfileContent = ({
 };
 
 const ConnectedProfileScreen = ({ theme }: Pick<ProfileScreenProps, "theme">) => {
-  const viewModel = useProfileViewModel();
-  return <ProfileContent theme={theme} viewModel={viewModel} />;
+  const [state, actions] = useProfileViewModel();
+  return <ProfileContent theme={theme} viewModel={{ ...state, ...actions }} />;
 };
 
 const ProfileScreen = ({ theme, viewModel }: ProfileScreenProps) => viewModel

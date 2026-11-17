@@ -140,7 +140,7 @@ export const useNewTaskViewModel = (
   taskUseCases?: ITaskUseCases,
   clockService?: IClockService,
   taskId?: string,
-): NewTaskState & NewTaskActions => {
+): [NewTaskState, NewTaskActions] => {
   const useCases = resolveUseCase(taskUseCases, container.useCases.tasks);
   const clock = resolveUseCase(clockService, container.services.clock);
   // O `id` vem da rota (`/new-task?id=...`); o parâmetro `taskId` substitui a rota em testes e histórias.
@@ -307,24 +307,28 @@ export const useNewTaskViewModel = (
     router.navigate("/tasks");
   }, [reset]);
 
-  return {
-    fields,
-    titleError: showErrors && titleMissing,
-    formError,
-    activePicker,
-    dateOptions,
-    timeOptions: TIME_PICKER_OPTIONS,
-    categoryOptions: CATEGORY_PICKER_OPTIONS,
-    selectedCategory: selectedCategoryOf(fields.category),
-    submitting,
-    created,
-    editing,
-    setField,
-    selectCategory,
-    openPicker,
-    closePicker,
-    submit,
-    reset,
-    handleClose,
-  };
+  return [
+    {
+      fields,
+      titleError: showErrors && titleMissing,
+      formError,
+      activePicker,
+      dateOptions,
+      timeOptions: TIME_PICKER_OPTIONS,
+      categoryOptions: CATEGORY_PICKER_OPTIONS,
+      selectedCategory: selectedCategoryOf(fields.category),
+      submitting,
+      created,
+      editing,
+    },
+    {
+      setField,
+      selectCategory,
+      openPicker,
+      closePicker,
+      submit,
+      reset,
+      handleClose,
+    },
+  ];
 };

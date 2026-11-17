@@ -68,7 +68,7 @@ const toListItem = ({ routine, taskCount, activeToday, doneToday }: RoutineOverv
  */
 export const useRoutinesViewModel = (
   source?: IRoutineUseCases | readonly RoutineListItem[],
-): RoutinesState & RoutinesActions => {
+): [RoutinesState, RoutinesActions] => {
   const isPrototypeMode = Array.isArray(source);
   const injectedUseCases = isPrototypeMode ? undefined : (source as IRoutineUseCases | undefined);
   const useCases = resolveUseCase(injectedUseCases, container.useCases.routines);
@@ -206,21 +206,25 @@ export const useRoutinesViewModel = (
   }, []);
 
   const today = routines.filter((routine) => routine.activeToday);
-  return {
-    visibleRoutines,
-    totalCount: today.length,
-    doneTodayCount: today.filter((routine) => routine.doneToday).length,
-    query,
-    lastDeleted: lastDeleted?.item ?? null,
-    loading,
-    errorKey,
-    setQuery,
-    toggleDoneToday,
-    deleteRoutine,
-    undoDelete,
-    dismissDeleted,
-    reload,
-    handleCreateRoutine,
-    handleOpenRoutine,
-  };
+  return [
+    {
+      visibleRoutines,
+      totalCount: today.length,
+      doneTodayCount: today.filter((routine) => routine.doneToday).length,
+      query,
+      lastDeleted: lastDeleted?.item ?? null,
+      loading,
+      errorKey,
+    },
+    {
+      setQuery,
+      toggleDoneToday,
+      deleteRoutine,
+      undoDelete,
+      dismissDeleted,
+      reload,
+      handleCreateRoutine,
+      handleOpenRoutine,
+    },
+  ];
 };

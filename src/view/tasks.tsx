@@ -3,9 +3,9 @@ import { TasksScreenContent } from "./tasks-content";
 
 /** Tela Tarefas: liga a ViewModel à apresentação. A navegação fica na ViewModel. */
 const TasksScreen = () => {
-  const vm = useTasksViewModel();
+  const [state, actions] = useTasksViewModel();
 
-  return <TasksScreenContent {...vm} onCreateTask={vm.handleCreateTask} onEditTask={vm.handleEditTask} />;
+  return <TasksScreenContent {...state} {...actions} onCreateTask={actions.handleCreateTask} onEditTask={actions.handleEditTask} />;
 };
 
 export default TasksScreen;
