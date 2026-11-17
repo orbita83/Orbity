@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { themes } from "../theme/tokens";
-import { MaterialSymbol } from "./material-symbol";
+import { MaterialSymbol } from "./MaterialSymbol";
 
 const theme = themes.cosmic;
 

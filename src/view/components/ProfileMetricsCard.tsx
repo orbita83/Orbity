@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { GradientSurface } from "./GradientSurface";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
 
 export type ProfileMetricsCardProps = {

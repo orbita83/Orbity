@@ -9,8 +9,8 @@ import type { ITaskUseCases } from "../usecase/i-task-use-cases";
 import { useNewTaskViewModel } from "../viewmodel/NewTaskViewModel";
 import { useTasksViewModel } from "../viewmodel/TasksViewModel";
 import { PROTOTYPE_TASKS } from "./__fixtures__/task-list.fixture";
-import { NewTaskScreenContent } from "./NewTaskScreenContent";
-import { TasksScreenContent, type TasksScreenContentProps } from "./TasksScreenContent";
+import { NewTaskScreenContent } from "./new-task-content";
+import { TasksScreenContent, type TasksScreenContentProps } from "./tasks-content";
 import { themes } from "./theme/tokens";
 
 // Histórias com props fixas ou estado em memória: nunca importam @/DI.

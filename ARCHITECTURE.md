@@ -65,8 +65,8 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     │   ├── repositories/     # Contratos (interfaces) de repositórios / DataSources
     │   └── services/         # Contratos (interfaces) de serviços externos
     ├── usecase/              # Casos de Uso (contratos I*UseCases e implementações)
-    ├── view/                 # Componentes de tela (*Screen.tsx) e UI em PascalCase
-    │   ├── components/       # Componentes reutilizáveis de interface
+    ├── view/                 # Telas em kebab-case.tsx, com o mesmo nome da rota em app/
+    │   ├── components/       # Componentes reutilizáveis de interface (PascalCase.tsx)
     │   └── theme/            # Tokens visuais e temas do Design System
     ├── viewmodel/            # Custom Hooks de estado e apresentação (use*ViewModel.ts)
     └── DI/                   # Ponto de composição e Injeção de Dependências

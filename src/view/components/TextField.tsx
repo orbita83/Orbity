@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
 import { cosmicColors, themes } from "../theme/tokens";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 
 const theme = themes.cosmic;
 /** Linhas visíveis do campo de várias linhas antes de rolar. */

@@ -8,9 +8,9 @@ import { useRoutinesViewModel } from "../viewmodel/RoutinesViewModel";
 import type { RoutineDetails as RoutineDetailsEntity } from "../model/entities/routine";
 import type { IRoutineUseCases } from "../usecase/i-routine-use-cases";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "./__fixtures__/routines.fixture";
-import { NewRoutineScreenContent } from "./NewRoutineScreenContent";
-import { RoutineDetailsScreenContent } from "./RoutineDetailsScreenContent";
-import { RoutinesScreenContent, type RoutinesScreenContentProps } from "./RoutinesScreenContent";
+import { NewRoutineScreenContent } from "./new-routine-content";
+import { RoutineDetailsScreenContent } from "./routine-details-content";
+import { RoutinesScreenContent, type RoutinesScreenContentProps } from "./routines-content";
 import { themes } from "./theme/tokens";
 
 // Histórias com props fixas, ViewModel em memória ou dublê de IRoutineUseCases: nunca importam @/DI.

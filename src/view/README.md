@@ -7,18 +7,18 @@ Camada de apresentação do Orbity. Contém os componentes de tela exportados co
 ## Interface
 
 - Telas (exportação `default`, cada uma renderiza `PlaceholderScreen` com `title` e `message` em pt-BR):
-  - `HomeScreen.tsx` -> `HomeScreen` (título "Início"); importado por `src/app/index.tsx`.
-  - `TasksScreen.tsx` -> `TasksScreen`; liga `useTasksViewModel` a `TasksScreenContent` (lista, filtros e seleção múltipla) e esconde a barra de abas na seleção; importado por `src/app/tasks.tsx`.
-  - `NewTaskScreen.tsx` -> `NewTaskScreen`; liga `useNewTaskViewModel` a `NewTaskScreenContent` (formulário e "Tarefa criada!"); importado por `src/app/new-task.tsx`.
+  - `index.tsx` -> `HomeScreen` (título "Início"); importado por `src/app/index.tsx`.
+  - `tasks.tsx` -> `TasksScreen`; liga `useTasksViewModel` a `TasksScreenContent` (lista, filtros e seleção múltipla) e esconde a barra de abas na seleção; importado por `src/app/tasks.tsx`.
+  - `new-task.tsx` -> `NewTaskScreen`; liga `useNewTaskViewModel` a `NewTaskScreenContent` (formulário e "Tarefa criada!"); importado por `src/app/new-task.tsx`.
   - Textos das telas de Tarefas em `tasks-copy.ts`; tarefas de exemplo só para histórias e testes em `__fixtures__/task-list.fixture.ts`.
-  - `RoutinesScreen.tsx` -> `RoutinesScreen`; liga `useRoutinesViewModel` a `RoutinesScreenContent` (busca, cards e aviso de exclusão com Desfazer), recarrega ao ganhar foco e exclui a rotina recebida em `?deleted=<id>`; importado por `src/app/routines.tsx`.
-  - `NewRoutineScreen.tsx` -> `NewRoutineScreen`; liga `useNewRoutineViewModel` a `NewRoutineScreenContent`; importado por `src/app/new-routine.tsx`.
-  - `RoutineDetailsScreen.tsx` -> `RoutineDetailsScreen`; lê o `id` da rota e liga `useRoutineDetailsViewModel` a `RoutineDetailsScreenContent` (detalhe, conclusão e confirmação de exclusão); importado por `src/app/routine-details.tsx`.
+  - `routines.tsx` -> `RoutinesScreen`; liga `useRoutinesViewModel` a `RoutinesScreenContent` (busca, cards e aviso de exclusão com Desfazer), recarrega ao ganhar foco e exclui a rotina recebida em `?deleted=<id>`; importado por `src/app/routines.tsx`.
+  - `new-routine.tsx` -> `NewRoutineScreen`; liga `useNewRoutineViewModel` a `NewRoutineScreenContent`; importado por `src/app/new-routine.tsx`.
+  - `routine-details.tsx` -> `RoutineDetailsScreen`; lê o `id` da rota e liga `useRoutineDetailsViewModel` a `RoutineDetailsScreenContent` (detalhe, conclusão e confirmação de exclusão); importado por `src/app/routine-details.tsx`.
   - Textos e formatação de dias das telas de Rotinas em `routines-copy.ts`; rotinas de exemplo só para histórias e testes em `__fixtures__/routines.fixture.ts`.
-  - `CosmosScreen.tsx` -> `CosmosScreen` (título "Cosmos"); importado por `src/app/cosmos.tsx`.
-  - `ProfileScreen.tsx` -> `ProfileScreen` (título "Perfil"); importado por `src/app/profile.tsx`.
+  - `cosmos.tsx` -> `CosmosScreen` (título "Cosmos"); importado por `src/app/cosmos.tsx`.
+  - `profile.tsx` -> `ProfileScreen` (título "Perfil"); importado por `src/app/profile.tsx`.
 - Subdiretórios:
-  - [components](./components/README.md): componentes nomeados `MainTabBar`, `PlaceholderScreen`, `CardTarefa`, `FilterChips`, `FilterChipItem`, `MaterialSymbol`, `NavBar`, `PrimaryButton` e tipos/constantes associados (`NavTabId`, `DEFAULT_NAV_TABS`, `TaskFilter`, `DEFAULT_TASK_FILTERS`, `MaterialSymbolName`, ...). `MainTabBar` é usado em `src/app/_layout.tsx`.
+  - [components](./components/README.md): componentes nomeados `MainTabBar`, `PlaceholderScreen`, `TaskCard`, `FilterChips`, `FilterChipItem`, `MaterialSymbol`, `NavBar`, `PrimaryButton` e tipos/constantes associados (`NavTabId`, `DEFAULT_NAV_TABS`, `TaskFilter`, `DEFAULT_TASK_FILTERS`, `MaterialSymbolName`, ...). `MainTabBar` é usado em `src/app/_layout.tsx`.
   - [theme](./theme/README.md): `tokens.ts` com `primitives`, `cosmicColors`, `accessibilityTokens`, `sharedTokens`, `ThemeMode`, `OrbityTheme` e `themes` (`light`, `dark`, `cosmic`).
 
 ## Invariants

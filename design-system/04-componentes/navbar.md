@@ -91,7 +91,7 @@ As razões das tabelas base abaixo descrevem os temas legados; a matriz cósmica
 
 ## Código
 
-A implementação está em [src/view/components/nav-bar.tsx](../../src/view/components/nav-bar.tsx) e pode ser visualizada e inspecionada nas [histórias do Storybook](../../src/view/components/nav-bar.stories.tsx). Execute `npm run storybook`, abra o navegador e utilize as teclas `Tab` e `Shift+Tab` para testar o foco, ou alterne o tema na barra de ferramentas.
+A implementação está em [src/view/components/NavBar.tsx](../../src/view/components/NavBar.tsx) e pode ser visualizada e inspecionada nas [histórias do Storybook](../../src/view/components/NavBar.stories.tsx). Execute `npm run storybook`, abra o navegador e utilize as teclas `Tab` e `Shift+Tab` para testar o foco, ou alterne o tema na barra de ferramentas.
 
 Trecho ilustrativo do componente:
 
@@ -158,4 +158,4 @@ Trecho ilustrativo do componente:
 - Glifo `star` para Cosmos. Rotinas mantém `autorenew`, que comunica repetição; o glifo de alvo do protótipo não foi adotado.
 - Estado pressionado com escala e opacidade dos tokens de movimento.
 
-Implementado em `nav-bar.tsx`; o ícone `star` foi adicionado a `material-symbol.tsx`.
+Implementado em `NavBar.tsx`; o ícone `star` foi adicionado a `MaterialSymbol.tsx`.

@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { View } from "react-native";
 import { useArgs } from "storybook/preview-api";
 import { expect, fn, userEvent, within } from "storybook/test";
-import { CardTarefa } from "./card-tarefa";
+import { TaskCard } from "./TaskCard";
 import { themes } from "../theme/tokens";
 
 const meta = {
   title: "Design System/Card de tarefa",
-  component: CardTarefa,
+  component: TaskCard,
   tags: ["autodocs"],
   args: {
     title: "Revisar anotações de biologia",
@@ -41,12 +41,12 @@ const meta = {
     },
   },
   render: (args, context) => (
-    <CardTarefa
+    <TaskCard
       {...args}
       theme={themes[context.globals.theme === "dark" ? "dark" : "light"]}
     />
   ),
-} satisfies Meta<typeof CardTarefa>;
+} satisfies Meta<typeof TaskCard>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -58,8 +58,8 @@ export const Estados: Story = {
     const theme = themes[context.globals.theme === "dark" ? "dark" : "light"];
     return (
       <View style={{ gap: theme.space.md }}>
-        <CardTarefa {...args} completed={false} theme={theme} />
-        <CardTarefa {...args} completed={true} theme={theme} />
+        <TaskCard {...args} completed={false} theme={theme} />
+        <TaskCard {...args} completed={true} theme={theme} />
       </View>
     );
   },
@@ -92,7 +92,7 @@ export const ListaDoPrototipo: Story = {
     return (
       <View style={{ gap: theme.space.sm }}>
         {tasks.map((title) => (
-          <CardTarefa
+          <TaskCard
             key={title}
             title={title}
             dueDate="termina 19/10 às 10:45"
@@ -114,7 +114,7 @@ export const Interativa: Story = {
     const theme = themes[context.globals.theme === "dark" ? "dark" : "light"];
 
     return (
-      <CardTarefa
+      <TaskCard
         {...args}
         onToggleCompleted={() => {
           args.onToggleCompleted();

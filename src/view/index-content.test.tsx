@@ -3,7 +3,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LocalDate } from "@/model/entities/local-date";
 import type { HomeSummary } from "@/model/entities/home-summary";
 import { HOME_COPY, PUNITIVE_TERMS } from "@/view/home-copy";
-import { HomeScreenContent, type HomeScreenContentProps } from "@/view/HomeScreenContent";
+import { HomeScreenContent, type HomeScreenContentProps } from "@/view/index-content";
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 760 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const today = LocalDate.parse("2026-11-14");

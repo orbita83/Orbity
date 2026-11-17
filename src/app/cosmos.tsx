@@ -1,3 +1,3 @@
-import CosmosScreen from "../view/CosmosScreen";
+import CosmosScreen from "../view/cosmos";
 
 export default CosmosScreen;

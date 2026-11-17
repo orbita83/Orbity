@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { fn } from "storybook/test";
-import { PrimaryButton } from "./primary-button";
+import { PrimaryButton } from "./PrimaryButton";
 import { themes } from "../theme/tokens";
 
 const meta = {

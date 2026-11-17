@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LocalDate } from "@/model/entities/local-date";
 import { PROTOTYPE_TASKS } from "@/view/__fixtures__/task-list.fixture";
-import { NewTaskScreenContent, type NewTaskScreenContentProps } from "@/view/NewTaskScreenContent";
+import { NewTaskScreenContent, type NewTaskScreenContentProps } from "@/view/new-task-content";
 import { TASKS_COPY } from "@/view/tasks-copy";
-import { TasksScreenContent, type TasksScreenContentProps } from "@/view/TasksScreenContent";
+import { TasksScreenContent, type TasksScreenContentProps } from "@/view/tasks-content";
 import {
   CATEGORY_PICKER_OPTIONS,
   TIME_PICKER_OPTIONS,

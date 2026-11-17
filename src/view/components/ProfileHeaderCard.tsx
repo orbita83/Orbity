@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { GradientSurface } from "./GradientSurface";
-import { MaterialSymbol } from "./material-symbol";
+import { MaterialSymbol } from "./MaterialSymbol";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
 
 export type ProfileHeaderCardProps = {

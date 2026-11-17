@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { expect, userEvent, within } from "storybook/test";
-import { CardTarefa } from "./card-tarefa";
-import { FilterChips, type TaskFilter } from "./filter-chips";
-import { NavBar, type NavTabId } from "./nav-bar";
-import { PrimaryButton } from "./primary-button";
+import { TaskCard } from "./TaskCard";
+import { FilterChips, type TaskFilter } from "./FilterChips";
+import { NavBar, type NavTabId } from "./NavBar";
+import { PrimaryButton } from "./PrimaryButton";
 import { themes, type OrbityTheme } from "../theme/tokens";
 
 const ThemeExample = ({ theme }: { theme: OrbityTheme }) => {
@@ -17,7 +17,7 @@ const ThemeExample = ({ theme }: { theme: OrbityTheme }) => {
       <Text style={{ ...theme.font.title, color: theme.color["on-surface"] }}>Tarefas</Text>
       <FilterChips selectedFilter={filter} onSelectFilter={setFilter} theme={theme} />
       <PrimaryButton label="+ Nova tarefa" onPress={() => {}} theme={theme} />
-      <CardTarefa title="Estudar para prova" dueDate="Hoje, 10:45" completed={completed}
+      <TaskCard title="Estudar para prova" dueDate="Hoje, 10:45" completed={completed}
         onToggleCompleted={() => setCompleted(!completed)} onOptionsPress={() => {}} theme={theme} />
       <NavBar activeTab={tab} onSelectTab={setTab} theme={theme} />
     </View>

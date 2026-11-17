@@ -45,4 +45,4 @@ Origem no sistema base: Material 3, Checkbox. Situação: Adaptado (1.2). Motivo
 
 ## Código
 
-Implementado em [CheckCircle.tsx](../../src/view/components/CheckCircle.tsx). O `CardTarefa` passa a usá-lo na tela de Tarefas.
+Implementado em [CheckCircle.tsx](../../src/view/components/CheckCircle.tsx). O `TaskCard` passa a usá-lo na tela de Tarefas.

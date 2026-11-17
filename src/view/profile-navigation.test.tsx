@@ -3,10 +3,10 @@ import { renderRouter } from "expo-router/testing-library";
 import { usePathname } from "expo-router";
 import { Text } from "react-native";
 import RootLayout from "@/app/_layout";
-import ProfileScreen from "./ProfileScreen";
-import AchievementsScreen from "./AchievementsScreen";
-import CategoriesScreen from "./CategoriesScreen";
-import SettingsScreen from "./SettingsScreen";
+import ProfileScreen from "./profile";
+import AchievementsScreen from "./achievements";
+import CategoriesScreen from "./categories";
+import SettingsScreen from "./settings";
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
 
 const profileState = {

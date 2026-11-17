@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
-import { PrimaryButton } from "@/view/components/primary-button";
+import { PrimaryButton } from "@/view/components/PrimaryButton";
 import { themes } from "@/view/theme/tokens";
 
 describe("PrimaryButton", () => {

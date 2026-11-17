@@ -2,9 +2,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
 import { CheckCircle } from "./CheckCircle";
 import { GradientSurface } from "./GradientSurface";
-import { MaterialSymbol } from "./material-symbol";
+import { MaterialSymbol } from "./MaterialSymbol";
 
-export type CardTarefaProps = {
+export type TaskCardProps = {
   title: string;
   dueDate?: string;
   category?: string;
@@ -22,7 +22,7 @@ export type CardTarefaProps = {
   theme?: OrbityTheme;
 };
 
-export const CardTarefa = ({
+export const TaskCard = ({
   title,
   dueDate,
   category,
@@ -35,7 +35,7 @@ export const CardTarefa = ({
   selected = false,
   onToggleSelected,
   theme = themes.cosmic,
-}: CardTarefaProps) => {
+}: TaskCardProps) => {
   const styles = createStyles(theme, completed);
   const cosmic = Boolean(theme.componentOverrides?.cardSurface);
   const secondaryMeta = [category, dueDate].filter(Boolean).join(" · ");

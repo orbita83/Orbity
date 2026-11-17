@@ -1,12 +1,12 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/TasksViewModel";
-import { CardTarefa } from "./components/card-tarefa";
+import { TaskCard } from "./components/TaskCard";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "./components/ContextualActionBar";
-import { FilterChips, type FilterChipOption } from "./components/filter-chips";
-import { MaterialSymbol } from "./components/material-symbol";
-import { PrimaryButton } from "./components/primary-button";
+import { FilterChips, type FilterChipOption } from "./components/FilterChips";
+import { MaterialSymbol } from "./components/MaterialSymbol";
+import { PrimaryButton } from "./components/PrimaryButton";
 import { TASKS_COPY, formatTasksCopy } from "./tasks-copy";
 import { cosmicBorders, themes } from "./theme/tokens";
 
@@ -115,7 +115,7 @@ export const TasksScreenContent = ({
             </View>
           ) : null}
           {visibleTasks.map((task) => (
-            <CardTarefa
+            <TaskCard
               key={task.id}
               theme={theme}
               title={task.title}

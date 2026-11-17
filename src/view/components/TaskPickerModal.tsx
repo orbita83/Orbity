@@ -1,6 +1,6 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { themes } from "../theme/tokens";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 
 const theme = themes.cosmic;
 const LIST_MAX_HEIGHT = theme.target.minSize * 6 + theme.space.sm * 5;

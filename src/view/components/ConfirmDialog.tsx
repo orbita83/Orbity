@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { cosmicBorders, themes } from "../theme/tokens";
-import { MaterialSymbol, type MaterialSymbolName } from "./material-symbol";
-import { PrimaryButton } from "./primary-button";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
+import { PrimaryButton } from "./PrimaryButton";
 
 const theme = themes.cosmic;
 
