@@ -3,6 +3,8 @@ import {
   type Task,
   type UpdateTaskInput,
   isValidTaskCategoryId,
+  normalizeDisplayDate,
+  normalizeDisplayTime,
   validateCreateTaskInput,
   validateDateTimeFields,
 } from "@/model/entities/task";
@@ -77,10 +79,10 @@ export class TaskUseCases implements ITaskUseCases {
     }
 
     const description = resolveOptionalPatch(input.description, existing.description);
-    const startDate = resolveOptionalPatch(input.startDate, existing.startDate);
-    const startTime = resolveOptionalPatch(input.startTime, existing.startTime);
-    const endDate = resolveOptionalPatch(input.endDate, existing.endDate);
-    const endTime = resolveOptionalPatch(input.endTime, existing.endTime);
+    const startDate = normalizeDisplayDate(resolveOptionalPatch(input.startDate, existing.startDate));
+    const startTime = normalizeDisplayTime(resolveOptionalPatch(input.startTime, existing.startTime));
+    const endDate = normalizeDisplayDate(resolveOptionalPatch(input.endDate, existing.endDate));
+    const endTime = normalizeDisplayTime(resolveOptionalPatch(input.endTime, existing.endTime));
 
     validateDateTimeFields({ startDate, startTime, endDate, endTime });
 
