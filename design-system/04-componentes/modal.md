@@ -6,7 +6,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 
 ## Quando usar
 
-- Use para o detalhe da conquista (1.4) e para confirmações curtas (como a exclusão em lote, quando desenhada).
+- Use para o detalhe da conquista (1.4) e para confirmações curtas (exclusão de tarefas e de rotinas, descarte de alterações).
 
 ## Quando não usar
 
@@ -28,7 +28,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 | Detalhe | Conquista | Anatomia acima |
 | Sucesso | Confirmação de criação ("Tarefa criada!") | Mesmos tokens; ícone `check` de `size.dialog-icon` em círculo com borda `color.success`; uma ação principal (`SuccessDialog.tsx`) |
 | Seleção | Escolher data, horário ou categoria | Mesmos tokens; lista de opções em `radiogroup` ([seletor-opcoes.md](seletor-opcoes.md), `TaskPickerModal.tsx`) |
-| Confirmação | Ação destrutiva (excluir rotina, excluir tarefas em lote) | Mesmos tokens; ícone central de `size.dialog-icon` (96 dp) em círculo com borda `color.error`; título e texto centralizados; ações empilhadas: a segura em destaque (`PrimaryButton`) e a destrutiva secundária, com ícone `color.error` e texto `color.on-surface` |
+| Confirmação | Ação destrutiva (excluir uma tarefa, excluir tarefas em lote, excluir rotina) e descarte de alterações | Mesmos tokens; ícone central de `size.dialog-icon` (96 dp) em círculo com borda `color.error`; título e texto centralizados; ações empilhadas, a primária primeiro. **Exclusão (issue #151):** Excluir é a ação primária (`PrimaryButton`, com o ícone do diálogo em `button.label`) e Manter/Cancelar é secundária, com contorno `border.width-thin` e texto `color.on-surface`. **Descarte de alterações:** a ação segura ("Continuar editando") é a primária e Descartar fica secundária, com ícone `color.error` e texto `color.on-surface`. Nos dois casos, o ✕ e o voltar do Android cancelam |
 
 ## Estados
 
@@ -53,7 +53,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 
 ## Código
 
-A variante Confirmação está em [ConfirmDialog.tsx](../../src/view/components/ConfirmDialog.tsx) (`Modal` do React Native com `transparent`), com histórias em `FeedbackComponents.stories.tsx`. O ✕ e o voltar do Android chamam `onCancel`. A variante Detalhe da conquista ainda não está implementada.
+A variante Confirmação está em [ConfirmDialog.tsx](../../src/view/components/ConfirmDialog.tsx) (`Modal` do React Native com `transparent`), com histórias em `FeedbackComponents.stories.tsx`. O ✕ e o voltar do Android chamam `onCancel`. A prop `emphasis` escolhe a ação primária: `"confirm"` (padrão, para exclusões) ou `"cancel"` (descarte de alterações, em `new-routine-content.tsx`). A variante Detalhe da conquista ainda não está implementada.
 
 ```tsx
 <ConfirmDialog

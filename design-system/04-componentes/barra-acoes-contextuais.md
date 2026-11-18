@@ -38,7 +38,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 - "✕" tem nome "Cancelar seleção" e devolve o foco ao card de origem.
 - O contador é anunciado em região ao vivo educada.
-- Excluir combina ícone, texto e número; a confirmação é obrigatória (desenho pendente).
+- Excluir combina ícone, texto e número; a confirmação é obrigatória e segue a variante Confirmação do [modal](modal.md), com Excluir como ação primária.
 
 ## Faça e evite
 
@@ -47,7 +47,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 ## Lacunas
 
-- A confirmação de exclusão em lote usa a variante Confirmação do [modal](modal.md); o texto final fica com a tela de Tarefas.
+- O texto da confirmação de exclusão em lote fica com a tela de Tarefas (`tasks-copy.ts`).
 
 ## Código
 

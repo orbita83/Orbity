@@ -143,7 +143,8 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
 - **Faça (1.2):** Divida a linha de filtros em colunas de largura igual, alinhadas ao botão Criar e aos cards; escreva prazos no formato "19/10 · 08:00–09:00".
-- **Faça:** Exija confirmação antes de apagar itens em lote e garanta que ações destrutivas combinem ícone e texto com contraste acessível.
+- **Faça:** Exija confirmação antes de apagar uma tarefa ou várias e garanta que ações destrutivas combinem ícone e texto com contraste acessível.
+- **Faça (issue #151):** No diálogo de confirmação, Excluir é a ação primária e vem primeiro; Manter tarefas é secundária. O ✕ e o voltar do Android cancelam, como Manter.
 - **Evite:** Mensagens ou alertas punitivos ao desmarcar tarefas concluídas.
 
 ---
@@ -166,6 +167,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Sucesso** | Tarefas riscadas e feedback comemorativo de avanço no Cosmos | `color.action`, `radius.lg`, `font.body`, `motion.duration.short` |
 
 - **Faça:** Permita reverter a conclusão sem perda punitiva de sequência.
+- **Faça (issue #151):** Ao excluir a rotina pelo detalhe, use a mesma hierarquia das Tarefas: Excluir rotina é a ação primária e Manter rotina é secundária. Mantenha o aviso de que a sequência não muda e o Desfazer depois da exclusão.
 - **Evite:** Bloquear a reorganização de hábitos na rotina.
 
 ---
@@ -262,10 +264,9 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 2. **Modo Foco:** O padrão F1/F2 especifica cronômetro regressivo e encerramento no painel; a integração e a persistência das sessões ainda precisam ser entregues nesta branch.
 3. **Tarefas de Rotina vs. Gerais:** Definir se tarefas de rotinas aparecem ou não na aba geral de Tarefas.
 4. **Conquistas na ERS:** Fluxo desenhado precisa ser formalizado como requisito funcional.
-5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote. Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
+5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas"). Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
 6. **Decisões abertas da 1.2:**
    - Tipos de conquista além de dias de sequência, e se conquistas dão estrelas como recompensa no Cosmos.
    - Carrossel de conquistas no painel: giro automático com pausa visível ou rolagem pelo dedo. Até a decisão, use rolagem pelo dedo, que não exige controle de pausa (WCAG 2.2.2).
-   - Desenho da confirmação de exclusão em lote.
    - Desenho da tela de sessão de foco ativa.
    - Glifo de Rotinas: a 1.2 mantém `autorenew`; o alvo do protótipo não foi adotado.

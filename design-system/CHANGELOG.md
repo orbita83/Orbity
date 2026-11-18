@@ -4,6 +4,7 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 
 ## Não publicado
 
+- **Confirmação de exclusão (issue #151):** nos diálogos de exclusão de uma tarefa, de várias tarefas e de rotina, Excluir passa a ser a ação primária (`PrimaryButton`, primeiro na pilha, com o ícone do diálogo) e Manter/Cancelar passa a ser secundária, com contorno. O descarte de alterações em Nova rotina continua com "Continuar editando" como primária. Sem tokens novos. Atualizados `modal.md`, `botao.md`, `barra-acoes-contextuais.md` e `05-padroes.md` (F5/F6 e F8); implementado em `ConfirmDialog.tsx` com a prop `emphasis`.
 - **NavBar (issue #146):** o rótulo passa a usar o tamanho de `font.caption` (12/16, antes 14/20 de `font.label`), mantendo os pesos 500 e 700, e as abas perdem o espaço entre si e o padding lateral, como no protótipo. Assim "Cosmos" não quebra mais em duas linhas em telas de 360 dp. Implementado em `NavBar.tsx`.
 
 ## 1.2.0 · 2026-11-15

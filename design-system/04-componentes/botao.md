@@ -15,7 +15,8 @@ Aplicação no Orbity: o componente corresponde à ação “+ Nova tarefa” do
 - Não use para os filtros “Todos”, “Pendentes” e “Concluídas”: eles representam seleção.
 - Não use para marcar uma tarefa como concluída, abrir o menu de opções ou compor a navegação inferior.
 - Não use a mesma ênfase para várias ações concorrentes na mesma tela.
-- Não use esta variante para exclusão de tarefas; ações destrutivas precisam de especificação própria.
+- Não use esta variante nos controles que apenas iniciam uma exclusão (o "Excluir (n)" da barra contextual, o Excluir do detalhe da rotina): eles seguem as próprias especificações.
+- Exceção aprovada (issue #151): dentro da variante Confirmação do [modal](modal.md), o botão que confirma a exclusão de tarefas ou de rotinas usa esta variante, com o ícone do diálogo, e a ação de manter fica secundária.
 
 ## Anatomia
 
