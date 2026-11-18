@@ -1,6 +1,6 @@
 import type { ActivitySource } from "@/model/entities/activity-source";
 import { calculateStreak, type StreakSnapshot } from "@/model/entities/streak";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { IStreakUseCases } from "@/usecase/i-streak-use-cases";

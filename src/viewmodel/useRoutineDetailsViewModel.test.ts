@@ -3,7 +3,7 @@ import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-
 import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { RoutineUseCases } from "@/usecase/routine-use-cases";
 import { PROTOTYPE_ROUTINE_DETAILS } from "@/view/__fixtures__/routines.fixture";
@@ -128,7 +128,7 @@ describe("useRoutineDetailsViewModel (caso de uso)", () => {
   it("falha ao salvar vira aviso e a tela volta ao que ficou salvo", async () => {
     const { useCases } = createUseCases();
     await useCases.createRoutine({ title: "Matemática", days: [1], tasks: ["Revisar"] });
-    jest.spyOn(useCases, "completeOccurrence").mockRejectedValue(new DomainError("PERSISTENCE_FAILURE"));
+    jest.spyOn(useCases, "completeOccurrence").mockRejectedValue(new DataSourceError());
     const { result } = await renderHook(() => useRoutineDetailsViewModel("id-1", useCases));
     await waitFor(() => expect(result.current[0].routine).not.toBeNull());
 

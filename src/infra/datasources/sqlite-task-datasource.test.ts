@@ -6,6 +6,7 @@ import type { ISqlExecutor } from "@/infra/database/i-sql-executor";
 import { SqliteTaskDataSource } from "@/infra/datasources/sqlite-task-datasource";
 import { runTaskDataSourceContractTests } from "@/infra/datasources/task-datasource.contract";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
+import { DataSourceError } from "@/model/errors";
 import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
 
 describe("SqliteTaskDataSource", () => {
@@ -51,7 +52,7 @@ describe("SqliteTaskDataSource", () => {
     }
   });
 
-  it("converte falha técnica do driver em DomainError PERSISTENCE_FAILURE", async () => {
+  it("converte falha técnica do driver em DataSourceError", async () => {
     const failingExecutor: ISqlExecutor = {
       all: async () => {
         throw new Error("SQLITE_BUSY");
@@ -65,10 +66,7 @@ describe("SqliteTaskDataSource", () => {
     };
     const repo = new SqliteTaskDataSource({ get: async () => failingExecutor } as unknown as DatabaseProvider);
 
-    await expect(repo.listAll()).rejects.toMatchObject({ code: "PERSISTENCE_FAILURE", retryable: true });
-    await expect(repo.create(createTaskFixture())).rejects.toMatchObject({
-      code: "PERSISTENCE_FAILURE",
-      retryable: true,
-    });
+    await expect(repo.listAll()).rejects.toBeInstanceOf(DataSourceError);
+    await expect(repo.create(createTaskFixture())).rejects.toBeInstanceOf(DataSourceError);
   });
 });

@@ -1,6 +1,6 @@
 import type { DatabaseProvider } from "@/infra/database/database-provider";
 import type { SqlStatement } from "@/infra/database/i-sql-executor";
-import { toDomainError } from "@/infra/database/persistence-error";
+import { toDataSourceError } from "@/infra/database/persistence-error";
 import { isValidTaskCategoryId, type Task } from "@/model/entities/task";
 import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
@@ -99,7 +99,7 @@ export class SqliteTaskDataSource implements ITaskDataSource {
       );
       return rows.map(mapRowToTask);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -112,7 +112,7 @@ export class SqliteTaskDataSource implements ITaskDataSource {
       );
       return rows.map(mapRowToTask);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -125,7 +125,7 @@ export class SqliteTaskDataSource implements ITaskDataSource {
       );
       return row ? mapRowToTask(row) : null;
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -135,7 +135,7 @@ export class SqliteTaskDataSource implements ITaskDataSource {
       const statement = insertTaskStatement(task);
       await executor.run(statement.sql, statement.params);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -144,7 +144,7 @@ export class SqliteTaskDataSource implements ITaskDataSource {
       const executor = await this.db.get();
       await executor.run(UPDATE_SQL, toUpdateParams(task));
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -160,7 +160,7 @@ export class SqliteTaskDataSource implements ITaskDataSource {
       }));
       await executor.runInTransaction(statements);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -173,7 +173,7 @@ export class SqliteTaskDataSource implements ITaskDataSource {
       const placeholders = ids.map(() => "?").join(", ");
       await executor.run(`DELETE FROM tasks WHERE id IN (${placeholders})`, ids);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 }

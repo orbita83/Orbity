@@ -1,13 +1,13 @@
 import type { ISqlExecutor } from "@/infra/database/i-sql-executor";
 import { MIGRATIONS, type Migration } from "@/infra/database/migrations";
-import { toDomainError } from "@/infra/database/persistence-error";
-import { DomainError } from "@/model/errors/domain-error";
+import { toDataSourceError } from "@/infra/database/persistence-error";
+import { DataSourceError, SchemaVersionError } from "@/model/errors";
 
 /**
  * Abre o banco e aplica as migrações pendentes no primeiro uso, nunca na importação.
  * - Chamadas simultâneas compartilham uma única tentativa.
- * - Falha com PERSISTENCE_FAILURE descarta a tentativa; a próxima chamada tenta de novo.
- * - SCHEMA_VERSION_UNSUPPORTED fica guardado: o banco não é tocado (D14).
+ * - Um `DataSourceError` descarta a tentativa; a próxima chamada tenta de novo.
+ * - Um `SchemaVersionError` fica guardado: o banco não é tocado (D14).
  */
 export class DatabaseProvider {
   private pending: Promise<ISqlExecutor> | null = null;
@@ -20,8 +20,8 @@ export class DatabaseProvider {
   get(): Promise<ISqlExecutor> {
     if (this.pending === null) {
       const attempt = this.openAndMigrate().catch((error: unknown) => {
-        const domainError = toDomainError(error);
-        if (domainError.retryable && this.pending === attempt) {
+        const domainError = toDataSourceError(error);
+        if (domainError instanceof DataSourceError && this.pending === attempt) {
           this.pending = null;
         }
         throw domainError;
@@ -39,8 +39,7 @@ export class DatabaseProvider {
     const latest = ordered.at(-1)?.version ?? 0;
 
     if (current > latest) {
-      throw new DomainError(
-        "SCHEMA_VERSION_UNSUPPORTED",
+      throw new SchemaVersionError(
         `O banco está na versão ${current}, mais nova que a ${latest} conhecida pelo app.`,
       );
     }

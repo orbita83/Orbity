@@ -1,5 +1,5 @@
 import { LocalDate } from "@/model/entities/local-date";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 
 describe("LocalDate", () => {
   it("converte e devolve o texto AAAA-MM-DD", () => {

@@ -1,5 +1,5 @@
 import { LocalDate } from "@/model/entities/local-date";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import type { IActivityDataSource } from "@/model/datasources/i-activity-datasource";
 import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
@@ -73,7 +73,7 @@ describe("HomeUseCases", () => {
   });
 
   it("repassa a falha do DataSource como DomainError", async () => {
-    const failure = new DomainError("PERSISTENCE_FAILURE");
+    const failure = new DataSourceError();
     const dataSource: IDailyActivityDataSource = {
       recordDay: async () => undefined,
       listDays: async () => {

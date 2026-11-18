@@ -226,7 +226,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 
 ### 6.4. Como Testar a Infraestrutura e Adapters Concretos (`src/infra/`)
 - Serviços (`src/infra/services/`) e DataSources (`src/infra/datasources/`) concretos devem ser criados e testados somente quando existir um contrato real previamente definido em `src/model/services/` ou `src/model/datasources/`.
-- Conforme a **Regra de Ouro da Infraestrutura** em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), os testes de infraestrutura devem validar tanto o mapeamento para entidades puras de `src/model/entities/` quanto a conversão de falhas técnicas/nativas para instâncias de `DomainError` (`src/model/errors/`), garantindo que exceções brutas nunca vazem para as camadas superiores.
+- Conforme a **Regra de Ouro da Infraestrutura** em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), os testes de infraestrutura devem validar tanto o mapeamento para entidades puras de `src/model/entities/` quanto a conversão de falhas técnicas/nativas para a subclasse de `DomainError` do seu tipo (`src/model/errors.ts`, ex.: `toBeInstanceOf(DataSourceError)`), garantindo que exceções brutas nunca vazem para as camadas superiores.
 
 ### 6.5. Inversão de Dependências e Composition Root (`src/di/container.ts`)
 Conforme documentado em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), a aplicação provê três níveis de substituição de dependências:
@@ -278,7 +278,7 @@ Os exemplos a seguir utilizam as abstrações didáticas de carimbo de data/hora
 
 ```typescript
 // src/usecase/timestamp-use-case.test.ts
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/clock-service";
 import { TimestampUseCase } from "@/usecase/timestamp-use-case";
 
@@ -315,7 +315,7 @@ A ViewModel retorna a tupla `[state, actions]`: no teste, `result.current[0]` é
 ```typescript
 // src/viewmodel/useTimestampViewModel.test.ts
 import { renderHook, act } from "@testing-library/react-native";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
 import { useTimestampViewModel } from "@/viewmodel/useTimestampViewModel";
 

@@ -9,7 +9,7 @@ import {
   formatTaskDueLabel,
   getTaskCategoryOption,
 } from "@/model/entities/task";
-import { DomainError } from "@/model/errors/domain-error";
+import { DomainError } from "@/model/errors";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 
 /** Tarefa como a lista a apresenta (view data preparada pela ViewModel). */

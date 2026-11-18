@@ -1,5 +1,5 @@
 import type { StudentProfile } from "@/model/entities/student-profile";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IProfileDataSource } from "@/model/datasources/i-profile-datasource";
 
 const normalizeMetric = (value: unknown): number =>

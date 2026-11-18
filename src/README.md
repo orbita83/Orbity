@@ -8,7 +8,7 @@ Código-fonte do Orbity (React Native + Expo + Expo Router + TypeScript), organi
 - `view/`: telas exportadas como `default`, componentes de UI nomeados e os tokens de tema.
 - `di/`: Composition Root (`container.ts`), que por enquanto registra fábricas vazias.
 
-As camadas `viewmodel/`, `usecase/`, `model/` (`entities/`, `errors/`, `datasources/`, `services/`) e `infra/` (`datasources/`, `services/`) contêm apenas `.gitkeep`. Por isso não têm contrato próprio nesta execução.
+As camadas `viewmodel/`, `usecase/`, `model/` (`entities/`, `errors.ts`, `datasources/`, `services/`) e `infra/` (`datasources/`, `services/`) contêm apenas `.gitkeep`. Por isso não têm contrato próprio nesta execução.
 
 Fluxo atual: `app/<rota>.tsx` re-exporta uma tela de `view/` (`HomeScreen`, `TasksScreen`, `RoutinesScreen`, `CosmosScreen`, `ProfileScreen`). Cada tela delega para `PlaceholderScreen`. Nenhuma tela consome ViewModels, Use Cases ou o container de DI ainda.
 

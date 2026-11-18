@@ -2,7 +2,7 @@ import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-
 import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/local-date";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { TaskUseCases } from "@/usecase/task-use-cases";
 

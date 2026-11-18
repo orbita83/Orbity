@@ -3,7 +3,7 @@ import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-
 import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
 import { RoutineUseCases } from "@/usecase/routine-use-cases";
@@ -94,7 +94,7 @@ describe("useNewRoutineViewModel", () => {
   });
 
   it("falha ao salvar mostra o aviso e preserva o formulário", async () => {
-    const failing = { createRoutine: () => Promise.reject(new DomainError("PERSISTENCE_FAILURE")) } as unknown as IRoutineUseCases;
+    const failing = { createRoutine: () => Promise.reject(new DataSourceError()) } as unknown as IRoutineUseCases;
     const { result } = await renderHook(() => useNewRoutineViewModel(failing));
     await act(async () => result.current[1].setName("Matemática"));
     await act(async () => result.current[1].toggleDay(1));

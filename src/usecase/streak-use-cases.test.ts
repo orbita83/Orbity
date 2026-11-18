@@ -1,5 +1,5 @@
 import { LocalDate } from "@/model/entities/local-date";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { StreakUseCases } from "@/usecase/streak-use-cases";

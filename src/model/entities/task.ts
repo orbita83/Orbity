@@ -1,4 +1,4 @@
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 
 export type TaskFilter = "all" | "pending" | "completed";
 

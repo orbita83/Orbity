@@ -3,7 +3,7 @@ import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-
 import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
 import { RoutineUseCases } from "@/usecase/routine-use-cases";
@@ -141,7 +141,7 @@ describe("useRoutinesViewModel (caso de uso)", () => {
   });
 
   it("falha ao carregar vira aviso, sem quebrar a tela", async () => {
-    const failing = { listRoutines: () => Promise.reject(new DomainError("PERSISTENCE_FAILURE")) } as unknown as IRoutineUseCases;
+    const failing = { listRoutines: () => Promise.reject(new DataSourceError()) } as unknown as IRoutineUseCases;
     const { result } = await renderHook(() => useRoutinesViewModel(failing));
     await waitFor(() => expect(result.current[0].errorKey).toBe("error.load"));
     expect(result.current[0].loading).toBe(false);

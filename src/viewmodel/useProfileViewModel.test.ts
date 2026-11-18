@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
 import type { StudentProfile } from "@/model/entities/student-profile";
-import { DomainError, ValidationError } from "@/model/errors/domain-error";
+import { DataSourceError, ValidationError } from "@/model/errors";
 import type { IProfileUseCases } from "@/usecase/profile-use-cases";
 import { useProfileViewModel } from "./useProfileViewModel";
 
@@ -74,7 +74,7 @@ describe("useProfileViewModel", () => {
   it("deve definir mensagem de erro quando falhar ao carregar o perfil", async () => {
     // Arrange
     fakeUseCases.getProfile = jest.fn(async () => {
-      throw new DomainError("PERSISTENCE_FAILURE", "Erro ao acessar dados remotos.");
+      throw new DataSourceError("Erro ao acessar dados remotos.");
     });
 
     // Act
@@ -198,7 +198,7 @@ describe("useProfileViewModel", () => {
   it("deve tratar erro de domínio no salvamento exibindo no erro global", async () => {
     // Arrange
     fakeUseCases.updateName = jest.fn(async () => {
-      throw new DomainError("PERSISTENCE_FAILURE", "Falha de conexão ao persistir nome.");
+      throw new DataSourceError("Falha de conexão ao persistir nome.");
     });
     const { result } = await renderHook(() => useProfileViewModel(fakeUseCases));
     await waitFor(() => expect(result.current[0].loading).toBe(false));
@@ -225,7 +225,7 @@ describe("useProfileViewModel", () => {
   it("deve permitir limpar mensagem de erro através da ação clearError", async () => {
     // Arrange
     fakeUseCases.getProfile = jest.fn(async () => {
-      throw new DomainError("PERSISTENCE_FAILURE", "Falha temporária");
+      throw new DataSourceError("Falha temporária");
     });
     const { result } = await renderHook(() => useProfileViewModel(fakeUseCases));
     await waitFor(() => expect(result.current[0].loading).toBe(false));
@@ -244,7 +244,7 @@ describe("useProfileViewModel", () => {
     const { result } = await renderHook(() => useProfileViewModel(fakeUseCases));
     await waitFor(() => expect(result.current[0].loading).toBe(false));
     const previous = result.current[0].profile;
-    fakeUseCases.getProfile = jest.fn().mockRejectedValueOnce(new DomainError("PERSISTENCE_FAILURE", "Falha temporária")).mockResolvedValue(currentProfile);
+    fakeUseCases.getProfile = jest.fn().mockRejectedValueOnce(new DataSourceError("Falha temporária")).mockResolvedValue(currentProfile);
     await act(async () => { await result.current[1].loadProfile(); });
     expect(result.current[0].profile).toBe(previous);
     expect(result.current[0].error).toBe("Falha temporária");
@@ -257,7 +257,7 @@ describe("useProfileViewModel", () => {
     const { result } = await renderHook(() => useProfileViewModel(fakeUseCases));
     await waitFor(() => expect(result.current[0].loading).toBe(false));
     const previous = result.current[0].profile;
-    fakeUseCases.updateName = jest.fn().mockRejectedValue(new DomainError("PERSISTENCE_FAILURE", "Não foi possível salvar."));
+    fakeUseCases.updateName = jest.fn().mockRejectedValue(new DataSourceError("Não foi possível salvar."));
     await act(async () => { await result.current[1].saveName(); });
     expect(result.current[0].profile).toBe(previous);
     expect(result.current[0].loading).toBe(false);

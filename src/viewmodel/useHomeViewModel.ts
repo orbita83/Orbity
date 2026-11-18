@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
 import type { HomeSummary } from "@/model/entities/home-summary";
-import { DomainError } from "@/model/errors/domain-error";
+import { SchemaVersionError } from "@/model/errors";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
 import type { FocusSheetStage } from "./ActivitySheetGeometry";
 
@@ -35,7 +35,7 @@ const NEXT_STAGE: Record<FocusSheetStage, FocusSheetStage> = {
 };
 
 const toErrorState = (error: unknown): NonNullable<HomeState["error"]> => {
-  if (error instanceof DomainError && error.code === "SCHEMA_VERSION_UNSUPPORTED") {
+  if (error instanceof SchemaVersionError) {
     return { messageKey: "error.schema", retryable: false };
   }
   return { messageKey: "error.persistence", retryable: true };
