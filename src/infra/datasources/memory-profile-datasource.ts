@@ -1,13 +1,13 @@
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
 import type { StudentProfile } from "@/model/entities/student-profile";
 import { DomainError } from "@/model/errors/domain-error";
-import type { IProfileRepository } from "@/model/repositories/profile-repository";
+import type { IProfileDataSource } from "@/model/datasources/i-profile-datasource";
 
 /**
- * Adapter concreto em memória para o repositório de perfil do estudante.
+ * Adapter concreto em memória para o DataSource de perfil do estudante.
  * Utilizado para desenvolvimento e execução antes da introdução de banco definitivo.
  */
-export class InMemoryProfileRepository implements IProfileRepository {
+export class MemoryProfileDataSource implements IProfileDataSource {
   private currentProfile: StudentProfile;
 
   constructor(initialProfile?: StudentProfile) {

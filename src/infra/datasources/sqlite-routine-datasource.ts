@@ -1,11 +1,11 @@
 import type { DatabaseProvider } from "@/infra/database/database-provider";
 import type { SqlStatement } from "@/infra/database/i-sql-executor";
 import { toDomainError } from "@/infra/database/persistence-error";
-import { insertTaskStatement, updateTaskStatement } from "@/infra/repositories/sqlite-task-repository";
+import { insertTaskStatement, updateTaskStatement } from "@/infra/datasources/sqlite-task-datasource";
 import type { LocalDate } from "@/model/entities/local-date";
 import { DEFAULT_ROUTINE_ICON, isRoutineIcon, isWeekday, type Routine, type Weekday } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
-import type { IRoutineRepository, RoutineTaskChanges } from "@/model/repositories/i-routine-repository";
+import type { IRoutineDataSource, RoutineTaskChanges } from "@/model/datasources/i-routine-datasource";
 
 type RoutineRow = {
   id: string;
@@ -40,7 +40,7 @@ const mapRowToRoutine = (row: RoutineRow): Routine =>
   });
 
 /** Rotinas no SQLite do aparelho (ADR-0001, rotinas.md). */
-export class SqliteRoutineRepository implements IRoutineRepository {
+export class SqliteRoutineDataSource implements IRoutineDataSource {
   constructor(private readonly db: DatabaseProvider) {}
 
   async listActive(): Promise<Routine[]> {

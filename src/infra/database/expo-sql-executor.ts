@@ -7,7 +7,7 @@ const toParams = (params?: readonly unknown[]): SQLiteBindValue[] =>
 /**
  * Único arquivo que importa o `expo-sqlite` (regra de lint em eslint.config.js).
  * As operações passam por uma fila para que nada se intercale dentro de uma transação.
- * Sem teste automatizado (D15): a lógica fica no DatabaseProvider e nos repositórios.
+ * Sem teste automatizado (D15): a lógica fica no DatabaseProvider e nos DataSources.
  */
 export class ExpoSqlExecutor implements ISqlExecutor {
   private queue: Promise<unknown> = Promise.resolve();

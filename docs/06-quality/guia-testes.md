@@ -35,7 +35,7 @@ Os testes automatizados acompanham a divisão em camadas da arquitetura MVVM Sof
 ```text
 src/
 ├── infra/
-│   ├── repositories/                         # Testes *.test.ts junto dos adapters
+│   ├── datasources/                          # Testes *.test.ts junto dos adapters
 │   └── services/                             # Testes *.test.ts junto dos serviços
 ├── model/
 │   └── __fixtures__/                         # Fixtures de entidades puras do domínio
@@ -122,14 +122,14 @@ Test Doubles são objetos substitutos que substituem dependências reais durante
 
 5. **Fake (Adapters In-Memory):**
    - **O que é:** Uma implementação real, simplificada e funcional de um contrato de domínio, que mantém estado interno na memória da aplicação sem utilizar serviços externos, rede ou armazenamento em disco.
-   - **Quando usar:** Para contratos de repositórios (`src/model/repositories/`) em testes de integração de Use Cases ou cenários complexos onde estados precisam persistir entre múltiplos passos.
+   - **Quando usar:** Para contratos de DataSources (`src/model/datasources/`) em testes de integração de Use Cases ou cenários complexos onde estados precisam persistir entre múltiplos passos.
 
 ### 4.2. Matriz de Decisão: Qual Test Double Escolher?
 
 | Necessidade do Teste | Double Recomendado | Ferramenta Jest | Justificativa |
 |---|---|---|---|
 | Fornecer dados constantes ou simular falha em serviço | **Stub** | Objeto literal ou `jest.fn().mockResolvedValue(...)` | Não acopla o teste a detalhes internos de quantas vezes o método foi lido. |
-| Testar fluxo complexo com persistência de estado transitório | **Fake** | Classe In-Memory (`InMemory*Repository`) | Reproduz contratos fielmente sem complexidade de infraestrutura. |
+| Testar fluxo complexo com persistência de estado transitório | **Fake** | Classe em memória (`Memory*DataSource`) | Reproduz contratos fielmente sem complexidade de infraestrutura. |
 | Validar se uma função de callback ou serviço externo foi invocado com argumentos corretos | **Mock** | `jest.fn()` | O critério de aceitação do teste é a verificação comportamental de disparo. |
 | Observar chamadas a utilitários de sistema ou métodos existentes sem substituir a execução | **Spy** | `jest.spyOn(objeto, "metodo")` | Garante rastreabilidade sem quebrar o comportamento original. |
 | Preencher dependência não exercitada pelo teste | **Dummy** | `{}` tipado como `never` ou objeto vazio | Evita criar estruturas desnecessárias para testes unitários focados. |
@@ -192,7 +192,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 │ 3. Use Cases (Regras de Negócio e Orquestração)                       │
 │    -> Testes Unitários Puros em TypeScript (Jest puro)                 │
 │    -> Sem React, sem Expo, sem dependências de UI                     │
-│    -> Recebe interfaces de repositórios e serviços via construtor      │
+│    -> Recebe interfaces de DataSources e serviços via construtor      │
 ├────────────────────────────────────────────────────────────────────────┤
 │ 4. Domínio / Model (Entidades, Tipos e Erros Puros)                   │
 │    -> Testes Unitários de cálculo, validação e exceções de domínio    │
@@ -204,7 +204,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 
 ### 6.1. Como Testar Use Cases (`src/usecase/`)
 - Os Use Cases contêm regras de negócio e validações puras.
-- Devem ser testados isoladamente, instanciando diretamente a classe concreta do Use Case e passando dublês (Stubs ou Fakes) de seus contratos de domínio (`src/model/repositories/` e `src/model/services/`).
+- Devem ser testados isoladamente, instanciando diretamente a classe concreta do Use Case e passando dublês (Stubs ou Fakes) de seus contratos de domínio (`src/model/datasources/` e `src/model/services/`).
 - Não utilize React, React Native Testing Library ou instâncias do container global para testes unitários de Use Cases.
 
 ### 6.2. Como Testar ViewModels (`src/viewmodel/`)
@@ -225,7 +225,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 - **Isolamento Completo:** A View não deve executar regras de negócio nem conter blocos `try/catch`. O teste de componente deve validar se a UI reflete fielmente o estado (`label`, `loading`, `error`) provido pela ViewModel.
 
 ### 6.4. Como Testar a Infraestrutura e Adapters Concretos (`src/infra/`)
-- Serviços (`src/infra/services/`) e repositórios (`src/infra/repositories/`) concretos devem ser criados e testados somente quando existir um contrato real previamente definido em `src/model/services/` ou `src/model/repositories/`.
+- Serviços (`src/infra/services/`) e DataSources (`src/infra/datasources/`) concretos devem ser criados e testados somente quando existir um contrato real previamente definido em `src/model/services/` ou `src/model/datasources/`.
 - Conforme a **Regra de Ouro da Infraestrutura** em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), os testes de infraestrutura devem validar tanto o mapeamento para entidades puras de `src/model/entities/` quanto a conversão de falhas técnicas/nativas para instâncias de `DomainError` (`src/model/errors/`), garantindo que exceções brutas nunca vazem para as camadas superiores.
 
 ### 6.5. Inversão de Dependências e Composition Root (`src/di/container.ts`)

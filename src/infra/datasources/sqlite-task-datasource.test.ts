@@ -3,12 +3,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseProvider } from "@/infra/database/database-provider";
 import type { ISqlExecutor } from "@/infra/database/i-sql-executor";
-import { SqliteTaskRepository } from "@/infra/repositories/sqlite-task-repository";
-import { runTaskRepositoryContractTests } from "@/infra/repositories/task-repository.contract";
+import { SqliteTaskDataSource } from "@/infra/datasources/sqlite-task-datasource";
+import { runTaskDataSourceContractTests } from "@/infra/datasources/task-datasource.contract";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
 
-describe("SqliteTaskRepository", () => {
+describe("SqliteTaskDataSource", () => {
   const openExecutors: BetterSqliteExecutor[] = [];
 
   afterEach(() => {
@@ -17,10 +17,10 @@ describe("SqliteTaskRepository", () => {
     }
   });
 
-  runTaskRepositoryContractTests(async () => {
+  runTaskDataSourceContractTests(async () => {
     const executor = new BetterSqliteExecutor();
     openExecutors.push(executor);
-    return new SqliteTaskRepository(new DatabaseProvider(async () => executor));
+    return new SqliteTaskDataSource(new DatabaseProvider(async () => executor));
   });
 
   it("persiste as tarefas quando o banco em arquivo é fechado e reaberto", async () => {
@@ -33,13 +33,13 @@ describe("SqliteTaskRepository", () => {
     try {
       const firstExecutor = new BetterSqliteExecutor(dbPath);
       fileExecutors.push(firstExecutor);
-      const firstRepo = new SqliteTaskRepository(new DatabaseProvider(async () => firstExecutor));
+      const firstRepo = new SqliteTaskDataSource(new DatabaseProvider(async () => firstExecutor));
       await firstRepo.create(task);
       firstExecutor.close();
 
       const secondExecutor = new BetterSqliteExecutor(dbPath);
       fileExecutors.push(secondExecutor);
-      const secondRepo = new SqliteTaskRepository(new DatabaseProvider(async () => secondExecutor));
+      const secondRepo = new SqliteTaskDataSource(new DatabaseProvider(async () => secondExecutor));
 
       expect(await secondRepo.listAll()).toEqual([task]);
     } finally {
@@ -63,7 +63,7 @@ describe("SqliteTaskRepository", () => {
         throw new Error("SQLITE_IOERR");
       },
     };
-    const repo = new SqliteTaskRepository({ get: async () => failingExecutor } as unknown as DatabaseProvider);
+    const repo = new SqliteTaskDataSource({ get: async () => failingExecutor } as unknown as DatabaseProvider);
 
     await expect(repo.listAll()).rejects.toMatchObject({ code: "PERSISTENCE_FAILURE", retryable: true });
     await expect(repo.create(createTaskFixture())).rejects.toMatchObject({

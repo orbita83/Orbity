@@ -1,10 +1,10 @@
 import { LocalDate } from "@/model/entities/local-date";
 import { ValidationError } from "@/model/errors/domain-error";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { StreakUseCases } from "@/usecase/streak-use-cases";
 
-class FakeDailyActivityRepository implements IDailyActivityRepository {
+class FakeDailyActivityDataSource implements IDailyActivityDataSource {
   readonly days = new Map<string, LocalDate>();
 
   async recordDay(date: LocalDate): Promise<void> {
@@ -29,14 +29,14 @@ class FakeClock implements IClockService {
 }
 
 describe("StreakUseCases", () => {
-  let repository: FakeDailyActivityRepository;
+  let dataSource: FakeDailyActivityDataSource;
   let clock: FakeClock;
   let useCases: StreakUseCases;
 
   beforeEach(() => {
-    repository = new FakeDailyActivityRepository();
+    dataSource = new FakeDailyActivityDataSource();
     clock = new FakeClock("2026-11-14");
-    useCases = new StreakUseCases(repository, clock);
+    useCases = new StreakUseCases(dataSource, clock);
   });
 
   it("RF-0015 CA-03: três conclusões no mesmo dia registram um dia e a sequência é 1", async () => {
@@ -44,7 +44,7 @@ describe("StreakUseCases", () => {
     await useCases.recordActivity({ kind: "routine", id: "r1" });
     await useCases.recordActivity({ kind: "standalone-task", id: "t2" });
 
-    expect((await repository.listDays()).map(String)).toEqual(["2026-11-14"]);
+    expect((await dataSource.listDays()).map(String)).toEqual(["2026-11-14"]);
     expect((await useCases.getStreak()).currentDays).toBe(1);
   });
 
@@ -52,7 +52,7 @@ describe("StreakUseCases", () => {
     await expect(useCases.recordActivity({ kind: "routine", id: "  " })).rejects.toBeInstanceOf(
       ValidationError,
     );
-    expect(repository.days.size).toBe(0);
+    expect(dataSource.days.size).toBe(0);
   });
 
   it("RF-0015 CA-04: atividade às 23h59 ainda conta às 00h01 do dia seguinte", async () => {
@@ -72,7 +72,7 @@ describe("StreakUseCases", () => {
   });
 
   it("grava o instante com o deslocamento do fuso", async () => {
-    const spy = jest.spyOn(repository, "recordDay");
+    const spy = jest.spyOn(dataSource, "recordDay");
     await useCases.recordActivity({ kind: "routine", id: "r1" });
     expect(spy).toHaveBeenCalledWith(LocalDate.parse("2026-11-14"), "2026-11-14T10:00:00-03:00");
   });

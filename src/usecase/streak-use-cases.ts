@@ -1,13 +1,13 @@
 import type { ActivitySource } from "@/model/entities/activity-source";
 import { calculateStreak, type StreakSnapshot } from "@/model/entities/streak";
 import { ValidationError } from "@/model/errors/domain-error";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { IStreakUseCases } from "@/usecase/i-streak-use-cases";
 
 export class StreakUseCases implements IStreakUseCases {
   constructor(
-    private readonly dailyActivity: IDailyActivityRepository,
+    private readonly dailyActivity: IDailyActivityDataSource,
     private readonly clock: IClockService,
   ) {}
 

@@ -1,17 +1,17 @@
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
-/** Suíte compartilhada por InMemoryTaskRepository e SqliteTaskRepository. */
-export function runTaskRepositoryContractTests(createRepository: () => Promise<ITaskRepository>): void {
-  describe("contrato ITaskRepository", () => {
+/** Suíte compartilhada por MemoryTaskDataSource e SqliteTaskDataSource. */
+export function runTaskDataSourceContractTests(createDataSource: () => Promise<ITaskDataSource>): void {
+  describe("contrato ITaskDataSource", () => {
     it("começa vazio", async () => {
-      const repo = await createRepository();
+      const repo = await createDataSource();
       expect(await repo.listAll()).toEqual([]);
       expect(await repo.findById("inexistente")).toBeNull();
     });
 
     it("cria, busca por id e lista da tarefa mais recente para a mais antiga", async () => {
-      const repo = await createRepository();
+      const repo = await createDataSource();
       const older = createTaskFixture({
         id: "t1",
         title: "Primeira",
@@ -35,7 +35,7 @@ export function runTaskRepositoryContractTests(createRepository: () => Promise<I
     });
 
     it("desempata pela ordem inversa de inserção quando createdAt é idêntico", async () => {
-      const repo = await createRepository();
+      const repo = await createDataSource();
       const first = createTaskFixture({ id: "t1", createdAt: "2026-11-15T10:00:00-03:00" });
       const second = createTaskFixture({ id: "t2", createdAt: "2026-11-15T10:00:00-03:00" });
 
@@ -46,7 +46,7 @@ export function runTaskRepositoryContractTests(createRepository: () => Promise<I
     });
 
     it("atualiza uma tarefa existente e preserva os demais campos", async () => {
-      const repo = await createRepository();
+      const repo = await createDataSource();
       const initial = createTaskFixture({ id: "t1", completed: false, pinned: false });
       await repo.create(initial);
 
@@ -62,7 +62,7 @@ export function runTaskRepositoryContractTests(createRepository: () => Promise<I
     });
 
     it("atualiza várias tarefas em lote e ignora listas vazias", async () => {
-      const repo = await createRepository();
+      const repo = await createDataSource();
       const first = createTaskFixture({ id: "t1", pinned: false });
       const second = createTaskFixture({ id: "t2", pinned: false });
       await repo.create(first);
@@ -79,7 +79,7 @@ export function runTaskRepositoryContractTests(createRepository: () => Promise<I
     });
 
     it("exclui várias tarefas pelo id e ignora listas vazias", async () => {
-      const repo = await createRepository();
+      const repo = await createDataSource();
       const first = createTaskFixture({ id: "t1" });
       const second = createTaskFixture({ id: "t2" });
       const third = createTaskFixture({ id: "t3" });
@@ -95,7 +95,7 @@ export function runTaskRepositoryContractTests(createRepository: () => Promise<I
     });
 
     it("rotinas.md R1: guarda o vínculo com a rotina e lista as tarefas dela pela posição", async () => {
-      const repo = await createRepository();
+      const repo = await createDataSource();
       const standalone = createTaskFixture({ id: "avulsa" });
       const second = createTaskFixture({ id: "r2", routineId: "routine-1", position: 1 });
       const first = createTaskFixture({ id: "r1", routineId: "routine-1", position: 0 });

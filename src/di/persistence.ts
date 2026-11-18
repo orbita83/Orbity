@@ -1,19 +1,19 @@
 import { DatabaseProvider } from "@/infra/database/database-provider";
 import { ExpoSqlExecutor } from "@/infra/database/expo-sql-executor";
-import { SqliteDailyActivityRepository } from "@/infra/repositories/sqlite-daily-activity-repository";
-import { SqliteRoutineRepository } from "@/infra/repositories/sqlite-routine-repository";
-import { SqliteTaskRepository } from "@/infra/repositories/sqlite-task-repository";
-import { TaskActivityCatalog } from "@/infra/repositories/task-activity-catalog";
-import type { IActivityCatalog } from "@/model/repositories/i-activity-catalog";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
-import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import { SqliteDailyActivityDataSource } from "@/infra/datasources/sqlite-daily-activity-datasource";
+import { SqliteRoutineDataSource } from "@/infra/datasources/sqlite-routine-datasource";
+import { SqliteTaskDataSource } from "@/infra/datasources/sqlite-task-datasource";
+import { TaskActivityDataSource } from "@/infra/datasources/task-activity-datasource";
+import type { IActivityDataSource } from "@/model/datasources/i-activity-datasource";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
+import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
 export type Persistence = {
-  dailyActivity: IDailyActivityRepository;
-  tasks: ITaskRepository;
-  routines: IRoutineRepository;
-  activityCatalog: IActivityCatalog;
+  dailyActivity: IDailyActivityDataSource;
+  tasks: ITaskDataSource;
+  routines: IRoutineDataSource;
+  activities: IActivityDataSource;
 };
 
 /**
@@ -22,12 +22,12 @@ export type Persistence = {
  */
 export function createPersistence(): Persistence {
   const provider = new DatabaseProvider(() => ExpoSqlExecutor.open("orbity.db"));
-  const tasks = new SqliteTaskRepository(provider);
-  const routines = new SqliteRoutineRepository(provider);
+  const tasks = new SqliteTaskDataSource(provider);
+  const routines = new SqliteRoutineDataSource(provider);
   return {
-    dailyActivity: new SqliteDailyActivityRepository(provider),
+    dailyActivity: new SqliteDailyActivityDataSource(provider),
     tasks,
     routines,
-    activityCatalog: new TaskActivityCatalog(tasks, routines),
+    activities: new TaskActivityDataSource(tasks, routines),
   };
 }

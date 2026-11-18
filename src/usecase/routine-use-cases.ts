@@ -11,9 +11,9 @@ import {
 } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors/domain-error";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
-import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
+import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
 
@@ -31,9 +31,9 @@ const TASK_NOT_FOUND = "Tarefa não encontrada nesta rotina.";
 /** Regras de Rotinas (rotinas.md). Depende só dos contratos do domínio (ARCHITECTURE.md §3.1). */
 export class RoutineUseCases implements IRoutineUseCases {
   constructor(
-    private readonly routineRepository: IRoutineRepository,
-    private readonly taskRepository: ITaskRepository,
-    private readonly dailyActivityRepository: IDailyActivityRepository,
+    private readonly routineDataSource: IRoutineDataSource,
+    private readonly taskDataSource: ITaskDataSource,
+    private readonly dailyActivityDataSource: IDailyActivityDataSource,
     private readonly clock: IClockService,
     private readonly generateId: () => string = defaultGenerateId,
   ) {}
@@ -41,14 +41,14 @@ export class RoutineUseCases implements IRoutineUseCases {
   async listRoutines(): Promise<RoutineOverview[]> {
     const today = this.clock.todayLocal();
     const [routines, completedToday] = await Promise.all([
-      this.routineRepository.listActive(),
-      this.routineRepository.listCompletedOn(today),
+      this.routineDataSource.listActive(),
+      this.routineDataSource.listCompletedOn(today),
     ]);
     const done = new Set(completedToday);
     return Promise.all(
       routines.map(async (routine) => ({
         routine,
-        taskCount: (await this.taskRepository.listByRoutine(routine.id)).length,
+        taskCount: (await this.taskDataSource.listByRoutine(routine.id)).length,
         activeToday: isRoutineActiveOn(routine, today),
         doneToday: done.has(routine.id),
       })),
@@ -56,7 +56,7 @@ export class RoutineUseCases implements IRoutineUseCases {
   }
 
   async getRoutine(id: string): Promise<RoutineDetails | null> {
-    const routine = await this.routineRepository.findById(id);
+    const routine = await this.routineDataSource.findById(id);
     return routine ? this.loadDetails(routine, this.clock.todayLocal()) : null;
   }
 
@@ -74,14 +74,14 @@ export class RoutineUseCases implements IRoutineUseCases {
     });
     // As tarefas da rotina são Task com routineId (R1); `completed` não é usado por elas (R2).
     const tasks = normalized.tasks.map((title, position) => this.newRoutineTask(routine.id, title, position, now));
-    await this.routineRepository.create(routine, tasks);
+    await this.routineDataSource.create(routine, tasks);
     return routine;
   }
 
   async updateRoutine(input: UpdateRoutineInput): Promise<RoutineDetails> {
     const normalized = validateUpdateRoutineInput(input);
     const current = await this.requireRoutine(normalized.id);
-    const existing = new Map((await this.taskRepository.listByRoutine(current.id)).map((task) => [task.id, task]));
+    const existing = new Map((await this.taskDataSource.listByRoutine(current.id)).map((task) => [task.id, task]));
     const now = this.clock.now();
 
     const kept = new Set<string>();
@@ -113,29 +113,29 @@ export class RoutineUseCases implements IRoutineUseCases {
       days: Object.freeze([...normalized.days]),
       updatedAt: now,
     });
-    await this.routineRepository.update(routine, { created, updated, deletedIds });
+    await this.routineDataSource.update(routine, { created, updated, deletedIds });
     return this.loadDetails(routine, this.clock.todayLocal());
   }
 
   async deleteRoutine(id: string): Promise<void> {
-    await this.routineRepository.markDeleted(id, this.clock.now());
+    await this.routineDataSource.markDeleted(id, this.clock.now());
   }
 
   async restoreRoutine(id: string): Promise<void> {
-    await this.routineRepository.restore(id);
+    await this.routineDataSource.restore(id);
   }
 
   async completeOccurrence(id: string): Promise<RoutineDetails> {
     const today = this.clock.todayLocal();
     const routine = await this.requireActiveToday(id, today);
-    const alreadyDone = (await this.routineRepository.listCompletedOn(today)).includes(id);
+    const alreadyDone = (await this.routineDataSource.listCompletedOn(today)).includes(id);
     // Concluir de novo no mesmo dia não faz nada (RF-0011 CA-05; R5).
     if (!alreadyDone) {
       const now = this.clock.now();
-      const tasks = await this.taskRepository.listByRoutine(id);
-      await this.routineRepository.completeOccurrence(id, today, tasks.map((task) => task.id), now);
+      const tasks = await this.taskDataSource.listByRoutine(id);
+      await this.routineDataSource.completeOccurrence(id, today, tasks.map((task) => task.id), now);
       // Concluir a rotina conta para a sequência (RN-0002); o registro do dia é idempotente.
-      await this.dailyActivityRepository.recordDay(today, now);
+      await this.dailyActivityDataSource.recordDay(today, now);
     }
     return this.loadDetails(routine, today);
   }
@@ -144,27 +144,27 @@ export class RoutineUseCases implements IRoutineUseCases {
     const today = this.clock.todayLocal();
     const routine = await this.requireActiveToday(id, today);
     // O dia registrado continua valendo (RF-0014 CA-04).
-    await this.routineRepository.reopenOccurrence(id, today);
+    await this.routineDataSource.reopenOccurrence(id, today);
     return this.loadDetails(routine, today);
   }
 
   async toggleRoutineTask(routineId: string, taskId: string): Promise<RoutineDetails> {
     const today = this.clock.todayLocal();
     const routine = await this.requireActiveToday(routineId, today);
-    const tasks = await this.taskRepository.listByRoutine(routineId);
+    const tasks = await this.taskDataSource.listByRoutine(routineId);
     if (!tasks.some((task) => task.id === taskId)) {
       throw new ValidationError(TASK_NOT_FOUND);
     }
-    const checked = (await this.routineRepository.listTaskChecks(routineId, today)).includes(taskId);
+    const checked = (await this.routineDataSource.listTaskChecks(routineId, today)).includes(taskId);
     // Só a marcação do dia: não registra atividade (RN-0002, D1) nem mexe na ocorrência (R3).
-    await this.routineRepository.setTaskCheck(routineId, taskId, today, !checked);
+    await this.routineDataSource.setTaskCheck(routineId, taskId, today, !checked);
     return this.loadDetails(routine, today);
   }
 
   async moveRoutineTaskUp(routineId: string, index: number): Promise<RoutineDetails> {
     const today = this.clock.todayLocal();
     const routine = await this.requireRoutine(routineId);
-    const tasks = await this.taskRepository.listByRoutine(routineId);
+    const tasks = await this.taskDataSource.listByRoutine(routineId);
     if (Number.isInteger(index) && index > 0 && index < tasks.length) {
       const reordered = [...tasks];
       [reordered[index - 1], reordered[index]] = [reordered[index], reordered[index - 1]];
@@ -173,7 +173,7 @@ export class RoutineUseCases implements IRoutineUseCases {
         .map((task, position) => ({ task, position }))
         .filter(({ task, position }) => task.position !== position)
         .map(({ task, position }) => Object.freeze({ ...task, position, updatedAt: now }));
-      await this.taskRepository.updateMany(changed);
+      await this.taskDataSource.updateMany(changed);
     }
     return this.loadDetails(routine, today);
   }
@@ -192,7 +192,7 @@ export class RoutineUseCases implements IRoutineUseCases {
   }
 
   private async requireRoutine(id: string): Promise<Routine> {
-    const routine = await this.routineRepository.findById(id);
+    const routine = await this.routineDataSource.findById(id);
     if (!routine) {
       throw new ValidationError(NOT_FOUND);
     }
@@ -210,9 +210,9 @@ export class RoutineUseCases implements IRoutineUseCases {
 
   private async loadDetails(routine: Routine, today: LocalDate): Promise<RoutineDetails> {
     const [tasks, checks, completed] = await Promise.all([
-      this.taskRepository.listByRoutine(routine.id),
-      this.routineRepository.listTaskChecks(routine.id, today),
-      this.routineRepository.listCompletedOn(today),
+      this.taskDataSource.listByRoutine(routine.id),
+      this.routineDataSource.listTaskChecks(routine.id, today),
+      this.routineDataSource.listCompletedOn(today),
     ]);
     const checked = new Set(checks);
     return {

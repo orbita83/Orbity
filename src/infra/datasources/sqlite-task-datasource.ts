@@ -2,7 +2,7 @@ import type { DatabaseProvider } from "@/infra/database/database-provider";
 import type { SqlStatement } from "@/infra/database/i-sql-executor";
 import { toDomainError } from "@/infra/database/persistence-error";
 import { isValidTaskCategoryId, type Task } from "@/model/entities/task";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
 type TaskRow = {
   id: string;
@@ -63,7 +63,7 @@ const toUpdateParams = (task: Task): readonly unknown[] => [
   task.id,
 ];
 
-/** Comando de inserção de uma tarefa; o repositório de rotinas o usa na mesma transação da rotina. */
+/** Comando de inserção de uma tarefa; o DataSource de rotinas o usa na mesma transação da rotina. */
 export const insertTaskStatement = (task: Task): SqlStatement => ({
   sql: `INSERT INTO tasks (${SELECT_COLUMNS}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   params: [
@@ -84,11 +84,11 @@ export const insertTaskStatement = (task: Task): SqlStatement => ({
   ],
 });
 
-/** Comando de atualização de uma tarefa; o repositório de rotinas o usa na edição da rotina. */
+/** Comando de atualização de uma tarefa; o DataSource de rotinas o usa na edição da rotina. */
 export const updateTaskStatement = (task: Task): SqlStatement => ({ sql: UPDATE_SQL, params: toUpdateParams(task) });
 
 /** Persistência local de tarefas no SQLite do aparelho (ADR-0001). */
-export class SqliteTaskRepository implements ITaskRepository {
+export class SqliteTaskDataSource implements ITaskDataSource {
   constructor(private readonly db: DatabaseProvider) {}
 
   async listAll(): Promise<Task[]> {

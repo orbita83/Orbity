@@ -1,18 +1,18 @@
 import type { LocalDate } from "@/model/entities/local-date";
 import type { Routine } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
-import type { IRoutineRepository, RoutineTaskChanges } from "@/model/repositories/i-routine-repository";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { IRoutineDataSource, RoutineTaskChanges } from "@/model/datasources/i-routine-datasource";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
 type StoredRoutine = { readonly order: number; readonly routine: Routine; readonly deletedAt: string | null };
 
 const key = (...parts: string[]) => parts.join("|");
 
 /**
- * Mesma semântica do SQLite, em memória. Usado na web (D8) e em testes. Recebe o repositório de
+ * Mesma semântica do SQLite, em memória. Usado na web (D8) e em testes. Recebe o DataSource de
  * tarefas para criar as tarefas da rotina junto com ela, como a transação do SQLite.
  */
-export class InMemoryRoutineRepository implements IRoutineRepository {
+export class MemoryRoutineDataSource implements IRoutineDataSource {
   private readonly routines = new Map<string, StoredRoutine>();
   /** routine_id|data -> completed_at */
   private readonly occurrences = new Map<string, string>();
@@ -20,7 +20,7 @@ export class InMemoryRoutineRepository implements IRoutineRepository {
   private readonly checks = new Map<string, string>();
   private sequence = 0;
 
-  constructor(private readonly tasks: ITaskRepository) {}
+  constructor(private readonly tasks: ITaskDataSource) {}
 
   async listActive(): Promise<Routine[]> {
     return [...this.routines.values()]

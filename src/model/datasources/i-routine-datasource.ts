@@ -13,9 +13,9 @@ export type RoutineTaskChanges = {
 /**
  * Persistência de rotinas, ocorrências e marcações por dia (rotinas.md, ADR-0001).
  * As tarefas da rotina são `Task` com `routineId`; só a criação e a edição delas passam por aqui, para
- * entrar na mesma transação da rotina. A leitura e a reordenação usam o `ITaskRepository`.
+ * entrar na mesma transação da rotina. A leitura e a reordenação usam o `ITaskDataSource`.
  */
-export interface IRoutineRepository {
+export interface IRoutineDataSource {
   /** Rotinas não excluídas, da mais antiga para a mais nova. */
   listActive(): Promise<Routine[]>;
   /** `null` quando não existe ou foi excluída. */

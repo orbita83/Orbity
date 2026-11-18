@@ -1,8 +1,8 @@
 import type { LocalDate } from "@/model/entities/local-date";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 
 /** Mesmo comportamento do SQLite, em memória. Usado na web (D8) e em testes. */
-export class InMemoryDailyActivityRepository implements IDailyActivityRepository {
+export class MemoryDailyActivityDataSource implements IDailyActivityDataSource {
   private readonly days = new Map<string, LocalDate>();
 
   async recordDay(date: LocalDate): Promise<void> {

@@ -10,8 +10,8 @@ import {
   validateDateTimeFields,
 } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors/domain-error";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 
@@ -36,15 +36,15 @@ const resolveOptionalPatch = (patch: string | null | undefined, current: string 
 /** Regras de aplicação para criação, conclusão, fixação e exclusão de tarefas. */
 export class TaskUseCases implements ITaskUseCases {
   constructor(
-    private readonly taskRepository: ITaskRepository,
-    private readonly dailyActivityRepository: IDailyActivityRepository,
+    private readonly taskDataSource: ITaskDataSource,
+    private readonly dailyActivityDataSource: IDailyActivityDataSource,
     private readonly clock: IClockService,
     private readonly generateId: () => string = defaultGenerateId,
   ) {}
 
   /** Só as tarefas avulsas: as de rotina ficam na aba Rotinas (rotinas.md, R1). */
   async listTasks(): Promise<Task[]> {
-    return (await this.taskRepository.listAll()).filter(isStandaloneTask);
+    return (await this.taskDataSource.listAll()).filter(isStandaloneTask);
   }
 
   async createTask(input: CreateTaskInput): Promise<Task> {
@@ -65,12 +65,12 @@ export class TaskUseCases implements ITaskUseCases {
       updatedAt: now,
     });
 
-    await this.taskRepository.create(task);
+    await this.taskDataSource.create(task);
     return task;
   }
 
   async updateTask(input: UpdateTaskInput): Promise<Task> {
-    const existing = await this.taskRepository.findById(input.id);
+    const existing = await this.taskDataSource.findById(input.id);
     if (!existing) {
       throw new ValidationError("Tarefa não encontrada.");
     }
@@ -115,17 +115,17 @@ export class TaskUseCases implements ITaskUseCases {
       updatedAt: now,
     });
 
-    await this.taskRepository.update(updated);
+    await this.taskDataSource.update(updated);
 
     if (!existing.completed && updated.completed) {
-      await this.dailyActivityRepository.recordDay(this.clock.todayLocal(), now);
+      await this.dailyActivityDataSource.recordDay(this.clock.todayLocal(), now);
     }
 
     return updated;
   }
 
   async toggleTaskCompletion(id: string): Promise<Task> {
-    const existing = await this.taskRepository.findById(id);
+    const existing = await this.taskDataSource.findById(id);
     if (!existing) {
       throw new ValidationError("Tarefa não encontrada.");
     }
@@ -137,11 +137,11 @@ export class TaskUseCases implements ITaskUseCases {
       updatedAt: now,
     });
 
-    await this.taskRepository.update(updated);
+    await this.taskDataSource.update(updated);
 
     // Concluir registra atividade do dia na sequência (RN-0002); reabrir mantém o dia (RF-0014 CA-04).
     if (!existing.completed && updated.completed) {
-      await this.dailyActivityRepository.recordDay(this.clock.todayLocal(), now);
+      await this.dailyActivityDataSource.recordDay(this.clock.todayLocal(), now);
     }
 
     return updated;
@@ -153,7 +153,7 @@ export class TaskUseCases implements ITaskUseCases {
       return [];
     }
 
-    const all = await this.taskRepository.listAll();
+    const all = await this.taskDataSource.listAll();
     const targets = all.filter((task) => selected.has(task.id));
     if (targets.length === 0) {
       return [];
@@ -172,7 +172,7 @@ export class TaskUseCases implements ITaskUseCases {
         }),
       );
 
-    await this.taskRepository.updateMany(changed);
+    await this.taskDataSource.updateMany(changed);
     return changed;
   }
 
@@ -181,6 +181,6 @@ export class TaskUseCases implements ITaskUseCases {
     if (uniqueIds.length === 0) {
       return;
     }
-    await this.taskRepository.deleteMany(uniqueIds);
+    await this.taskDataSource.deleteMany(uniqueIds);
   }
 }

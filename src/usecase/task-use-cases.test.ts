@@ -1,5 +1,5 @@
-import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
-import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/local-date";
 import { ValidationError } from "@/model/errors/domain-error";
@@ -12,9 +12,9 @@ const createClock = (nowIso = "2026-11-15T09:30:00-03:00", localDate = "2026-11-
 });
 
 describe("TaskUseCases", () => {
-  it("cria tarefa com campos normalizados e persiste no repositório", async () => {
-    const taskRepo = new InMemoryTaskRepository();
-    const activityRepo = new InMemoryDailyActivityRepository();
+  it("cria tarefa com campos normalizados e persiste no DataSource", async () => {
+    const taskRepo = new MemoryTaskDataSource();
+    const activityRepo = new MemoryDailyActivityDataSource();
     let seq = 0;
     const useCases = new TaskUseCases(taskRepo, activityRepo, createClock(), () => `t-${++seq}`);
 
@@ -46,18 +46,18 @@ describe("TaskUseCases", () => {
   });
 
   it("rotinas.md R1: a aba Tarefas não lista as tarefas de rotina", async () => {
-    const taskRepo = new InMemoryTaskRepository([
+    const taskRepo = new MemoryTaskDataSource([
       createTaskFixture({ id: "avulsa" }),
       createTaskFixture({ id: "da-rotina", routineId: "routine-1", position: 0 }),
     ]);
-    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock());
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), createClock());
 
     expect((await useCases.listTasks()).map((task) => task.id)).toEqual(["avulsa"]);
   });
 
   it("rejeita criação com título vazio ou datas inválidas sem gravar nada", async () => {
-    const taskRepo = new InMemoryTaskRepository();
-    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock());
+    const taskRepo = new MemoryTaskDataSource();
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), createClock());
 
     await expect(useCases.createTask({ title: "  " })).rejects.toThrow(ValidationError);
     await expect(useCases.createTask({ title: "Estudar", startDate: "31/02/2026" })).rejects.toThrow(ValidationError);
@@ -66,8 +66,8 @@ describe("TaskUseCases", () => {
 
   it("concluir tarefa registra o dia local na sequência e reabrir preserva o dia registrado", async () => {
     const initial = createTaskFixture({ id: "t1", completed: false });
-    const taskRepo = new InMemoryTaskRepository([initial]);
-    const activityRepo = new InMemoryDailyActivityRepository();
+    const taskRepo = new MemoryTaskDataSource([initial]);
+    const activityRepo = new MemoryDailyActivityDataSource();
     const useCases = new TaskUseCases(taskRepo, activityRepo, createClock("2026-11-15T18:00:00-03:00", "2026-11-15"));
 
     const completed = await useCases.toggleTaskCompletion("t1");
@@ -83,8 +83,8 @@ describe("TaskUseCases", () => {
     const a = createTaskFixture({ id: "a", pinned: false });
     const b = createTaskFixture({ id: "b", pinned: true });
     const c = createTaskFixture({ id: "c", pinned: false });
-    const taskRepo = new InMemoryTaskRepository([a, b, c]);
-    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock());
+    const taskRepo = new MemoryTaskDataSource([a, b, c]);
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), createClock());
 
     await useCases.togglePinTasks(["a", "b"]);
     expect((await taskRepo.findById("a"))?.pinned).toBe(true);
@@ -99,8 +99,8 @@ describe("TaskUseCases", () => {
   it("atualiza campos e exclui tarefas selecionadas em lote", async () => {
     const a = createTaskFixture({ id: "a", title: "Antiga" });
     const b = createTaskFixture({ id: "b", title: "Outra" });
-    const taskRepo = new InMemoryTaskRepository([a, b]);
-    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock());
+    const taskRepo = new MemoryTaskDataSource([a, b]);
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), createClock());
 
     const updated = await useCases.updateTask({ id: "a", title: "Atualizada", category: null });
     expect(updated.title).toBe("Atualizada");
@@ -111,8 +111,8 @@ describe("TaskUseCases", () => {
   });
 
   it("aceita e normaliza datas e horários digitados sem formatação na criação e edição", async () => {
-    const taskRepo = new InMemoryTaskRepository();
-    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), createClock(), () => "t-digits");
+    const taskRepo = new MemoryTaskDataSource();
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), createClock(), () => "t-digits");
 
     const created = await useCases.createTask({
       title: "Revisar física",

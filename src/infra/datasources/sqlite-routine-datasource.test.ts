@@ -1,13 +1,13 @@
 import { DatabaseProvider } from "@/infra/database/database-provider";
-import { runRoutineRepositoryContractTests } from "@/infra/repositories/routine-repository.contract";
-import { SqliteRoutineRepository } from "@/infra/repositories/sqlite-routine-repository";
-import { SqliteTaskRepository } from "@/infra/repositories/sqlite-task-repository";
+import { runRoutineDataSourceContractTests } from "@/infra/datasources/routine-datasource.contract";
+import { SqliteRoutineDataSource } from "@/infra/datasources/sqlite-routine-datasource";
+import { SqliteTaskDataSource } from "@/infra/datasources/sqlite-task-datasource";
 import { createRoutineFixture } from "@/model/__fixtures__/routine.fixture";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { DomainError } from "@/model/errors/domain-error";
 import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
 
-describe("SqliteRoutineRepository", () => {
+describe("SqliteRoutineDataSource", () => {
   const openExecutors: BetterSqliteExecutor[] = [];
 
   afterEach(() => {
@@ -20,10 +20,10 @@ describe("SqliteRoutineRepository", () => {
     const executor = new BetterSqliteExecutor();
     openExecutors.push(executor);
     const provider = new DatabaseProvider(async () => executor);
-    return { executor, routines: new SqliteRoutineRepository(provider), tasks: new SqliteTaskRepository(provider) };
+    return { executor, routines: new SqliteRoutineDataSource(provider), tasks: new SqliteTaskDataSource(provider) };
   };
 
-  runRoutineRepositoryContractTests(async () => {
+  runRoutineDataSourceContractTests(async () => {
     const { routines, tasks } = open();
     return { routines, tasks };
   });
