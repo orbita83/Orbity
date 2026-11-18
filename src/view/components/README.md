@@ -14,7 +14,7 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
   - Mapeamentos internos (não exportados) `routeByTab` / `tabByRoute`: `inicio` <-> `index`, `tarefas` <-> `tasks`, `rotinas` <-> `routines`, `cosmos` <-> `cosmos`, `perfil` <-> `profile`.
 - `CheckCircle.tsx`: `CheckCircle({ checked, onToggle, accessibilityLabel, disabled? })`, círculo de concluir com papel `checkbox` e alvo de 48 dp.
 - `SuccessDialog.tsx`: `SuccessDialog({ visible, title, message, actionLabel, onClose })`, variante de sucesso do Modal ("Tarefa criada!").
-- `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; o ✕ e a ação segura chamam `onCancel`, a ação destrutiva chama `onConfirm`.
+- `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; o ✕ e a ação segura chamam `onCancel`, a ação de confirmar chama `onConfirm`. `emphasis` define a primária: `"confirm"` (padrão, exclusões) ou `"cancel"` (descarte de alterações).
 - `ContextualActionBar.tsx`: `ContextualHeader({ countLabel, onCancel })` e `ContextualActionBar({ actions })` para a seleção múltipla; `ContextualAction` = `{ id, label, icon, onPress, destructive?, disabled? }`.
 - `IconTile.tsx`: `IconTile({ icon })`, quadro decorativo com o ícone de uma rotina.
 - `ScreenHeader.tsx`: `ScreenHeader({ title, onBack, variant?, backLabel })`, cabeçalho das telas empilhadas (seta ou ✕).

@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import { ConfirmDialog } from "@/view/components/ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "@/view/components/ContextualActionBar";
 import { Snackbar } from "@/view/components/Snackbar";
+import { themes } from "@/view/theme/tokens";
+
+const primaryBg = themes.cosmic.button.bg;
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
@@ -17,7 +20,24 @@ const dialogProps = {
 };
 
 describe("ConfirmDialog", () => {
-  it("a ação segura e o ✕ cancelam; só a ação destrutiva confirma", async () => {
+  it("em exclusões, Excluir é a ação primária e vem antes de Manter, que fica secundária", async () => {
+    await render(<ConfirmDialog {...dialogProps} onCancel={jest.fn()} onConfirm={jest.fn()} />);
+
+    const [first, second] = screen.getAllByRole("button").filter((button) => button.props.accessibilityLabel !== "Fechar");
+    expect(first.props.accessibilityLabel).toBe("Excluir rotina");
+    expect(second.props.accessibilityLabel).toBe("Manter rotina");
+    expect(first).toHaveStyle({ backgroundColor: primaryBg });
+    expect(second).not.toHaveStyle({ backgroundColor: primaryBg });
+  });
+
+  it('com emphasis="cancel", a ação segura volta a ser a primária', async () => {
+    await render(<ConfirmDialog {...dialogProps} emphasis="cancel" onCancel={jest.fn()} onConfirm={jest.fn()} />);
+
+    expect(screen.getByRole("button", { name: "Manter rotina" })).toHaveStyle({ backgroundColor: primaryBg });
+    expect(screen.getByRole("button", { name: "Excluir rotina" })).not.toHaveStyle({ backgroundColor: primaryBg });
+  });
+
+  it("a ação segura e o ✕ cancelam; só a ação de excluir confirma", async () => {
     const onCancel = jest.fn();
     const onConfirm = jest.fn();
     await render(<ConfirmDialog {...dialogProps} onCancel={onCancel} onConfirm={onConfirm} />);

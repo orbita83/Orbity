@@ -49,6 +49,18 @@ export const ConfirmacaoDestrutiva: Story = {
   ),
 };
 
+export const ConfirmacaoDescarte: Story = {
+  name: "ConfirmDialog · descartar alterações",
+  args: {
+    icon: "edit",
+    title: "Descartar alterações?",
+    message: "O que você mudou nesta rotina não será salvo. A rotina continua como estava.",
+    cancelLabel: "Continuar editando",
+    confirmLabel: "Descartar alterações",
+    emphasis: "cancel",
+  },
+};
+
 export const AvisoComDesfazer: Story = {
   name: "Snackbar · com Desfazer",
   render: () => (

@@ -5,6 +5,7 @@ import { PROTOTYPE_TASKS } from "@/view/__fixtures__/task-list.fixture";
 import { NewTaskScreenContent, type NewTaskScreenContentProps } from "@/view/new-task-content";
 import { TASKS_COPY } from "@/view/tasks-copy";
 import { TasksScreenContent, type TasksScreenContentProps } from "@/view/tasks-content";
+import { themes } from "@/view/theme/tokens";
 import {
   CATEGORY_PICKER_OPTIONS,
   TIME_PICKER_OPTIONS,
@@ -104,7 +105,18 @@ describe("TasksScreenContent", () => {
     expect(screen.getByRole("button", { name: TASKS_COPY["action.edit"] }).props.accessibilityState.disabled).toBe(true);
   });
 
-  it("a confirmação de exclusão mostra quantas tarefas e só confirma pela ação destrutiva", async () => {
+  it.each([
+    [["a"], "Excluir 1 tarefa?"],
+    [["a", "b"], "Excluir 2 tarefas?"],
+  ])("na confirmação de %j, Excluir é a ação primária e Manter é secundária", async (selectedIds, title) => {
+    await renderInSafeArea(<TasksScreenContent {...listProps({ selectionMode: true, selectedIds, confirmDeleteVisible: true })} />);
+
+    expect(screen.getByRole("header", { name: title })).toBeTruthy();
+    expect(screen.getByRole("button", { name: TASKS_COPY["delete.confirm"] })).toHaveStyle({ backgroundColor: themes.cosmic.button.bg });
+    expect(screen.getByRole("button", { name: TASKS_COPY["delete.cancel"] })).not.toHaveStyle({ backgroundColor: themes.cosmic.button.bg });
+  });
+
+  it("a confirmação de exclusão mostra quantas tarefas e só confirma por Excluir", async () => {
     const props = listProps({ selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true });
     await renderInSafeArea(<TasksScreenContent {...props} />);
 

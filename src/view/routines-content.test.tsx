@@ -5,6 +5,7 @@ import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/vi
 import { RoutineDetailsScreenContent, type RoutineDetailsScreenContentProps } from "@/view/routine-details-content";
 import { ROUTINES_COPY } from "@/view/routines-copy";
 import { RoutinesScreenContent, type RoutinesScreenContentProps } from "@/view/routines-content";
+import { themes } from "@/view/theme/tokens";
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const inSafeArea = (node: React.ReactElement) => render(<SafeAreaProvider initialMetrics={metrics}>{node}</SafeAreaProvider>);
@@ -309,6 +310,14 @@ describe("RoutineDetailsScreenContent", () => {
     await inSafeArea(<RoutineDetailsScreenContent {...detailsProps({ routine: null, loading: true })} />);
     expect(screen.getByLabelText(ROUTINES_COPY["details.loading"])).toBeTruthy();
     expect(screen.queryByText(ROUTINES_COPY["details.missing.title"])).toBeNull();
+  });
+
+  it("3.3: na confirmação, Excluir rotina é a ação primária e Manter rotina é secundária", async () => {
+    await inSafeArea(<RoutineDetailsScreenContent {...detailsProps({ confirmDeleteVisible: true })} />);
+
+    const confirms = screen.getAllByRole("button", { name: ROUTINES_COPY["delete.confirm"] });
+    expect(confirms[confirms.length - 1]).toHaveStyle({ backgroundColor: themes.cosmic.button.bg });
+    expect(screen.getByRole("button", { name: ROUTINES_COPY["delete.cancel"] })).not.toHaveStyle({ backgroundColor: themes.cosmic.button.bg });
   });
 
   it("3.3: confirmar a exclusão volta para a lista com a rotina excluída", async () => {
