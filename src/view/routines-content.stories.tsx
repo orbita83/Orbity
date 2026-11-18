@@ -13,7 +13,7 @@ import { RoutineDetailsScreenContent } from "./routine-details-content";
 import { RoutinesScreenContent, type RoutinesScreenContentProps } from "./routines-content";
 import { themes } from "./theme/tokens";
 
-// Histórias com props fixas, ViewModel em memória ou dublê de IRoutineUseCases: nunca importam @/DI.
+// Histórias com props fixas, ViewModel em memória ou dublê de IRoutineUseCases: nunca importam @/di.
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const noop = () => undefined;
 

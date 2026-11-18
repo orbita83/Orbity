@@ -75,7 +75,7 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 - `SqliteTaskRepository` (Android) e `InMemoryTaskRepository` (web e testes), validados pela mesma suíte de contrato (`task-repository.contract.ts`).
 - `TaskActivityCatalog` implementa `IActivityCatalog` sobre o repositório de tarefas.
 
-### 4. Composição (`src/DI/`)
+### 4. Composição (`src/di/`)
 - `createPersistence()` devolve `tasks` e `activityCatalog` além de `dailyActivity`, nas duas plataformas.
 - O container registra o caso de uso `tasks`.
 

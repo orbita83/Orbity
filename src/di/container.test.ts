@@ -1,4 +1,4 @@
-import { container, createAppContainer } from "@/DI/container";
+import { container, createAppContainer } from "@/di/container";
 import { DatabaseProvider } from "@/infra/database/database-provider";
 import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
 import { InMemoryRoutineRepository } from "@/infra/repositories/in-memory-routine-repository";
@@ -34,7 +34,7 @@ describe("container da aplicação", () => {
     jest.isolateModules(() => {
       // Import dinâmico de propósito: o módulo precisa ser carregado depois do spy.
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require("@/DI/container");
+      require("@/di/container");
     });
 
     expect(get).not.toHaveBeenCalled();

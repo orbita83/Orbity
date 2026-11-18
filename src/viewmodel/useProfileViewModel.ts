@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { container, resolveUseCase } from "@/DI/container";
+import { container, resolveUseCase } from "@/di/container";
 import type { StudentProfile } from "@/model/entities/student-profile";
 import { DomainError, ValidationError } from "@/model/errors/domain-error";
 import type { IProfileUseCases } from "@/usecase/profile-use-cases";

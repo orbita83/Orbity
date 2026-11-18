@@ -13,7 +13,7 @@ import { NewTaskScreenContent } from "./new-task-content";
 import { TasksScreenContent, type TasksScreenContentProps } from "./tasks-content";
 import { themes } from "./theme/tokens";
 
-// Histórias com props fixas ou estado em memória: nunca importam @/DI.
+// Histórias com props fixas ou estado em memória: nunca importam @/di.
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const noop = () => undefined;
 

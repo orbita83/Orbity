@@ -6,7 +6,7 @@ import type { HomeSummary } from "../model/entities/home-summary";
 import { HomeScreenContent, type HomeScreenContentProps } from "./index-content";
 import { themes } from "./theme/tokens";
 
-// Histórias com props fixas: nunca importam @/DI (Technical Plan §7).
+// Histórias com props fixas: nunca importam @/di (Technical Plan §7).
 const zeroMetrics = { frame: { x: 0, y: 0, width: 390, height: 760 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const today = LocalDate.parse("2026-11-14");
 const noop = () => undefined;

@@ -108,11 +108,11 @@ No detalhe, o estudante toca em "Editar", troca o nome, remove uma tarefa e adic
 - `SqliteRoutineRepository` e `InMemoryRoutineRepository` passam pela mesma suíte de contrato (`routine-repository.contract.ts`). A versão em memória recebe o `InMemoryTaskRepository`, para criar as tarefas da rotina.
 - `TaskActivityCatalog(tasks, routines)`, conforme R9 e R10.
 
-### 4. Composição (`src/DI/`)
+### 4. Composição (`src/di/`)
 - `createPersistence()` devolve `routines` nas duas plataformas, e o container registra `useCases.routines`.
 
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)
-- As três ViewModels usam `IRoutineUseCases` e ganham `loading` e `errorKey`. Elas aceitam um array de protótipo, como o `useTasksViewModel`, para o Storybook e as fixtures continuarem sem `@/DI`.
+- As três ViewModels usam `IRoutineUseCases` e ganham `loading` e `errorKey`. Elas aceitam um array de protótipo, como o `useTasksViewModel`, para o Storybook e as fixtures continuarem sem `@/di`.
 - `RoutineListItem` e `RoutineDetails` ganham `activeToday`, e o detalhe ganha `doneToday`, vindo da ocorrência e não de "todas as tarefas marcadas".
 - `RoutineDetailsScreen` lê o `id` da rota. As telas recarregam ao ganhar foco (`useFocusEffect`), como em Tarefas (T6).
 - **ODS 1.2.0:** depois de criar, "Rotina criada!" (`SuccessDialog`, passo 4 do F7); esqueleto dos cards ao carregar (`SkeletonCards`, F8); barra de progresso do detalhe com contador e porcentagem fora da barra (`barra-progresso.md`); estado vazio "Nenhuma tarefa nesta rotina" (F8), com o atalho "Adicionar tarefas" para a edição (R11).

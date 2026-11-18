@@ -1,4 +1,4 @@
-import { createAppContainer } from "@/DI/container";
+import { createAppContainer } from "@/di/container";
 import { InMemoryProfileRepository } from "@/infra/repositories/in-memory-profile-repository";
 import { createStudentProfileFixture } from "@/model/__fixtures__/student-profile.fixture";
 import type { StudentProfile } from "@/model/entities/student-profile";

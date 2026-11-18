@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { container, resolveUseCase } from "@/DI/container";
+import { container, resolveUseCase } from "@/di/container";
 import type { LocalDate } from "@/model/entities/local-date";
 import {
   TASK_CATEGORIES,

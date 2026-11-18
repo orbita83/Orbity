@@ -2,7 +2,7 @@
 
 ## Overview
 
-`src/DI/` contém o **Composition Root** do Orbity, implementado em um único módulo, `container.ts`, sem frameworks externos de injeção de dependências. O módulo conecta implementações concretas de `src/infra/` aos casos de uso de `src/usecase/` por meio dos contratos de domínio de `src/model/`, e fornece os contratos de Use Cases consumidos pelas ViewModels em `src/viewmodel/`.
+`src/di/` contém o **Composition Root** do Orbity, implementado em um único módulo, `container.ts`, sem frameworks externos de injeção de dependências. O módulo conecta implementações concretas de `src/infra/` aos casos de uso de `src/usecase/` por meio dos contratos de domínio de `src/model/`, e fornece os contratos de Use Cases consumidos pelas ViewModels em `src/viewmodel/`.
 
 Direção de dependências assegurada (conforme o cabeçalho de `container.ts`):
 
@@ -52,7 +52,7 @@ Todos os parâmetros genéricos têm como padrão `RepositoryRegistry`, `Service
 - **Recomposição automática:** `definition.useCases(infra)` recebe `infra` construído com `repositories` e `services` já mesclados com as substituições; assim, test doubles de infraestrutura são injetados nos Use Cases sem alterar os consumidores.
 - **Ordem de construção:** dentro de `createContainer`, `definition.repositories()` e `definition.services()` são chamados antes de `definition.useCases(infra)`, e cada fábrica é chamada exatamente uma vez por chamada a `createContainer`.
 - **Resolução na ViewModel:** `resolveUseCase` retorna `defaultUseCase` somente quando `override` é `null` ou `undefined` (operador `??`).
-- **Fronteira de acoplamento (ARCHITECTURE.md, Seção 6.1):** `container.ts` é o único módulo autorizado a importar simultaneamente implementações concretas de `src/infra/` e classes concretas de `src/usecase/`. Use Cases nunca importam `src/DI/container.ts`, e a View (`src/view/`) não conhece `src/DI/`.
+- **Fronteira de acoplamento (ARCHITECTURE.md, Seção 6.1):** `container.ts` é o único módulo autorizado a importar simultaneamente implementações concretas de `src/infra/` e classes concretas de `src/usecase/`. Use Cases nunca importam `src/di/container.ts`, e a View (`src/view/`) não conhece `src/di/`.
 
 ## Side Effects
 
@@ -62,4 +62,4 @@ Todos os parâmetros genéricos têm como padrão `RepositoryRegistry`, `Service
 ## Verification
 
 - Run: `npm test`
-- Não existem testes dedicados a `src/DI/` no momento; as estratégias de teste do container estão descritas em `docs/06-quality/guia-testes.md` (Seção 6.5) e em `ARCHITECTURE.md` (Seções 6.2 e 6.3).
+- Não existem testes dedicados a `src/di/` no momento; as estratégias de teste do container estão descritas em `docs/06-quality/guia-testes.md` (Seção 6.5) e em `ARCHITECTURE.md` (Seções 6.2 e 6.3).

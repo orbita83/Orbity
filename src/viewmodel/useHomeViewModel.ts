@@ -1,7 +1,7 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
-import { container, resolveUseCase } from "@/DI/container";
+import { container, resolveUseCase } from "@/di/container";
 import type { HomeSummary } from "@/model/entities/home-summary";
 import { DomainError } from "@/model/errors/domain-error";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
