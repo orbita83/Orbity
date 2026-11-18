@@ -13,7 +13,7 @@ import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TaskPickerModal } from "./components/TaskPickerModal";
 import { TextField } from "./components/TextField";
-import { TASKS_COPY, formatTasksCopy } from "./tasks-copy";
+import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicColors, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;

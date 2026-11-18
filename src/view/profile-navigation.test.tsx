@@ -7,8 +7,8 @@ import ProfileScreen from "./profile";
 import AchievementsScreen from "./achievements";
 import CategoriesScreen from "./categories";
 import SettingsScreen from "./settings";
-import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
-import type { IProfileUseCases } from "@/usecase/profile-use-cases";
+import { mockStudentProfile } from "@/model/__fixtures__/studentProfile.fixture";
+import type { IProfileUseCases } from "@/usecase/profileUseCases";
 import { useProfileViewModel } from "@/viewmodel/useProfileViewModel";
 
 // ViewModel real com um Use Case falso: os atalhos navegam pelas ações da ViewModel.

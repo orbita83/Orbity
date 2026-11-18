@@ -9,7 +9,7 @@ import { MaterialSymbol, type MaterialSymbolName } from "./components/MaterialSy
 import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
-import { ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routines-copy";
+import { ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;

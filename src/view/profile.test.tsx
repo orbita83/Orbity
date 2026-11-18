@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
+import { mockStudentProfile } from "@/model/__fixtures__/studentProfile.fixture";
 import ProfileScreen from "./profile";
 
 // A navegação real é exercitada em profile-navigation.test.tsx.

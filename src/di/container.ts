@@ -1,6 +1,6 @@
-import { MemoryProfileDataSource } from "@/infra/datasources/memory-profile-datasource";
-import type { IProfileDataSource } from "@/model/datasources/i-profile-datasource";
-import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-cases";
+import { MemoryProfileDataSource } from "@/infra/datasources/memoryProfileDataSource";
+import type { IProfileDataSource } from "@/model/datasources/iProfileDataSource";
+import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profileUseCases";
 
 /**
  * Composition Root e Container de Injeção de Dependências (`src/di/container.ts`).
@@ -13,20 +13,20 @@ import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-ca
  * View -> ViewModel -> Use Cases -> Domínio (Model) <- Infraestrutura
  */
 
-import { SystemClockService } from "@/infra/services/system-clock-service";
-import type { IActivityDataSource } from "@/model/datasources/i-activity-datasource";
-import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
-import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
-import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
-import type { IClockService } from "@/model/services/i-clock-service";
-import { HomeUseCases } from "@/usecase/home-use-cases";
-import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
-import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
-import type { IStreakUseCases } from "@/usecase/i-streak-use-cases";
-import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
-import { RoutineUseCases } from "@/usecase/routine-use-cases";
-import { StreakUseCases } from "@/usecase/streak-use-cases";
-import { TaskUseCases } from "@/usecase/task-use-cases";
+import { SystemClockService } from "@/infra/services/systemClockService";
+import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
+import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
+import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
+import type { IClockService } from "@/model/services/iClockService";
+import { HomeUseCases } from "@/usecase/homeUseCases";
+import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
+import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
+import type { IStreakUseCases } from "@/usecase/iStreakUseCases";
+import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
+import { RoutineUseCases } from "@/usecase/routineUseCases";
+import { StreakUseCases } from "@/usecase/streakUseCases";
+import { TaskUseCases } from "@/usecase/taskUseCases";
 // Resolvido pelo Metro: persistence.ts no Android e persistence.web.ts na web (D8).
 import { createPersistence } from "./persistence";
 

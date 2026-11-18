@@ -1,4 +1,4 @@
-import type { LocalDate } from "@/model/entities/local-date";
+import type { LocalDate } from "@/model/entities/localDate";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 

@@ -2,9 +2,9 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
-import type { HomeSummary } from "@/model/entities/home-summary";
+import type { HomeSummary } from "@/model/entities/homeSummary";
 import { SchemaVersionError } from "@/model/errors";
-import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
+import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import type { FocusSheetStage } from "./ActivitySheetGeometry";
 
 export type HomeErrorMessageKey = "error.persistence" | "error.schema";

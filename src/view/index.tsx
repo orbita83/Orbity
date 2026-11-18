@@ -1,4 +1,4 @@
-import { useReduceMotion } from "./theme/use-reduce-motion";
+import { useReduceMotion } from "./theme/useReduceMotion";
 import { useHomeViewModel } from "../viewmodel/useHomeViewModel";
 import { HomeScreenContent } from "./index-content";
 

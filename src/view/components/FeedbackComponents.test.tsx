@@ -3,8 +3,8 @@ import { StyleSheet } from "react-native";
 import { ConfirmDialog } from "@/view/components/ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "@/view/components/ContextualActionBar";
 import { Snackbar } from "@/view/components/Snackbar";
-import { ROUTINES_COPY, formatRoutinesCopy } from "@/view/routines-copy";
-import { TASKS_COPY, formatTasksCopy } from "@/view/tasks-copy";
+import { ROUTINES_COPY, formatRoutinesCopy } from "@/view/routinesCopy";
+import { TASKS_COPY, formatTasksCopy } from "@/view/tasksCopy";
 import { cosmicBorders, themes } from "@/view/theme/tokens";
 
 jest.mock("react-native-safe-area-context", () => ({

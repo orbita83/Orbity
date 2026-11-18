@@ -8,7 +8,17 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 
 - **Funções normais:** `camelCase` (ex: `handleSubmit`, `fetchData`)
 - **Componentes funcionais:** `PascalCase` (ex: `Button`, `UserProfile`)
-- **Arquivos gerais:** `kebab-case` com extensão apropriada para módulos de domínio, use cases, infraestrutura e rotas do app (`src/app/`) (ex: `timestamp-use-case.ts`, `timestamp-record.ts`)
+- **Arquivos gerais:** `camelCase` em `src/model/`, `src/usecase/`, `src/infra/` e `src/di/`, incluindo testes (`.test.ts`), suítes de contrato (`.contract.ts`) e fixtures (`.fixture.ts`), como no livro (Cap. 10, Figura 10.2). Arquivos que contêm **só uma interface** recebem o prefixo `i` (Seção 10.4).
+
+  | Camada | Exemplos |
+  | :--- | :--- |
+  | `src/model/` | `entities/localDate.ts`, `entities/studentProfile.ts`, `datasources/iTaskDataSource.ts`, `services/iClockService.ts`, `errors.ts`, `__fixtures__/task.fixture.ts` |
+  | `src/usecase/` | `iTaskUseCases.ts`, `taskUseCases.ts`, `taskUseCases.test.ts` |
+  | `src/infra/` | `datasources/sqliteTaskDataSource.ts`, `datasources/taskDataSource.contract.ts`, `services/systemClockService.ts`, `database/iSqlExecutor.ts` |
+  | `src/di/` | `container.ts`, `persistence.web.ts` |
+
+  - **Arquivos da `view` que não são telas nem componentes** (textos, hooks e fixtures) também usam `camelCase`: `src/view/homeCopy.ts`, `src/view/theme/useReduceMotion.ts`, `src/view/__fixtures__/taskList.fixture.ts`. Assim, `kebab-case` fica só para rotas e telas, e `PascalCase` só para componentes.
+  - O sufixo de plataforma do Metro continua separado por ponto (`persistence.web.ts`).
 - **Arquivos de View e ViewModel:**
 
   | Tipo de arquivo | Nome do arquivo | Exemplo |
