@@ -1,5 +1,5 @@
 import type { Task } from "@/model/entities/task";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
 type StoredEntry = {
   readonly order: number;
@@ -7,7 +7,7 @@ type StoredEntry = {
 };
 
 /** Mesma semântica de persistência do SQLite, em memória. Usado na web e em testes. */
-export class InMemoryTaskRepository implements ITaskRepository {
+export class MemoryTaskDataSource implements ITaskDataSource {
   private readonly items = new Map<string, StoredEntry>();
   private sequence = 0;
 

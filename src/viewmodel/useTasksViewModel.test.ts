@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
-import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/local-date";
 import { DomainError } from "@/model/errors/domain-error";
@@ -137,7 +137,7 @@ describe("useTasksViewModel", () => {
   });
 
   it("carrega, conclui, fixa em toggle e exclui tarefas usando os casos de uso", async () => {
-    const taskRepo = new InMemoryTaskRepository([
+    const taskRepo = new MemoryTaskDataSource([
       createTaskFixture({
         id: "t1",
         title: "Estudar Cálculo",
@@ -154,7 +154,7 @@ describe("useTasksViewModel", () => {
         createdAt: "2026-11-15T07:00:00-03:00",
       }),
     ]);
-    const activityRepo = new InMemoryDailyActivityRepository();
+    const activityRepo = new MemoryDailyActivityDataSource();
     const useCases = new TaskUseCases(taskRepo, activityRepo, clock);
 
     const { result } = await renderHook(() => useTasksViewModel(useCases));

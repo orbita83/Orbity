@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
-import { InMemoryRoutineRepository } from "@/infra/repositories/in-memory-routine-repository";
-import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
+import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
 import { DomainError } from "@/model/errors/domain-error";
 import type { IClockService } from "@/model/services/i-clock-service";
@@ -49,11 +49,11 @@ const monday: IClockService = {
   todayLocal: () => LocalDate.parse("2026-11-16"),
 };
 
-/** Caso de uso real sobre repositórios em memória (Fake), sem banco e sem o container. */
+/** Caso de uso real sobre DataSources em memória (Fake), sem banco e sem o container. */
 const createUseCases = () => {
-  const tasks = new InMemoryTaskRepository();
-  const routines = new InMemoryRoutineRepository(tasks);
-  const dailyActivity = new InMemoryDailyActivityRepository();
+  const tasks = new MemoryTaskDataSource();
+  const routines = new MemoryRoutineDataSource(tasks);
+  const dailyActivity = new MemoryDailyActivityDataSource();
   let seq = 0;
   const useCases = new RoutineUseCases(routines, tasks, dailyActivity, monday, () => `id-${++seq}`);
   return { useCases, dailyActivity };

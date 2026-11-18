@@ -2,7 +2,7 @@
 
 ## Overview
 
-Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, repositórios ou serviços.
+Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, DataSources ou serviços.
 
 Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton`, `OdsGlobal` e outros) são histórias do Storybook (`@storybook/react-native-web-vite`), não fazem parte do código de produção e não são importados pelo app. Os arquivos `*.test.tsx` contêm testes Jest.
 

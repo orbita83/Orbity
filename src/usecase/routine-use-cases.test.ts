@@ -1,6 +1,6 @@
-import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
-import { InMemoryRoutineRepository } from "@/infra/repositories/in-memory-routine-repository";
-import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
+import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
 import type { RoutineDetails } from "@/model/entities/routine";
 import { ValidationError } from "@/model/errors/domain-error";
@@ -22,9 +22,9 @@ const createClock = (initial = MONDAY) => {
 };
 
 const setup = (initialDay = MONDAY) => {
-  const tasks = new InMemoryTaskRepository();
-  const routines = new InMemoryRoutineRepository(tasks);
-  const dailyActivity = new InMemoryDailyActivityRepository();
+  const tasks = new MemoryTaskDataSource();
+  const routines = new MemoryRoutineDataSource(tasks);
+  const dailyActivity = new MemoryDailyActivityDataSource();
   const { clock, setDay } = createClock(initialDay);
   let seq = 0;
   const useCases = new RoutineUseCases(routines, tasks, dailyActivity, clock, () => `id-${++seq}`);
@@ -40,7 +40,7 @@ const createMath = (useCases: RoutineUseCases) =>
   });
 
 const checked = (details: RoutineDetails) => details.tasks.filter((item) => item.checkedToday).map((item) => item.task.title);
-const days = async (dailyActivity: InMemoryDailyActivityRepository) => (await dailyActivity.listDays()).map(String);
+const days = async (dailyActivity: MemoryDailyActivityDataSource) => (await dailyActivity.listDays()).map(String);
 
 describe("RoutineUseCases", () => {
   it("RF-0007 e RF-0008: cria a rotina com as tarefas em ordem e a lista com o estado de hoje", async () => {

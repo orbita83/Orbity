@@ -16,7 +16,7 @@ O **MVVM Sofisticado** evolui o padrão simplificado (vista no Capítulo 8) inco
 | **ViewModel** | Concentra estado da tela + chamadas diretas a serviços. | Gerencia **apenas o estado da tela**; delega toda lógica aos *Use Cases*. |
 | **Regras de Negócio** | Misturadas na ViewModel ou no Serviço. | Isoladas exclusivamente na camada de **Use Cases**. |
 | **Model** | Continha entidades e serviços concretos. | Contém **apenas entidades puras e interfaces (contratos)**. |
-| **Acesso a Dados** | Direto nos serviços/repositórios dentro do Model. | Isolado na camada de **Infraestrutura** (*Firebase, SQLite, REST, Memory*). |
+| **Acesso a Dados** | Direto nos serviços/DataSources dentro do Model. | Isolado na camada de **Infraestrutura** (*Firebase, SQLite, REST, Memory*). |
 | **Dependências** | Classes concretas importadas diretamente. | **Inversão de Dependência (DIP)** via interfaces e Container de Injeção (*DI*). |
 
 ---
@@ -29,20 +29,20 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 
 1. **View (Interface):** Componentes e telas React Native. Responsável apenas por renderizar estado e disparar ações (*fire-and-forget*). Não possui blocos `try/catch` nem regras de negócio e **não chama hooks de navegação**.
 2. **ViewModel (Apresentação):** Custom Hooks que gerenciam estado de interface (`loading`, `error`, `data`), expõem funções de ação (retorno em tupla `[state, actions]`, com os tipos `XState` e `XActions` exportados) e **cuidam da navegação** (`router` do `expo-router`, parâmetros de rota e foco da tela). Depende **apenas de abstrações** (interfaces de Use Cases).
-3. **Use Cases (Casos de Uso / Orquestração):** Contratos (`I*UseCase` / `I*UseCases`) e implementações de regras de negócio puras e validações do sistema. Orquestram repositórios e serviços exclusivamente através de interfaces do domínio.
-4. **Domínio / Model (Core do Negócio):** Entidades puras (`src/model/entities/`), erros de domínio (`src/model/errors/`), interfaces de repositórios (`src/model/repositories/`) e interfaces de serviços (`src/model/services/`). **Zero dependência de bibliotecas externas** (React, Expo, SDKs).
+3. **Use Cases (Casos de Uso / Orquestração):** Contratos (`I*UseCase` / `I*UseCases`) e implementações de regras de negócio puras e validações do sistema. Orquestram DataSources e serviços exclusivamente através de interfaces do domínio.
+4. **Domínio / Model (Core do Negócio):** Entidades puras (`src/model/entities/`), erros de domínio (`src/model/errors/`), interfaces de DataSources (`src/model/datasources/`) e interfaces de serviços (`src/model/services/`). **Zero dependência de bibliotecas externas** (React, Expo, SDKs).
 5. **Infraestrutura:**
    Implementa:
    - **Services concretos** (`src/infra/services/`, ex.: adapters de relógio, notificações ou APIs);
-   - **Repositórios / DataSources concretos** (`src/infra/repositories/`, ex.: implementações em memória ou armazenamento local);
+   - **DataSources concretos** (`src/infra/datasources/`, ex.: implementações em memória ou armazenamento local);
    - **Mapeamentos** para converter dados externos em entidades do domínio.
 
    > **Regra de Ouro da Infraestrutura:** A Infra nunca propaga erros específicos. Sempre converte para erros puros definidos no domínio.
 
    > **Nota — DataSource, Service e Use Case:**
-   > - **DataSource / Repository (Infra):** Lida com persistência e busca de dados brutos (memória, banco local, Firestore, API) e os mapeia para entidades do domínio.
+   > - **DataSource (Infra):** Lida com persistência e busca de dados brutos (memória, banco local, Firestore, API) e os mapeia para entidades do domínio.
    > - **Service (Infra):** Lida com integrações e capacidades externas (autenticação, notificações, sensores, câmera).
-   > - **Use Case:** Coordena e aplica as regras de negócio sobre as interfaces de `Service` e `Repository`/`DataSource`, sem saber qual tecnologia concreta está por baixo.
+   > - **Use Case:** Coordena e aplica as regras de negócio sobre as interfaces de `Service` e `DataSource`, sem saber qual tecnologia concreta está por baixo.
 
 ---
 
@@ -55,12 +55,12 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     │   └── index.tsx
     ├── infra/                # Implementações concretas (Infraestrutura)
     │   ├── database/         # Porta ISqlExecutor, executor do expo-sqlite, migrações e DatabaseProvider (ADR-0001)
-    │   ├── repositories/     # Repositórios / DataSources concretos (ex.: Memory, SQLite, Firestore)
+    │   ├── datasources/      # DataSources concretos (ex.: Memory, SQLite, Firestore)
     │   └── services/         # Serviços concretos de integração externa
     ├── model/                # Camada de Domínio Puro (zero dependências externas)
     │   ├── entities/         # Entidades e tipos puros de domínio
     │   ├── errors/           # Erros puros de domínio (ex.: ValidationError)
-    │   ├── repositories/     # Contratos (interfaces) de repositórios / DataSources
+    │   ├── datasources/      # Contratos (interfaces) de DataSources
     │   └── services/         # Contratos (interfaces) de serviços externos
     ├── usecase/              # Casos de Uso (contratos I*UseCases e implementações)
     ├── view/                 # Telas em kebab-case.tsx, com o mesmo nome da rota em app/
@@ -81,10 +81,10 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 | :--- | :--- | :--- | :--- |
 | **`app/`** | Módulos de rota do Expo Router. Apenas importam e re-exportam como `default` as telas de `src/view/`. | `src/view/`, `expo-router` | `viewmodel/`, `usecase/`, `model/`, `infra/`, `di/` |
 | **`view/`** | Componentes visuais (`components/`), telas (`kebab-case.tsx`, com o mesmo nome da rota em `src/app/`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System, **tipos** de entidade de `src/model/entities/` usados no estado (`import type`; testes e histórias podem usar o domínio para montar dados) | `usecase/`, funções, contratos e erros de `model/`, `infra/`, `di/`, hooks e componentes de navegação do `expo-router` (exceto a `MainTabBar`, que recebe `navigation` por props do `<Tabs />`) |
-| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/model/errors/` (para tratar `DomainError` e `ValidationError`), `src/di/container.ts`, React hooks, `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) | Classes concretas de `usecase/`, `model/repositories/`, `model/services/`, `infra/` |
-| **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors/`, `repositories/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `di/`, React Native, Expo, SDKs externos |
-| **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors/`) e contratos (`repositories/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `di`) ou biblioteca externa |
-| **`infra/`** | Repositórios/DataSources (`repositories/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `di/` |
+| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/model/errors/` (para tratar `DomainError` e `ValidationError`), `src/di/container.ts`, React hooks, `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) | Classes concretas de `usecase/`, `model/datasources/`, `model/services/`, `infra/` |
+| **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors/`, `datasources/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `di/`, React Native, Expo, SDKs externos |
+| **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors/`) e contratos (`datasources/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `di`) ou biblioteca externa |
+| **`infra/`** | DataSources (`datasources/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `di/` |
 | **`di/`** | Composition Root (`container.ts`). Único ponto autorizado a instanciar e conectar `infra/` e `usecase/`. | `src/infra/`, `src/usecase/`, `src/model/` | `app/`, `view/`, `viewmodel/` |
 
 ---
@@ -93,13 +93,13 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 
 ### 4.1. Convenções de Contratos e Implementações
 
-1. **Contratos de Domínio (`src/model/repositories/` e `src/model/services/`):**
-   - Definem interfaces puras prefixadas com `I` (`IClockService`, `IRepository`), operando apenas com tipos primitivos, entidades de `src/model/entities/` e erros de `src/model/errors/`.
+1. **Contratos de Domínio (`src/model/datasources/` e `src/model/services/`):**
+   - Definem interfaces puras prefixadas com `I` (`IClockService`, `IDataSource`), operando apenas com tipos primitivos, entidades de `src/model/entities/` e erros de `src/model/errors/`.
    - Não expõem DTOs externos, tipos de banco de dados, objetos HTTP ou detalhes de bibliotecas.
 2. **Contratos e Orquestração de Use Cases (`src/usecase/`):**
    - Cada caso de uso expõe uma interface pública (`I*UseCases` ou `I*UseCase`) consumida pela ViewModel e uma classe concreta (`*UseCases` ou `*UseCase`) que depende exclusivamente das interfaces de `src/model/` injetadas via construtor.
 3. **Repositórios, Services e Adapters na Infraestrutura (`src/infra/`):**
-   - Classes em `src/infra/repositories/` e `src/infra/services/` atuam como **adapters**: implementam explicitamente (`implements`) as interfaces de `src/model/`, convertem estruturas brutas externas (JSON, linhas SQLite, SDKs) em entidades puras de `src/model/entities/` e traduzem falhas técnicas em erros de `src/model/errors/`.
+   - Classes em `src/infra/datasources/` e `src/infra/services/` atuam como **adapters**: implementam explicitamente (`implements`) as interfaces de `src/model/`, convertem estruturas brutas externas (JSON, linhas SQLite, SDKs) em entidades puras de `src/model/entities/` e traduzem falhas técnicas em erros de `src/model/errors/`.
 
 ### 4.2. Fluxo entre Camadas (Exemplo Técnico Neutro)
 
@@ -191,7 +191,7 @@ export function toDomainError(error: unknown): DomainError {
   return new DomainError("PERSISTENCE_FAILURE", "Falha ao acessar o armazenamento local.");
 }
 
-// Uso em um adapter (trecho de src/infra/repositories/sqlite-task-repository.ts, real):
+// Uso em um adapter (trecho de src/infra/datasources/sqlite-task-datasource.ts, real):
 //   async listAll(): Promise<Task[]> {
 //     try {
 //       const executor = await this.db.get();
@@ -213,7 +213,7 @@ export type AppUseCases = {
   timestamp: ITimestampUseCase;
 };
 
-// Dentro de appContainerDefinition.useCases({ repositories, services }):
+// Dentro de appContainerDefinition.useCases({ dataSources, services }):
 //   timestamp: composeUseCase(
 //     ({ clock }: { clock: IClockService }) => new TimestampUseCase(clock),
 //     { clock: services.clock },
@@ -339,14 +339,14 @@ O arquivo `src/di/container.ts` materializa o **Composition Root** mínimo do Or
 ### 6.1. Responsabilidades e Regras de Composição
 
 1. **Ponto Único de Acoplamento Concreto (`src/di/container.ts`):**
-   - É o único módulo da aplicação autorizado a importar simultaneamente implementações concretas de `src/infra/` (`repositories/` e `services/`) e classes concretas de `src/usecase/`.
-   - Expõe objetos imutáveis (`Object.freeze`) organizados em `repositories`, `services` e `useCases`, além dos utilitários `composeUseCase`, `resolveUseCase`, `createContainer`, `createAppContainer` e a instância padrão `container`.
+   - É o único módulo da aplicação autorizado a importar simultaneamente implementações concretas de `src/infra/` (`datasources/` e `services/`) e classes concretas de `src/usecase/`.
+   - Expõe objetos imutáveis (`Object.freeze`) organizados em `dataSources`, `services` e `useCases`, além dos utilitários `composeUseCase`, `resolveUseCase`, `createContainer`, `createAppContainer` e a instância padrão `container`.
 2. **Contratos de Domínio → Use Cases (`composeUseCase`):**
-   - Os Use Cases em `src/usecase/` declaram suas dependências exclusivamente por meio de interfaces de `src/model/repositories/` e `src/model/services/`.
+   - Os Use Cases em `src/usecase/` declaram suas dependências exclusivamente por meio de interfaces de `src/model/datasources/` e `src/model/services/`.
    - Nunca importam classes concretas de `src/infra/` nem o próprio `src/di/container.ts`.
 3. **Abstrações de Use Cases → ViewModels (`resolveUseCase` / parâmetro padrão):**
    - As ViewModels em `src/viewmodel/` dependem exclusivamente de interfaces `I*UseCases` definidas em `src/usecase/`.
-   - Recebem a abstração por parâmetro opcional (com valor padrão vindo do container ou resolvido via `resolveUseCase`), sem instanciar repositórios ou serviços diretamente.
+   - Recebem a abstração por parâmetro opcional (com valor padrão vindo do container ou resolvido via `resolveUseCase`), sem instanciar DataSources ou serviços diretamente.
 4. **Isolamento da View (`src/view/`):**
    - Componentes e telas invocam os hooks da ViewModel sem conhecer `src/di/`, `src/usecase/` ou `src/infra/`.
 
@@ -355,7 +355,7 @@ O arquivo `src/di/container.ts` materializa o **Composition Root** mínimo do Or
 A arquitetura suporta três níveis complementares de substituição de dependências em testes, sem modificar os consumidores:
 
 - **Substituição direta no Use Case:** passar um *test double* (mock, stub, fake ou in-memory) do contrato de `src/model/` diretamente ao construtor do Use Case ou a `composeUseCase`.
-- **Substituição na composição (`createContainer` / `createAppContainer`):** fornecer `overrides.repositories` ou `overrides.services` ao criar um container isolado; os Use Cases são automaticamente recompostos com os *test doubles* fornecidos.
+- **Substituição na composição (`createContainer` / `createAppContainer`):** fornecer `overrides.dataSources` ou `overrides.services` ao criar um container isolado; os Use Cases são automaticamente recompostos com os *test doubles* fornecidos.
 - **Substituição direta na ViewModel:** passar um *test double* de `I*UseCases` como argumento da ViewModel (ou via `overrides.useCases`).
 
 ### 6.3. Exemplo Técnico Mínimo de Composição e Substituição em Testes
@@ -377,7 +377,7 @@ import {
   type ITimestampUseCase,
 } from "@/usecase/timestamp-use-case";
 
-type ExampleRepositories = Record<string, never>;
+type ExampleDataSources = Record<string, never>;
 interface ExampleServices {
   clock: IClockService;
 }
@@ -386,11 +386,11 @@ interface ExampleUseCases {
 }
 
 const definition: ContainerDefinition<
-  ExampleRepositories,
+  ExampleDataSources,
   ExampleServices,
   ExampleUseCases
 > = {
-  repositories: () => ({}),
+  dataSources: () => ({}),
   services: () => ({
     clock: new SystemClockService(),
   }),

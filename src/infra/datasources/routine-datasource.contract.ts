@@ -1,12 +1,12 @@
 import { createRoutineFixture } from "@/model/__fixtures__/routine.fixture";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/local-date";
-import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
-export type RoutineRepositoryHarness = {
-  routines: IRoutineRepository;
-  tasks: ITaskRepository;
+export type RoutineDataSourceHarness = {
+  routines: IRoutineDataSource;
+  tasks: ITaskDataSource;
 };
 
 const MONDAY = LocalDate.parse("2026-11-16");
@@ -18,9 +18,9 @@ const routineTasks = () => [
   createTaskFixture({ id: "t2", title: "Resolver", routineId: "routine-1", position: 1 }),
 ];
 
-/** Suíte única que toda implementação de IRoutineRepository deve passar (rotinas.md). */
-export function runRoutineRepositoryContractTests(createHarness: () => Promise<RoutineRepositoryHarness>): void {
-  describe("contrato IRoutineRepository", () => {
+/** Suíte única que toda implementação de IRoutineDataSource deve passar (rotinas.md). */
+export function runRoutineDataSourceContractTests(createHarness: () => Promise<RoutineDataSourceHarness>): void {
+  describe("contrato IRoutineDataSource", () => {
     it("começa sem rotinas", async () => {
       const { routines } = await createHarness();
       expect(await routines.listActive()).toEqual([]);

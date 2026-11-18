@@ -1,9 +1,9 @@
 import { container, createAppContainer } from "@/di/container";
 import { DatabaseProvider } from "@/infra/database/database-provider";
-import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
-import { InMemoryRoutineRepository } from "@/infra/repositories/in-memory-routine-repository";
-import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
-import { TaskActivityCatalog } from "@/infra/repositories/task-activity-catalog";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
+import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
+import { TaskActivityDataSource } from "@/infra/datasources/task-activity-datasource";
 import { LocalDate } from "@/model/entities/local-date";
 import type { IClockService } from "@/model/services/i-clock-service";
 
@@ -12,14 +12,14 @@ const fixedClock: IClockService = {
   todayLocal: () => LocalDate.parse("2026-11-14"),
 };
 
-const memoryRepositories = () => {
-  const tasks = new InMemoryTaskRepository();
-  const routines = new InMemoryRoutineRepository(tasks);
+const memoryDataSources = () => {
+  const tasks = new MemoryTaskDataSource();
+  const routines = new MemoryRoutineDataSource(tasks);
   return {
-    dailyActivity: new InMemoryDailyActivityRepository(),
+    dailyActivity: new MemoryDailyActivityDataSource(),
     tasks,
     routines,
-    activityCatalog: new TaskActivityCatalog(tasks, routines),
+    activities: new TaskActivityDataSource(tasks, routines),
   };
 };
 
@@ -40,10 +40,10 @@ describe("container da aplicação", () => {
     expect(get).not.toHaveBeenCalled();
   });
 
-  it("o caso de uso da sequência usa o repositório passado em overrides", async () => {
-    const repositories = memoryRepositories();
-    const { dailyActivity } = repositories;
-    const isolated = createAppContainer({ repositories, services: { clock: fixedClock } });
+  it("o caso de uso da sequência usa o DataSource passado em overrides", async () => {
+    const dataSources = memoryDataSources();
+    const { dailyActivity } = dataSources;
+    const isolated = createAppContainer({ dataSources, services: { clock: fixedClock } });
 
     await isolated.useCases.streak.recordActivity({ kind: "routine", id: "r1" });
 
@@ -56,7 +56,7 @@ describe("container da aplicação", () => {
       now: () => "2026-11-16T10:00:00-03:00",
       todayLocal: () => LocalDate.parse("2026-11-16"),
     };
-    const isolated = createAppContainer({ repositories: memoryRepositories(), services: { clock: monday } });
+    const isolated = createAppContainer({ dataSources: memoryDataSources(), services: { clock: monday } });
 
     const routine = await isolated.useCases.routines.createRoutine({ title: "Matemática", days: [1], tasks: ["Revisar"] });
     expect(await isolated.useCases.home.loadHome()).toMatchObject({
@@ -75,7 +75,7 @@ describe("container da aplicação", () => {
   });
 
   it("concluir uma tarefa no container reflete no progresso, nas metas e na sequência da Home", async () => {
-    const isolated = createAppContainer({ repositories: memoryRepositories(), services: { clock: fixedClock } });
+    const isolated = createAppContainer({ dataSources: memoryDataSources(), services: { clock: fixedClock } });
 
     const created = await isolated.useCases.tasks.createTask({ title: "Estudar estrutura de dados" });
     expect(await isolated.useCases.home.loadHome()).toMatchObject({
@@ -95,7 +95,7 @@ describe("container da aplicação", () => {
 
   it("o container e seus registros ficam congelados", () => {
     expect(Object.isFrozen(container)).toBe(true);
-    expect(Object.isFrozen(container.repositories)).toBe(true);
+    expect(Object.isFrozen(container.dataSources)).toBe(true);
     expect(Object.isFrozen(container.services)).toBe(true);
     expect(Object.isFrozen(container.useCases)).toBe(true);
   });

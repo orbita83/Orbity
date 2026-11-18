@@ -1,7 +1,7 @@
 import type { Task } from "@/model/entities/task";
 
 /** Contrato de persistência de tarefas (ARCHITECTURE.md). */
-export interface ITaskRepository {
+export interface ITaskDataSource {
   /** Todas as tarefas, avulsas e de rotina. */
   listAll(): Promise<Task[]>;
   /** Tarefas de uma rotina, pela posição (rotinas.md, R1). */

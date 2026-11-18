@@ -1,15 +1,15 @@
 import type { LocalDate } from "@/model/entities/local-date";
 import { isRoutineActiveOn } from "@/model/entities/routine";
 import { isStandaloneTask } from "@/model/entities/task";
-import type { IActivityCatalog } from "@/model/repositories/i-activity-catalog";
-import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { IActivityDataSource } from "@/model/datasources/i-activity-datasource";
+import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 
-/** Catálogo de atividades da Home alimentado pelos repositórios de tarefas e rotinas. */
-export class TaskActivityCatalog implements IActivityCatalog {
+/** DataSource de atividades da Home montado sobre os DataSources de tarefas e rotinas. */
+export class TaskActivityDataSource implements IActivityDataSource {
   constructor(
-    private readonly taskRepository: ITaskRepository,
-    private readonly routineRepository: IRoutineRepository,
+    private readonly taskDataSource: ITaskDataSource,
+    private readonly routineDataSource: IRoutineDataSource,
   ) {}
 
   /**
@@ -18,9 +18,9 @@ export class TaskActivityCatalog implements IActivityCatalog {
    */
   async getProgressCounts(today: LocalDate): Promise<{ completed: number; total: number }> {
     const [tasks, routines, completedIds] = await Promise.all([
-      this.taskRepository.listAll(),
-      this.routineRepository.listActive(),
-      this.routineRepository.listCompletedOn(today),
+      this.taskDataSource.listAll(),
+      this.routineDataSource.listActive(),
+      this.routineDataSource.listCompletedOn(today),
     ]);
     const standalone = tasks.filter(isStandaloneTask);
     const routinesToday = routines.filter((routine) => isRoutineActiveOn(routine, today));
@@ -32,10 +32,10 @@ export class TaskActivityCatalog implements IActivityCatalog {
 
   /** Uma tarefa avulsa ou uma rotina pode ser alvo do Modo Foco (RN-0001; rotinas.md, R9). */
   async hasFocusTargets(): Promise<boolean> {
-    const tasks = await this.taskRepository.listAll();
+    const tasks = await this.taskDataSource.listAll();
     if (tasks.some(isStandaloneTask)) {
       return true;
     }
-    return (await this.routineRepository.listActive()).length > 0;
+    return (await this.routineDataSource.listActive()).length > 0;
   }
 }

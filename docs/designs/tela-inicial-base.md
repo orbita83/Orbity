@@ -14,7 +14,7 @@ A branch `origin/feat/tela-principal-prototipo` tem um protótipo da tela, com 9
 *   painel deslizante com gestos (`activity-sheet-geometry.ts`, `use-activity-sheet-motion.ts`);
 *   visualizador de planeta (`planet-streak-view.tsx`) e `focus-bottom-sheet.tsx`;
 *   tokens cósmicos próprios (`cosmicTokens`);
-*   domínio, use case, repositório em memória e DI próprios.
+*   domínio, use case, DataSource em memória e DI próprios.
 
 Este design parte desse protótipo (D4).
 
@@ -77,7 +77,7 @@ Os pontos de entrada que Tarefas e Rotinas vão usar ficam definidos desde já. 
     | CA-08 | o dia é o calendário local do estudante | `IClockService.todayLocal()` |
 
     Cada linha tem um teste automatizado com o ID do critério no nome.
-*   **G2 — Registro diário idempotente.** Registrar atividade várias vezes no mesmo dia gera um único dia registrado (RF-0014 CA-03). O `IDailyActivityRepository` não tem operação de apagar (RF-0014 CA-04). O comportamento de desfazer uma conclusão será testado na mudança de Tarefas.
+*   **G2 — Registro diário idempotente.** Registrar atividade várias vezes no mesmo dia gera um único dia registrado (RF-0014 CA-03). O `IDailyActivityDataSource` não tem operação de apagar (RF-0014 CA-04). O comportamento de desfazer uma conclusão será testado na mudança de Tarefas.
 *   **G3 — Persistência local verificada pelo contrato.** A suíte de contrato roda o SQL real no `better-sqlite3` e mostra que os dias continuam registrados depois de fechar e reabrir a conexão com o banco ([RNF-0004](../02-requirements/non-functional/RNF-0004.md), [ADR-0001](../05-architecture/decisions/ADR-0001.md)). Nesta iteração não há checagem no aparelho (E6).
 *   **G4 — Ponto de entrada pronto para Tarefas e Rotinas.** Existe um único caso de uso para registrar atividade. O tipo da origem só admite tarefa sem rotina ou rotina ([RN-0002](../02-requirements/business-rules/RN-0002.md)), então sessões de foco não conseguem registrar atividade (RF-0019 CA-04). Classificar uma tarefa como avulsa ou de rotina é responsabilidade de quem chama.
 *   **G5 — Barra de progresso conforme o RN-0007.** Mostra `concluídas/total` sobre o total geral, e `0/0` quando não há nada cadastrado, sem dividir por zero e sempre com o texto visível, não só a cor.
@@ -145,7 +145,7 @@ Os rótulos "(era Qn)" apontam para as perguntas do brainstorm e do draft. As de
 
 ### Ainda em aberto
 
-*   **RN-0007, pontos pendentes:** como uma rotina recorrente conta como "concluída" no total geral, e se as tarefas de uma rotina entram no total por conta própria. Isso fica para a mudança de Tarefas e Rotinas. O contrato `IActivityCatalog.getProgressCounts()` pode mudar então.
+*   **RN-0007, pontos pendentes:** como uma rotina recorrente conta como "concluída" no total geral, e se as tarefas de uma rotina entram no total por conta própria. Isso fica para a mudança de Tarefas e Rotinas. O contrato `IActivityDataSource.getProgressCounts()` pode mudar então.
 
 ## Critical User Journeys (CUJs)
 
@@ -234,10 +234,10 @@ Regras de resolução:
                                           │ dependem só de contratos de src/model/
                                           ▼
                      src/model/    entities (local-date, streak, progress, activity-source, focus-duration,
-                                             home-summary) · repositories (i-daily-activity-repository,
-                                             i-activity-catalog) · services (i-clock-service) · errors
+                                             home-summary) · datasources (i-daily-activity-datasource,
+                                             i-activity-datasource) · services (i-clock-service) · errors
                                           ▲ implementam
-                     src/infra/    repositories/ (sqlite-*, in-memory-*, empty-activity-catalog)
+                     src/infra/    datasources/ (sqlite-*, memory-*, empty-activity-datasource)
                                    services/ (system-clock-service) · database/ (i-sql-executor,
                                    expo-sql-executor, database-provider, migrations)
                                           ▲ compõe: o único ponto de composição
@@ -256,14 +256,14 @@ O domínio não depende de React, Expo nem de SDKs ([ARCHITECTURE.md](../../ARCH
 *   **`FocusAvailability`** e **`HomeSummary`** (`entities/home-summary.ts`): `FocusAvailability = { canStart: boolean; reason: 'no-targets' | null; durations: readonly FocusDuration[]; defaultDuration: FocusDuration }`, e `HomeSummary = { streak: StreakSnapshot; progress: Progress; focus: FocusAvailability }`.
 *   **Erros** (`errors/domain-error.ts`): `DomainError`, com `code` e `retryable`, e `ValidationError extends DomainError`. Os códigos são `VALIDATION_ERROR`, `PERSISTENCE_FAILURE` (passível de nova tentativa) e `SCHEMA_VERSION_UNSUPPORTED` (não passível).
 *   **Contratos:**
-    *   `IDailyActivityRepository`: `recordDay` é idempotente, e `listDays` lista os dias. Não existe operação de apagar.
-    *   `IActivityCatalog`: somente leitura, com `getProgressCounts()` (`{ completed; total }`, lidos juntos) e `hasFocusTargets()`.
+    *   `IDailyActivityDataSource`: `recordDay` é idempotente, e `listDays` lista os dias. Não existe operação de apagar.
+    *   `IActivityDataSource`: somente leitura, com `getProgressCounts()` (`{ completed; total }`, lidos juntos) e `hasFocusTargets()`.
     *   `IClockService`: `now()` (instante ISO com o deslocamento do fuso) e `todayLocal()`.
 
 ### 4. Casos de uso (`src/usecase/`)
 
 *   **`IStreakUseCases`:** `recordActivity(source)` grava `clock.todayLocal()` e valida que o `source.id` não está vazio. É o ponto de entrada que Tarefas e Rotinas vão chamar. Nesta iteração, só os testes chamam. O `getStreak()` aplica `calculateStreak` sobre `listDays()`.
-*   **`IHomeUseCases`:** `loadHome(): Promise<HomeSummary>`. Depende **direto** dos contratos `IDailyActivityRepository`, `IActivityCatalog` e `IClockService`, e não de outros use cases ([ARCHITECTURE.md](../../ARCHITECTURE.md) §3.1). O `focus.canStart` vem de `hasFocusTargets()`.
+*   **`IHomeUseCases`:** `loadHome(): Promise<HomeSummary>`. Depende **direto** dos contratos `IDailyActivityDataSource`, `IActivityDataSource` e `IClockService`, e não de outros use cases ([ARCHITECTURE.md](../../ARCHITECTURE.md) §3.1). O `focus.canStart` vem de `hasFocusTargets()`.
 *   Os métodos `loadDashboard` e `completeFocusSession` do protótipo deixam de existir.
 
 ### 5. Persistência (`src/infra/`)
@@ -288,21 +288,21 @@ O domínio não depende de React, Expo nem de SDKs ([ARCHITECTURE.md](../../ARCH
     *   `SCHEMA_VERSION_UNSUPPORTED` fica guardado, sem nova tentativa (D14);
     *   qualquer outra exceção do driver vira `PERSISTENCE_FAILURE`.
 *   **Repositórios:**
-    *   `sqlite-daily-activity-repository` usa `INSERT OR IGNORE`;
-    *   `in-memory-daily-activity-repository` tem o mesmo comportamento, em memória;
-    *   `empty-activity-catalog` é provisório e devolve `{ completed: 0, total: 0 }` e `false`.
+    *   `sqlite-daily-activity-datasource` usa `INSERT OR IGNORE`;
+    *   `memory-daily-activity-datasource` tem o mesmo comportamento, em memória;
+    *   `empty-activity-datasource` é provisório e devolve `{ completed: 0, total: 0 }` e `false`.
 *   **`system-clock-service`:** monta a data local pelo calendário local do aparelho.
 
 ### 6. Composição (`src/di/`)
 
-*   O `container.ts` troca os registros genéricos `Record<string, unknown>` pelos tipos `AppRepositories` (`dailyActivity`, `activityCatalog`), `AppServices` (`clock`) e `AppUseCases` (`streak`, `home`).
+*   O `container.ts` troca os registros genéricos `Record<string, unknown>` pelos tipos `AppDataSources` (`dailyActivity`, `activities`), `AppServices` (`clock`) e `AppUseCases` (`streak`, `home`).
 *   **Troca por plataforma dentro do DI** (ADR-0001 §5):
-    *   `src/di/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos repositórios SQLite;
-    *   `src/di/persistence.web.ts` devolve os repositórios em memória (D8);
+    *   `src/di/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos DataSources SQLite;
+    *   `src/di/persistence.web.ts` devolve os DataSources em memória (D8);
     *   o Metro escolhe o `.web.ts` na web, inclusive na renderização estática.
 
     Os dois arquivos só são importados pelo `container.ts`. É o único mecanismo para manter o `expo-sqlite` fora da web, dos testes e do Storybook. A F11 verifica isso com `npm test` e `build-storybook`.
-*   O `createContainer` congela (`Object.freeze`) cada registro, para nenhuma camada trocar uma dependência em tempo de execução. Os testes substituem repositórios ou o relógio por `ContainerOverrides`. O `resolveUseCase(override, padrão)` devolve o override quando ele é passado e, se não, o use case do container.
+*   O `createContainer` congela (`Object.freeze`) cada registro, para nenhuma camada trocar uma dependência em tempo de execução. Os testes substituem DataSources ou o relógio por `ContainerOverrides`. O `resolveUseCase(override, padrão)` devolve o override quando ele é passado e, se não, o use case do container.
 *   O `src/di/home-factory.ts` do protótipo é removido (Technical Plan §1).
 
 ### 7. Apresentação (`src/viewmodel/` e `src/view/`)
@@ -463,7 +463,7 @@ Os demais riscos de persistência estão no [ADR-0001](../05-architecture/decisi
 ## Future Improvements
 
 *   **Mudança de Tarefas e Rotinas:**
-    *   trocar o `EmptyActivityCatalog` por uma implementação real;
+    *   trocar o `EmptyActivityDataSource` por uma implementação real;
     *   chamar `recordActivity`;
     *   desenhar o seletor de alvo e o motor do foco (o G9 e as decisões D5, D10, D11 e D19, retiradas);
     *   resolver o EC-0007, o EC-0008 e os pontos pendentes do RN-0007;
@@ -537,9 +537,9 @@ export function createProgress(completed: number, total: number): Progress; // V
 export type DomainErrorCode = 'VALIDATION_ERROR' | 'PERSISTENCE_FAILURE' | 'SCHEMA_VERSION_UNSUPPORTED';
 export class DomainError extends Error { constructor(code: DomainErrorCode, message?: string); readonly retryable: boolean }
 export class ValidationError extends DomainError {}
-// repositories
-export interface IDailyActivityRepository { recordDay(date: LocalDate, recordedAt: string): Promise<void>; listDays(): Promise<LocalDate[]> }
-export interface IActivityCatalog { getProgressCounts(): Promise<{ completed: number; total: number }>; hasFocusTargets(): Promise<boolean> }
+// dataSources
+export interface IDailyActivityDataSource { recordDay(date: LocalDate, recordedAt: string): Promise<void>; listDays(): Promise<LocalDate[]> }
+export interface IActivityDataSource { getProgressCounts(): Promise<{ completed: number; total: number }>; hasFocusTargets(): Promise<boolean> }
 // services
 export interface IClockService { now(): string; todayLocal(): LocalDate }
 ```
@@ -547,7 +547,7 @@ export interface IClockService { now(): string; todayLocal(): LocalDate }
 O `retryable` de `DomainError` é `true` só para `PERSISTENCE_FAILURE`.
 
 **Arquivos:**
-*   **Create:** `src/model/entities/local-date.ts`, `streak.ts`, `progress.ts`, `activity-source.ts`, `focus-duration.ts` e `home-summary.ts`; `src/model/errors/domain-error.ts`; `src/model/repositories/i-daily-activity-repository.ts` e `i-activity-catalog.ts`; `src/model/services/i-clock-service.ts`.
+*   **Create:** `src/model/entities/local-date.ts`, `streak.ts`, `progress.ts`, `activity-source.ts`, `focus-duration.ts` e `home-summary.ts`; `src/model/errors/domain-error.ts`; `src/model/datasources/i-daily-activity-datasource.ts` e `i-activity-datasource.ts`; `src/model/services/i-clock-service.ts`.
 *   **Testes (Create):**
     *   `local-date.test.ts`: virada de mês, de ano e ano bissexto com `addDays`, e `parse` inválido.
     *   `progress.test.ts`: `createProgress(0, 0)` → `{ completed: 0, total: 0, ratio: null }`; `(3, 30)` → `ratio: 0.1`; `(-1, 0)` e `(4, 3)` → `ValidationError`.
@@ -600,15 +600,15 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   migração com o segundo comando inválido → `ROLLBACK`, e a tabela não existe;
     *   a primeira abertura falha, a segunda funciona → `get()` resolve na segunda chamada;
     *   duas chamadas simultâneas → uma só abertura.
-*   `src/infra/repositories/sqlite-daily-activity-repository.ts`: `constructor(provider: DatabaseProvider)`, usando `INSERT OR IGNORE`.
-*   `src/infra/repositories/in-memory-daily-activity-repository.ts`.
-*   `src/infra/repositories/daily-activity-repository.contract.ts`: `describeDailyActivityRepositoryContract(name, factory)`. Casos:
+*   `src/infra/datasources/sqlite-daily-activity-datasource.ts`: `constructor(provider: DatabaseProvider)`, usando `INSERT OR IGNORE`.
+*   `src/infra/datasources/memory-daily-activity-datasource.ts`.
+*   `src/infra/datasources/daily-activity-datasource.contract.ts`: `describeDailyActivityDataSourceContract(name, factory)`. Casos:
     *   o mesmo dia duas vezes → um dia só;
     *   ordem decrescente;
     *   lista vazia;
     *   para SQLite: fechar e reabrir o banco no mesmo arquivo temporário → os dias continuam (G3).
-*   `src/infra/repositories/sqlite-daily-activity-repository.test.ts` e `in-memory-daily-activity-repository.test.ts`: cada um roda o contrato.
-*   `src/infra/repositories/empty-activity-catalog.ts`.
+*   `src/infra/datasources/sqlite-daily-activity-datasource.test.ts` e `memory-daily-activity-datasource.test.ts`: cada um roda o contrato.
+*   `src/infra/datasources/empty-activity-datasource.ts`.
 *   `src/infra/services/system-clock-service.ts` e `system-clock-service.test.ts` (fuso `America/Sao_Paulo` pela Etapa 1):
     *   `new Date(2026, 10, 14, 23, 59)` → `todayLocal()` = `2026-11-14`;
     *   `new Date(2026, 10, 15, 0, 1)` → `2026-11-15`;
@@ -621,8 +621,8 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 ### Etapa 4 — Casos de uso (`src/usecase/`)
 
 **Construtores:**
-*   `new StreakUseCases(dailyActivity: IDailyActivityRepository, clock: IClockService)`;
-*   `new HomeUseCases(dailyActivity: IDailyActivityRepository, activityCatalog: IActivityCatalog, clock: IClockService)`.
+*   `new StreakUseCases(dailyActivity: IDailyActivityDataSource, clock: IClockService)`;
+*   `new HomeUseCases(dailyActivity: IDailyActivityDataSource, activities: IActivityDataSource, clock: IClockService)`.
 
 **Arquivos:**
 *   **Create:** `src/usecase/i-streak-use-cases.ts` e `streak-use-cases.ts`.
@@ -635,19 +635,19 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 *   **`home-use-cases.test.ts` (Create):**
     *   catálogo vazio → `progress` `{ completed: 0, total: 0, ratio: null }`, `focus.canStart = false`, `reason = 'no-targets'`, `defaultDuration = 15` e `streak.currentDays = 0`;
     *   catálogo falso com `{ completed: 3, total: 30 }` → `ratio: 0.1`;
-    *   repositório que rejeita com `PERSISTENCE_FAILURE` → `loadHome()` rejeita com o mesmo `DomainError`.
+    *   DataSource que rejeita com `PERSISTENCE_FAILURE` → `loadHome()` rejeita com o mesmo `DomainError`.
 *   **Delete:** `src/usecase/.gitkeep`.
 
 ### Etapa 5 — Composição (`src/di/`)
 
-*   **`src/di/container.ts` (Modify):** os tipos `AppRepositories { dailyActivity; activityCatalog }`, `AppServices { clock }` e `AppUseCases { streak; home }`. O `appContainerDefinition` usa `createPersistence()` de `./persistence`, `EmptyActivityCatalog` e `SystemClockService`. A API pública não muda.
-*   **`src/di/persistence.ts` (Create):** `createPersistence(): { dailyActivity: IDailyActivityRepository }`, com `DatabaseProvider(() => ExpoSqlExecutor.open('orbity.db'))`.
-*   **`src/di/persistence.web.ts` (Create):** a mesma assinatura, com `InMemoryDailyActivityRepository`.
+*   **`src/di/container.ts` (Modify):** os tipos `AppDataSources { dailyActivity; activities }`, `AppServices { clock }` e `AppUseCases { streak; home }`. O `appContainerDefinition` usa `createPersistence()` de `./persistence`, `EmptyActivityDataSource` e `SystemClockService`. A API pública não muda.
+*   **`src/di/persistence.ts` (Create):** `createPersistence(): { dailyActivity: IDailyActivityDataSource }`, com `DatabaseProvider(() => ExpoSqlExecutor.open('orbity.db'))`.
+*   **`src/di/persistence.web.ts` (Create):** a mesma assinatura, com `MemoryDailyActivityDataSource`.
 *   **`src/di/container.test.ts` (Create):**
     *   com `jest.isolateModules` e `jest.spyOn(DatabaseProvider.prototype, 'get')` antes de `require('@/di/container')`, importar o módulo não abre o banco (0 chamadas);
     *   `container.useCases.streak` usa o `dailyActivity` em memória passado em `overrides`;
     *   o container está congelado.
-*   **`src/di/persistence.web.test.ts` (Create):** `createPersistence()` devolve um `InMemoryDailyActivityRepository`.
+*   **`src/di/persistence.web.test.ts` (Create):** `createPersistence()` devolve um `MemoryDailyActivityDataSource`.
 
 ### Etapa 6 — ViewModel (`src/viewmodel/`)
 
@@ -716,7 +716,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 
 *   **`docs/05-architecture/decisions/ADR-0001.md` (Modify):**
     *   status `Accepted` (2026-11-14);
-    *   nomes `IDailyActivityRepository`, com prefixo `I`, e arquivos kebab-case;
+    *   nomes `IDailyActivityDataSource`, com prefixo `I`, e arquivos kebab-case;
     *   esquema v1 só com `daily_activity`;
     *   `ISqlExecutor` com transação em lote e `better-sqlite3` nos testes (D15);
     *   troca por plataforma em `src/di/persistence(.web).ts` (D8);

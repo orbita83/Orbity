@@ -1,17 +1,17 @@
-import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
-import { InMemoryRoutineRepository } from "@/infra/repositories/in-memory-routine-repository";
-import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
-import { TaskActivityCatalog } from "@/infra/repositories/task-activity-catalog";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
+import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
+import { TaskActivityDataSource } from "@/infra/datasources/task-activity-datasource";
 import type { Persistence } from "./persistence";
 
 /** Web: dados só em memória, perdidos ao recarregar (D8). Mantém o `expo-sqlite` fora do bundle web. */
 export function createPersistence(): Persistence {
-  const tasks = new InMemoryTaskRepository();
-  const routines = new InMemoryRoutineRepository(tasks);
+  const tasks = new MemoryTaskDataSource();
+  const routines = new MemoryRoutineDataSource(tasks);
   return {
-    dailyActivity: new InMemoryDailyActivityRepository(),
+    dailyActivity: new MemoryDailyActivityDataSource(),
     tasks,
     routines,
-    activityCatalog: new TaskActivityCatalog(tasks, routines),
+    activities: new TaskActivityDataSource(tasks, routines),
   };
 }

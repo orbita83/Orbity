@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
-import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
 import { DomainError } from "@/model/errors/domain-error";
 import type { IClockService } from "@/model/services/i-clock-service";
@@ -50,8 +50,8 @@ const fixedClock: IClockService = {
 };
 
 const createVmDependencies = () => {
-  const taskRepo = new InMemoryTaskRepository();
-  const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), fixedClock, () => "task-created");
+  const taskRepo = new MemoryTaskDataSource();
+  const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), fixedClock, () => "task-created");
   return { taskRepo, useCases };
 };
 
@@ -143,7 +143,7 @@ describe("useNewTaskViewModel", () => {
   });
 
   it("no modo de edição, carrega os dados da tarefa existente e atualiza ao salvar", async () => {
-    const taskRepo = new InMemoryTaskRepository([
+    const taskRepo = new MemoryTaskDataSource([
       {
         id: "t1",
         title: "Estudar Cálculo",
@@ -159,7 +159,7 @@ describe("useNewTaskViewModel", () => {
         updatedAt: "2026-11-15T08:00:00-03:00",
       },
     ]);
-    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), fixedClock);
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), fixedClock);
     const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock, "t1"));
 
     expect(result.current[0].editing).toBe(true);
@@ -223,7 +223,7 @@ describe("useNewTaskViewModel", () => {
 
 describe("useNewTaskViewModel (navegação)", () => {
   it("lê o id da tarefa na rota e abre a edição", async () => {
-    const taskRepo = new InMemoryTaskRepository([
+    const taskRepo = new MemoryTaskDataSource([
       {
         id: "t1",
         title: "Estudar Cálculo",
@@ -233,7 +233,7 @@ describe("useNewTaskViewModel (navegação)", () => {
         updatedAt: "2026-11-15T08:00:00-03:00",
       },
     ]);
-    const useCases = new TaskUseCases(taskRepo, new InMemoryDailyActivityRepository(), fixedClock);
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), fixedClock);
     mockParams = { id: "t1" };
     const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
     expect(result.current[0].editing).toBe(true);

@@ -1,13 +1,13 @@
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
-import { InMemoryProfileRepository } from "./in-memory-profile-repository";
+import { MemoryProfileDataSource } from "./memory-profile-datasource";
 
-describe("InMemoryProfileRepository", () => {
+describe("MemoryProfileDataSource", () => {
   it("deve carregar os dados iniciais padrão quando nenhum perfil inicial for passado", async () => {
     // Arrange
-    const repository = new InMemoryProfileRepository();
+    const dataSource = new MemoryProfileDataSource();
 
     // Act
-    const profile = await repository.getProfile();
+    const profile = await dataSource.getProfile();
 
     // Assert
     expect(profile).toEqual(mockStudentProfile);
@@ -22,10 +22,10 @@ describe("InMemoryProfileRepository", () => {
       achievementsCount: 1,
       studyHours: 8,
     };
-    const repository = new InMemoryProfileRepository(customInitial);
+    const dataSource = new MemoryProfileDataSource(customInitial);
 
     // Act
-    const profile = await repository.getProfile();
+    const profile = await dataSource.getProfile();
 
     // Assert
     expect(profile).toEqual(customInitial);
@@ -33,11 +33,11 @@ describe("InMemoryProfileRepository", () => {
 
   it("deve atualizar o nome e persistir a alteração para chamadas subsequentes", async () => {
     // Arrange
-    const repository = new InMemoryProfileRepository();
+    const dataSource = new MemoryProfileDataSource();
 
     // Act
-    const updated = await repository.updateName("Lucas Mendes");
-    const retrieved = await repository.getProfile();
+    const updated = await dataSource.updateName("Lucas Mendes");
+    const retrieved = await dataSource.getProfile();
 
     // Assert
     expect(updated.name).toBe("Lucas Mendes");
@@ -47,15 +47,15 @@ describe("InMemoryProfileRepository", () => {
 
   it("deve manter isolamento de dados entre instâncias distintas", async () => {
     // Arrange
-    const repository1 = new InMemoryProfileRepository();
-    const repository2 = new InMemoryProfileRepository();
+    const dataSource1 = new MemoryProfileDataSource();
+    const dataSource2 = new MemoryProfileDataSource();
 
     // Act
-    await repository1.updateName("Nome Modificado");
+    await dataSource1.updateName("Nome Modificado");
 
     // Assert
-    const profile1 = await repository1.getProfile();
-    const profile2 = await repository2.getProfile();
+    const profile1 = await dataSource1.getProfile();
+    const profile2 = await dataSource2.getProfile();
 
     expect(profile1.name).toBe("Nome Modificado");
     expect(profile2.name).toBe(mockStudentProfile.name);

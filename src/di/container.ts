@@ -1,5 +1,5 @@
-import { InMemoryProfileRepository } from "@/infra/repositories/in-memory-profile-repository";
-import type { IProfileRepository } from "@/model/repositories/profile-repository";
+import { MemoryProfileDataSource } from "@/infra/datasources/memory-profile-datasource";
+import type { IProfileDataSource } from "@/model/datasources/i-profile-datasource";
 import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-cases";
 
 /**
@@ -14,10 +14,10 @@ import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-ca
  */
 
 import { SystemClockService } from "@/infra/services/system-clock-service";
-import type { IActivityCatalog } from "@/model/repositories/i-activity-catalog";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
-import type { IRoutineRepository } from "@/model/repositories/i-routine-repository";
-import type { ITaskRepository } from "@/model/repositories/i-task-repository";
+import type { IActivityDataSource } from "@/model/datasources/i-activity-datasource";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
+import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
+import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { HomeUseCases } from "@/usecase/home-use-cases";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
@@ -31,10 +31,10 @@ import { TaskUseCases } from "@/usecase/task-use-cases";
 import { createPersistence } from "./persistence";
 
 /**
- * Registro de contratos de repositórios de domínio (`src/model/repositories/`).
- * Expandido conforme os épicos funcionais introduzem repositórios concretos em `src/infra/repositories/`.
+ * Registro de contratos de DataSources de domínio (`src/model/datasources/`).
+ * Expandido conforme os épicos funcionais introduzem DataSources concretos em `src/infra/datasources/`.
  */
-export type RepositoryRegistry = Record<string, unknown>;
+export type DataSourceRegistry = Record<string, unknown>;
 
 /**
  * Registro de contratos de serviços de domínio (`src/model/services/`).
@@ -52,10 +52,10 @@ export type UseCaseRegistry = Record<string, unknown>;
  * Contrato que agrupa as abstrações de infraestrutura injetadas nos Use Cases.
  */
 export interface InfrastructureDependencies<
-  TRepositories extends object = RepositoryRegistry,
+  TDataSources extends object = DataSourceRegistry,
   TServices extends object = ServiceRegistry,
 > {
-  readonly repositories: Readonly<TRepositories>;
+  readonly dataSources: Readonly<TDataSources>;
   readonly services: Readonly<TServices>;
 }
 
@@ -63,10 +63,10 @@ export interface InfrastructureDependencies<
  * Container imutável de Injeção de Dependências que expõe as camadas compostas.
  */
 export interface DependencyContainer<
-  TRepositories extends object = RepositoryRegistry,
+  TDataSources extends object = DataSourceRegistry,
   TServices extends object = ServiceRegistry,
   TUseCases extends object = UseCaseRegistry,
-> extends InfrastructureDependencies<TRepositories, TServices> {
+> extends InfrastructureDependencies<TDataSources, TServices> {
   readonly useCases: Readonly<TUseCases>;
 }
 
@@ -81,27 +81,27 @@ export type UseCaseFactory<TDependencies, TUseCaseContract extends object> = (
  * Definição estrutural de como a infraestrutura concreta e os Use Cases são instanciados.
  */
 export interface ContainerDefinition<
-  TRepositories extends object = RepositoryRegistry,
+  TDataSources extends object = DataSourceRegistry,
   TServices extends object = ServiceRegistry,
   TUseCases extends object = UseCaseRegistry,
 > {
-  readonly repositories: () => TRepositories;
+  readonly dataSources: () => TDataSources;
   readonly services: () => TServices;
   readonly useCases: (
-    infra: InfrastructureDependencies<TRepositories, TServices>,
+    infra: InfrastructureDependencies<TDataSources, TServices>,
   ) => TUseCases;
 }
 
 /**
- * Substituições opcionais para trocar repositórios, serviços ou Use Cases concretos
+ * Substituições opcionais para trocar DataSources, serviços ou Use Cases concretos
  * por test doubles (mocks, stubs, fakes ou spies) durante testes automatizados.
  */
 export interface ContainerOverrides<
-  TRepositories extends object = RepositoryRegistry,
+  TDataSources extends object = DataSourceRegistry,
   TServices extends object = ServiceRegistry,
   TUseCases extends object = UseCaseRegistry,
 > {
-  readonly repositories?: Partial<TRepositories>;
+  readonly dataSources?: Partial<TDataSources>;
   readonly services?: Partial<TServices>;
   readonly useCases?: Partial<TUseCases>;
 }
@@ -131,31 +131,31 @@ export function resolveUseCase<TUseCaseContract extends object>(
 /**
  * Constrói um `DependencyContainer` imutável a partir de uma definição e substituições opcionais.
  *
- * Quando substituições de infraestrutura (`repositories` ou `services`) são fornecidas,
+ * Quando substituições de infraestrutura (`dataSources` ou `services`) são fornecidas,
  * os Use Cases são automaticamente compostos com esses test doubles sem exigir
  * alterações nos consumidores (Use Cases ou ViewModels).
  */
 export function createContainer<
-  TRepositories extends object,
+  TDataSources extends object,
   TServices extends object,
   TUseCases extends object,
 >(
-  definition: ContainerDefinition<TRepositories, TServices, TUseCases>,
-  overrides: ContainerOverrides<TRepositories, TServices, TUseCases> = {},
-): DependencyContainer<TRepositories, TServices, TUseCases> {
-  const repositories = Object.freeze({
-    ...definition.repositories(),
-    ...overrides.repositories,
-  }) as Readonly<TRepositories>;
+  definition: ContainerDefinition<TDataSources, TServices, TUseCases>,
+  overrides: ContainerOverrides<TDataSources, TServices, TUseCases> = {},
+): DependencyContainer<TDataSources, TServices, TUseCases> {
+  const dataSources = Object.freeze({
+    ...definition.dataSources(),
+    ...overrides.dataSources,
+  }) as Readonly<TDataSources>;
 
   const services = Object.freeze({
     ...definition.services(),
     ...overrides.services,
   }) as Readonly<TServices>;
 
-  const infra: InfrastructureDependencies<TRepositories, TServices> =
+  const infra: InfrastructureDependencies<TDataSources, TServices> =
     Object.freeze({
-      repositories,
+      dataSources,
       services,
     });
 
@@ -165,19 +165,19 @@ export function createContainer<
   }) as Readonly<TUseCases>;
 
   return Object.freeze({
-    repositories,
+    dataSources,
     services,
     useCases,
   });
 }
 
-/** Repositórios da aplicação. */
-export type AppRepositories = {
-  dailyActivity: IDailyActivityRepository;
-  tasks: ITaskRepository;
-  routines: IRoutineRepository;
-  activityCatalog: IActivityCatalog;
-  profile: IProfileRepository;
+/** DataSources da aplicação. */
+export type AppDataSources = {
+  dailyActivity: IDailyActivityDataSource;
+  tasks: ITaskDataSource;
+  routines: IRoutineDataSource;
+  activities: IActivityDataSource;
+  profile: IProfileDataSource;
 };
 
 /** Serviços da aplicação. */
@@ -198,53 +198,53 @@ export type AppUseCases = {
  * Definição do composition root da aplicação. Criar o container não abre o banco:
  * o `DatabaseProvider` só abre no primeiro uso.
  */
-export const appContainerDefinition: ContainerDefinition<AppRepositories, AppServices, AppUseCases> =
+export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServices, AppUseCases> =
   Object.freeze({
-    repositories: () => ({
+    dataSources: () => ({
       ...createPersistence(),
       // Perfil ainda sem persistência: memória em todas as plataformas.
-      profile: new InMemoryProfileRepository(),
+      profile: new MemoryProfileDataSource(),
     }),
     services: () => ({ clock: new SystemClockService() }),
-    useCases: ({ repositories, services }: InfrastructureDependencies<AppRepositories, AppServices>) => ({
+    useCases: ({ dataSources, services }: InfrastructureDependencies<AppDataSources, AppServices>) => ({
       streak: composeUseCase(
-        ({ dailyActivity, clock }: { dailyActivity: IDailyActivityRepository; clock: IClockService }) =>
+        ({ dailyActivity, clock }: { dailyActivity: IDailyActivityDataSource; clock: IClockService }) =>
           new StreakUseCases(dailyActivity, clock),
-        { dailyActivity: repositories.dailyActivity, clock: services.clock },
+        { dailyActivity: dataSources.dailyActivity, clock: services.clock },
       ),
       home: composeUseCase(
-        (deps: { dailyActivity: IDailyActivityRepository; activityCatalog: IActivityCatalog; clock: IClockService }) =>
-          new HomeUseCases(deps.dailyActivity, deps.activityCatalog, deps.clock),
+        (deps: { dailyActivity: IDailyActivityDataSource; activities: IActivityDataSource; clock: IClockService }) =>
+          new HomeUseCases(deps.dailyActivity, deps.activities, deps.clock),
         {
-          dailyActivity: repositories.dailyActivity,
-          activityCatalog: repositories.activityCatalog,
+          dailyActivity: dataSources.dailyActivity,
+          activities: dataSources.activities,
           clock: services.clock,
         },
       ),
       tasks: composeUseCase(
-        (deps: { tasks: ITaskRepository; dailyActivity: IDailyActivityRepository; clock: IClockService }) =>
+        (deps: { tasks: ITaskDataSource; dailyActivity: IDailyActivityDataSource; clock: IClockService }) =>
           new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock),
         {
-          tasks: repositories.tasks,
-          dailyActivity: repositories.dailyActivity,
+          tasks: dataSources.tasks,
+          dailyActivity: dataSources.dailyActivity,
           clock: services.clock,
         },
       ),
       profile: composeUseCase(
-        ({ profile }: { profile: IProfileRepository }) => new ProfileUseCases(profile),
-        { profile: repositories.profile },
+        ({ profile }: { profile: IProfileDataSource }) => new ProfileUseCases(profile),
+        { profile: dataSources.profile },
       ),
       routines: composeUseCase(
         (deps: {
-          routines: IRoutineRepository;
-          tasks: ITaskRepository;
-          dailyActivity: IDailyActivityRepository;
+          routines: IRoutineDataSource;
+          tasks: ITaskDataSource;
+          dailyActivity: IDailyActivityDataSource;
           clock: IClockService;
         }) => new RoutineUseCases(deps.routines, deps.tasks, deps.dailyActivity, deps.clock),
         {
-          routines: repositories.routines,
-          tasks: repositories.tasks,
-          dailyActivity: repositories.dailyActivity,
+          routines: dataSources.routines,
+          tasks: dataSources.tasks,
+          dailyActivity: dataSources.dailyActivity,
           clock: services.clock,
         },
       ),
@@ -253,11 +253,11 @@ export const appContainerDefinition: ContainerDefinition<AppRepositories, AppSer
 
 /**
  * Cria um container isolado da aplicação, permitindo a substituição parcial de
- * repositórios, serviços ou Use Cases por test doubles.
+ * DataSources, serviços ou Use Cases por test doubles.
  */
 export function createAppContainer(
-  overrides: ContainerOverrides<AppRepositories, AppServices, AppUseCases> = {},
-): DependencyContainer<AppRepositories, AppServices, AppUseCases> {
+  overrides: ContainerOverrides<AppDataSources, AppServices, AppUseCases> = {},
+): DependencyContainer<AppDataSources, AppServices, AppUseCases> {
   return createContainer(appContainerDefinition, overrides);
 }
 

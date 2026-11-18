@@ -1,11 +1,11 @@
 import type { DatabaseProvider } from "@/infra/database/database-provider";
 import { toDomainError } from "@/infra/database/persistence-error";
 import { LocalDate } from "@/model/entities/local-date";
-import type { IDailyActivityRepository } from "@/model/repositories/i-daily-activity-repository";
+import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 
 type DailyActivityRow = { local_date: string };
 
-export class SqliteDailyActivityRepository implements IDailyActivityRepository {
+export class SqliteDailyActivityDataSource implements IDailyActivityDataSource {
   constructor(private readonly provider: DatabaseProvider) {}
 
   async recordDay(date: LocalDate, recordedAt: string): Promise<void> {

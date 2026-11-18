@@ -3,7 +3,7 @@ import type { StudentProfile } from "../entities/student-profile";
 /**
  * Contrato puro de domínio para operações de persistência e consulta do perfil do estudante.
  */
-export interface IProfileRepository {
+export interface IProfileDataSource {
   /**
    * Obtém o perfil atual do estudante.
    */
