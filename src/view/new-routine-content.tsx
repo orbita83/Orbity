@@ -235,7 +235,7 @@ export const NewRoutineScreenContent = ({
         actionLabel={editing ? ROUTINES_COPY["updated.action"] : ROUTINES_COPY["created.action"]}
         onClose={onFinish}
       />
-      {/* Variante Confirmação do Modal: a ação segura ("Continuar editando") fica em destaque. */}
+      {/* Variante Confirmação do Modal: confirmar o descarte usa o estilo primário e continuar editando usa o secundário. */}
       <ConfirmDialog
         visible={discardVisible}
         icon="edit"
