@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useNavigation } from "expo-router";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BackHandler } from "react-native";
-import { container, resolveUseCase } from "@/DI/container";
+import { container, resolveUseCase } from "@/di/container";
 import {
   type Task,
   type TaskFilter as DomainTaskFilter,

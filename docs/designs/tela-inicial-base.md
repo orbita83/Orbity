@@ -241,7 +241,7 @@ Regras de resolução:
                                    services/ (system-clock-service) · database/ (i-sql-executor,
                                    expo-sql-executor, database-provider, migrations)
                                           ▲ compõe: o único ponto de composição
-                     src/DI/container.ts + src/DI/persistence.ts (Android) / persistence.web.ts (web)
+                     src/di/container.ts + src/di/persistence.ts (Android) / persistence.web.ts (web)
 ```
 
 ### 3. Domínio (`src/model/`)
@@ -293,12 +293,12 @@ O domínio não depende de React, Expo nem de SDKs ([ARCHITECTURE.md](../../ARCH
     *   `empty-activity-catalog` é provisório e devolve `{ completed: 0, total: 0 }` e `false`.
 *   **`system-clock-service`:** monta a data local pelo calendário local do aparelho.
 
-### 6. Composição (`src/DI/`)
+### 6. Composição (`src/di/`)
 
 *   O `container.ts` troca os registros genéricos `Record<string, unknown>` pelos tipos `AppRepositories` (`dailyActivity`, `activityCatalog`), `AppServices` (`clock`) e `AppUseCases` (`streak`, `home`).
 *   **Troca por plataforma dentro do DI** (ADR-0001 §5):
-    *   `src/DI/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos repositórios SQLite;
-    *   `src/DI/persistence.web.ts` devolve os repositórios em memória (D8);
+    *   `src/di/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos repositórios SQLite;
+    *   `src/di/persistence.web.ts` devolve os repositórios em memória (D8);
     *   o Metro escolhe o `.web.ts` na web, inclusive na renderização estática.
 
     Os dois arquivos só são importados pelo `container.ts`. É o único mecanismo para manter o `expo-sqlite` fora da web, dos testes e do Storybook. A F11 verifica isso com `npm test` e `build-storybook`.
@@ -322,7 +322,7 @@ Os arquivos:
 *   **`ActivitySheetGeometry.ts`:** funções puras de geometria do painel e o tipo `FocusSheetStage` (`'collapsed' | 'stage1_1' | 'stage1_2'`). É um auxiliar da camada ViewModel.
 *   **`useActivitySheetMotionViewModel.ts`:** a lógica de gesto do protótipo, que recebe `SheetGeometryConfig` e `reduceMotion` como parâmetros.
 *   **`HomeScreen.tsx`** (`default`): chama `useHomeViewModel()` e `useReduceMotion()`, monta o `SheetGeometryConfig` a partir de `themes.cosmic` e renderiza o `HomeScreenContent`.
-*   **`HomeScreenContent.tsx`:** a tela do protótipo refatorada, só de apresentação, que recebe estado e ações por props. Testes e histórias renderizam este componente e nunca importam `@/DI`. Ela:
+*   **`HomeScreenContent.tsx`:** a tela do protótipo refatorada, só de apresentação, que recebe estado e ações por props. Testes e histórias renderizam este componente e nunca importam `@/di`. Ela:
     *   não tem `NavBar` própria;
     *   tem estados de carregando, erro e pronto;
     *   não tem os diálogos de conquista nem de "última sessão".
@@ -408,7 +408,7 @@ Os arquivos:
 
 *   **Pros**: Mantém a infraestrutura autocontida.
 *   **Cons**: Cria um segundo ponto de composição, contra o ADR-0001 §5 e o ARCHITECTURE §6.1.
-*   **Reason for Rejection**: Rejected na revisão: a troca fica em `src/DI/persistence(.web).ts`.
+*   **Reason for Rejection**: Rejected na revisão: a troca fica em `src/di/persistence(.web).ts`.
 
 ### Alternative M: Web com `expo-sqlite` (WASM) ou IndexedDB
 
@@ -638,16 +638,16 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   repositório que rejeita com `PERSISTENCE_FAILURE` → `loadHome()` rejeita com o mesmo `DomainError`.
 *   **Delete:** `src/usecase/.gitkeep`.
 
-### Etapa 5 — Composição (`src/DI/`)
+### Etapa 5 — Composição (`src/di/`)
 
-*   **`src/DI/container.ts` (Modify):** os tipos `AppRepositories { dailyActivity; activityCatalog }`, `AppServices { clock }` e `AppUseCases { streak; home }`. O `appContainerDefinition` usa `createPersistence()` de `./persistence`, `EmptyActivityCatalog` e `SystemClockService`. A API pública não muda.
-*   **`src/DI/persistence.ts` (Create):** `createPersistence(): { dailyActivity: IDailyActivityRepository }`, com `DatabaseProvider(() => ExpoSqlExecutor.open('orbity.db'))`.
-*   **`src/DI/persistence.web.ts` (Create):** a mesma assinatura, com `InMemoryDailyActivityRepository`.
-*   **`src/DI/container.test.ts` (Create):**
-    *   com `jest.isolateModules` e `jest.spyOn(DatabaseProvider.prototype, 'get')` antes de `require('@/DI/container')`, importar o módulo não abre o banco (0 chamadas);
+*   **`src/di/container.ts` (Modify):** os tipos `AppRepositories { dailyActivity; activityCatalog }`, `AppServices { clock }` e `AppUseCases { streak; home }`. O `appContainerDefinition` usa `createPersistence()` de `./persistence`, `EmptyActivityCatalog` e `SystemClockService`. A API pública não muda.
+*   **`src/di/persistence.ts` (Create):** `createPersistence(): { dailyActivity: IDailyActivityRepository }`, com `DatabaseProvider(() => ExpoSqlExecutor.open('orbity.db'))`.
+*   **`src/di/persistence.web.ts` (Create):** a mesma assinatura, com `InMemoryDailyActivityRepository`.
+*   **`src/di/container.test.ts` (Create):**
+    *   com `jest.isolateModules` e `jest.spyOn(DatabaseProvider.prototype, 'get')` antes de `require('@/di/container')`, importar o módulo não abre o banco (0 chamadas);
     *   `container.useCases.streak` usa o `dailyActivity` em memória passado em `overrides`;
     *   o container está congelado.
-*   **`src/DI/persistence.web.test.ts` (Create):** `createPersistence()` devolve um `InMemoryDailyActivityRepository`.
+*   **`src/di/persistence.web.test.ts` (Create):** `createPersistence()` devolve um `InMemoryDailyActivityRepository`.
 
 ### Etapa 6 — ViewModel (`src/viewmodel/`)
 
@@ -697,7 +697,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   estado de erro do esquema → `error.schema`, sem botão;
     *   botão do painel → alterna entre `sheet.open` e `sheet.close`;
     *   o texto renderizado não contém termos de `PUNITIVE_TERMS`.
-*   **`src/view/HomeScreenContent.stories.tsx` (Rename de `home-screen.stories.tsx`, depois Modify):** histórias "vazio", "com sequência (12 dias, 3/30)", "erro" e "erro de esquema", montadas com props fixas e sem importar `@/DI`.
+*   **`src/view/HomeScreenContent.stories.tsx` (Rename de `home-screen.stories.tsx`, depois Modify):** histórias "vazio", "com sequência (12 dias, 3/30)", "erro" e "erro de esquema", montadas com props fixas e sem importar `@/di`.
 *   **`src/view/components/FocusBottomSheet.tsx` (Rename de `focus-bottom-sheet.tsx`, depois Modify):** as props passam a ser `progressLabel`, `progressRatio`, `focus: FocusAvailability`, `selectedDuration`, `onSelectDuration`, `stage` e as ações do painel. Saem `DailyFocusProgress`, `achievements`, `onToggleFocus`, `onSelectAchievement` e `lastSessionLabel`.
 *   **`src/view/components/FocusBottomSheet.test.tsx` (Create):**
     *   seis durações, com 15 marcado (`accessibilityState.checked`);
@@ -719,7 +719,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   nomes `IDailyActivityRepository`, com prefixo `I`, e arquivos kebab-case;
     *   esquema v1 só com `daily_activity`;
     *   `ISqlExecutor` com transação em lote e `better-sqlite3` nos testes (D15);
-    *   troca por plataforma em `src/DI/persistence(.web).ts` (D8);
+    *   troca por plataforma em `src/di/persistence(.web).ts` (D8);
     *   o motor do foco e a sessão saem do contexto.
 *   **`docs/05-architecture/decisions/README.md` (Modify):** o status do ADR-0001 passa a `Accepted`.
 *   **`docs/02-requirements/business-rules/RN-0003.md` (Modify):** o CA-02 passa a ser "o progresso da constelação acompanha cada incremento da sequência e não volta quando a sequência zera" (D6).
@@ -729,7 +729,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 *   **`docs/02-requirements/functional/RF-0015.md` (Modify):** um critério novo, CA-09: "A sequência deve ser recalculada quando o aplicativo volta do segundo plano, e registros com data posterior à data local atual não devem ser contabilizados (D17)." Não há critério sobre meia-noite (E3).
 *   **`docs/02-requirements/functional/RF-0019.md` (Modify):** o ponto pendente vira o CA-05: "A duração selecionada por padrão deve ser de 15 minutos (D12)."
 *   **`docs/04-specifications/use-cases/UC-0011-atualizar-sequencia-estudos.md` e `docs/04-specifications/flows/FL-0011.md` (Modify):** "incrementa o contador" vira "registra o dia; a sequência é recalculada na leitura", com links para o RF-0014 e o RF-0015. Fica anotado que a parte de constelação e conquistas não é entregue nesta mudança.
-*   **`ARCHITECTURE.md` (Modify):** a árvore do §3 ganha `infra/database/` e os arquivos `DI/persistence(.web).ts`.
+*   **`ARCHITECTURE.md` (Modify):** a árvore do §3 ganha `infra/database/` e os arquivos `di/persistence(.web).ts`.
 *   **`design-system/README.md` (Modify):** o índice registra o `08-home-cosmica.md` (Etapa 0.2a).
 
 ### Verification Plan

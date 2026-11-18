@@ -210,7 +210,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 ### 6.2. Como Testar ViewModels (`src/viewmodel/`)
 - ViewModels são implementadas em arquivos `use*ViewModel.ts` com o mesmo nome do hook (ex.: `useTimestampViewModel.ts`) e expostas como Custom Hooks (`use*ViewModel`) que retornam a tupla `[state, actions]`.
 - Devem ser testadas utilizando o utilitário `renderHook` de `@testing-library/react-native`.
-- Devem receber a interface do Use Case (`I*UseCase` / `I*UseCases`) via injeção por parâmetro opcional (resolvido internamente com `resolveUseCase` de `src/DI/container.ts`), passando um dublê da abstração.
+- Devem receber a interface do Use Case (`I*UseCase` / `I*UseCases`) via injeção por parâmetro opcional (resolvido internamente com `resolveUseCase` de `src/di/container.ts`), passando um dublê da abstração.
 - Verifique as transições de estado:
   - Estado inicial (dados nulos/vazios, `loading: false`, `error: null`).
   - Durante o carregamento (`loading: true`, `error: null`).
@@ -228,7 +228,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 - Serviços (`src/infra/services/`) e repositórios (`src/infra/repositories/`) concretos devem ser criados e testados somente quando existir um contrato real previamente definido em `src/model/services/` ou `src/model/repositories/`.
 - Conforme a **Regra de Ouro da Infraestrutura** em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), os testes de infraestrutura devem validar tanto o mapeamento para entidades puras de `src/model/entities/` quanto a conversão de falhas técnicas/nativas para instâncias de `DomainError` (`src/model/errors/`), garantindo que exceções brutas nunca vazem para as camadas superiores.
 
-### 6.5. Inversão de Dependências e Composition Root (`src/DI/container.ts`)
+### 6.5. Inversão de Dependências e Composition Root (`src/di/container.ts`)
 Conforme documentado em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), a aplicação provê três níveis de substituição de dependências:
 
 1. **Nível 1 (Unitário Direto no Use Case):** Passar o dublê diretamente ao construtor do Use Case ou a `composeUseCase((clock) => new TimestampUseCase(clock), fakeClockService)`.

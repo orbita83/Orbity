@@ -1,4 +1,4 @@
-import { createPersistence } from "@/DI/persistence.web";
+import { createPersistence } from "@/di/persistence.web";
 import { InMemoryDailyActivityRepository } from "@/infra/repositories/in-memory-daily-activity-repository";
 import { InMemoryRoutineRepository } from "@/infra/repositories/in-memory-routine-repository";
 import { InMemoryTaskRepository } from "@/infra/repositories/in-memory-task-repository";

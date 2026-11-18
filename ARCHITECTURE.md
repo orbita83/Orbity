@@ -67,7 +67,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     │   ├── components/       # Componentes reutilizáveis de interface (PascalCase.tsx)
     │   └── theme/            # Tokens visuais e temas do Design System
     ├── viewmodel/            # Custom Hooks de estado e apresentação (use*ViewModel.ts)
-    └── DI/                   # Ponto de composição e Injeção de Dependências
+    └── di/                   # Ponto de composição e Injeção de Dependências
         ├── container.ts      # Composition Root mínimo e fábricas de composição
         ├── persistence.ts    # Persistência no Android: SQLite (ADR-0001)
         └── persistence.web.ts # Persistência na web: em memória, escolhida pelo Metro
@@ -79,13 +79,13 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 
 | Camada (`src/`) | Responsabilidade e Limite Estrito | Dependências Permitidas | Dependências Proibidas |
 | :--- | :--- | :--- | :--- |
-| **`app/`** | Módulos de rota do Expo Router. Apenas importam e re-exportam como `default` as telas de `src/view/`. | `src/view/`, `expo-router` | `viewmodel/`, `usecase/`, `model/`, `infra/`, `DI/` |
-| **`view/`** | Componentes visuais (`components/`), telas (`kebab-case.tsx`, com o mesmo nome da rota em `src/app/`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System, **tipos** de entidade de `src/model/entities/` usados no estado (`import type`; testes e histórias podem usar o domínio para montar dados) | `usecase/`, funções, contratos e erros de `model/`, `infra/`, `DI/`, hooks e componentes de navegação do `expo-router` (exceto a `MainTabBar`, que recebe `navigation` por props do `<Tabs />`) |
-| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/model/errors/` (para tratar `DomainError` e `ValidationError`), `src/DI/container.ts`, React hooks, `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) | Classes concretas de `usecase/`, `model/repositories/`, `model/services/`, `infra/` |
-| **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors/`, `repositories/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `DI/`, React Native, Expo, SDKs externos |
-| **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors/`) e contratos (`repositories/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `DI`) ou biblioteca externa |
-| **`infra/`** | Repositórios/DataSources (`repositories/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `DI/` |
-| **`DI/`** | Composition Root (`container.ts`). Único ponto autorizado a instanciar e conectar `infra/` e `usecase/`. | `src/infra/`, `src/usecase/`, `src/model/` | `app/`, `view/`, `viewmodel/` |
+| **`app/`** | Módulos de rota do Expo Router. Apenas importam e re-exportam como `default` as telas de `src/view/`. | `src/view/`, `expo-router` | `viewmodel/`, `usecase/`, `model/`, `infra/`, `di/` |
+| **`view/`** | Componentes visuais (`components/`), telas (`kebab-case.tsx`, com o mesmo nome da rota em `src/app/`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System, **tipos** de entidade de `src/model/entities/` usados no estado (`import type`; testes e histórias podem usar o domínio para montar dados) | `usecase/`, funções, contratos e erros de `model/`, `infra/`, `di/`, hooks e componentes de navegação do `expo-router` (exceto a `MainTabBar`, que recebe `navigation` por props do `<Tabs />`) |
+| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/model/errors/` (para tratar `DomainError` e `ValidationError`), `src/di/container.ts`, React hooks, `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) | Classes concretas de `usecase/`, `model/repositories/`, `model/services/`, `infra/` |
+| **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors/`, `repositories/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `di/`, React Native, Expo, SDKs externos |
+| **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors/`) e contratos (`repositories/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `di`) ou biblioteca externa |
+| **`infra/`** | Repositórios/DataSources (`repositories/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `di/` |
+| **`di/`** | Composition Root (`container.ts`). Único ponto autorizado a instanciar e conectar `infra/` e `usecase/`. | `src/infra/`, `src/usecase/`, `src/model/` | `app/`, `view/`, `viewmodel/` |
 
 ---
 
@@ -103,7 +103,7 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 
 ### 4.2. Fluxo entre Camadas (Exemplo Técnico Neutro)
 
-Os trechos abaixo ilustram a comunicação ponta a ponta entre as camadas com o mecanismo de composição de `src/DI/container.ts`, sem antecipar regras de negócio de produto. A entidade `TimestampRecord`, o caso de uso `TimestampUseCase`, a ViewModel `useTimestampViewModel` e a tela `timestamp` são didáticos e não existem no código. Os demais trechos (`DomainError`, `IClockService`, `SystemClockService`, `toDomainError` e o container) reproduzem o código real.
+Os trechos abaixo ilustram a comunicação ponta a ponta entre as camadas com o mecanismo de composição de `src/di/container.ts`, sem antecipar regras de negócio de produto. A entidade `TimestampRecord`, o caso de uso `TimestampUseCase`, a ViewModel `useTimestampViewModel` e a tela `timestamp` são didáticos e não existem no código. Os demais trechos (`DomainError`, `IClockService`, `SystemClockService`, `toDomainError` e o container) reproduzem o código real.
 
 ```typescript
 // 1. Domínio Puro — Entidade, Erro e Contrato (src/model/)
@@ -204,7 +204,7 @@ export function toDomainError(error: unknown): DomainError {
 ```
 
 ```typescript
-// 4. Composição — Registro no Container (trechos a acrescentar em src/DI/container.ts)
+// 4. Composição — Registro no Container (trechos a acrescentar em src/di/container.ts)
 import { TimestampUseCase, type ITimestampUseCase } from "@/usecase/timestamp-use-case";
 
 /** Casos de uso expostos às ViewModels. */
@@ -223,7 +223,7 @@ export type AppUseCases = {
 ```typescript
 // 5. ViewModel — Tipos State/Actions e Resolução de Abstração (src/viewmodel/useTimestampViewModel.ts, didático)
 import { useState } from "react";
-import { container, resolveUseCase } from "@/DI/container";
+import { container, resolveUseCase } from "@/di/container";
 import { DomainError } from "@/model/errors/domain-error";
 import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
 
@@ -332,23 +332,23 @@ const styles = StyleSheet.create({
 
 ---
 
-## 6. Composition Root e Convenções de Injeção de Dependências (`src/DI/container.ts`)
+## 6. Composition Root e Convenções de Injeção de Dependências (`src/di/container.ts`)
 
-O arquivo `src/DI/container.ts` materializa o **Composition Root** mínimo do Orbity sem depender de frameworks externos de injeção de dependências.
+O arquivo `src/di/container.ts` materializa o **Composition Root** mínimo do Orbity sem depender de frameworks externos de injeção de dependências.
 
 ### 6.1. Responsabilidades e Regras de Composição
 
-1. **Ponto Único de Acoplamento Concreto (`src/DI/container.ts`):**
+1. **Ponto Único de Acoplamento Concreto (`src/di/container.ts`):**
    - É o único módulo da aplicação autorizado a importar simultaneamente implementações concretas de `src/infra/` (`repositories/` e `services/`) e classes concretas de `src/usecase/`.
    - Expõe objetos imutáveis (`Object.freeze`) organizados em `repositories`, `services` e `useCases`, além dos utilitários `composeUseCase`, `resolveUseCase`, `createContainer`, `createAppContainer` e a instância padrão `container`.
 2. **Contratos de Domínio → Use Cases (`composeUseCase`):**
    - Os Use Cases em `src/usecase/` declaram suas dependências exclusivamente por meio de interfaces de `src/model/repositories/` e `src/model/services/`.
-   - Nunca importam classes concretas de `src/infra/` nem o próprio `src/DI/container.ts`.
+   - Nunca importam classes concretas de `src/infra/` nem o próprio `src/di/container.ts`.
 3. **Abstrações de Use Cases → ViewModels (`resolveUseCase` / parâmetro padrão):**
    - As ViewModels em `src/viewmodel/` dependem exclusivamente de interfaces `I*UseCases` definidas em `src/usecase/`.
    - Recebem a abstração por parâmetro opcional (com valor padrão vindo do container ou resolvido via `resolveUseCase`), sem instanciar repositórios ou serviços diretamente.
 4. **Isolamento da View (`src/view/`):**
-   - Componentes e telas invocam os hooks da ViewModel sem conhecer `src/DI/`, `src/usecase/` ou `src/infra/`.
+   - Componentes e telas invocam os hooks da ViewModel sem conhecer `src/di/`, `src/usecase/` ou `src/infra/`.
 
 ### 6.2. Estratégias de Substituição por Test Doubles
 
@@ -368,7 +368,7 @@ import {
   createContainer,
   resolveUseCase,
   type ContainerDefinition,
-} from "@/DI/container";
+} from "@/di/container";
 import { SystemClockService } from "@/infra/services/system-clock-service";
 import { LocalDate } from "@/model/entities/local-date";
 import type { IClockService } from "@/model/services/i-clock-service";

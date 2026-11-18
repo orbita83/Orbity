@@ -3,7 +3,7 @@ import type { IProfileRepository } from "@/model/repositories/profile-repository
 import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profile-use-cases";
 
 /**
- * Composition Root e Container de Injeção de Dependências (`src/DI/container.ts`).
+ * Composition Root e Container de Injeção de Dependências (`src/di/container.ts`).
  *
  * Conecta implementações concretas de `src/infra/` aos casos de uso em `src/usecase/`
  * por meio dos contratos de domínio de `src/model/`, e fornece contratos de Use Cases
