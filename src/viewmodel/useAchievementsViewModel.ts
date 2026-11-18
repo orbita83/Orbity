@@ -14,7 +14,7 @@ export type AchievementsActions = {
  * Estado e navegação da tela provisória Conquistas. Volta para Meu perfil pelo botão da tela e, no
  * Android, pelo voltar do sistema, inclusive quando a tela foi aberta direto pela URL.
  */
-export const useAchievementsViewModel = (): AchievementsState & AchievementsActions => {
+export const useAchievementsViewModel = (): [AchievementsState, AchievementsActions] => {
   const handleReturnToProfile = useCallback(() => {
     router.replace("/profile");
   }, []);
@@ -31,5 +31,5 @@ export const useAchievementsViewModel = (): AchievementsState & AchievementsActi
     }, [handleReturnToProfile]),
   );
 
-  return { handleReturnToProfile };
+  return [{}, { handleReturnToProfile }];
 };

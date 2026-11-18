@@ -78,66 +78,66 @@ describe("useHomeViewModel", () => {
     const useCases = useCasesFrom(summaryWith(12, 3, 30));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
 
-    await waitFor(() => expect(result.current.status).toBe("ready"));
-    expect(result.current.summary?.streak.currentDays).toBe(12);
-    expect(result.current.progressLabel).toBe("3/30");
-    expect(result.current.error).toBeNull();
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
+    expect(result.current[0].summary?.streak.currentDays).toBe(12);
+    expect(result.current[0].progressLabel).toBe("3/30");
+    expect(result.current[0].error).toBeNull();
   });
 
   it("RN-0007: sem atividades, o rótulo do progresso é 0/0", async () => {
     const useCases = useCasesFrom(summaryWith(0));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
 
-    await waitFor(() => expect(result.current.status).toBe("ready"));
-    expect(result.current.progressLabel).toBe("0/0");
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
+    expect(result.current[0].progressLabel).toBe("0/0");
   });
 
   it("PERSISTENCE_FAILURE: erro com nova tentativa e sem resumo", async () => {
     const useCases = useCasesFrom(new DomainError("PERSISTENCE_FAILURE"), summaryWith(2));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
 
-    await waitFor(() => expect(result.current.status).toBe("error"));
-    expect(result.current.error).toEqual({ messageKey: "error.persistence", retryable: true });
-    expect(result.current.summary).toBeNull();
+    await waitFor(() => expect(result.current[0].status).toBe("error"));
+    expect(result.current[0].error).toEqual({ messageKey: "error.persistence", retryable: true });
+    expect(result.current[0].summary).toBeNull();
 
     await act(async () => {
-      await result.current.retry();
+      await result.current[1].retry();
     });
-    expect(result.current.status).toBe("ready");
-    expect(result.current.summary?.streak.currentDays).toBe(2);
+    expect(result.current[0].status).toBe("ready");
+    expect(result.current[0].summary?.streak.currentDays).toBe(2);
   });
 
   it("SCHEMA_VERSION_UNSUPPORTED: erro sem nova tentativa", async () => {
     const useCases = useCasesFrom(new DomainError("SCHEMA_VERSION_UNSUPPORTED"));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
 
-    await waitFor(() => expect(result.current.status).toBe("error"));
-    expect(result.current.error).toEqual({ messageKey: "error.schema", retryable: false });
+    await waitFor(() => expect(result.current[0].status).toBe("error"));
+    expect(result.current[0].error).toEqual({ messageKey: "error.schema", retryable: false });
   });
 
   it("RF-0015 CA-06 e D17: volta do segundo plano recalcula sem passar por carregando", async () => {
     const emit = captureAppStateListener();
     const useCases = useCasesFrom(summaryWith(5), summaryWith(0));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
 
     const statuses: string[] = [];
     await act(async () => {
       emit("active");
-      statuses.push(result.current.status);
+      statuses.push(result.current[0].status);
     });
 
-    await waitFor(() => expect(result.current.summary?.streak.currentDays).toBe(0));
+    await waitFor(() => expect(result.current[0].summary?.streak.currentDays).toBe(0));
     expect(useCases.loadHome).toHaveBeenCalledTimes(2);
     expect(statuses).not.toContain("loading");
-    expect(result.current.status).toBe("ready");
+    expect(result.current[0].status).toBe("ready");
   });
 
   it("ir para segundo plano não recalcula", async () => {
     const emit = captureAppStateListener();
     const useCases = useCasesFrom(summaryWith(5));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
 
     await act(async () => {
       emit("background");
@@ -149,45 +149,45 @@ describe("useHomeViewModel", () => {
     const emit = captureAppStateListener();
     const useCases = useCasesFrom(summaryWith(5), new DomainError("PERSISTENCE_FAILURE"));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
 
     await act(async () => {
       emit("active");
     });
 
     await waitFor(() => expect(useCases.loadHome).toHaveBeenCalledTimes(2));
-    expect(result.current.status).toBe("ready");
-    expect(result.current.summary?.streak.currentDays).toBe(5);
+    expect(result.current[0].status).toBe("ready");
+    expect(result.current[0].summary?.streak.currentDays).toBe(5);
   });
 
   it("refresh recalcula sequência e progresso ao voltar para a aba sem voltar para carregando", async () => {
     const useCases = useCasesFrom(summaryWith(0, 0, 1), summaryWith(1, 1, 1));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
-    expect(result.current.progressLabel).toBe("0/1");
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
+    expect(result.current[0].progressLabel).toBe("0/1");
 
     await act(async () => {
-      await result.current.refresh();
+      await result.current[1].refresh();
     });
 
-    expect(result.current.status).toBe("ready");
-    expect(result.current.summary?.streak.currentDays).toBe(1);
-    expect(result.current.progressLabel).toBe("1/1");
+    expect(result.current[0].status).toBe("ready");
+    expect(result.current[0].summary?.streak.currentDays).toBe(1);
+    expect(result.current[0].progressLabel).toBe("1/1");
   });
 
   it("abre e fecha o painel pelos botões", async () => {
     const useCases = useCasesFrom(summaryWith(0));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
 
-    await act(async () => result.current.handleExpandSheet());
-    expect(result.current.sheetStage).toBe("stage1_1");
-    await act(async () => result.current.handleExpandSheet());
-    expect(result.current.sheetStage).toBe("stage1_2");
-    await act(async () => result.current.handleReduceSheet());
-    expect(result.current.sheetStage).toBe("stage1_1");
-    await act(async () => result.current.handleCollapseSheet());
-    expect(result.current.sheetStage).toBe("collapsed");
+    await act(async () => result.current[1].handleExpandSheet());
+    expect(result.current[0].sheetStage).toBe("stage1_1");
+    await act(async () => result.current[1].handleExpandSheet());
+    expect(result.current[0].sheetStage).toBe("stage1_2");
+    await act(async () => result.current[1].handleReduceSheet());
+    expect(result.current[0].sheetStage).toBe("stage1_1");
+    await act(async () => result.current[1].handleCollapseSheet());
+    expect(result.current[0].sheetStage).toBe("collapsed");
   });
 });
 
@@ -195,11 +195,11 @@ describe("useHomeViewModel (navegação)", () => {
   it("recalcula a Home quando a aba ganha foco", async () => {
     const useCases = useCasesFrom(summaryWith(1), summaryWith(2));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
     await act(async () => {
       focusScreen();
     });
-    await waitFor(() => expect(result.current.summary?.streak.currentDays).toBe(2));
+    await waitFor(() => expect(result.current[0].summary?.streak.currentDays).toBe(2));
     expect(useCases.loadHome).toHaveBeenCalledTimes(2);
   });
 });

@@ -6,13 +6,14 @@ import { RoutinesScreenContent } from "./routines-content";
  * exclusão confirmada no detalhe (`?deleted=<id>`, com "Desfazer" do protótipo 3.4) e navega.
  */
 const RoutinesScreen = () => {
-  const vm = useRoutinesViewModel();
+  const [state, actions] = useRoutinesViewModel();
 
   return (
     <RoutinesScreenContent
-      {...vm}
-      onCreateRoutine={vm.handleCreateRoutine}
-      onOpenRoutine={vm.handleOpenRoutine}
+      {...state}
+      {...actions}
+      onCreateRoutine={actions.handleCreateRoutine}
+      onOpenRoutine={actions.handleOpenRoutine}
     />
   );
 };

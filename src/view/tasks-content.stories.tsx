@@ -119,8 +119,8 @@ export const ConfirmarExclusao: Story = {
 };
 
 const InteractiveList = () => {
-  const vm = useTasksViewModel(PROTOTYPE_TASKS);
-  return <TasksScreenContent {...vm} onCreateTask={noop} onEditTask={noop} />;
+  const [state, actions] = useTasksViewModel(PROTOTYPE_TASKS);
+  return <TasksScreenContent {...state} {...actions} onCreateTask={noop} onEditTask={noop} />;
 };
 export const Interativa: Story = {
   name: "Interativa · filtros, conclusão e seleção (toque longo)",
@@ -130,8 +130,8 @@ export const Interativa: Story = {
 const storyTaskUseCases = createStoryTaskUseCases();
 
 const InteractiveForm = () => {
-  const vm = useNewTaskViewModel(storyTaskUseCases, storyClock);
-  return <NewTaskScreenContent {...vm} onClose={vm.reset} onFinish={vm.reset} />;
+  const [state, actions] = useNewTaskViewModel(storyTaskUseCases, storyClock);
+  return <NewTaskScreenContent {...state} {...actions} onClose={actions.reset} onFinish={actions.reset} />;
 };
 export const NovaTarefa: Story = {
   name: "2.1 e 2.2 · Nova tarefa (interativa)",

@@ -14,7 +14,7 @@ export type CategoriesActions = {
  * Estado e navegação da tela provisória Categorias. Volta para Meu perfil pelo botão da tela e, no
  * Android, pelo voltar do sistema, inclusive quando a tela foi aberta direto pela URL.
  */
-export const useCategoriesViewModel = (): CategoriesState & CategoriesActions => {
+export const useCategoriesViewModel = (): [CategoriesState, CategoriesActions] => {
   const handleReturnToProfile = useCallback(() => {
     router.replace("/profile");
   }, []);
@@ -31,5 +31,5 @@ export const useCategoriesViewModel = (): CategoriesState & CategoriesActions =>
     }, [handleReturnToProfile]),
   );
 
-  return { handleReturnToProfile };
+  return [{}, { handleReturnToProfile }];
 };

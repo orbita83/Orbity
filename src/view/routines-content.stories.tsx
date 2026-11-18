@@ -62,8 +62,8 @@ export const RotinaExcluida: Story = {
 };
 
 const InteractiveList = () => {
-  const vm = useRoutinesViewModel(PROTOTYPE_ROUTINES);
-  return <RoutinesScreenContent {...vm} onCreateRoutine={noop} onOpenRoutine={noop} />;
+  const [state, actions] = useRoutinesViewModel(PROTOTYPE_ROUTINES);
+  return <RoutinesScreenContent {...state} {...actions} onCreateRoutine={noop} onOpenRoutine={noop} />;
 };
 export const Interativa: Story = { name: "Interativa · busca e conclusão", render: () => <InteractiveList /> };
 
@@ -128,20 +128,20 @@ const storyRoutineUseCases: IRoutineUseCases = {
 };
 
 const InteractiveForm = () => {
-  const vm = useNewRoutineViewModel(storyRoutineUseCases);
-  return <NewRoutineScreenContent {...vm} onBack={vm.reset} onFinish={vm.reset} />;
+  const [state, actions] = useNewRoutineViewModel(storyRoutineUseCases);
+  return <NewRoutineScreenContent {...state} {...actions} onBack={actions.reset} onFinish={actions.reset} />;
 };
 export const NovaRotina: Story = { name: "3.1 · Nova rotina (interativa)", render: () => <InteractiveForm /> };
 
 const InteractiveEdit = () => {
-  const vm = useNewRoutineViewModel(storyRoutineUseCases, STORY_DETAILS.routine.id);
-  return <NewRoutineScreenContent {...vm} onBack={noop} onFinish={noop} />;
+  const [state, actions] = useNewRoutineViewModel(storyRoutineUseCases, STORY_DETAILS.routine.id);
+  return <NewRoutineScreenContent {...state} {...actions} onBack={noop} onFinish={noop} />;
 };
 export const EditarRotina: Story = { name: "3.1 · Editar rotina (#137)", render: () => <InteractiveEdit /> };
 
 const InteractiveDetails = ({ confirm = false, inactive = false }: { confirm?: boolean; inactive?: boolean }) => {
-  const vm = useRoutineDetailsViewModel({ ...PROTOTYPE_ROUTINE_DETAILS, activeToday: !inactive });
-  return <RoutineDetailsScreenContent {...vm} confirmDeleteVisible={confirm || vm.confirmDeleteVisible} onBack={noop} onEdit={noop} onDeleted={noop} />;
+  const [state, actions] = useRoutineDetailsViewModel({ ...PROTOTYPE_ROUTINE_DETAILS, activeToday: !inactive });
+  return <RoutineDetailsScreenContent {...state} {...actions} confirmDeleteVisible={confirm || state.confirmDeleteVisible} onBack={noop} onEdit={noop} onDeleted={noop} />;
 };
 export const Detalhe: Story = { name: "3.2 · Detalhe da rotina (interativa)", render: () => <InteractiveDetails /> };
 export const DetalheForaDoDia: Story = { name: "3.2 · Detalhe fora do dia (R6)", render: () => <InteractiveDetails inactive /> };

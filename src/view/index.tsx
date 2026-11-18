@@ -4,23 +4,23 @@ import { HomeScreenContent } from "./index-content";
 
 /** Tela Início: liga a ViewModel à apresentação (HomeScreenContent). A ViewModel recalcula ao ganhar foco. */
 const HomeScreen = () => {
-  const vm = useHomeViewModel();
+  const [state, actions] = useHomeViewModel();
   const reduceMotion = useReduceMotion();
 
   return (
     <HomeScreenContent
-      status={vm.status}
-      error={vm.error}
-      summary={vm.summary}
-      progressLabel={vm.progressLabel}
-      sheetStage={vm.sheetStage}
+      status={state.status}
+      error={state.error}
+      summary={state.summary}
+      progressLabel={state.progressLabel}
+      sheetStage={state.sheetStage}
       reduceMotion={reduceMotion}
-      onRetry={() => void vm.retry()}
-      onCycleSheetStage={vm.handleCycleSheetStage}
-      onCollapseSheet={vm.handleCollapseSheet}
-      onExpandSheet={vm.handleExpandSheet}
-      onReduceSheet={vm.handleReduceSheet}
-      onSetSheetStage={vm.handleSetSheetStage}
+      onRetry={() => void actions.retry()}
+      onCycleSheetStage={actions.handleCycleSheetStage}
+      onCollapseSheet={actions.handleCollapseSheet}
+      onExpandSheet={actions.handleExpandSheet}
+      onReduceSheet={actions.handleReduceSheet}
+      onSetSheetStage={actions.handleSetSheetStage}
     />
   );
 };

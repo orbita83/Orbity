@@ -71,7 +71,7 @@ const snapshotOf = (fields: FormFields): string => JSON.stringify(fields);
 export const useNewRoutineViewModel = (
   routineUseCases?: IRoutineUseCases,
   routineId?: string,
-): NewRoutineState & NewRoutineActions => {
+): [NewRoutineState, NewRoutineActions] => {
   const useCases = resolveUseCase(routineUseCases, container.useCases.routines);
   // O `id` vem da rota (`/new-routine?id=...`); o parâmetro `routineId` substitui a rota em testes e histórias.
   const params = useLocalSearchParams<{ id?: string | string[] }>();
@@ -250,33 +250,37 @@ export const useNewRoutineViewModel = (
     }
   }, [editingId, reset]);
 
-  return {
-    name: fields.name,
-    icon: fields.icon,
-    description: fields.description,
-    days: fields.days,
-    tasks,
-    draft,
-    nameError: showErrors && nameMissing,
-    daysError: showErrors && daysMissing,
-    formError,
-    submitting,
-    created,
-    editing,
-    loading,
-    discardVisible,
-    setName,
-    setIcon,
-    setDescription,
-    toggleDay,
-    setDraft,
-    addTask,
-    removeTask,
-    moveTaskUp,
-    submit,
-    reset,
-    requestLeave,
-    cancelLeave,
-    handleLeave,
-  };
+  return [
+    {
+      name: fields.name,
+      icon: fields.icon,
+      description: fields.description,
+      days: fields.days,
+      tasks,
+      draft,
+      nameError: showErrors && nameMissing,
+      daysError: showErrors && daysMissing,
+      formError,
+      submitting,
+      created,
+      editing,
+      loading,
+      discardVisible,
+    },
+    {
+      setName,
+      setIcon,
+      setDescription,
+      toggleDay,
+      setDraft,
+      addTask,
+      removeTask,
+      moveTaskUp,
+      submit,
+      reset,
+      requestLeave,
+      cancelLeave,
+      handleLeave,
+    },
+  ];
 };

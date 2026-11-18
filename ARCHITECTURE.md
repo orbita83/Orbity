@@ -28,7 +28,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 ```
 
 1. **View (Interface):** Componentes e telas React Native. Responsável apenas por renderizar estado e disparar ações (*fire-and-forget*). Não possui blocos `try/catch` nem regras de negócio e **não chama hooks de navegação**.
-2. **ViewModel (Apresentação):** Custom Hooks que gerenciam estado de interface (`loading`, `error`, `data`), expõem funções de ação e **cuidam da navegação** (`router` do `expo-router`, parâmetros de rota e foco da tela). Depende **apenas de abstrações** (interfaces de Use Cases).
+2. **ViewModel (Apresentação):** Custom Hooks que gerenciam estado de interface (`loading`, `error`, `data`), expõem funções de ação (retorno em tupla `[state, actions]`, com os tipos `XState` e `XActions` exportados) e **cuidam da navegação** (`router` do `expo-router`, parâmetros de rota e foco da tela). Depende **apenas de abstrações** (interfaces de Use Cases).
 3. **Use Cases (Casos de Uso / Orquestração):** Contratos (`I*UseCase` / `I*UseCases`) e implementações de regras de negócio puras e validações do sistema. Orquestram repositórios e serviços exclusivamente através de interfaces do domínio.
 4. **Domínio / Model (Core do Negócio):** Entidades puras (`src/model/entities/`), erros de domínio (`src/model/errors/`), interfaces de repositórios (`src/model/repositories/`) e interfaces de serviços (`src/model/services/`). **Zero dependência de bibliotecas externas** (React, Expo, SDKs).
 5. **Infraestrutura:**
@@ -239,7 +239,7 @@ export type TimestampActions = {
 
 export function useTimestampViewModel(
   overrideUseCase?: ITimestampUseCase,
-): TimestampState & TimestampActions {
+): [TimestampState, TimestampActions] {
   const useCase = resolveUseCase(overrideUseCase, container.useCases.timestamp);
   const [label, setLabel] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -262,7 +262,8 @@ export function useTimestampViewModel(
     }
   }
 
-  return { label, loading, error, handleGenerate };
+  // Retorno em tupla [state, actions], como no livro (Cap. 10, Seção 10.10).
+  return [{ label, loading, error }, { handleGenerate }];
 }
 ```
 
@@ -270,17 +271,14 @@ export function useTimestampViewModel(
 // 6. View (src/view/timestamp.tsx, didático) e Rota (src/app/timestamp.tsx)
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { themes } from "@/view/theme/tokens";
-import {
-  useTimestampViewModel,
-  type TimestampActions,
-  type TimestampState,
-} from "@/viewmodel/useTimestampViewModel";
+import { useTimestampViewModel } from "@/viewmodel/useTimestampViewModel";
 
 const theme = themes.light;
 
 const TimestampScreen = () => {
-  const { label, loading, error, handleGenerate }: TimestampState & TimestampActions =
-    useTimestampViewModel();
+  const [state, actions] = useTimestampViewModel();
+  const { label, loading, error } = state;
+  const { handleGenerate } = actions;
 
   return (
     <View style={styles.container}>

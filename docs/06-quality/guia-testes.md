@@ -208,7 +208,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 - Não utilize React, React Native Testing Library ou instâncias do container global para testes unitários de Use Cases.
 
 ### 6.2. Como Testar ViewModels (`src/viewmodel/`)
-- ViewModels são implementadas em arquivos `use*ViewModel.ts` com o mesmo nome do hook (ex.: `useTimestampViewModel.ts`) e expostas como Custom Hooks (`use*ViewModel`).
+- ViewModels são implementadas em arquivos `use*ViewModel.ts` com o mesmo nome do hook (ex.: `useTimestampViewModel.ts`) e expostas como Custom Hooks (`use*ViewModel`) que retornam a tupla `[state, actions]`.
 - Devem ser testadas utilizando o utilitário `renderHook` de `@testing-library/react-native`.
 - Devem receber a interface do Use Case (`I*UseCase` / `I*UseCases`) via injeção por parâmetro opcional (resolvido internamente com `resolveUseCase` de `src/DI/container.ts`), passando um dublê da abstração.
 - Verifique as transições de estado:
@@ -310,6 +310,8 @@ describe("TimestampUseCase", () => {
 
 ### 8.2. Exemplo: Teste de Hook de ViewModel com Dublê de Use Case
 
+A ViewModel retorna a tupla `[state, actions]`: no teste, `result.current[0]` é o estado e `result.current[1]` são as ações.
+
 ```typescript
 // src/viewmodel/useTimestampViewModel.test.ts
 import { renderHook, act } from "@testing-library/react-native";
@@ -328,17 +330,17 @@ describe("useTimestampViewModel", () => {
 
     const { result } = renderHook(() => useTimestampViewModel(stubUseCase));
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.label).toBeNull();
-    expect(result.current.error).toBeNull();
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].label).toBeNull();
+    expect(result.current[0].error).toBeNull();
 
     await act(async () => {
-      await result.current.handleGenerate("sync");
+      await result.current[1].handleGenerate("sync");
     });
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.label).toBe("sync:2026-11-06T10:00:00.000Z");
-    expect(result.current.error).toBeNull();
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].label).toBe("sync:2026-11-06T10:00:00.000Z");
+    expect(result.current[0].error).toBeNull();
     expect(stubUseCase.createRecord).toHaveBeenCalledWith("sync");
   });
 
@@ -354,12 +356,12 @@ describe("useTimestampViewModel", () => {
     const { result } = renderHook(() => useTimestampViewModel(failingUseCase));
 
     await act(async () => {
-      await result.current.handleGenerate("   ");
+      await result.current[1].handleGenerate("   ");
     });
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.label).toBeNull();
-    expect(result.current.error).toBe(
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].label).toBeNull();
+    expect(result.current[0].error).toBe(
       "O prefixo de identificação é obrigatório.",
     );
   });

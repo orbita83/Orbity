@@ -14,7 +14,7 @@ export type SettingsActions = {
  * Estado e navegação da tela provisória Configurações. Volta para Meu perfil pelo botão da tela e, no
  * Android, pelo voltar do sistema, inclusive quando a tela foi aberta direto pela URL.
  */
-export const useSettingsViewModel = (): SettingsState & SettingsActions => {
+export const useSettingsViewModel = (): [SettingsState, SettingsActions] => {
   const handleReturnToProfile = useCallback(() => {
     router.replace("/profile");
   }, []);
@@ -31,5 +31,5 @@ export const useSettingsViewModel = (): SettingsState & SettingsActions => {
     }, [handleReturnToProfile]),
   );
 
-  return { handleReturnToProfile };
+  return [{}, { handleReturnToProfile }];
 };
