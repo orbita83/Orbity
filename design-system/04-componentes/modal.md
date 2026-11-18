@@ -6,7 +6,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 
 ## Quando usar
 
-- Use para o detalhe da conquista (1.4) e para confirmações curtas (como a exclusão em lote, quando desenhada).
+- Use para o detalhe da conquista (1.4) e para confirmações curtas (exclusão individual ou em lote de tarefas, exclusão de rotina, descarte de alterações e futuras confirmações).
 
 ## Quando não usar
 
@@ -28,7 +28,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 | Detalhe | Conquista | Anatomia acima |
 | Sucesso | Confirmação de criação ("Tarefa criada!") | Mesmos tokens; ícone `check` de `size.dialog-icon` em círculo com borda `color.success`; uma ação principal (`SuccessDialog.tsx`) |
 | Seleção | Escolher data, horário ou categoria | Mesmos tokens; lista de opções em `radiogroup` ([seletor-opcoes.md](seletor-opcoes.md), `TaskPickerModal.tsx`) |
-| Confirmação | Ação destrutiva (excluir rotina, excluir tarefas em lote) | Mesmos tokens; ícone central de `size.dialog-icon` (96 dp) em círculo com borda `color.error`; título e texto centralizados; ações empilhadas: a segura em destaque (`PrimaryButton`) e a destrutiva secundária, com ícone `color.error` e texto `color.on-surface` |
+| Confirmação | Ação destrutiva (excluir tarefa individual ou em lote, excluir rotina) e confirmações reutilizáveis | Mesmos tokens; ícone central de `size.dialog-icon` (96 dp) em círculo com borda `color.error`; título e texto centralizados; ações empilhadas: a confirmação recebe destaque primário (`PrimaryButton`) e o cancelamento usa o estilo secundário com borda `cosmicBorders.sheet` e texto `color.on-surface` |
 
 ## Estados
 
@@ -53,7 +53,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#6-conquistas-f3), [cartao-
 
 ## Código
 
-A variante Confirmação está em [ConfirmDialog.tsx](../../src/view/components/ConfirmDialog.tsx) (`Modal` do React Native com `transparent`), com histórias em `FeedbackComponents.stories.tsx`. O ✕ e o voltar do Android chamam `onCancel`. A variante Detalhe da conquista ainda não está implementada.
+A variante Confirmação está em [ConfirmDialog.tsx](../../src/view/components/ConfirmDialog.tsx) (`Modal` do React Native com `transparent`), com histórias em `FeedbackComponents.stories.tsx` para exclusão individual de tarefa, exclusão múltipla de tarefas e exclusão de rotina. O componente recebe título, mensagem, rótulos e callbacks configuráveis, permitindo reutilização em futuras telas sem duplicação. O botão de confirmação (`confirmLabel`) utiliza `PrimaryButton`, enquanto o cancelamento (`cancelLabel`), o ✕ e o voltar do Android acionam `onCancel`. A variante Detalhe da conquista ainda não está implementada.
 
 ```tsx
 <ConfirmDialog

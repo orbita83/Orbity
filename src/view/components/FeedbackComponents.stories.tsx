@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { fn } from "storybook/test";
+import { ROUTINES_COPY, formatRoutinesCopy } from "../routines-copy";
+import { TASKS_COPY, formatTasksCopy } from "../tasks-copy";
 import { themes } from "../theme/tokens";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "./ContextualActionBar";
@@ -25,11 +27,11 @@ const meta = {
   ],
   args: {
     visible: true,
-    title: "Excluir a rotina Matemática?",
-    message: "Ela sai da sua lista e não aparece mais nos próximos dias.",
+    title: formatRoutinesCopy("delete.title", { name: "Matemática" }),
+    message: formatRoutinesCopy("delete.message.other", { n: 3 }),
     icon: "delete_outline",
-    cancelLabel: "Manter rotina",
-    confirmLabel: "Excluir rotina",
+    cancelLabel: ROUTINES_COPY["delete.cancel"],
+    confirmLabel: ROUTINES_COPY["delete.confirm"],
     onCancel: fn(),
     onConfirm: fn(),
   },
@@ -38,12 +40,32 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const ExclusaoTarefaIndividual: Story = {
+  name: "ConfirmDialog · exclusão individual de tarefa",
+  args: {
+    title: TASKS_COPY["delete.title.one"],
+    message: TASKS_COPY["delete.message"],
+    cancelLabel: TASKS_COPY["delete.cancel"],
+    confirmLabel: TASKS_COPY["delete.confirm"],
+  },
+};
+
+export const ExclusaoTarefasMultiplas: Story = {
+  name: "ConfirmDialog · exclusão múltipla de tarefas",
+  args: {
+    title: formatTasksCopy("delete.title.other", { n: 2 }),
+    message: TASKS_COPY["delete.message"],
+    cancelLabel: TASKS_COPY["delete.cancel"],
+    confirmLabel: TASKS_COPY["delete.confirm"],
+  },
+};
+
 export const ConfirmacaoDestrutiva: Story = {
-  name: "ConfirmDialog · exclusão",
+  name: "ConfirmDialog · exclusão de rotina",
   render: (args) => (
     <ConfirmDialog {...args}>
       <View style={styles.note}>
-        <Text style={styles.noteText}>Sua sequência, suas estrelas e suas conquistas continuam do mesmo jeito.</Text>
+        <Text style={styles.noteText}>{ROUTINES_COPY["delete.note"]}</Text>
       </View>
     </ConfirmDialog>
   ),

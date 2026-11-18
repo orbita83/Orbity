@@ -109,8 +109,12 @@ export const Selecao: Story = {
   name: "2.3 · Seleção múltipla",
   args: { selectionMode: true, selectedIds: ["a"] },
 };
+export const ConfirmarExclusaoIndividual: Story = {
+  name: "2.3 · Confirmar exclusão individual",
+  args: { selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true },
+};
 export const ConfirmarExclusao: Story = {
-  name: "2.3 · Confirmar exclusão",
+  name: "2.3 · Confirmar exclusão múltipla",
   args: { selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true },
 };
 

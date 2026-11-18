@@ -1,10 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
 import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/view/new-routine-content";
 import { RoutineDetailsScreenContent, type RoutineDetailsScreenContentProps } from "@/view/routine-details-content";
 import { ROUTINES_COPY } from "@/view/routines-copy";
 import { RoutinesScreenContent, type RoutinesScreenContentProps } from "@/view/routines-content";
+import { cosmicBorders, themes } from "@/view/theme/tokens";
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const inSafeArea = (node: React.ReactElement) => render(<SafeAreaProvider initialMetrics={metrics}>{node}</SafeAreaProvider>);
@@ -311,7 +313,7 @@ describe("RoutineDetailsScreenContent", () => {
     expect(screen.queryByText(ROUTINES_COPY["details.missing.title"])).toBeNull();
   });
 
-  it("3.3: confirmar a exclusão volta para a lista com a rotina excluída", async () => {
+  it("3.3: confirmar a exclusão destaca Excluir rotina como primário, Manter rotina como secundário e volta para a lista", async () => {
     const props = detailsProps({ confirmDeleteVisible: true });
     await inSafeArea(<RoutineDetailsScreenContent {...props} />);
 
@@ -319,7 +321,18 @@ describe("RoutineDetailsScreenContent", () => {
     expect(screen.getByText(ROUTINES_COPY["delete.note"])).toBeTruthy();
     // O botão da página e o do diálogo têm o mesmo nome; o do diálogo vem por último.
     const confirms = screen.getAllByRole("button", { name: ROUTINES_COPY["delete.confirm"] });
-    await fireEvent.press(confirms[confirms.length - 1]);
+    const dialogConfirm = confirms[confirms.length - 1];
+    const dialogCancel = screen.getByRole("button", { name: ROUTINES_COPY["delete.cancel"] });
+
+    expect(StyleSheet.flatten(dialogConfirm.props.style).backgroundColor).toBe(themes.cosmic.button.bg);
+    expect(StyleSheet.flatten(dialogCancel.props.style).backgroundColor).toBeUndefined();
+    expect(StyleSheet.flatten(dialogCancel.props.style).borderColor).toBe(cosmicBorders.sheet);
+
+    await fireEvent.press(dialogCancel);
+    expect(props.cancelDelete).toHaveBeenCalledTimes(1);
+    expect(props.onDeleted).not.toHaveBeenCalled();
+
+    await fireEvent.press(dialogConfirm);
     expect(props.onDeleted).toHaveBeenCalledWith("mat");
   });
 
