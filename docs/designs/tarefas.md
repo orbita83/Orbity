@@ -64,7 +64,7 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 
 ### 1. Domínio (`src/model/`)
 - `entities/task.ts`: `Task`, `CreateTaskInput`, `UpdateTaskInput`, `TASK_CATEGORIES`, validações (`validateCreateTaskInput`, `validateDateTimeFields`), `formatTaskDueLabel` e `filterAndSortTasks`.
-- `datasources/i-task-datasource.ts`: `listAll`, `findById`, `create`, `update`, `updateMany` e `deleteMany`.
+- `datasources/iTaskDataSource.ts`: `listAll`, `findById`, `create`, `update`, `updateMany` e `deleteMany`.
 
 ### 2. Casos de uso (`src/usecase/`)
 - `ITaskUseCases` e `TaskUseCases`, que dependem de `ITaskDataSource`, `IDailyActivityDataSource` e `IClockService`.
@@ -72,7 +72,7 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 
 ### 3. Persistência (`src/infra/`)
 - Migração v2 em `database/migrations.ts`.
-- `SqliteTaskDataSource` (Android) e `MemoryTaskDataSource` (web e testes), validados pela mesma suíte de contrato (`task-datasource.contract.ts`).
+- `SqliteTaskDataSource` (Android) e `MemoryTaskDataSource` (web e testes), validados pela mesma suíte de contrato (`taskDataSource.contract.ts`).
 - `TaskActivityDataSource` implementa `IActivityDataSource` sobre o DataSource de tarefas.
 
 ### 4. Composição (`src/di/`)

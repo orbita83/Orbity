@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react-native";
-import type { FocusAvailability } from "@/model/entities/home-summary";
+import type { FocusAvailability } from "@/model/entities/homeSummary";
 import { FocusBottomSheet, type FocusBottomSheetProps } from "@/view/components/FocusBottomSheet";
-import { HOME_COPY } from "@/view/home-copy";
+import { HOME_COPY } from "@/view/homeCopy";
 
 const blockedFocus: FocusAvailability = {
   canStart: false,

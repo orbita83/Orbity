@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { LocalDate } from "../model/entities/local-date";
-import type { HomeSummary } from "../model/entities/home-summary";
+import { LocalDate } from "../model/entities/localDate";
+import type { HomeSummary } from "../model/entities/homeSummary";
 import { HomeScreenContent, type HomeScreenContentProps } from "./index-content";
 import { themes } from "./theme/tokens";
 

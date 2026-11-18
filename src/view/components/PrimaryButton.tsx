@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { themes, type OrbityTheme } from "../theme/tokens";
-import { useReduceMotion } from "../theme/use-reduce-motion";
+import { useReduceMotion } from "../theme/useReduceMotion";
 
 export type PrimaryButtonProps = {
   label: string;

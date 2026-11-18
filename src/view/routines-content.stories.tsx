@@ -6,7 +6,7 @@ import { useNewRoutineViewModel } from "../viewmodel/useNewRoutineViewModel";
 import { useRoutineDetailsViewModel } from "../viewmodel/useRoutineDetailsViewModel";
 import { useRoutinesViewModel } from "../viewmodel/useRoutinesViewModel";
 import type { RoutineDetails as RoutineDetailsEntity } from "../model/entities/routine";
-import type { IRoutineUseCases } from "../usecase/i-routine-use-cases";
+import type { IRoutineUseCases } from "../usecase/iRoutineUseCases";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "./__fixtures__/routines.fixture";
 import { NewRoutineScreenContent } from "./new-routine-content";
 import { RoutineDetailsScreenContent } from "./routine-details-content";

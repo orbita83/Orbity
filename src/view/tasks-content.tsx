@@ -7,7 +7,7 @@ import { ContextualActionBar, ContextualHeader } from "./components/ContextualAc
 import { FilterChips, type FilterChipOption } from "./components/FilterChips";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
-import { TASKS_COPY, formatTasksCopy } from "./tasks-copy";
+import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicBorders, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;

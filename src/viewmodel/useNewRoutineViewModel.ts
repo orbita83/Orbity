@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
 import { DEFAULT_ROUTINE_ICON, type RoutineIcon, type RoutineTaskDraft } from "@/model/entities/routine";
 import { ValidationError } from "@/model/errors";
-import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
+import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
 export type NewRoutineState = {
   name: string;

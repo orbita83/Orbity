@@ -1,13 +1,13 @@
-import { DatabaseProvider } from "@/infra/database/database-provider";
-import { ExpoSqlExecutor } from "@/infra/database/expo-sql-executor";
-import { SqliteDailyActivityDataSource } from "@/infra/datasources/sqlite-daily-activity-datasource";
-import { SqliteRoutineDataSource } from "@/infra/datasources/sqlite-routine-datasource";
-import { SqliteTaskDataSource } from "@/infra/datasources/sqlite-task-datasource";
-import { TaskActivityDataSource } from "@/infra/datasources/task-activity-datasource";
-import type { IActivityDataSource } from "@/model/datasources/i-activity-datasource";
-import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
-import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
-import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";
+import { DatabaseProvider } from "@/infra/database/databaseProvider";
+import { ExpoSqlExecutor } from "@/infra/database/expoSqlExecutor";
+import { SqliteDailyActivityDataSource } from "@/infra/datasources/sqliteDailyActivityDataSource";
+import { SqliteRoutineDataSource } from "@/infra/datasources/sqliteRoutineDataSource";
+import { SqliteTaskDataSource } from "@/infra/datasources/sqliteTaskDataSource";
+import { TaskActivityDataSource } from "@/infra/datasources/taskActivityDataSource";
+import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
+import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
+import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 
 export type Persistence = {
   dailyActivity: IDailyActivityDataSource;

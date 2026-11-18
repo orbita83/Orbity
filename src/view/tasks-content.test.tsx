@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { LocalDate } from "@/model/entities/local-date";
-import { PROTOTYPE_TASKS } from "@/view/__fixtures__/task-list.fixture";
+import { LocalDate } from "@/model/entities/localDate";
+import { PROTOTYPE_TASKS } from "@/view/__fixtures__/taskList.fixture";
 import { NewTaskScreenContent, type NewTaskScreenContentProps } from "@/view/new-task-content";
-import { TASKS_COPY } from "@/view/tasks-copy";
+import { TASKS_COPY } from "@/view/tasksCopy";
 import { TasksScreenContent, type TasksScreenContentProps } from "@/view/tasks-content";
 import { cosmicBorders, themes } from "@/view/theme/tokens";
 import {

@@ -107,7 +107,7 @@ Os trechos abaixo ilustram a comunicação ponta a ponta entre as camadas com o 
 
 ```typescript
 // 1. Domínio Puro — Entidade, Erro e Contrato (src/model/)
-// src/model/entities/timestamp-record.ts (didático)
+// src/model/entities/timestampRecord.ts (didático)
 export interface TimestampRecord {
   readonly label: string;
   readonly isoDate: string;
@@ -131,8 +131,8 @@ export class DataSourceError extends DomainError { /* mensagem padrão + name */
 // Banco gravado por uma versão mais nova do app. Não admite nova tentativa (D14).
 export class SchemaVersionError extends DomainError { /* mensagem padrão + name */ }
 
-// src/model/services/i-clock-service.ts (real)
-import type { LocalDate } from "@/model/entities/local-date";
+// src/model/services/iClockService.ts (real)
+import type { LocalDate } from "@/model/entities/localDate";
 
 export interface IClockService {
   /** Instante atual em ISO-8601 com o deslocamento do fuso (ex.: 2026-11-14T23:59:00-03:00). */
@@ -143,10 +143,10 @@ export interface IClockService {
 ```
 
 ```typescript
-// 2. Caso de Uso — Contrato e Implementação (src/usecase/timestamp-use-case.ts, didático)
-import type { TimestampRecord } from "@/model/entities/timestamp-record";
+// 2. Caso de Uso — Contrato e Implementação (src/usecase/timestampUseCase.ts, didático)
+import type { TimestampRecord } from "@/model/entities/timestampRecord";
 import { ValidationError } from "@/model/errors";
-import type { IClockService } from "@/model/services/i-clock-service";
+import type { IClockService } from "@/model/services/iClockService";
 
 export interface ITimestampUseCase {
   createRecord(prefix: string): Promise<TimestampRecord>;
@@ -168,9 +168,9 @@ export class TimestampUseCase implements ITimestampUseCase {
 
 ```typescript
 // 3. Infraestrutura — Adapters Concretos (src/infra/)
-// O relógio do aparelho já existe: src/infra/services/system-clock-service.ts implementa IClockService.
+// O relógio do aparelho já existe: src/infra/services/systemClockService.ts implementa IClockService.
 
-// src/infra/database/persistence-error.ts (real)
+// src/infra/database/persistenceError.ts (real)
 // A Infra nunca propaga exceções nativas ou de SDK: converte para um erro puro do domínio.
 import { DataSourceError, DomainError } from "@/model/errors";
 
@@ -182,7 +182,7 @@ export function toDataSourceError(error: unknown): DomainError {
   return new DataSourceError();
 }
 
-// Uso em um adapter (trecho de src/infra/datasources/sqlite-task-datasource.ts, real):
+// Uso em um adapter (trecho de src/infra/datasources/sqliteTaskDataSource.ts, real):
 //   async listAll(): Promise<Task[]> {
 //     try {
 //       const executor = await this.db.get();
@@ -196,7 +196,7 @@ export function toDataSourceError(error: unknown): DomainError {
 
 ```typescript
 // 4. Composição — Registro no Container (trechos a acrescentar em src/di/container.ts)
-import { TimestampUseCase, type ITimestampUseCase } from "@/usecase/timestamp-use-case";
+import { TimestampUseCase, type ITimestampUseCase } from "@/usecase/timestampUseCase";
 
 /** Casos de uso expostos às ViewModels. */
 export type AppUseCases = {
@@ -216,7 +216,7 @@ export type AppUseCases = {
 import { useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
 import { DomainError } from "@/model/errors";
-import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
+import type { ITimestampUseCase } from "@/usecase/timestampUseCase";
 
 export type TimestampState = {
   label: string | null;
@@ -360,13 +360,13 @@ import {
   resolveUseCase,
   type ContainerDefinition,
 } from "@/di/container";
-import { SystemClockService } from "@/infra/services/system-clock-service";
-import { LocalDate } from "@/model/entities/local-date";
-import type { IClockService } from "@/model/services/i-clock-service";
+import { SystemClockService } from "@/infra/services/systemClockService";
+import { LocalDate } from "@/model/entities/localDate";
+import type { IClockService } from "@/model/services/iClockService";
 import {
   TimestampUseCase,
   type ITimestampUseCase,
-} from "@/usecase/timestamp-use-case";
+} from "@/usecase/timestampUseCase";
 
 type ExampleDataSources = Record<string, never>;
 interface ExampleServices {

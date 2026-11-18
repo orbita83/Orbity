@@ -8,7 +8,7 @@ import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { Snackbar } from "./components/Snackbar";
-import { ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routines-copy";
+import { ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 import { GradientSurface } from "./components/GradientSurface";
 

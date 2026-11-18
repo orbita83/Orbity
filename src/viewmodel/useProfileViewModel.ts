@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import type { StudentProfile } from "@/model/entities/student-profile";
+import type { StudentProfile } from "@/model/entities/studentProfile";
 import { DomainError, ValidationError } from "@/model/errors";
-import type { IProfileUseCases } from "@/usecase/profile-use-cases";
+import type { IProfileUseCases } from "@/usecase/profileUseCases";
 
 /**
  * Representação do estado observável da tela de Perfil.

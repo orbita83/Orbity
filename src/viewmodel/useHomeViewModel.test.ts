@@ -1,9 +1,9 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { AppState, type AppStateStatus } from "react-native";
-import { LocalDate } from "@/model/entities/local-date";
-import type { HomeSummary } from "@/model/entities/home-summary";
+import { LocalDate } from "@/model/entities/localDate";
+import type { HomeSummary } from "@/model/entities/homeSummary";
 import { DataSourceError, SchemaVersionError } from "@/model/errors";
-import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
+import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import { useHomeViewModel } from "@/viewmodel/useHomeViewModel";
 
 // Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.

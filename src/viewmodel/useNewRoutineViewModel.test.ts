@@ -1,12 +1,12 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
-import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-datasource";
-import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
-import { LocalDate } from "@/model/entities/local-date";
+import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
+import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
+import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { LocalDate } from "@/model/entities/localDate";
 import { DataSourceError } from "@/model/errors";
-import type { IClockService } from "@/model/services/i-clock-service";
-import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
-import { RoutineUseCases } from "@/usecase/routine-use-cases";
+import type { IClockService } from "@/model/services/iClockService";
+import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
+import { RoutineUseCases } from "@/usecase/routineUseCases";
 import { useNewRoutineViewModel } from "@/viewmodel/useNewRoutineViewModel";
 
 // Navegação do Expo Router isolada.

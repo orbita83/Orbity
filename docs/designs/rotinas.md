@@ -85,12 +85,12 @@ No detalhe, o estudante toca em "Editar", troca o nome, remove uma tarefa e adic
   - tipos: `Routine`, `RoutineIcon`, `ROUTINE_ICONS`, `DEFAULT_ROUTINE_ICON`, `Weekday` (0 = domingo), `CreateRoutineInput`, `RoutineOverview` (lista) e `RoutineDetails` (detalhe);
   - funções: `validateCreateRoutineInput`, `validateUpdateRoutineInput` (mesmas regras; tarefas como `RoutineTaskDraft { id?, title }`), `weekdayOf(LocalDate)` e `isRoutineActiveOn(routine, date)`.
 - `entities/task.ts`: `routineId?` e `position?`, mais `isStandaloneTask`.
-- `datasources/i-routine-datasource.ts`:
+- `datasources/iRoutineDataSource.ts`:
   - consulta: `listActive`, `findById` e `listCompletedOn(date)`;
   - criação, edição e exclusão: `create(routine, tasks)` e `update(routine, { created, updated, deletedIds })` (transações) e `markDeleted`/`restore`;
   - ocorrência do dia: `completeOccurrence(id, date, taskIds, at)` (transação) e `reopenOccurrence(id, date)`;
   - marcações: `listTaskChecks(id, date)` e `setTaskCheck(id, taskId, date, checked)`.
-- `datasources/i-task-datasource.ts`: ganha `listByRoutine(routineId)`, em ordem de posição.
+- `datasources/iTaskDataSource.ts`: ganha `listByRoutine(routineId)`, em ordem de posição.
 
 ### 2. Casos de uso (`src/usecase/`)
 - `IRoutineUseCases` e `RoutineUseCases`, que dependem de `IRoutineDataSource`, `ITaskDataSource`, `IDailyActivityDataSource` e `IClockService`:
@@ -105,7 +105,7 @@ No detalhe, o estudante toca em "Editar", troca o nome, remove uma tarefa e adic
   - `routine_occurrences (routine_id, local_date, completed_at)`, com chave composta;
   - `routine_task_checks (routine_id, task_id, local_date)`, com chave composta;
   - `tasks.routine_id` e `tasks.position`, com o índice `idx_tasks_routine`.
-- `SqliteRoutineDataSource` e `MemoryRoutineDataSource` passam pela mesma suíte de contrato (`routine-datasource.contract.ts`). A versão em memória recebe o `MemoryTaskDataSource`, para criar as tarefas da rotina.
+- `SqliteRoutineDataSource` e `MemoryRoutineDataSource` passam pela mesma suíte de contrato (`routineDataSource.contract.ts`). A versão em memória recebe o `MemoryTaskDataSource`, para criar as tarefas da rotina.
 - `TaskActivityDataSource(tasks, routines)`, conforme R9 e R10.
 
 ### 4. Composição (`src/di/`)

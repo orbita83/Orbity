@@ -4,7 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
 import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/view/new-routine-content";
 import { RoutineDetailsScreenContent, type RoutineDetailsScreenContentProps } from "@/view/routine-details-content";
-import { ROUTINES_COPY } from "@/view/routines-copy";
+import { ROUTINES_COPY } from "@/view/routinesCopy";
 import { RoutinesScreenContent, type RoutinesScreenContentProps } from "@/view/routines-content";
 import { cosmicBorders, themes } from "@/view/theme/tokens";
 

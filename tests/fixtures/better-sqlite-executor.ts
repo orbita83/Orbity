@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import type { ISqlExecutor, SqlStatement } from "@/infra/database/i-sql-executor";
+import type { ISqlExecutor, SqlStatement } from "@/infra/database/iSqlExecutor";
 
 /**
  * ISqlExecutor de teste sobre o `better-sqlite3` (D15). Roda o SQL real do app no Node,

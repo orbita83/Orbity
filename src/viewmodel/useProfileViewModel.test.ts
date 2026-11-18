@@ -1,8 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
-import type { StudentProfile } from "@/model/entities/student-profile";
+import { mockStudentProfile } from "@/model/__fixtures__/studentProfile.fixture";
+import type { StudentProfile } from "@/model/entities/studentProfile";
 import { DataSourceError, ValidationError } from "@/model/errors";
-import type { IProfileUseCases } from "@/usecase/profile-use-cases";
+import type { IProfileUseCases } from "@/usecase/profileUseCases";
 import { useProfileViewModel } from "./useProfileViewModel";
 
 // Navegação do Expo Router isolada.

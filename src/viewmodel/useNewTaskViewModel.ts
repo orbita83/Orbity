@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import type { LocalDate } from "@/model/entities/local-date";
+import type { LocalDate } from "@/model/entities/localDate";
 import {
   TASK_CATEGORIES,
   formatDisplayDateInput,
@@ -12,8 +12,8 @@ import {
   type TaskCategoryId,
 } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
-import type { IClockService } from "@/model/services/i-clock-service";
-import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
+import type { IClockService } from "@/model/services/iClockService";
+import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 
 export type NewTaskPickerField = "startDate" | "startTime" | "endDate" | "endTime" | "category";
 

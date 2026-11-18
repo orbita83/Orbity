@@ -58,10 +58,10 @@ tests/
 A árvore indica a organização dos testes e dos arquivos de apoio quando necessários; não exige criar fixtures ou módulos de funcionalidades futuras. Testes de telas ficam na camada `view/`, fora de `src/app/`, para não serem interpretados como rotas pelo Expo Router.
 
 ### Convenções de Nomenclatura de Arquivos
-- **Lógica Pura, Use Cases e Infraestrutura:** Arquivos TypeScript em `kebab-case` sob a extensão `*.test.ts` (ex.: `timestamp-use-case.test.ts`, `system-clock-service.test.ts`).
+- **Lógica Pura, Use Cases e Infraestrutura:** Arquivos TypeScript em `camelCase` sob a extensão `*.test.ts` (ex.: `timestampUseCase.test.ts`, `systemClockService.test.ts`).
 - **ViewModels (Hooks de Apresentação):** Arquivos TypeScript em `camelCase` com o mesmo nome do hook testado, sob a extensão `use*ViewModel.test.ts`, espelhando o módulo `use*ViewModel.ts` (ex.: `useTimestampViewModel.test.ts` para testar o hook `useTimestampViewModel`). Um arquivo de teste por ViewModel.
 - **Componentes e Telas React Native:** Arquivos TSX sob a extensão `*.test.tsx` (ex.: `TimestampScreen.test.tsx`, `PrimaryButton.test.tsx`).
-- **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestamp-record.fixture.ts`); fixtures compartilhadas entre camadas podem ficar em `tests/fixtures/`.
+- **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestampRecord.fixture.ts`); fixtures compartilhadas entre camadas podem ficar em `tests/fixtures/`.
 
 ### Estrutura Interna das Suítes (Padrão AAA)
 Toda suíte deve ser organizada através dos blocos `describe`, `it` (ou `test`) com títulos expressivos em **Português Brasileiro (`pt-BR`)**, seguindo o ciclo **AAA (Arrange, Act, Assert)**:
@@ -155,8 +155,8 @@ Test Doubles são objetos substitutos que substituem dependências reais durante
 ### 5.2. Exemplo Padronizado de Fixture
 
 ```typescript
-// src/model/__fixtures__/timestamp-record.fixture.ts
-import type { TimestampRecord } from "@/model/entities/timestamp-record";
+// src/model/__fixtures__/timestampRecord.fixture.ts
+import type { TimestampRecord } from "@/model/entities/timestampRecord";
 
 /**
  * Cria uma fixture imutável de TimestampRecord para utilização em testes.
@@ -277,10 +277,10 @@ Os exemplos a seguir utilizam as abstrações didáticas de carimbo de data/hora
 ### 8.1. Exemplo: Teste Unitário de Use Case com Stub de Serviço
 
 ```typescript
-// src/usecase/timestamp-use-case.test.ts
+// src/usecase/timestampUseCase.test.ts
 import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/clock-service";
-import { TimestampUseCase } from "@/usecase/timestamp-use-case";
+import { TimestampUseCase } from "@/usecase/timestampUseCase";
 
 describe("TimestampUseCase", () => {
   it("deve criar registro de carimbo de data/hora delegando ao servico de relogio", async () => {
@@ -316,7 +316,7 @@ A ViewModel retorna a tupla `[state, actions]`: no teste, `result.current[0]` é
 // src/viewmodel/useTimestampViewModel.test.ts
 import { renderHook, act } from "@testing-library/react-native";
 import { ValidationError } from "@/model/errors";
-import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
+import type { ITimestampUseCase } from "@/usecase/timestampUseCase";
 import { useTimestampViewModel } from "@/viewmodel/useTimestampViewModel";
 
 describe("useTimestampViewModel", () => {

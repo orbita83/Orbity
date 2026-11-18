@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { HOME_COPY, streakUnit } from "../home-copy";
+import { HOME_COPY, streakUnit } from "../homeCopy";
 import { planetColors, themes } from "../theme/tokens";
 import { PLANET_ARTBOARD, PLANET_SPHERE, PlanetIllustration } from "./PlanetIllustration";
 

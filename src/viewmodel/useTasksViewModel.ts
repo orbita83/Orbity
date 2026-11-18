@@ -10,7 +10,7 @@ import {
   getTaskCategoryOption,
 } from "@/model/entities/task";
 import { DomainError } from "@/model/errors";
-import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
+import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 
 /** Tarefa como a lista a apresenta (view data preparada pela ViewModel). */
 export type TaskListItem = {

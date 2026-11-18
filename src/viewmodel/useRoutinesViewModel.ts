@@ -2,7 +2,7 @@ import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
 import { ROUTINE_ICONS, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
-import type { IRoutineUseCases } from "@/usecase/i-routine-use-cases";
+import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
 export { ROUTINE_ICONS, type RoutineIcon };
 
