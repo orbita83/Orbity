@@ -11,7 +11,7 @@ import {
   type TaskCategoryIcon,
   type TaskCategoryId,
 } from "@/model/entities/task";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 

@@ -3,7 +3,7 @@ import { MemoryRoutineDataSource } from "@/infra/datasources/memory-routine-data
 import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
 import type { RoutineDetails } from "@/model/entities/routine";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import { RoutineUseCases } from "@/usecase/routine-use-cases";
 

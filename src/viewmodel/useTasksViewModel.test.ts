@@ -3,7 +3,7 @@ import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-
 import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/local-date";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 import { TaskUseCases } from "@/usecase/task-use-cases";
@@ -184,7 +184,7 @@ describe("useTasksViewModel", () => {
   it("exibe erro ao falhar o carregamento e limpa ao tentar novamente", async () => {
     const listTasks = jest
       .fn<Promise<ReturnType<typeof createTaskFixture>[]>, []>()
-      .mockRejectedValueOnce(new DomainError("PERSISTENCE_FAILURE"))
+      .mockRejectedValueOnce(new DataSourceError())
       .mockResolvedValueOnce([createTaskFixture({ id: "t1" })]);
     const failingUseCases: ITaskUseCases = {
       listTasks,

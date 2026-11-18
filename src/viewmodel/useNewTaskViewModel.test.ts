@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memory-daily-activity-datasource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memory-task-datasource";
 import { LocalDate } from "@/model/entities/local-date";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 import type { ITaskUseCases } from "@/usecase/i-task-use-cases";
 import { TaskUseCases } from "@/usecase/task-use-cases";
@@ -115,7 +115,7 @@ describe("useNewTaskViewModel", () => {
 
     const failingUseCases: ITaskUseCases = {
       listTasks: jest.fn(),
-      createTask: jest.fn().mockRejectedValueOnce(new DomainError("PERSISTENCE_FAILURE")),
+      createTask: jest.fn().mockRejectedValueOnce(new DataSourceError()),
       updateTask: jest.fn(),
       toggleTaskCompletion: jest.fn(),
       togglePinTasks: jest.fn(),

@@ -1,5 +1,5 @@
 import type { DatabaseProvider } from "@/infra/database/database-provider";
-import { toDomainError } from "@/infra/database/persistence-error";
+import { toDataSourceError } from "@/infra/database/persistence-error";
 import { LocalDate } from "@/model/entities/local-date";
 import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 
@@ -16,7 +16,7 @@ export class SqliteDailyActivityDataSource implements IDailyActivityDataSource {
         [date.toString(), recordedAt],
       );
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -28,7 +28,7 @@ export class SqliteDailyActivityDataSource implements IDailyActivityDataSource {
       );
       return rows.map((row) => LocalDate.parse(row.local_date));
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 }

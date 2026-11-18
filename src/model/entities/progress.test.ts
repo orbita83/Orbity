@@ -1,5 +1,5 @@
 import { createProgress } from "@/model/entities/progress";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 
 describe("createProgress", () => {
   it("RN-0007: sem atividades, mostra 0/0 sem proporção", () => {

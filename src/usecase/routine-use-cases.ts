@@ -10,7 +10,7 @@ import {
   validateUpdateRoutineInput,
 } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IDailyActivityDataSource } from "@/model/datasources/i-daily-activity-datasource";
 import type { IRoutineDataSource } from "@/model/datasources/i-routine-datasource";
 import type { ITaskDataSource } from "@/model/datasources/i-task-datasource";

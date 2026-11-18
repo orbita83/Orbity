@@ -4,7 +4,7 @@ import { SqliteRoutineDataSource } from "@/infra/datasources/sqlite-routine-data
 import { SqliteTaskDataSource } from "@/infra/datasources/sqlite-task-datasource";
 import { createRoutineFixture } from "@/model/__fixtures__/routine.fixture";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
 
 describe("SqliteRoutineDataSource", () => {
@@ -32,18 +32,16 @@ describe("SqliteRoutineDataSource", () => {
     const { routines, tasks } = open();
     const duplicated = createTaskFixture({ id: "t1", routineId: "routine-1", position: 0 });
 
-    await expect(routines.create(createRoutineFixture(), [duplicated, duplicated])).rejects.toMatchObject({
-      code: "PERSISTENCE_FAILURE",
-    });
+    await expect(routines.create(createRoutineFixture(), [duplicated, duplicated])).rejects.toBeInstanceOf(DataSourceError);
     expect(await routines.listActive()).toEqual([]);
     expect(await tasks.listByRoutine("routine-1")).toEqual([]);
   });
 
-  it("converte o erro do driver em DomainError", async () => {
+  it("converte o erro do driver em DataSourceError", async () => {
     const { executor, routines } = open();
     await routines.listActive();
     executor.database.exec("DROP TABLE routines");
 
-    await expect(routines.listActive()).rejects.toBeInstanceOf(DomainError);
+    await expect(routines.listActive()).rejects.toBeInstanceOf(DataSourceError);
   });
 });

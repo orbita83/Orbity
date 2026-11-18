@@ -1,6 +1,6 @@
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
 import type { StudentProfile } from "@/model/entities/student-profile";
-import { DomainError, ValidationError } from "@/model/errors/domain-error";
+import { DataSourceError, DomainError, ValidationError } from "@/model/errors";
 import type { IProfileDataSource } from "@/model/datasources/i-profile-datasource";
 import { ProfileUseCases } from "./profile-use-cases";
 
@@ -35,7 +35,7 @@ describe("ProfileUseCases", () => {
     it("deve propagar erro de domínio caso o DataSource falhe", async () => {
       // Arrange
       fakeDataSource.getProfile = jest.fn(async () => {
-        throw new DomainError("PERSISTENCE_FAILURE", "Falha na consulta do perfil.");
+        throw new DataSourceError("Falha na consulta do perfil.");
       });
       const useCases = new ProfileUseCases(fakeDataSource);
 

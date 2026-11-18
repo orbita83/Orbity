@@ -1,6 +1,6 @@
 import type { LocalDate } from "@/model/entities/local-date";
 import type { Task } from "@/model/entities/task";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 
 /** Ícones que o estudante pode escolher para uma rotina (protótipo 3.1). "Geral" é o padrão. */
 export const ROUTINE_ICONS = ["track_changes", "menu_book", "calculate", "translate", "science", "code", "music_note"] as const;

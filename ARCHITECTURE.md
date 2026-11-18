@@ -30,7 +30,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 1. **View (Interface):** Componentes e telas React Native. Responsável apenas por renderizar estado e disparar ações (*fire-and-forget*). Não possui blocos `try/catch` nem regras de negócio e **não chama hooks de navegação**.
 2. **ViewModel (Apresentação):** Custom Hooks que gerenciam estado de interface (`loading`, `error`, `data`), expõem funções de ação (retorno em tupla `[state, actions]`, com os tipos `XState` e `XActions` exportados) e **cuidam da navegação** (`router` do `expo-router`, parâmetros de rota e foco da tela). Depende **apenas de abstrações** (interfaces de Use Cases).
 3. **Use Cases (Casos de Uso / Orquestração):** Contratos (`I*UseCase` / `I*UseCases`) e implementações de regras de negócio puras e validações do sistema. Orquestram DataSources e serviços exclusivamente através de interfaces do domínio.
-4. **Domínio / Model (Core do Negócio):** Entidades puras (`src/model/entities/`), erros de domínio (`src/model/errors/`), interfaces de DataSources (`src/model/datasources/`) e interfaces de serviços (`src/model/services/`). **Zero dependência de bibliotecas externas** (React, Expo, SDKs).
+4. **Domínio / Model (Core do Negócio):** Entidades puras (`src/model/entities/`), erros de domínio (`src/model/errors.ts`), interfaces de DataSources (`src/model/datasources/`) e interfaces de serviços (`src/model/services/`). **Zero dependência de bibliotecas externas** (React, Expo, SDKs).
 5. **Infraestrutura:**
    Implementa:
    - **Services concretos** (`src/infra/services/`, ex.: adapters de relógio, notificações ou APIs);
@@ -59,7 +59,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
     │   └── services/         # Serviços concretos de integração externa
     ├── model/                # Camada de Domínio Puro (zero dependências externas)
     │   ├── entities/         # Entidades e tipos puros de domínio
-    │   ├── errors/           # Erros puros de domínio (ex.: ValidationError)
+    │   ├── errors.ts         # Erros puros de domínio: DomainError e subclasses
     │   ├── datasources/      # Contratos (interfaces) de DataSources
     │   └── services/         # Contratos (interfaces) de serviços externos
     ├── usecase/              # Casos de Uso (contratos I*UseCases e implementações)
@@ -81,9 +81,9 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 | :--- | :--- | :--- | :--- |
 | **`app/`** | Módulos de rota do Expo Router. Apenas importam e re-exportam como `default` as telas de `src/view/`. | `src/view/`, `expo-router` | `viewmodel/`, `usecase/`, `model/`, `infra/`, `di/` |
 | **`view/`** | Componentes visuais (`components/`), telas (`kebab-case.tsx`, com o mesmo nome da rota em `src/app/`) e tokens (`theme/`). Renderiza estado e dispara ações sem `try/catch` ou regras. | `src/viewmodel/`, `src/view/`, React Native, tokens do Design System, **tipos** de entidade de `src/model/entities/` usados no estado (`import type`; testes e histórias podem usar o domínio para montar dados) | `usecase/`, funções, contratos e erros de `model/`, `infra/`, `di/`, hooks e componentes de navegação do `expo-router` (exceto a `MainTabBar`, que recebe `navigation` por props do `<Tabs />`) |
-| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/model/errors/` (para tratar `DomainError` e `ValidationError`), `src/di/container.ts`, React hooks, `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) | Classes concretas de `usecase/`, `model/datasources/`, `model/services/`, `infra/` |
-| **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors/`, `datasources/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `di/`, React Native, Expo, SDKs externos |
-| **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors/`) e contratos (`datasources/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `di`) ou biblioteca externa |
+| **`viewmodel/`** | Custom Hooks em arquivos `camelCase` com o mesmo nome do hook exportado (`use*ViewModel.ts`, expondo `use*ViewModel`) que gerenciam estado de UI (`loading`, `error`, dados) e orquestram chamadas aos contratos de Use Cases. | Contratos `I*UseCases` (`src/usecase/`), `src/model/entities/`, `src/model/errors.ts` (para tratar `DomainError` e suas subclasses), `src/di/container.ts`, React hooks, `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) | Classes concretas de `usecase/`, `model/datasources/`, `model/services/`, `infra/` |
+| **`usecase/`** | Contratos (`I*UseCases`) e implementações (`*UseCases`) de regras de negócio e validações. Recebem dependências via construtor. | `src/model/` (`entities/`, `errors.ts`, `datasources/`, `services/`) | `app/`, `view/`, `viewmodel/`, `infra/`, `di/`, React Native, Expo, SDKs externos |
+| **`model/`** | Núcleo de domínio puro: entidades (`entities/`), erros (`errors.ts`) e contratos (`datasources/`, `services/`). | Apenas módulos internos do próprio `src/model/` | Qualquer outra camada (`app`, `view`, `viewmodel`, `usecase`, `infra`, `di`) ou biblioteca externa |
 | **`infra/`** | DataSources (`datasources/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `di/` |
 | **`di/`** | Composition Root (`container.ts`). Único ponto autorizado a instanciar e conectar `infra/` e `usecase/`. | `src/infra/`, `src/usecase/`, `src/model/` | `app/`, `view/`, `viewmodel/` |
 
@@ -94,16 +94,16 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 ### 4.1. Convenções de Contratos e Implementações
 
 1. **Contratos de Domínio (`src/model/datasources/` e `src/model/services/`):**
-   - Definem interfaces puras prefixadas com `I` (`IClockService`, `IDataSource`), operando apenas com tipos primitivos, entidades de `src/model/entities/` e erros de `src/model/errors/`.
+   - Definem interfaces puras prefixadas com `I` (`IClockService`, `IDataSource`), operando apenas com tipos primitivos, entidades de `src/model/entities/` e erros de `src/model/errors.ts`.
    - Não expõem DTOs externos, tipos de banco de dados, objetos HTTP ou detalhes de bibliotecas.
 2. **Contratos e Orquestração de Use Cases (`src/usecase/`):**
    - Cada caso de uso expõe uma interface pública (`I*UseCases` ou `I*UseCase`) consumida pela ViewModel e uma classe concreta (`*UseCases` ou `*UseCase`) que depende exclusivamente das interfaces de `src/model/` injetadas via construtor.
 3. **Repositórios, Services e Adapters na Infraestrutura (`src/infra/`):**
-   - Classes em `src/infra/datasources/` e `src/infra/services/` atuam como **adapters**: implementam explicitamente (`implements`) as interfaces de `src/model/`, convertem estruturas brutas externas (JSON, linhas SQLite, SDKs) em entidades puras de `src/model/entities/` e traduzem falhas técnicas em erros de `src/model/errors/`.
+   - Classes em `src/infra/datasources/` e `src/infra/services/` atuam como **adapters**: implementam explicitamente (`implements`) as interfaces de `src/model/`, convertem estruturas brutas externas (JSON, linhas SQLite, SDKs) em entidades puras de `src/model/entities/` e traduzem falhas técnicas na subclasse de erro de `src/model/errors.ts` do seu tipo.
 
 ### 4.2. Fluxo entre Camadas (Exemplo Técnico Neutro)
 
-Os trechos abaixo ilustram a comunicação ponta a ponta entre as camadas com o mecanismo de composição de `src/di/container.ts`, sem antecipar regras de negócio de produto. A entidade `TimestampRecord`, o caso de uso `TimestampUseCase`, a ViewModel `useTimestampViewModel` e a tela `timestamp` são didáticos e não existem no código. Os demais trechos (`DomainError`, `IClockService`, `SystemClockService`, `toDomainError` e o container) reproduzem o código real.
+Os trechos abaixo ilustram a comunicação ponta a ponta entre as camadas com o mecanismo de composição de `src/di/container.ts`, sem antecipar regras de negócio de produto. A entidade `TimestampRecord`, o caso de uso `TimestampUseCase`, a ViewModel `useTimestampViewModel` e a tela `timestamp` são didáticos e não existem no código. Os demais trechos (`errors.ts`, `IClockService`, `SystemClockService`, `toDataSourceError` e o container) reproduzem o código real.
 
 ```typescript
 // 1. Domínio Puro — Entidade, Erro e Contrato (src/model/)
@@ -113,32 +113,23 @@ export interface TimestampRecord {
   readonly isoDate: string;
 }
 
-// src/model/errors/domain-error.ts (real)
-export type DomainErrorCode =
-  | "VALIDATION_ERROR"
-  | "PERSISTENCE_FAILURE"
-  | "SCHEMA_VERSION_UNSUPPORTED";
-
-// Só PERSISTENCE_FAILURE admite nova tentativa.
+// src/model/errors.ts (real, resumido)
+// O tipo da falha é a própria subclasse: não há código nem flag de nova tentativa.
 export class DomainError extends Error {
-  readonly retryable: boolean;
-
-  constructor(
-    readonly code: DomainErrorCode,
-    message: string = code,
-  ) {
+  constructor(message: string) {
     super(message);
     this.name = "DomainError";
-    this.retryable = code === "PERSISTENCE_FAILURE";
   }
 }
 
-export class ValidationError extends DomainError {
-  constructor(message: string) {
-    super("VALIDATION_ERROR", message);
-    this.name = "ValidationError";
-  }
-}
+// Entrada que viola uma regra de negócio.
+export class ValidationError extends DomainError { /* name = "ValidationError" */ }
+
+// Falha técnica ao guardar ou ler dados. Admite nova tentativa.
+export class DataSourceError extends DomainError { /* mensagem padrão + name */ }
+
+// Banco gravado por uma versão mais nova do app. Não admite nova tentativa (D14).
+export class SchemaVersionError extends DomainError { /* mensagem padrão + name */ }
 
 // src/model/services/i-clock-service.ts (real)
 import type { LocalDate } from "@/model/entities/local-date";
@@ -154,7 +145,7 @@ export interface IClockService {
 ```typescript
 // 2. Caso de Uso — Contrato e Implementação (src/usecase/timestamp-use-case.ts, didático)
 import type { TimestampRecord } from "@/model/entities/timestamp-record";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/i-clock-service";
 
 export interface ITimestampUseCase {
@@ -181,14 +172,14 @@ export class TimestampUseCase implements ITimestampUseCase {
 
 // src/infra/database/persistence-error.ts (real)
 // A Infra nunca propaga exceções nativas ou de SDK: converte para um erro puro do domínio.
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError, DomainError } from "@/model/errors";
 
 /** Converte qualquer falha do driver em erro de domínio (ARCHITECTURE.md §5). */
-export function toDomainError(error: unknown): DomainError {
+export function toDataSourceError(error: unknown): DomainError {
   if (error instanceof DomainError) {
     return error;
   }
-  return new DomainError("PERSISTENCE_FAILURE", "Falha ao acessar o armazenamento local.");
+  return new DataSourceError();
 }
 
 // Uso em um adapter (trecho de src/infra/datasources/sqlite-task-datasource.ts, real):
@@ -198,7 +189,7 @@ export function toDomainError(error: unknown): DomainError {
 //       const rows = await executor.all<TaskRow>(`SELECT ... FROM tasks ...`);
 //       return rows.map(mapRowToTask);
 //     } catch (error) {
-//       throw toDomainError(error);
+//       throw toDataSourceError(error);
 //     }
 //   }
 ```
@@ -224,7 +215,7 @@ export type AppUseCases = {
 // 5. ViewModel — Tipos State/Actions e Resolução de Abstração (src/viewmodel/useTimestampViewModel.ts, didático)
 import { useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import { DomainError } from "@/model/errors/domain-error";
+import { DomainError } from "@/model/errors";
 import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
 
 export type TimestampState = {
@@ -324,10 +315,10 @@ const styles = StyleSheet.create({
 
 | Camada | Responsabilidade no Tratamento de Erros |
 | :--- | :--- |
-| **1. Domínio (`src/model/errors/`)** | Define classes puras de erro (`DomainError`, `ValidationError`) desacopladas de códigos HTTP, exceções de banco ou SDKs externos. |
-| **2. Infraestrutura (`src/infra/`)** | Captura falhas técnicas (rede, SQLite, AsyncStorage, SDKs) em blocos `try/catch` internos e **sempre** as converte em instâncias de `src/model/errors/`. **Nunca propaga erros brutos de infraestrutura.** |
+| **1. Domínio (`src/model/errors.ts`)** | Define, em um único arquivo, a classe base `DomainError` e uma subclasse por tipo de falha (`ValidationError`, `DataSourceError`, `SchemaVersionError`), desacopladas de códigos HTTP, exceções de banco ou SDKs externos. O tipo da falha é a própria subclasse: os erros não carregam código nem flag de nova tentativa. |
+| **2. Infraestrutura (`src/infra/`)** | Captura falhas técnicas (rede, SQLite, AsyncStorage, SDKs) em blocos `try/catch` internos e **sempre** as converte na subclasse de `src/model/errors.ts` do seu tipo (ex.: `DataSourceError` em falhas de dados, via `toDataSourceError`). **Nunca propaga erros brutos de infraestrutura.** |
 | **3. Use Cases (`src/usecase/`)** | Valida parâmetros de entrada e invariantes de negócio (lançando `ValidationError` ou erros de domínio) e repassa erros de domínio originados nos contratos invocados. |
-| **4. ViewModel (`src/viewmodel/`)** | Único ponto da camada de apresentação que utiliza `try/catch`. Captura erros lançados pelos Use Cases e os converte em estado reativo (`error: string \| null`, `loading: boolean`) com mensagens claras e não-punitivas (`design-system/01-principios.md`). |
+| **4. ViewModel (`src/viewmodel/`)** | Único ponto da camada de apresentação que utiliza `try/catch`. Captura erros lançados pelos Use Cases e os converte em estado reativo (`error: string \| null`, `loading: boolean`) com mensagens claras e não-punitivas (`design-system/01-principios.md`). Separa erros previstos de inesperados com `instanceof DomainError` e escolhe a mensagem pela subclasse (ex.: `instanceof SchemaVersionError`), nunca por código. |
 | **5. View (`src/view/`)** | Apenas lê o estado `error` e `loading` exposto pela ViewModel para renderizar feedback visual e acessível. **Nunca utiliza `try/catch` para lógica de negócio.** |
 
 ---

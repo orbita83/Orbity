@@ -5,7 +5,7 @@ import { DatabaseProvider } from "@/infra/database/database-provider";
 import { describeDailyActivityDataSourceContract } from "@/infra/datasources/daily-activity-datasource.contract";
 import { SqliteDailyActivityDataSource } from "@/infra/datasources/sqlite-daily-activity-datasource";
 import { LocalDate } from "@/model/entities/local-date";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
 
 describeDailyActivityDataSourceContract("SqliteDailyActivityDataSource", async () => {
@@ -34,19 +34,16 @@ describeDailyActivityDataSourceContract("SqliteDailyActivityDataSource", async (
 });
 
 describe("SqliteDailyActivityDataSource (falhas)", () => {
-  it("converte o erro do driver em PERSISTENCE_FAILURE", async () => {
+  it("converte o erro do driver em DataSourceError", async () => {
     const executor = new BetterSqliteExecutor();
     const dataSource = new SqliteDailyActivityDataSource(new DatabaseProvider(async () => executor));
     await dataSource.listDays();
     executor.database.exec("DROP TABLE daily_activity");
 
-    await expect(dataSource.listDays()).rejects.toMatchObject({
-      code: "PERSISTENCE_FAILURE",
-      retryable: true,
-    });
+    await expect(dataSource.listDays()).rejects.toBeInstanceOf(DataSourceError);
     await expect(
       dataSource.recordDay(LocalDate.parse("2026-11-14"), "2026-11-14T10:00:00-03:00"),
-    ).rejects.toBeInstanceOf(DomainError);
+    ).rejects.toBeInstanceOf(DataSourceError);
     executor.close();
   });
 });

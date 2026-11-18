@@ -1,6 +1,6 @@
 import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
 import type { StudentProfile } from "@/model/entities/student-profile";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError } from "@/model/errors";
 import type { IProfileDataSource } from "@/model/datasources/i-profile-datasource";
 
 /**
@@ -20,7 +20,7 @@ export class MemoryProfileDataSource implements IProfileDataSource {
     try {
       return { ...this.currentProfile };
     } catch {
-      throw new DomainError("PERSISTENCE_FAILURE", "Não foi possível consultar os dados do perfil em memória.");
+      throw new DataSourceError("Não foi possível consultar os dados do perfil em memória.");
     }
   }
 
@@ -32,7 +32,7 @@ export class MemoryProfileDataSource implements IProfileDataSource {
       };
       return { ...this.currentProfile };
     } catch {
-      throw new DomainError("PERSISTENCE_FAILURE", "Não foi possível atualizar o nome do perfil em memória.");
+      throw new DataSourceError("Não foi possível atualizar o nome do perfil em memória.");
     }
   }
 }

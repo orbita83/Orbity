@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { AppState, type AppStateStatus } from "react-native";
 import { LocalDate } from "@/model/entities/local-date";
 import type { HomeSummary } from "@/model/entities/home-summary";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError, SchemaVersionError } from "@/model/errors";
 import type { IHomeUseCases } from "@/usecase/i-home-use-cases";
 import { useHomeViewModel } from "@/viewmodel/useHomeViewModel";
 
@@ -92,8 +92,8 @@ describe("useHomeViewModel", () => {
     expect(result.current[0].progressLabel).toBe("0/0");
   });
 
-  it("PERSISTENCE_FAILURE: erro com nova tentativa e sem resumo", async () => {
-    const useCases = useCasesFrom(new DomainError("PERSISTENCE_FAILURE"), summaryWith(2));
+  it("DataSourceError: erro com nova tentativa e sem resumo", async () => {
+    const useCases = useCasesFrom(new DataSourceError(), summaryWith(2));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
 
     await waitFor(() => expect(result.current[0].status).toBe("error"));
@@ -107,8 +107,8 @@ describe("useHomeViewModel", () => {
     expect(result.current[0].summary?.streak.currentDays).toBe(2);
   });
 
-  it("SCHEMA_VERSION_UNSUPPORTED: erro sem nova tentativa", async () => {
-    const useCases = useCasesFrom(new DomainError("SCHEMA_VERSION_UNSUPPORTED"));
+  it("SchemaVersionError: erro sem nova tentativa", async () => {
+    const useCases = useCasesFrom(new SchemaVersionError());
     const { result } = await renderHook(() => useHomeViewModel(useCases));
 
     await waitFor(() => expect(result.current[0].status).toBe("error"));
@@ -147,7 +147,7 @@ describe("useHomeViewModel", () => {
 
   it("erro num recálculo depois de pronto mantém o valor anterior", async () => {
     const emit = captureAppStateListener();
-    const useCases = useCasesFrom(summaryWith(5), new DomainError("PERSISTENCE_FAILURE"));
+    const useCases = useCasesFrom(summaryWith(5), new DataSourceError());
     const { result } = await renderHook(() => useHomeViewModel(useCases));
     await waitFor(() => expect(result.current[0].status).toBe("ready"));
 

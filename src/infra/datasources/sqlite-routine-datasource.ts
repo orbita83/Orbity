@@ -1,6 +1,6 @@
 import type { DatabaseProvider } from "@/infra/database/database-provider";
 import type { SqlStatement } from "@/infra/database/i-sql-executor";
-import { toDomainError } from "@/infra/database/persistence-error";
+import { toDataSourceError } from "@/infra/database/persistence-error";
 import { insertTaskStatement, updateTaskStatement } from "@/infra/datasources/sqlite-task-datasource";
 import type { LocalDate } from "@/model/entities/local-date";
 import { DEFAULT_ROUTINE_ICON, isRoutineIcon, isWeekday, type Routine, type Weekday } from "@/model/entities/routine";
@@ -51,7 +51,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       );
       return rows.map(mapRowToRoutine);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -64,7 +64,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       );
       return row ? mapRowToRoutine(row) : null;
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -88,7 +88,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       ];
       await executor.runInTransaction(statements);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -123,7 +123,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       }
       await executor.runInTransaction(statements);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -132,7 +132,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       const executor = await this.db.get();
       await executor.run("UPDATE routines SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL", [deletedAt, id]);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -141,7 +141,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       const executor = await this.db.get();
       await executor.run("UPDATE routines SET deleted_at = NULL WHERE id = ?", [id]);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -154,7 +154,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       );
       return rows.map((row) => row.routine_id);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -179,7 +179,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
         })),
       ]);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -192,7 +192,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
         { sql: "DELETE FROM routine_task_checks WHERE routine_id = ? AND local_date = ?", params: [routineId, day] },
       ]);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -205,7 +205,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
       );
       return rows.map((row) => row.task_id);
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 
@@ -222,7 +222,7 @@ export class SqliteRoutineDataSource implements IRoutineDataSource {
         await executor.run("DELETE FROM routine_task_checks WHERE task_id = ? AND local_date = ?", [taskId, day]);
       }
     } catch (error) {
-      throw toDomainError(error);
+      throw toDataSourceError(error);
     }
   }
 }

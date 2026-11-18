@@ -1,7 +1,7 @@
 import { DatabaseProvider } from "@/infra/database/database-provider";
 import type { ISqlExecutor } from "@/infra/database/i-sql-executor";
 import { MIGRATIONS, type Migration } from "@/infra/database/migrations";
-import { DomainError } from "@/model/errors/domain-error";
+import { DataSourceError, DomainError, SchemaVersionError } from "@/model/errors";
 import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
 
 const userVersion = (executor: BetterSqliteExecutor) =>
@@ -80,18 +80,15 @@ describe("DatabaseProvider", () => {
     expect(spy).toHaveBeenCalledTimes(MIGRATIONS.length);
   });
 
-  it("D14: banco mais novo que o app dá SCHEMA_VERSION_UNSUPPORTED sem mexer nas tabelas", async () => {
+  it("D14: banco mais novo que o app dá SchemaVersionError sem mexer nas tabelas", async () => {
     executor.database.pragma("user_version = 99");
     const provider = new DatabaseProvider(async () => executor);
 
-    await expect(provider.get()).rejects.toMatchObject({
-      code: "SCHEMA_VERSION_UNSUPPORTED",
-      retryable: false,
-    });
+    await expect(provider.get()).rejects.toBeInstanceOf(SchemaVersionError);
     expect(tableExists(executor, "daily_activity")).toBe(false);
     expect(userVersion(executor)).toBe(99);
     // Fica guardado: a próxima chamada não tenta abrir de novo.
-    await expect(provider.get()).rejects.toMatchObject({ code: "SCHEMA_VERSION_UNSUPPORTED" });
+    await expect(provider.get()).rejects.toBeInstanceOf(SchemaVersionError);
   });
 
   it("migração com o segundo comando inválido faz ROLLBACK", async () => {
@@ -102,9 +99,7 @@ describe("DatabaseProvider", () => {
       },
     ];
 
-    await expect(new DatabaseProvider(async () => executor, broken).get()).rejects.toMatchObject({
-      code: "PERSISTENCE_FAILURE",
-    });
+    await expect(new DatabaseProvider(async () => executor, broken).get()).rejects.toBeInstanceOf(DataSourceError);
     expect(tableExists(executor, "first_table")).toBe(false);
     expect(userVersion(executor)).toBe(0);
   });
@@ -118,7 +113,7 @@ describe("DatabaseProvider", () => {
 
     const first = provider.get();
     await expect(first).rejects.toBeInstanceOf(DomainError);
-    await expect(first).rejects.toMatchObject({ code: "PERSISTENCE_FAILURE", retryable: true });
+    await expect(first).rejects.toBeInstanceOf(DataSourceError);
 
     await expect(provider.get()).resolves.toBe(executor);
     expect(open).toHaveBeenCalledTimes(2);
