@@ -15,7 +15,7 @@ Aplicação no Orbity: o componente corresponde à ação “+ Nova tarefa” do
 - Não use para os filtros “Todos”, “Pendentes” e “Concluídas”: eles representam seleção.
 - Não use para marcar uma tarefa como concluída, abrir o menu de opções ou compor a navegação inferior.
 - Não use a mesma ênfase para várias ações concorrentes na mesma tela.
-- Não use esta variante para exclusão de tarefas; ações destrutivas precisam de especificação própria.
+- Não use nos controles de tela que apenas abrem uma confirmação de exclusão; dentro do diálogo de confirmação ([modal.md](modal.md)), o estilo primário existente é aplicado à ação explícita de confirmação, sem criar variante destrutiva vermelha.
 
 ## Anatomia
 
