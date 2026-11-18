@@ -12,7 +12,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 
 ## The Problem
 
-- A Início mostrava "0/0" e o Modo Foco bloqueado porque o `EmptyActivityCatalog` não tinha tarefas para contar (D7 de [tela-inicial-base.md](tela-inicial-base.md)).
+- A Início mostrava "0/0" e o Modo Foco bloqueado porque o `EmptyActivityDataSource` não tinha tarefas para contar (D7 de [tela-inicial-base.md](tela-inicial-base.md)).
 - A tela de Tarefas guardava as ações só em memória, e tudo se perdia ao fechar o app.
 - A sequência (RN-0002, RF-0014) não tinha nenhuma atividade real para registrar.
 
@@ -37,7 +37,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 - **T2:** A tabela `tasks` entra pela migração v2 no mesmo banco do registro diário (ADR-0001), com índice `(pinned DESC, created_at DESC)`.
 - **T3:** Seis categorias iniciais de estudo (Matemática, Leitura, Idiomas, Ciências, Programação e Música), mais "Sem categoria". Os ids ficam no domínio (`TaskCategoryId`).
 - **T4:** Fixar em lote alterna: se todas as selecionadas já estão fixadas, a ação desafixa (o rótulo vira "Desafixar").
-- **T5:** O `TaskActivityCatalog` substitui o `EmptyActivityCatalog` na composição. Há Modo Foco disponível quando existe ao menos uma tarefa.
+- **T5:** O `TaskActivityDataSource` substitui o `EmptyActivityDataSource` na composição. Há Modo Foco disponível quando existe ao menos uma tarefa.
 - **T6:** A Início e a lista de Tarefas recarregam ao ganhar foco (`useFocusEffect`), para refletir mudanças feitas em outra aba.
 - **T7:** Datas e horas aceitam digitação direta (com máscara automática na ViewModel para `dd/mm/aaaa` e `hh:mm` e normalização de entradas equivalentes no domínio) e também um seletor em modal (`TaskPickerModal`, ver `design-system/04-componentes/seletor-opcoes.md`).
 
@@ -64,19 +64,19 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 
 ### 1. Domínio (`src/model/`)
 - `entities/task.ts`: `Task`, `CreateTaskInput`, `UpdateTaskInput`, `TASK_CATEGORIES`, validações (`validateCreateTaskInput`, `validateDateTimeFields`), `formatTaskDueLabel` e `filterAndSortTasks`.
-- `repositories/i-task-repository.ts`: `listAll`, `findById`, `create`, `update`, `updateMany` e `deleteMany`.
+- `datasources/iTaskDataSource.ts`: `listAll`, `findById`, `create`, `update`, `updateMany` e `deleteMany`.
 
 ### 2. Casos de uso (`src/usecase/`)
-- `ITaskUseCases` e `TaskUseCases`, que dependem de `ITaskRepository`, `IDailyActivityRepository` e `IClockService`.
+- `ITaskUseCases` e `TaskUseCases`, que dependem de `ITaskDataSource`, `IDailyActivityDataSource` e `IClockService`.
 - Concluir (por `toggleTaskCompletion` ou `updateTask`) chama `recordDay` só na passagem de pendente para concluída.
 
 ### 3. Persistência (`src/infra/`)
 - Migração v2 em `database/migrations.ts`.
-- `SqliteTaskRepository` (Android) e `InMemoryTaskRepository` (testes), validados pela mesma suíte de contrato (`task-repository.contract.ts`).
-- `TaskActivityCatalog` implementa `IActivityCatalog` sobre o repositório de tarefas.
+- `SqliteTaskDataSource` (Android) e `MemoryTaskDataSource` (testes), validados pela mesma suíte de contrato (`taskDataSource.contract.ts`).
+- `TaskActivityDataSource` implementa `IActivityDataSource` sobre o DataSource de tarefas.
 
-### 4. Composição (`src/DI/`)
-- `createPersistence()` devolve `tasks` e `activityCatalog` além de `dailyActivity`, nas duas plataformas.
+### 4. Composição (`src/di/`)
+- `createPersistence()` devolve `tasks` e `activities` além de `dailyActivity`, nas duas plataformas.
 - O container registra o caso de uso `tasks`.
 
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)

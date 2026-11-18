@@ -12,7 +12,7 @@ import {
   normalizeDisplayTime,
   validateCreateTaskInput,
 } from "@/model/entities/task";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 
 describe("Entidade Task e validações de domínio", () => {
   describe("isValidDisplayDate e isValidDisplayTime", () => {

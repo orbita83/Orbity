@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { NewRoutineActions, NewRoutineState } from "../viewmodel/NewRoutineViewModel";
-import { ROUTINE_ICONS } from "../viewmodel/RoutinesViewModel";
+import type { NewRoutineActions, NewRoutineState } from "../viewmodel/useNewRoutineViewModel";
+import { ROUTINE_ICONS } from "../viewmodel/useRoutinesViewModel";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { GradientSurface } from "./components/GradientSurface";
 import { MaterialSymbol } from "./components/MaterialSymbol";
@@ -10,14 +10,14 @@ import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TextField } from "./components/TextField";
-import { ROUTINE_ICON_LABELS, ROUTINES_COPY, formatDays, formatRoutinesCopy, weekdayLong, weekdayShort } from "./routines-copy";
+import { ROUTINE_ICON_LABELS, ROUTINES_COPY, formatDays, formatRoutinesCopy, weekdayLong, weekdayShort } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
 const WEEK = [0, 1, 2, 3, 4, 5, 6] as const;
 
 export type NewRoutineScreenContentProps = NewRoutineState &
-  NewRoutineActions & {
+  Omit<NewRoutineActions, "handleLeave"> & {
     /** Sai sem salvar: volta para a lista (criação) ou para o detalhe (edição). */
     onBack: () => void;
     /** Fecha o "Rotina criada!"/"Rotina atualizada!" e volta (05-padroes.md, F7, passo 4). */
@@ -235,7 +235,7 @@ export const NewRoutineScreenContent = ({
         actionLabel={editing ? ROUTINES_COPY["updated.action"] : ROUTINES_COPY["created.action"]}
         onClose={onFinish}
       />
-      {/* Variante Confirmação do Modal: a ação segura ("Continuar editando") fica em destaque. */}
+      {/* Variante Confirmação do Modal: confirmar o descarte usa o estilo primário e continuar editando usa o secundário. */}
       <ConfirmDialog
         visible={discardVisible}
         icon="edit"

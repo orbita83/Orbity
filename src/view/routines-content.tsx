@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { RoutineListItem, RoutinesActions, RoutinesState } from "../viewmodel/RoutinesViewModel";
+import type { RoutineListItem, RoutinesActions, RoutinesState } from "../viewmodel/useRoutinesViewModel";
 import { CheckCircle } from "./components/CheckCircle";
 import { IconTile } from "./components/IconTile";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { Snackbar } from "./components/Snackbar";
-import { ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routines-copy";
+import { ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 import { GradientSurface } from "./components/GradientSurface";
 
 const theme = themes.cosmic;
 
 export type RoutinesScreenContentProps = RoutinesState &
-  RoutinesActions & {
+  Omit<RoutinesActions, "handleCreateRoutine" | "handleOpenRoutine"> & {
     onCreateRoutine: () => void;
     onOpenRoutine: (id: string) => void;
   };

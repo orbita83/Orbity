@@ -2,7 +2,7 @@
 
 ## Overview
 
-Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, repositórios ou serviços.
+Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, DataSources ou serviços.
 
 Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton`, `OdsGlobal` e outros) são histórias do Storybook (`@storybook/react-native-web-vite`), não fazem parte do código de produção e não são importados pelo app. Os arquivos `*.test.tsx` contêm testes Jest.
 
@@ -14,7 +14,7 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
   - Mapeamentos internos (não exportados) `routeByTab` / `tabByRoute`: `inicio` <-> `index`, `tarefas` <-> `tasks`, `rotinas` <-> `routines`, `cosmos` <-> `cosmos`, `perfil` <-> `profile`.
 - `CheckCircle.tsx`: `CheckCircle({ checked, onToggle, accessibilityLabel, disabled? })`, círculo de concluir com papel `checkbox` e alvo de 48 dp.
 - `SuccessDialog.tsx`: `SuccessDialog({ visible, title, message, actionLabel, onClose })`, variante de sucesso do Modal ("Tarefa criada!").
-- `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; o ✕ e a ação segura chamam `onCancel`, a ação destrutiva chama `onConfirm`.
+- `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; a ação de confirmação (`confirmLabel`) recebe `PrimaryButton` (`onConfirm`) e o ✕ e a ação de cancelamento (`cancelLabel`, estilo secundário com borda) chamam `onCancel`.
 - `ContextualActionBar.tsx`: `ContextualHeader({ countLabel, onCancel })` e `ContextualActionBar({ actions })` para a seleção múltipla; `ContextualAction` = `{ id, label, icon, onPress, destructive?, disabled? }`.
 - `IconTile.tsx`: `IconTile({ icon })`, quadro decorativo com o ícone de uma rotina.
 - `ScreenHeader.tsx`: `ScreenHeader({ title, onBack, variant?, backLabel })`, cabeçalho das telas empilhadas (seta ou ✕).

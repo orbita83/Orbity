@@ -4,6 +4,7 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 
 ## Não publicado
 
+- **ConfirmDialog (issue #151):** ajuste na aplicação dos estilos existentes nos diálogos de confirmação de exclusão de tarefas (individual e em lote) e rotinas. A confirmação (`confirmLabel`) passa a utilizar o `PrimaryButton` existente e o cancelamento (`cancelLabel`) passa a utilizar o estilo secundário com borda, mantendo o componente compartilhado e reutilizável para futuras funcionalidades sem criar novas cores, tokens ou variantes destrutivas.
 - **NavBar (issue #146):** o rótulo passa a usar o tamanho de `font.caption` (12/16, antes 14/20 de `font.label`), mantendo os pesos 500 e 700, e as abas perdem o espaço entre si e o padding lateral, como no protótipo. Assim "Cosmos" não quebra mais em duas linhas em telas de 360 dp. Implementado em `NavBar.tsx`.
 
 ## 1.2.0 · 2026-11-15

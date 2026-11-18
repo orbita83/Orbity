@@ -1,8 +1,8 @@
 import { createRoutineFixture } from "@/model/__fixtures__/routine.fixture";
-import { LocalDate } from "@/model/entities/local-date";
+import { LocalDate } from "@/model/entities/localDate";
 import { isRoutineActiveOn, validateCreateRoutineInput, weekdayOf } from "@/model/entities/routine";
 import { isStandaloneTask } from "@/model/entities/task";
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 
 describe("validateCreateRoutineInput", () => {
   it("RF-0007: exige um nome", () => {

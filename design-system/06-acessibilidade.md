@@ -196,7 +196,7 @@ A interface do Orbity é flexível e se adapta às necessidades sensoriais e cog
   - Desativar animações complexas, como transições de constelações, efeitos de partículas, translações laterais longas e zooms.
   - Substituir transições de tela por transições instantâneas ou por um desvanecimento suave de opacidade (*crossfade*) com duração ultra curta (`motion.duration.short` de 100 ms ou 0 ms).
   - Manter feedback de interação instantâneo para preservar a percepção de resposta tátil da interface sem deslocamento espacial. (Adaptado)
-  - Desligar a escala `motion.scale-pressed` e manter apenas `motion.opacity-pressed` no toque; o hook `useReduceMotion` (`src/view/theme/use-reduce-motion.ts`) expõe a preferência aos componentes. (Novo, 1.2)
+  - Desligar a escala `motion.scale-pressed` e manter apenas `motion.opacity-pressed` no toque; o hook `useReduceMotion` (`src/view/theme/useReduceMotion.ts`) expõe a preferência aos componentes. (Novo, 1.2)
   - Parar a rotação (24 s) e o pulso (4 s) do planeta, exibindo-o estático. (Novo, 1.2)
 - **Conteúdo em movimento automático (WCAG 2.2.2):** se o carrossel de conquistas girar sozinho, ofereça pausa visível; até a decisão aberta da 1.2, use rolagem pelo dedo. (Novo, 1.2)
 - **Modais (1.2):** confine o foco no modal, feche por "✕", `Escape` e gesto de voltar, anuncie o título e devolva o foco ao elemento de origem. (Novo)

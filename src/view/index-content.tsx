@@ -10,15 +10,16 @@ import {
   type LayoutChangeEvent,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { HomeSummary } from "../model/entities/homeSummary";
 import type { FocusSheetStage } from "../viewmodel/ActivitySheetGeometry";
-import { useActivitySheetMotionViewModel } from "../viewmodel/ActivitySheetMotionViewModel";
-import type { HomeState, HomeSummary } from "../viewmodel/HomeViewModel";
+import { useActivitySheetMotionViewModel } from "../viewmodel/useActivitySheetMotionViewModel";
+import type { HomeState } from "../viewmodel/useHomeViewModel";
 import { CosmicStarfield } from "./components/CosmicStarfield";
 import { FocusBottomSheet } from "./components/FocusBottomSheet";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PlanetStreakView } from "./components/PlanetStreakView";
 import { PrimaryButton } from "./components/PrimaryButton";
-import { HOME_COPY } from "./home-copy";
+import { HOME_COPY } from "./homeCopy";
 import { cosmicBorders, cosmicColors, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;

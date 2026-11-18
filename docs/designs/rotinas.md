@@ -49,8 +49,8 @@ Concluir a rotina do dia registra o dia na sequência (RN-0002). As tarefas de u
   - Ocorrências e dias registrados não mudam: "Sua sequência, suas estrelas e suas conquistas continuam do mesmo jeito".
   - A remoção física fica para depois.
 - **R8 — Ícone:** o UC-0005 fala em "categoria (opcional)", e o protótipo 3.1 usa o ícone, com "Geral" como padrão. A rotina guarda o ícone (`ROUTINE_ICONS`, que passa da ViewModel para o domínio). Ela não usa `TASK_CATEGORIES`: as categorias de tarefa têm seis ids e não têm "Geral". Unir as duas listas fica como questão em aberto (Q1).
-- **R9 — Modo Foco:** há alvo quando existe ao menos uma tarefa avulsa **ou** uma rotina não excluída (RN-0001). O `TaskActivityCatalog` passa a receber o repositório de rotinas.
-- **R10 — Progresso da Início (RN-0007, issue #138):** o card passa a se chamar "Seu progresso". `concluídas = tarefas avulsas concluídas + rotinas de hoje concluídas hoje` e `total = tarefas avulsas + rotinas de hoje`. As tarefas de rotina não contam sozinhas, e uma rotina fora do dia não entra no total. `IActivityCatalog.getProgressCounts(today)` recebe o dia do `HomeUseCases`, que o lê do relógio.
+- **R9 — Modo Foco:** há alvo quando existe ao menos uma tarefa avulsa **ou** uma rotina não excluída (RN-0001). O `TaskActivityDataSource` passa a receber o DataSource de rotinas.
+- **R10 — Progresso da Início (RN-0007, issue #138):** o card passa a se chamar "Seu progresso". `concluídas = tarefas avulsas concluídas + rotinas de hoje concluídas hoje` e `total = tarefas avulsas + rotinas de hoje`. As tarefas de rotina não contam sozinhas, e uma rotina fora do dia não entra no total. `IActivityDataSource.getProgressCounts(today)` recebe o dia do `HomeUseCases`, que o lê do relógio.
 - **R11 — Editar rotina (RF-0009, UC-0007, FL-0007, issue #137):** reaproveita o formulário de Nova rotina (`new-routine?id=<id>`), como a edição de tarefas. As tarefas chegam ao caso de uso na ordem final, com `id` quando já existem. As que têm `id` são mantidas (renomear ou reordenar preserva a marcação de hoje), as novas entram desmarcadas, e as ausentes são removidas com as marcações delas. A ocorrência do dia e a sequência nunca mudam por uma edição, e a edição vale em qualquer dia. Sair com alterações pergunta "Descartar alterações?". O estado vazio do detalhe ganha o atalho "Adicionar tarefas", que abre a edição.
 
 ### Ainda em aberto
@@ -85,15 +85,15 @@ No detalhe, o estudante toca em "Editar", troca o nome, remove uma tarefa e adic
   - tipos: `Routine`, `RoutineIcon`, `ROUTINE_ICONS`, `DEFAULT_ROUTINE_ICON`, `Weekday` (0 = domingo), `CreateRoutineInput`, `RoutineOverview` (lista) e `RoutineDetails` (detalhe);
   - funções: `validateCreateRoutineInput`, `validateUpdateRoutineInput` (mesmas regras; tarefas como `RoutineTaskDraft { id?, title }`), `weekdayOf(LocalDate)` e `isRoutineActiveOn(routine, date)`.
 - `entities/task.ts`: `routineId?` e `position?`, mais `isStandaloneTask`.
-- `repositories/i-routine-repository.ts`:
+- `datasources/iRoutineDataSource.ts`:
   - consulta: `listActive`, `findById` e `listCompletedOn(date)`;
   - criação, edição e exclusão: `create(routine, tasks)` e `update(routine, { created, updated, deletedIds })` (transações) e `markDeleted`/`restore`;
   - ocorrência do dia: `completeOccurrence(id, date, taskIds, at)` (transação) e `reopenOccurrence(id, date)`;
   - marcações: `listTaskChecks(id, date)` e `setTaskCheck(id, taskId, date, checked)`.
-- `repositories/i-task-repository.ts`: ganha `listByRoutine(routineId)`, em ordem de posição.
+- `datasources/iTaskDataSource.ts`: ganha `listByRoutine(routineId)`, em ordem de posição.
 
 ### 2. Casos de uso (`src/usecase/`)
-- `IRoutineUseCases` e `RoutineUseCases`, que dependem de `IRoutineRepository`, `ITaskRepository`, `IDailyActivityRepository` e `IClockService`:
+- `IRoutineUseCases` e `RoutineUseCases`, que dependem de `IRoutineDataSource`, `ITaskDataSource`, `IDailyActivityDataSource` e `IClockService`:
   - `listRoutines` e `getRoutine` (devolve `null` se não existir);
   - `createRoutine`, `updateRoutine` (R11), `deleteRoutine` e `restoreRoutine`;
   - `completeOccurrence`, `reopenOccurrence`, `toggleRoutineTask` e `moveRoutineTaskUp`.
@@ -105,14 +105,14 @@ No detalhe, o estudante toca em "Editar", troca o nome, remove uma tarefa e adic
   - `routine_occurrences (routine_id, local_date, completed_at)`, com chave composta;
   - `routine_task_checks (routine_id, task_id, local_date)`, com chave composta;
   - `tasks.routine_id` e `tasks.position`, com o índice `idx_tasks_routine`.
-- `SqliteRoutineRepository` e `InMemoryRoutineRepository` passam pela mesma suíte de contrato (`routine-repository.contract.ts`). A versão em memória recebe o `InMemoryTaskRepository`, para criar as tarefas da rotina.
-- `TaskActivityCatalog(tasks, routines)`, conforme R9 e R10.
+- `SqliteRoutineDataSource` e `MemoryRoutineDataSource` passam pela mesma suíte de contrato (`routineDataSource.contract.ts`). A versão em memória recebe o `MemoryTaskDataSource`, para criar as tarefas da rotina.
+- `TaskActivityDataSource(tasks, routines)`, conforme R9 e R10.
 
-### 4. Composição (`src/DI/`)
+### 4. Composição (`src/di/`)
 - `createPersistence()` devolve `routines`, e o container registra `useCases.routines`.
 
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)
-- As três ViewModels usam `IRoutineUseCases` e ganham `loading` e `errorKey`. Elas aceitam um array de protótipo, como o `useTasksViewModel`, para o Storybook e as fixtures continuarem sem `@/DI`.
+- As três ViewModels usam `IRoutineUseCases` e ganham `loading` e `errorKey`. Elas aceitam um array de protótipo, como o `useTasksViewModel`, para o Storybook e as fixtures continuarem sem `@/di`.
 - `RoutineListItem` e `RoutineDetails` ganham `activeToday`, e o detalhe ganha `doneToday`, vindo da ocorrência e não de "todas as tarefas marcadas".
 - `RoutineDetailsScreen` lê o `id` da rota. As telas recarregam ao ganhar foco (`useFocusEffect`), como em Tarefas (T6).
 - **ODS 1.2.0:** depois de criar, "Rotina criada!" (`SuccessDialog`, passo 4 do F7); esqueleto dos cards ao carregar (`SkeletonCards`, F8); barra de progresso do detalhe com contador e porcentagem fora da barra (`barra-progresso.md`); estado vazio "Nenhuma tarefa nesta rotina" (F8), com o atalho "Adicionar tarefas" para a edição (R11).
@@ -129,5 +129,5 @@ Exigiria guardar um retrato completo da rotina, com tarefas, ocorrências e marc
 ## Risks & Mitigations
 
 - **Migração v3 em bancos que já estão na v2:** o `ALTER TABLE` acrescenta colunas que aceitam nulo, e as tarefas existentes continuam avulsas. Um teste cobre a passagem de v2 para v3.
-- **Mudança no código de Tarefas (#129):** as alterações em `Task`, `TaskUseCases` e `TaskActivityCatalog` são pequenas e cobertas pelos testes que já existem. Combinadas com o Vitor.
+- **Mudança no código de Tarefas (#129):** as alterações em `Task`, `TaskUseCases` e `TaskActivityDataSource` são pequenas e cobertas pelos testes que já existem. Combinadas com o Vitor.
 - **Duas fontes de "concluída" para a mesma tarefa:** as tarefas de rotina não usam `Task.completed`. Só o `routine_task_checks` vale para elas, e nenhuma tela de Tarefas as mostra.

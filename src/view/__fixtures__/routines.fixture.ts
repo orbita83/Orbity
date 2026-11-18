@@ -1,5 +1,5 @@
-import type { RoutineDetails } from "@/viewmodel/RoutineDetailsViewModel";
-import type { RoutineListItem } from "@/viewmodel/RoutinesViewModel";
+import type { RoutineDetails } from "@/viewmodel/useRoutineDetailsViewModel";
+import type { RoutineListItem } from "@/viewmodel/useRoutinesViewModel";
 
 /** Rotinas do protótipo 3 (Claude Design), só para histórias e testes; o app começa sem rotinas. */
 export const PROTOTYPE_ROUTINES: readonly RoutineListItem[] = [

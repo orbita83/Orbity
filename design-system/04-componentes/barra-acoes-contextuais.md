@@ -37,7 +37,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 - "✕" tem nome "Cancelar seleção" e devolve o foco ao card de origem.
 - O contador é anunciado em região ao vivo educada.
-- Excluir combina ícone, texto e número; a confirmação é obrigatória (desenho pendente).
+- Excluir combina ícone, texto e número; a confirmação é obrigatória por meio da variante Confirmação do [modal](modal.md), onde confirmar usa o estilo primário e cancelar usa o secundário.
 
 ## Faça e evite
 

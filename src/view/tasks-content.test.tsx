@@ -1,15 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { LocalDate } from "@/model/entities/local-date";
-import { PROTOTYPE_TASKS } from "@/view/__fixtures__/task-list.fixture";
+import { LocalDate } from "@/model/entities/localDate";
+import { PROTOTYPE_TASKS } from "@/view/__fixtures__/taskList.fixture";
 import { NewTaskScreenContent, type NewTaskScreenContentProps } from "@/view/new-task-content";
-import { TASKS_COPY } from "@/view/tasks-copy";
+import { TASKS_COPY } from "@/view/tasksCopy";
 import { TasksScreenContent, type TasksScreenContentProps } from "@/view/tasks-content";
+import { cosmicBorders, themes } from "@/view/theme/tokens";
 import {
   CATEGORY_PICKER_OPTIONS,
   TIME_PICKER_OPTIONS,
   buildDatePickerOptions,
-} from "@/viewmodel/NewTaskViewModel";
+} from "@/viewmodel/useNewTaskViewModel";
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 
@@ -104,14 +106,34 @@ describe("TasksScreenContent", () => {
     expect(screen.getByRole("button", { name: TASKS_COPY["action.edit"] }).props.accessibilityState.disabled).toBe(true);
   });
 
-  it("a confirmação de exclusão mostra quantas tarefas e só confirma pela ação destrutiva", async () => {
+  it("a confirmação de exclusão individual e múltipla destaca Excluir como primário e Cancelar como secundário", async () => {
+    const singleProps = listProps({ selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true });
+    const view = await renderInSafeArea(<TasksScreenContent {...singleProps} />);
+
+    expect(screen.getByRole("header", { name: TASKS_COPY["delete.title.one"] })).toBeTruthy();
+    const singleConfirm = screen.getByRole("button", { name: TASKS_COPY["delete.confirm"] });
+    const singleCancel = screen.getByRole("button", { name: TASKS_COPY["delete.cancel"] });
+    expect(StyleSheet.flatten(singleConfirm.props.style).backgroundColor).toBe(themes.cosmic.button.bg);
+    expect(StyleSheet.flatten(singleCancel.props.style).backgroundColor).toBeUndefined();
+    expect(StyleSheet.flatten(singleCancel.props.style).borderColor).toBe(cosmicBorders.sheet);
+
     const props = listProps({ selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true });
-    await renderInSafeArea(<TasksScreenContent {...props} />);
+    await view.rerender(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <TasksScreenContent {...props} />
+      </SafeAreaProvider>,
+    );
 
     expect(screen.getByRole("header", { name: "Excluir 2 tarefas?" })).toBeTruthy();
-    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["delete.cancel"] }));
+    const batchConfirm = screen.getByRole("button", { name: TASKS_COPY["delete.confirm"] });
+    const batchCancel = screen.getByRole("button", { name: TASKS_COPY["delete.cancel"] });
+    expect(StyleSheet.flatten(batchConfirm.props.style).backgroundColor).toBe(themes.cosmic.button.bg);
+    expect(StyleSheet.flatten(batchCancel.props.style).backgroundColor).toBeUndefined();
+    expect(StyleSheet.flatten(batchCancel.props.style).borderColor).toBe(cosmicBorders.sheet);
+
+    await fireEvent.press(batchCancel);
     expect(props.cancelDelete).toHaveBeenCalledTimes(1);
-    await fireEvent.press(screen.getByRole("button", { name: TASKS_COPY["delete.confirm"] }));
+    await fireEvent.press(batchConfirm);
     expect(props.confirmDelete).toHaveBeenCalledTimes(1);
   });
 });

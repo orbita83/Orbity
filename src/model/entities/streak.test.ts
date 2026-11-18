@@ -1,4 +1,4 @@
-import { LocalDate } from "@/model/entities/local-date";
+import { LocalDate } from "@/model/entities/localDate";
 import { calculateStreak } from "@/model/entities/streak";
 
 const D = LocalDate.parse("2026-11-14");

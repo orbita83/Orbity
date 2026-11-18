@@ -6,20 +6,20 @@ import type {
   NewTaskPickerField,
   NewTaskState,
   NewTaskTextField,
-} from "../viewmodel/NewTaskViewModel";
+} from "../viewmodel/useNewTaskViewModel";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TaskPickerModal } from "./components/TaskPickerModal";
 import { TextField } from "./components/TextField";
-import { TASKS_COPY, formatTasksCopy } from "./tasks-copy";
+import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicColors, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
 
 export type NewTaskScreenContentProps = NewTaskState &
-  NewTaskActions & {
+  Omit<NewTaskActions, "handleClose"> & {
     /** Fecha o formulário sem criar e volta para Tarefas. */
     onClose: () => void;
     /** Depois do sucesso: limpa o formulário e volta para a lista. */

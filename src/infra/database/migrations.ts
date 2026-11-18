@@ -1,4 +1,4 @@
-import type { SqlStatement } from "@/infra/database/i-sql-executor";
+import type { SqlStatement } from "@/infra/database/iSqlExecutor";
 
 export type Migration = { version: number; statements: readonly SqlStatement[] };
 

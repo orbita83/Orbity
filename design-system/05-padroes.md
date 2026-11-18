@@ -143,7 +143,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
 - **Faça (1.2):** Divida a linha de filtros em colunas de largura igual, alinhadas ao botão Criar e aos cards; escreva prazos no formato "19/10 · 08:00–09:00".
-- **Faça:** Exija confirmação antes de apagar itens em lote e garanta que ações destrutivas combinem ícone e texto com contraste acessível.
+- **Faça:** Exija confirmação antes de apagar itens (individual ou em lote) com a variante Confirmação do [modal](04-componentes/modal.md), mantendo o botão "Excluir" no estilo primário existente (`PrimaryButton`) e "Manter tarefas" no estilo secundário existente.
 - **Evite:** Mensagens ou alertas punitivos ao desmarcar tarefas concluídas.
 
 ---
@@ -165,7 +165,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Vazio** | "Nenhuma tarefa nesta rotina" com atalho para adicionar | `font.body`, `button.bg`, `button.label`, `space.md` |
 | **Sucesso** | Tarefas riscadas e feedback comemorativo de avanço no Cosmos | `color.action`, `radius.lg`, `font.body`, `motion.duration.short` |
 
-- **Faça:** Permita reverter a conclusão sem perda punitiva de sequência.
+- **Faça:** Permita reverter a conclusão sem perda punitiva de sequência e confirme a exclusão da rotina pelo [modal](04-componentes/modal.md) compartilhado (`ConfirmDialog`), com "Excluir rotina" no estilo primário existente (`PrimaryButton`), "Manter rotina" no estilo secundário existente e aviso com "Desfazer" após excluir.
 - **Evite:** Bloquear a reorganização de hábitos na rotina.
 
 ---
