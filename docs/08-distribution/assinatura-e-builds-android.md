@@ -183,7 +183,10 @@ Os builds usam os valores da [T0010](./versionamento-do-app.md), lidos do `app.j
 | Keystore criado no EAS e backup guardado pelo responsável | 10/11/2026 | Concluído (Seção 3.2) |
 | Build `development` | 10/11/2026 | Concluído — [394582b2-5ca0-42fa-942c-8f5ded32cfb9](https://expo.dev/accounts/mailsons/projects/orbity/builds/394582b2-5ca0-42fa-942c-8f5ded32cfb9), com credenciais remotas e a configuração `Build Credentials 2XZlO4RCyx` |
 | Instalação do build `development` em Android | 10/11/2026 | **Impedimento:** o aparelho exibiu "App não instalado". Causa não diagnosticada (Seção 6.4); a validação de abertura e conexão ao servidor de desenvolvimento permanece pendente |
-| Build `production` (`.aab`) | 10/11/2026 | Solicitado — [1a321ab4-c93e-4bd2-8cbb-f89c5a66fee8](https://expo.dev/accounts/mailsons/projects/orbity/builds/1a321ab4-c93e-4bd2-8cbb-f89c5a66fee8), com credenciais remotas e a configuração `Build Credentials 2XZlO4RCyx`; conclusão e formato `.aab` a confirmar na página do build |
+| Build `production` (`.aab`) | 10/11/2026 | Solicitado — [1a321ab4-c93e-4bd2-8cbb-f89c5a66fee8](https://expo.dev/accounts/mailsons/projects/orbity/builds/1a321ab4-c93e-4bd2-8cbb-f89c5a66fee8), com credenciais remotas e a configuração `Build Credentials 2XZlO4RCyx` |
+| Conclusão do build `production` | 20/11/2026 | Concluído — `npx eas-cli build:view 1a321ab4-c93e-4bd2-8cbb-f89c5a66fee8` mostra status `FINISHED`, perfil `production`, artefato `.aab`, versão `0.1.0` e `versionCode` `1`. O conteúdo do AAB (nível de API, permissões e assinatura) é auditado na [T0013 (#79)](https://github.com/orbita83/Orbity/issues/79) |
+
+A T0012 foi encerrada em 15/11/2026 com o impedimento de instalação registrado acima, para não atrasar as etapas seguintes. A fila do EAS levou cerca de 40 minutos para entregar o APK, e a nova tentativa ficou para depois. A instalação e a abertura do build `development` em um Android continuam sem evidência e devem constar como pendentes de verificação na T0013, e não como atendidas.
 
 ## 11. Referências
 
