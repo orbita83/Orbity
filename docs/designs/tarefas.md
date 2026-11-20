@@ -29,7 +29,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 - Tarefas dentro de rotinas e a relação entre as duas abas (lacuna "Tarefas de Rotina vs. Gerais" do `05-padroes.md`).
 - Categorias criadas pelo estudante; a lista é fixa nesta iteração.
 - Sessão de foco ligada a uma tarefa (fica para o motor do Modo Foco).
-- Sincronização entre aparelhos e persistência na web (a web continua em memória, como na D8 da Início).
+- Sincronização entre aparelhos.
 
 ## Decisions & Open Questions
 
@@ -72,7 +72,7 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 
 ### 3. Persistência (`src/infra/`)
 - Migração v2 em `database/migrations.ts`.
-- `SqliteTaskDataSource` (Android) e `MemoryTaskDataSource` (web e testes), validados pela mesma suíte de contrato (`taskDataSource.contract.ts`).
+- `SqliteTaskDataSource` (Android) e `MemoryTaskDataSource` (testes), validados pela mesma suíte de contrato (`taskDataSource.contract.ts`).
 - `TaskActivityDataSource` implementa `IActivityDataSource` sobre o DataSource de tarefas.
 
 ### 4. Composição (`src/di/`)

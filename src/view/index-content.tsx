@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Animated,
   PanResponder,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -83,18 +82,8 @@ export const HomeScreenContent = ({
     onStageChange: onSetSheetStage,
   });
 
-  useEffect(() => {
-    if (Platform.OS !== "web") return;
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onCollapseSheet();
-    };
-    globalThis.addEventListener("keydown", handleKey);
-    return () => globalThis.removeEventListener("keydown", handleKey);
-  }, [onCollapseSheet]);
-
   // Toque e arraste no cenário passam por um único responder. Com um Pressable por cima, ele
-  // sobrescrevia os handlers do gesto (o arraste não chegava) e, na web, o clique do mouse
-  // ainda disparava o toque depois de um arraste, abrindo dois estágios de uma vez.
+  // sobrescrevia os handlers do gesto (o arraste não chegava).
   const heroPan = useMemo(
     () =>
       PanResponder.create({

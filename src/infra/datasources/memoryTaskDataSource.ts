@@ -6,7 +6,7 @@ type StoredEntry = {
   readonly task: Task;
 };
 
-/** Mesma semântica de persistência do SQLite, em memória. Usado na web e em testes. */
+/** Mesma semântica de persistência do SQLite, em memória. Usado em testes. */
 export class MemoryTaskDataSource implements ITaskDataSource {
   private readonly items = new Map<string, StoredEntry>();
   private sequence = 0;

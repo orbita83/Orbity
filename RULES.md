@@ -15,10 +15,9 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
   | `src/model/` | `entities/localDate.ts`, `entities/studentProfile.ts`, `datasources/iTaskDataSource.ts`, `services/iClockService.ts`, `errors.ts`, `__fixtures__/task.fixture.ts` |
   | `src/usecase/` | `iTaskUseCases.ts`, `taskUseCases.ts`, `taskUseCases.test.ts` |
   | `src/infra/` | `datasources/sqliteTaskDataSource.ts`, `datasources/taskDataSource.contract.ts`, `services/systemClockService.ts`, `database/iSqlExecutor.ts` |
-  | `src/di/` | `container.ts`, `persistence.web.ts` |
+  | `src/di/` | `container.ts`, `persistence.ts` |
 
   - **Arquivos da `view` que não são telas nem componentes** (textos, hooks e fixtures) também usam `camelCase`: `src/view/homeCopy.ts`, `src/view/theme/useReduceMotion.ts`, `src/view/__fixtures__/taskList.fixture.ts`. Assim, `kebab-case` fica só para rotas e telas, e `PascalCase` só para componentes.
-  - O sufixo de plataforma do Metro continua separado por ponto (`persistence.web.ts`).
 - **Arquivos de View e ViewModel:**
 
   | Tipo de arquivo | Nome do arquivo | Exemplo |

@@ -27,7 +27,6 @@ import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 import { RoutineUseCases } from "@/usecase/routineUseCases";
 import { StreakUseCases } from "@/usecase/streakUseCases";
 import { TaskUseCases } from "@/usecase/taskUseCases";
-// Resolvido pelo Metro: persistence.ts no Android e persistence.web.ts na web (D8).
 import { createPersistence } from "./persistence";
 
 /**

@@ -1,6 +1,6 @@
 # Orbity — Agent Harness
 
-Você está operando no repositório do **Orbity** (aplicativo mobile/web para organização e hábitos de estudo, construído com **React Native 0.86 + Expo 57 + Expo Router + TypeScript**).
+Você está operando no repositório do **Orbity** (aplicativo mobile para organização e hábitos de estudo, construído com **React Native 0.86 + Expo 57 + Expo Router + TypeScript**).
 
 Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **não adivinhe convenções**: sempre que uma tarefa envolver um dos gatilhos abaixo, leia o documento indicado antes de agir.
 

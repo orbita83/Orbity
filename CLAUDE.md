@@ -12,7 +12,7 @@ O harness operacional do projeto (roteamento obrigatório de leitura por gatilho
 
 | Objetivo | Comando |
 | :--- | :--- |
-| Servidor de desenvolvimento (Expo) | `npm start` (`npm run android` / `npm run web`) |
+| Servidor de desenvolvimento (Expo) | `npm start` (`npm run android`) |
 | Lint | `npm run lint` |
 | Tipos | `npx --no-install tsc --noEmit` |
 | Testes (Jest, não interativo) | `npm test` |
@@ -40,7 +40,7 @@ src/app (rotas) → src/view → src/viewmodel → src/usecase (I*UseCases) → 
 - **Rotas:** `src/app/_layout.tsx` define um navegador `Tabs` com barra customizada (`MainTabBar`) e as abas `index`, `tasks`, `routines`, `cosmos` e `profile`. As rotas `new-task`, `new-routine`, `routine-details`, `achievements`, `categories` e `settings` ficam fora da barra (`href: null`). Cada módulo de rota só reexporta como `default` a tela de mesmo nome em `src/view/` (ex.: `src/app/tasks.tsx` → `src/view/tasks.tsx`).
 - **Navegação:** quem navega é a ViewModel (`router` do `expo-router`, parâmetros de rota e foco da tela). A View não chama hooks de navegação (`RULES.md`, "Navegação na ViewModel").
 - **Composição:** `src/di/container.ts` expõe `createContainer`, `createAppContainer`, `composeUseCase`, `resolveUseCase` e a instância `container`. As ViewModels recebem um `I*UseCases` opcional por parâmetro, o que permite trocar dependências em testes em três níveis: Use Case, overrides do container e ViewModel (`ARCHITECTURE.md`, Seção 6).
-- **Persistência:** SQLite no Android (`src/di/persistence.ts`, ADR-0001) e memória na web (`src/di/persistence.web.ts`, escolhido pelo Metro). Só `src/infra/database/expoSqlExecutor.ts` importa o `expo-sqlite`; os testes usam `tests/fixtures/better-sqlite-executor.ts`.
+- **Persistência:** SQLite no Android (`src/di/persistence.ts`, ADR-0001). Só `src/infra/database/expoSqlExecutor.ts` importa o `expo-sqlite`; os testes usam `tests/fixtures/better-sqlite-executor.ts`.
 - **Erros:** só a ViewModel usa `try/catch` na apresentação. A Infra converte falhas técnicas na subclasse de `DomainError` do seu tipo (`src/model/errors.ts`, ex.: `toDataSourceError` → `DataSourceError`), e a ViewModel decide pela subclasse com `instanceof`, e a View apenas lê `error`/`loading`.
 - **Estado atual:** todas as camadas têm código. Há domínio, casos de uso e persistência para Tarefas, Rotinas, sequência (streak), Home e Perfil. Conquistas, Categorias e Configurações ainda são telas provisórias.
 - **Tema:** `src/view/theme/tokens.ts` espelha `design-system/02-tokens.md` e exporta `themes.light`, `themes.dark` e `themes.cosmic`, além de grupos como `cosmicColors`, `motionTokens` e `accessibilityTokens`. Os componentes consomem `themes.<modo>`; nunca use valores literais. `useReduceMotion.ts` respeita a preferência de redução de movimento do sistema.

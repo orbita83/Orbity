@@ -32,7 +32,6 @@ Fluxo atual: `app/<rota>.tsx` re-exporta uma tela de `view/` (`HomeScreen`, `Tas
 
 - `app/_layout.tsx` configura a barra de status do sistema (`StatusBar style="light"`).
 - `MainTabBar` emite `tabPress` e chama `navigation.navigate`. Também lê os insets de área segura.
-- `FilterChips` move o foco e dispara `click()` no DOM ao navegar com as setas, só na web.
 - `di/container.ts` instancia o singleton `container` quando o módulo carrega, com fábricas vazias e sem I/O.
 - Não há rede, persistência nem acesso a disco no código atual.
 

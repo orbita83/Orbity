@@ -44,7 +44,7 @@ Para componentes em qualquer tema:
 - Controles e atalhos interativos em lista devem utilizar obrigatoriamente altura mínima de `target.min-size` (48 dp) e `radius.md`. (Herdado)
 - Para elementos de carregamento (esqueleto/skeleton), utilize larguras percentuais (ex.: 60%, 80%, 100%) e alturas alinhadas às alturas de linha tipográficas (`lineHeight`: 32 px para títulos, 24 px para corpo e 20 px para rótulos) com `radius.md`. (Novo)
 - Mantenha espaçamentos consistentes entre elementos com a mesma função. (Adaptado)
-- Em grupos de controles lado a lado (chips, campos em linha), divida a linha em colunas de largura igual, com `minmax(0, 1fr)` na Web e `flex: 1` com `minWidth: 0` no app, alinhadas às bordas do botão e dos cards. (Novo, 1.2)
+- Em grupos de controles lado a lado (chips, campos em linha), divida a linha em colunas de largura igual com `flex: 1` e `minWidth: 0` no app, alinhadas às bordas do botão e dos cards. (Novo, 1.2)
 
 ## Ícones
 

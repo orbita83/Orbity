@@ -1,7 +1,7 @@
 import type { LocalDate } from "@/model/entities/localDate";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 
-/** Mesmo comportamento do SQLite, em memória. Usado na web (D8) e em testes. */
+/** Mesmo comportamento do SQLite, em memória. Usado em testes. */
 export class MemoryDailyActivityDataSource implements IDailyActivityDataSource {
   private readonly days = new Map<string, LocalDate>();
 
