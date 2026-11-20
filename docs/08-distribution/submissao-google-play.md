@@ -23,6 +23,7 @@ Aprovar o PR de release **não** equivale a aprovar o envio, e enviar **não** e
 - [ ] Conta Google Play Console criada e verificada pelo titular ([T0009 — Seção 5](./identidade-e-propriedade.md#5-propriedade-da-publicação-na-google-play)).
 - [ ] Aplicativo criado no Play Console com o pacote `io.github.orbita83.orbity`. O pacote não pode mudar depois do primeiro envio ([T0009 — Seção 3.3](./identidade-e-propriedade.md#33-validação-do-pacote-aprovado)).
 - [ ] Requisitos de conta, políticas e nível de API conferidos pela T0013 — [#79](https://github.com/orbita83/Orbity/issues/79).
+- [ ] Consultar a [auditoria Google Play](./auditoria-google-play.md) e resolver as pendências aplicáveis à faixa pretendida. O relatório de 20/11/2026 não comprova prontidão do AAB nem elegibilidade da conta; configurações locais conferidas não substituem evidências do artefato e do Console.
 - [ ] Para envio a faixas abertas ou produção: versão aprovada pelo fluxo de release, com tag `vX.Y.Z` na `main` ([`CONTRIBUTING.md` — Seção 4.7](../../CONTRIBUTING.md#47-convenções-de-git-tags-e-github-releases)).
 - [ ] AAB do perfil `production` gerado a partir do commit da versão, com build `FINISHED` no EAS.
 
