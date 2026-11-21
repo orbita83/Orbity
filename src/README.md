@@ -2,20 +2,22 @@
 
 ## System Overview
 
-Código-fonte do Orbity (React Native + Expo + Expo Router + TypeScript), organizado em camadas conforme o [`ARCHITECTURE.md`](../ARCHITECTURE.md). Hoje só existe código em três camadas:
+Código-fonte do Orbity (React Native + Expo + Expo Router + TypeScript), organizado em camadas conforme o [`ARCHITECTURE.md`](../ARCHITECTURE.md). Todas as camadas têm código:
 
-- `app/`: roteamento Expo Router. O `_layout.tsx` monta a navegação por abas (`Tabs`) com a barra customizada `MainTabBar`.
-- `view/`: telas exportadas como `default`, componentes de UI nomeados e os tokens de tema.
-- `di/`: Composition Root (`container.ts`), que por enquanto registra fábricas vazias.
+- `app/`: roteamento Expo Router. O `_layout.tsx` monta a navegação por abas (`Tabs`) com a barra customizada `MainTabBar`; os demais arquivos só re-exportam a tela de mesmo nome da `view/`.
+- `view/`: telas (`kebab-case.tsx`), partes de tela (`*-content.tsx`), componentes reutilizáveis (`components/`), textos (`*Copy.ts`) e tokens de tema (`theme/`).
+- `viewmodel/`: hooks `use*ViewModel` que guardam o estado das telas, chamam os contratos `I*UseCases` e cuidam da navegação.
+- `usecase/`: contratos `I*UseCases` e implementações para Tarefas, Rotinas, sequência (streak), Início e Perfil.
+- `model/`: entidades, erros de domínio (`errors.ts`) e contratos de DataSources e serviços.
+- `infra/`: DataSources em memória e em SQLite (Android, ADR-0001), banco e migrações, e o relógio do sistema.
+- `di/`: Composition Root (`container.ts` e `persistence.ts`), que liga a `infra/` aos Use Cases.
 
-As camadas `viewmodel/`, `usecase/`, `model/` (`entities/`, `errors.ts`, `datasources/`, `services/`) e `infra/` (`datasources/`, `services/`) contêm apenas `.gitkeep`. Por isso não têm contrato próprio nesta execução.
-
-Fluxo atual: `app/<rota>.tsx` re-exporta uma tela de `view/` (`HomeScreen`, `TasksScreen`, `RoutinesScreen`, `CosmosScreen`, `ProfileScreen`). Cada tela delega para `PlaceholderScreen`. Nenhuma tela consome ViewModels, Use Cases ou o container de DI ainda.
+Fluxo atual: `app/<rota>.tsx` → tela de `view/` → `use*ViewModel` → `container.useCases` → Use Case → contratos de `model/`, implementados pela `infra/`. Cosmos, Conquistas, Categorias e Configurações ainda são telas provisórias (`PlaceholderScreen`).
 
 ## Subdirectories & System Boundaries
 
 - `app`: [./app/README.md](./app/README.md) — módulos de rota sem lógica. O `RootLayout` define as cinco abas (Início, Tarefas, Rotinas, Cosmos, Perfil), a rota inicial `index`, `headerShown: false` e a `StatusBar` `light`.
-- `view`: [./view/README.md](./view/README.md) — as cinco telas placeholder, mais:
+- `view`: [./view/README.md](./view/README.md) — telas, partes de tela e textos, mais:
   - `components`: [./view/components/README.md](./view/components/README.md) — `MainTabBar`, `NavBar`, `TaskCard`, `FilterChips`/`FilterChipItem`, `PrimaryButton`, `MaterialSymbol` e `PlaceholderScreen`.
   - `theme`: [./view/theme/README.md](./view/theme/README.md) — `tokens.ts`, com `primitives`, `cosmicColors`, `accessibilityTokens`, `sharedTokens` e `themes` (`light`, `dark`, `cosmic`).
 - `di`: [./di/README.md](./di/README.md) — `createContainer`, `createAppContainer`, `composeUseCase`, `resolveUseCase`, `appContainerDefinition` e o singleton `container`.
@@ -32,8 +34,8 @@ Fluxo atual: `app/<rota>.tsx` re-exporta uma tela de `view/` (`HomeScreen`, `Tas
 
 - `app/_layout.tsx` configura a barra de status do sistema (`StatusBar style="light"`).
 - `MainTabBar` emite `tabPress` e chama `navigation.navigate`. Também lê os insets de área segura.
-- `di/container.ts` instancia o singleton `container` quando o módulo carrega, com fábricas vazias e sem I/O.
-- Não há rede, persistência nem acesso a disco no código atual.
+- `di/container.ts` instancia o singleton `container` quando o módulo carrega. Criar o container não abre o banco: o `DatabaseProvider` só abre o SQLite no primeiro uso.
+- Tarefas, Rotinas e o registro diário persistem em SQLite no aparelho. O Perfil ainda fica em memória. Não há acesso à rede.
 
 ## System Verification
 

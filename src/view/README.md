@@ -2,7 +2,7 @@
 
 ## Overview
 
-Camada de apresentação do Orbity. Contém os componentes de tela exportados como `default` (re-exportados pelos módulos de rota em `src/app/`), os componentes de UI reutilizáveis em `components/` e os tokens visuais em `theme/`. No estado atual, todas as telas são placeholders que delegam para `PlaceholderScreen`; nenhuma tela desta pasta consome `viewmodel`, `usecase` ou `infra`.
+Camada de apresentação do Orbity. Contém os componentes de tela exportados como `default` (re-exportados pelos módulos de rota em `src/app/`), as partes de tela (`*-content.tsx`), os textos (`*Copy.ts`), os componentes de UI reutilizáveis em `components/` e os tokens visuais em `theme/`. Cada tela liga a sua ViewModel (`src/viewmodel/`) às partes de apresentação e não importa `usecase`, `infra` nem `di`. Cosmos, Conquistas, Categorias e Configurações ainda são telas provisórias que delegam para `PlaceholderScreen`.
 
 ## Interface
 
