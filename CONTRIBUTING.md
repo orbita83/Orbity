@@ -205,7 +205,7 @@ Todos os Pull Requests de desenvolvimento devem seguir o padrão de título:
 **Requisitos:**
 
 - A criação do Pull Request pode ser feita manualmente pelo integrante ou pelo agente em nome dele, seguindo o template `.github/PULL_REQUEST_TEMPLATE/development.md`.
-- O autor do Pull Request deve constar como responsável (*assignee*). Quando o agente abre o PR, o responsável é o integrante em nome de quem ele atua.
+- O autor do Pull Request deve constar como responsável (*assignee*). O workflow descrito em **Responsável (assignee)**, abaixo, faz essa atribuição ao abrir o PR. Quando o agente abre o PR em nome de um integrante, confira se ele foi atribuído e, se não, atribua-o.
 - A branch de destino deve ser `development`.
 - O prefixo deve corresponder ao tipo principal da alteração.
 - O escopo deve indicar objetivamente a área afetada.

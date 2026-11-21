@@ -49,7 +49,7 @@ src/app (rotas) → src/view → src/viewmodel → src/usecase (I*UseCases) → 
 
 ## Pontos de atenção
 
-- `README.md` é o guia de onboarding técnico (stack, instalação, execução, qualidade, Storybook, build EAS e mapa da documentação). Para regras de contribuição e de código, a fonte de verdade continua sendo `AGENTS.md` e os documentos que ele roteia.
+- `README.md` é a apresentação do projeto e o guia de primeiros passos (funcionalidades, stack, instalação, arquitetura, ODS, qualidade, build Android e mapa da documentação). Para regras de contribuição e de código, a fonte de verdade continua sendo `AGENTS.md` e os documentos que ele roteia.
 - Bugs, inconsistências ou outros desvios encontrados durante uma tarefa seguem `CONTRIBUTING.md` (Seção 2.6), resumida no `AGENTS.md` (Seção 3).
 - Nomes de arquivo (`RULES.md`): telas da `view` em `kebab-case.tsx` com o mesmo nome da rota em `src/app/`; partes de apresentação de uma tela em `kebab-case` com sufixo `-content`; componentes reutilizáveis de `src/view/components/` em `PascalCase.tsx`; ViewModels em `useNomeViewModel.ts`, com o mesmo nome do hook exportado; os arquivos de `model`, `usecase`, `infra` e `di`, e os da `view` que não são telas nem componentes, em `camelCase` (prefixo `i` nos que só têm uma interface, ex.: `iTaskDataSource.ts`).
 - As stories (`*.stories.tsx`) ficam ao lado dos componentes e são renderizadas via `@storybook/react-native-web-vite` (`.storybook/`). No Storybook, o `expo-router` é substituído por `.storybook/mocks/expo-router.ts` (`docs/storybook.md`).
