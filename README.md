@@ -235,7 +235,7 @@ O **ODS** adapta o **Material Design 3** à identidade cósmica do Orbity e defi
 </div>
 
 > [!NOTE]
-> **Tema:** o app usa a identidade 🌌 **cósmica** (`themes.cosmic`) em todas as telas. `themes.light` e `themes.dark` são contratos legados da versão 1.0, mantidos apenas para migração. Ainda não há troca de tema pelo estudante, e o modo claro cósmico ainda não foi definido.
+> **Tema:** o app usa a identidade 🌌 **cósmica** (`themes.cosmic`) em todas as telas.
 
 | Documento | Conteúdo |
 | :--- | :--- |
