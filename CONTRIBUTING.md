@@ -249,6 +249,13 @@ O workflow [`.github/workflows/labels-pull-requests.yml`](.github/workflows/labe
 - O workflow usa o evento `pull_request` e roda com as regras da própria branch do PR. Por isso, um PR só recebe labels automáticas se a sua branch já contiver o workflow; branches criadas antes dele precisam ser atualizadas com a `development`.
 - PRs abertos a partir de forks não recebem labels automáticas, porque o GitHub entrega a eles um token só de leitura.
 
+**Responsável (assignee):**
+
+O workflow [`.github/workflows/auto-assign-pull-requests.yml`](.github/workflows/auto-assign-pull-requests.yml) atribui o autor como responsável quando um Pull Request é aberto ou reaberto, qualquer que seja a branch de destino.
+
+- Só o autor é atribuído. A automação não remove nem substitui quem foi atribuído manualmente e não age se o autor já for responsável.
+- Assim como as labels, usa o evento `pull_request`: só vale para PRs cuja branch já contém o workflow, e PRs de forks ou abertos por bots ficam de fora.
+
 ### 1.5. Pull Requests de Publicação
 
 Os Pull Requests de publicação são responsáveis por integrar à branch `main` as alterações acumuladas e validadas na branch `development`, estabelecendo uma nova versão estável do projeto.
