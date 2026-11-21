@@ -4,6 +4,7 @@ Versões no formato `MAIOR.MENOR.CORREÇÃO`. Mudança grande = versão nova (ex
 
 ## Não publicado
 
+- **CategoryTag (issue #25):** novo componente informativo [tag de categoria](04-componentes/tag-categoria.md), adaptado do Assist chip do Material 3. Ícone e rótulo em `color.on-surface` sobre `color.action-subtle`, com `radius.md` e `font.label`, sem toque nem foco. Contraste de 14,33:1 no cósmico, 5,38:1 no escuro e 12,61:1 no claro, verificado em `tests/ods-theme.test.cjs`. O `TaskCard` mostra a tag antes do prazo, numa linha que quebra com texto ampliado; antes, o rótulo da categoria vinha colado ao prazo como texto. O padrão F5 registra que não há filtro por categoria nesta iteração. Implementado em `CategoryTag.tsx` e `TaskCard.tsx`; nenhum token novo.
 - **ConfirmDialog (issue #151):** ajuste na aplicação dos estilos existentes nos diálogos de confirmação de exclusão de tarefas (individual e em lote) e rotinas. A confirmação (`confirmLabel`) passa a utilizar o `PrimaryButton` existente e o cancelamento (`cancelLabel`) passa a utilizar o estilo secundário com borda, mantendo o componente compartilhado e reutilizável para futuras funcionalidades sem criar novas cores, tokens ou variantes destrutivas.
 - **NavBar (issue #146):** o rótulo passa a usar o tamanho de `font.caption` (12/16, antes 14/20 de `font.label`), mantendo os pesos 500 e 700, e as abas perdem o espaço entre si e o padding lateral, como no protótipo. Assim "Cosmos" não quebra mais em duas linhas em telas de 360 dp. Implementado em `NavBar.tsx`.
 
