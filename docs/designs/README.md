@@ -2,6 +2,8 @@
 
 Este diretório reúne os designs técnicos aprovados do Orbity, produzidos com o Elephant-Goldfish Model (EGM). Cada funcionalidade tem **um** arquivo `<funcionalidade>.md`, que é a especificação de referência para implementar e revisar.
 
+O uso do EGM é **opcional** ([`AGENTS.md`](../../AGENTS.md), Seção 4): uma atividade pode ser implementada sem design técnico. Quando a funcionalidade tem design aqui, a implementação segue o design, e qualquer divergência é registrada atualizando o design no mesmo Pull Request ([`CONTRIBUTING.md`](../../CONTRIBUTING.md), Seção 2.6).
+
 ## Como o EGM organiza os artefatos
 
 | Onde | O que fica | Vai para o Git? |
