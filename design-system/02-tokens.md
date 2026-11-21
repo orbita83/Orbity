@@ -129,6 +129,7 @@ Os temas exportam `divider.width` e `feedback.pressedOpacity`. Validar o contras
 | `motion.duration.short`  | 100 ms                       | Feedback de toque       | Adaptado |
 | `motion.duration.medium` | 300 ms                       | Transições entre telas  | Adaptado |
 | `motion.easing.standard` | `cubic-bezier(0.2, 0, 0, 1)` | Curva padrão            | Adaptado |
+| `motion.duration.hold`   | 500 ms, curva linear         | Toque longo: tempo para ativar e duração do preenchimento (fill-on-hold) | Novo (1.3) |
 | `motion.scale-pressed`   | `0.96`                       | Escala de botões, ícones, abas e links ao toque | Novo (1.2) |
 | `motion.opacity-pressed` | `0.8`                        | Opacidade aplicada junto da escala ao toque     | Novo (1.2) |
 | `motion.planet.rotation` | 24 s, linear, contínua       | Volta das crateras do planeta | Novo (1.2) |
