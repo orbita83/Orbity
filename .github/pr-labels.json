@@ -1,0 +1,43 @@
+{
+  "types": {
+    "feat": "feature",
+    "fix": "fix",
+    "docs": "docs",
+    "refactor": "refactor",
+    "test": "test",
+    "chore": "chore"
+  },
+  "areas": [
+    {
+      "label": "ci",
+      "files": [".github/workflows/**", ".husky/**", "commitlint.config.cjs"]
+    },
+    {
+      "label": "cd",
+      "files": ["eas.json", ".github/workflows/eas-build.yml"]
+    },
+    {
+      "label": "design",
+      "files": ["design-system/**", "src/view/theme/**"]
+    },
+    {
+      "label": "ui",
+      "files": ["src/view/**"],
+      "exclude": ["src/view/theme/**", "**/*.stories.tsx"]
+    },
+    {
+      "label": "test",
+      "files": ["tests/**", "**/*.test.ts", "**/*.test.tsx", "**/*.test.js", "**/*.test.cjs"],
+      "requiresOther": ["src/**"]
+    },
+    {
+      "label": "docs",
+      "files": ["docs/**", "*.md"],
+      "unlessType": ["docs"]
+    }
+  ],
+  "bases": {
+    "main": { "label": "production", "skipAreas": true }
+  },
+  "ignoredFiles": ["package-lock.json", "storybook-static/**"]
+}
