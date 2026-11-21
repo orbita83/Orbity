@@ -217,6 +217,21 @@ O template deve permitir descrever as alterações, registrar as validações re
 
 O modelo está em `.github/PULL_REQUEST_TEMPLATE/development.md`. Ao abrir o Pull Request para `development` pela interface do GitHub, acrescente `template=development.md` à URL de comparação (`?template=development.md` ou `&template=development.md`, se já houver outros parâmetros).
 
+**Labels:**
+
+O workflow [`.github/workflows/labels-pull-requests.yml`](.github/workflows/labels-pull-requests.yml) aplica labels automaticamente quando um Pull Request é aberto, reaberto, editado ou recebe novos commits. As regras ficam em [`.github/pr-labels.json`](.github/pr-labels.json), a lógica fica em [`scripts/pr-labels.cjs`](scripts/pr-labels.cjs) e o log do job informa qual regra gerou cada label.
+
+| Tipo | Labels | Regra |
+| :--- | :--- | :--- |
+| Tipo | `feature`, `fix`, `docs`, `refactor`, `test`, `chore` | Uma por PR, pelo prefixo do título ou, se o título não seguir o padrão, pelo prefixo da branch. |
+| Área | `ci`, `cd`, `design`, `ui`, `test`, `docs` | Pelos caminhos alterados, ignorando `package-lock.json` e `storybook-static/`. `test` só vale com código de `src/` no mesmo PR, e `docs` não se repete em PR do tipo `docs`. |
+| Destino | `production` | PR para a `main`. Nesse caso não há labels de área, porque a publicação agrega todas as áreas. |
+
+- A automação remove só as labels que ela mesma aplicou e que deixaram de valer (ex.: o título mudou de `fix` para `refactor`).
+- Labels adicionadas manualmente nunca são removidas, e uma label que alguém removeu à mão não é reaplicada naquele PR.
+- Continuam manuais as labels que dependem de julgamento: `accessibility`, `ux`, `bug`, `enhancement`, `development`, `good first issue`, `help wanted`, `question`, `duplicate`, `invalid` e `wontfix`.
+- O workflow usa `pull_request_target`, então roda com as regras da branch de destino. Mudanças em `.github/pr-labels.json` só passam a valer depois do merge.
+
 ### 1.5. Pull Requests de Publicação
 
 Os Pull Requests de publicação são responsáveis por integrar à branch `main` as alterações acumuladas e validadas na branch `development`, estabelecendo uma nova versão estável do projeto.
