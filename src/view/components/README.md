@@ -17,6 +17,7 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
 - `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; a ação de confirmação (`confirmLabel`) recebe `PrimaryButton` (`onConfirm`) e o ✕ e a ação de cancelamento (`cancelLabel`, estilo secundário com borda) chamam `onCancel`.
 - `ContextualActionBar.tsx`: `ContextualHeader({ countLabel, onCancel })` e `ContextualActionBar({ actions })` para a seleção múltipla; `ContextualAction` = `{ id, label, icon, onPress, destructive?, disabled? }`.
 - `IconTile.tsx`: `IconTile({ icon })`, quadro decorativo com o ícone de uma rotina.
+- `CategoryTag.tsx`: `CategoryTag({ label, symbol, theme? })`, tag informativa e não interativa da categoria de estudo, anunciada como "Categoria: <rótulo>" (`design-system/04-componentes/tag-categoria.md`).
 - `ScreenHeader.tsx`: `ScreenHeader({ title, onBack, variant?, backLabel })`, cabeçalho das telas empilhadas (seta ou ✕).
 - `SkeletonCards.tsx`: `SkeletonCards({ count?, accessibilityLabel })`, esqueleto estático dos cards enquanto os dados carregam (padrões F5 e F8), com os tokens do esqueleto da Início.
 - `Snackbar.tsx`: `Snackbar({ message, actionLabel?, onAction? })`, aviso curto com ação opcional.
@@ -24,8 +25,8 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
 - `PlaceholderScreen.tsx`
   - `PlaceholderScreen({ title, message })`: tela de espera com `ScrollView`, título com `accessibilityRole="header"` e mensagem; usa fixamente `themes.cosmic`.
 - `TaskCard.tsx`
-  - `TaskCard(props: TaskCardProps)`: cartão de tarefa com checkbox (`accessibilityRole="checkbox"`), título, `dueDate` opcional e botão de opções opcional.
-  - `TaskCardProps`: `title`, `dueDate?`, `completed`, `onToggleCompleted`, `onOptionsPress?`, `onLongPress?`, `pinned?`, `selectionMode?`, `selected?`, `onToggleSelected?`, `theme?` (padrão `themes.cosmic`).
+  - `TaskCard(props: TaskCardProps)`: cartão de tarefa com checkbox (`accessibilityRole="checkbox"`), título, `category` e `dueDate` opcionais e botão de opções opcional.
+  - `TaskCardProps`: `title`, `dueDate?`, `category?` (`TaskCardCategory`: `{ label, symbol }`, mostrada como `CategoryTag`), `completed`, `onToggleCompleted`, `onOptionsPress?`, `onLongPress?`, `pinned?`, `selectionMode?`, `selected?`, `onToggleSelected?`, `theme?` (padrão `themes.cosmic`).
 - `FilterChips.tsx`
   - `FilterChips<T extends string = TaskFilter>(props: FilterChipsProps<T>)`: grupo `accessibilityRole="radiogroup"` de chips; padrão `filters = DEFAULT_TASK_FILTERS`, `accessibilityLabel = "Filtros de tarefas"`, `theme = themes.light`.
   - `FilterChipItem(props: FilterChipItemProps)`: chip individual com `accessibilityRole="radio"` e anel de foco.

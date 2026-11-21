@@ -76,6 +76,8 @@ for (const [foreground, background, minimum] of [
   [themes.cosmic.color.focus, themes.cosmic.color['surface-variant'], 3],
   [themes.light.color['on-surface-variant'], themes.light.color.surface, 4.5],
   [themes.light.color['on-surface-variant'], themes.light.color['surface-variant'], 4.5],
+  // Tag de categoria (issue #25): texto e ícone em on-surface sobre action-subtle, nos três temas.
+  ...['cosmic', 'dark', 'light'].map((name) => [themes[name].color['on-surface'], themes[name].color['action-subtle'], 4.5]),
   // Tela Inicial: ícones e chama são indicadores gráficos (3:1) sobre o fundo, o painel e o card.
   ...[cosmicColors.iconAccent, cosmicColors.streakFlame, cosmicColors.achievementPendingIcon].flatMap((color) => [
     [color, cosmicColors.background, 3],
