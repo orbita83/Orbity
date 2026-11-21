@@ -163,7 +163,7 @@ Refatorações e testes não têm template próprio: use o `[CHORE]`. O prefixo 
 - As labels devem corresponder à classificação da Issue.
 - Antes de criar uma Issue, deve-se verificar a existência de registros duplicados.
 - A Issue deve apresentar informações suficientes para compreender a necessidade e orientar sua implementação.
-- Quando a Issue registra um desvio encontrado durante outra atividade, o campo **Origem** do template informa a Issue ou o Pull Request em que ele foi encontrado (ver [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade)).
+- Quando a Issue registra um desvio encontrado durante outra atividade, o campo **Origem** do template informa a Issue ou o Pull Request em que ele foi encontrado, e a Issue recebe a label `deviation` (e também `blocker`, se o desvio bloquear a atividade). Ver [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade).
 
 **Obrigatoriedade:**
 
@@ -245,6 +245,7 @@ O workflow [`.github/workflows/labels-pull-requests.yml`](.github/workflows/labe
 - A automação remove só as labels que ela mesma aplicou e que deixaram de valer (ex.: o título mudou de `fix` para `refactor`).
 - Labels adicionadas manualmente nunca são removidas, e uma label que alguém removeu à mão não é reaplicada naquele PR.
 - Continuam manuais as labels que dependem de julgamento: `accessibility`, `ux`, `bug`, `enhancement`, `development`, `good first issue`, `help wanted`, `question`, `duplicate`, `invalid` e `wontfix`.
+- As labels `deviation` e `blocker` são de Issues que registram desvios ([Seção 2.6](#26-desvios-encontrados-durante-uma-atividade)) e não são aplicadas pela automação de PRs.
 - O workflow usa o evento `pull_request` e roda com as regras da própria branch do PR. Por isso, um PR só recebe labels automáticas se a sua branch já contiver o workflow; branches criadas antes dele precisam ser atualizadas com a `development`.
 - PRs abertos a partir de forks não recebem labels automáticas, porque o GitHub entrega a eles um token só de leitura.
 
@@ -409,31 +410,42 @@ Um **desvio** é qualquer problema encontrado durante uma atividade que não faz
 
 1. **Confirmar a origem.** Verifique se o problema já existia: reproduza-o na `development` atualizada, sem as alterações da atividade. Se ele só aparece com as suas alterações, não é desvio: é parte da atividade e deve ser corrigido nela.
 2. **Descartar instabilidade.** Se um teste falha só na suíte completa, rode-o isolado ou com `npx jest --maxWorkers=2` antes de concluir que há defeito.
-3. **Procurar duplicatas.** Busque Issues abertas e encerradas sobre o mesmo problema. Se existir, use-a em vez de abrir outra.
+3. **Procurar duplicatas.** Busque Issues abertas e encerradas sobre o mesmo problema. Se existir, use-a em vez de abrir outra: comente nela a nova ocorrência e aplique as labels abaixo, se faltarem.
+
+**Labels dos registros de desvio:**
+
+| Label | Quando aplicar |
+| :--- | :--- |
+| `deviation` | Em toda Issue que registra um desvio encontrado durante outra atividade (classes B, C e D). |
+| `blocker` | Também na Issue de um desvio bloqueante (classe C, ou classe D bloqueante). Retire a label quando o bloqueio for resolvido ou deixar de bloquear. |
+
+As labels de desvio somam-se à label do tipo, que o template aplica (`fix`, `chore`, `docs` ou `feature`).
 
 **Classes de desvio:**
 
 | Classe | Quando | O que fazer |
 | :--- | :--- | :--- |
 | **A. No escopo** | O defeito está no código que a atividade já altera, ou corrigi-lo é necessário para cumprir o objetivo dela. | Corrigir na mesma branch, em commit próprio, e registrar no PR, na seção **Desvios encontrados**. |
-| **B. Fora do escopo, não bloqueante** | O problema está fora do objetivo e não impede concluir a atividade. | Não corrigir na branch atual. Registrar uma Issue com o template do tipo (Seção 1.3), preenchendo **Origem** com a Issue ou o PR da atividade. Listar a Issue no PR, em **Desvios encontrados**. A atividade continua. |
+| **B. Fora do escopo, não bloqueante** | O problema está fora do objetivo e não impede concluir a atividade. | Não corrigir na branch atual. Registrar uma Issue com o template do tipo (Seção 1.3) e a label `deviation`, preenchendo **Origem** com a Issue ou o PR da atividade. Listar a Issue no PR, em **Desvios encontrados**. A atividade continua. |
 | **C. Bloqueante** | O problema já existia e impede concluir ou validar a atividade (ex.: teste falhando na `development`, contrato errado, CI quebrado). | Interromper a atividade e seguir o procedimento abaixo. |
-| **D. Inconsistência no harness** | Documentos do harness (`AGENTS.md`, `RULES.md`, `ARCHITECTURE.md`, este guia, design system, templates) se contradizem, ou contradizem o código, no ponto necessário para a decisão atual. | Não escolher uma das versões por conta própria. Levar a dúvida a quem decide (o operador, no caso do agente) e registrar uma Issue `[DOCS]` ou `[CHORE]` para alinhar os documentos. |
+| **D. Inconsistência no harness** | Documentos do harness (`AGENTS.md`, `RULES.md`, `ARCHITECTURE.md`, este guia, design system, templates) se contradizem, ou contradizem o código. | Registrar uma Issue `[DOCS]` ou `[CHORE]` com a label `deviation` para alinhar os documentos. Se a contradição estiver no ponto necessário para a decisão atual, ela é **bloqueante**: não escolha uma das versões por conta própria; siga o procedimento da classe C (label `blocker`), sem a etapa da branch `fix/…` quando a solução for decidir qual documento vale. Caso contrário, a atividade continua. |
 
 **Procedimento para desvio bloqueante (classe C):**
 
 1. Pare a atividade e reúna a evidência: comando executado, saída do erro e confirmação de que o problema ocorre na `development` sem as suas alterações.
-2. Comunique o bloqueio a quem decide (o operador, no caso do agente). Não contorne o problema: é proibido desabilitar ou remover testes, usar `--no-verify` ou `HUSKY=0`, relaxar regras de lint ou do CI, ou embutir a correção na atividade sem registrá-la.
-3. Registre uma Issue `[FIX]`, preenchendo **Origem** e indicando no campo de bloqueio a atividade afetada (ex.: `Bloqueia #158`). Comente na Issue da atividade bloqueada com a referência ao bloqueio (ex.: `Bloqueada por #200`). Use a palavra "Bloqueia", e não `fixes` ou `closes`, para a automação de fechamento não encerrar a Issue errada.
-4. Corrija o bloqueio numa branch `fix/<descricao-curta>` própria, criada a partir da `development`, com Pull Request próprio. Depois do merge, atualize a branch da atividade com a `development` e retome o trabalho.
-5. Só quando quem decide autorizar expressamente, e a correção for pequena e inseparável da atividade, ela pode entrar na mesma branch: em commit próprio, citada na seção **Desvios encontrados** do PR, com a Issue do bloqueio referenciada por `Closes #numero`.
+2. Não contorne o problema: é proibido desabilitar ou remover testes, usar `--no-verify` ou `HUSKY=0`, relaxar regras de lint ou do CI, ou embutir a correção na atividade sem registrá-la.
+3. Registre uma Issue `[FIX]` com as labels `deviation` e `blocker`, preenchendo **Origem** e indicando no campo de bloqueio a atividade afetada (ex.: `Bloqueia #158`). Comente na Issue da atividade bloqueada com a referência ao bloqueio (ex.: `Bloqueada por #200`). Use a palavra "Bloqueia", e não `fixes` ou `closes`, para a automação de fechamento não encerrar a Issue errada.
+4. Comunique o bloqueio a quem decide (o operador, no caso do agente), com a evidência e o link da Issue, e aguarde a decisão antes de retomar.
+5. Corrija o bloqueio numa branch `fix/<descricao-curta>` própria, criada a partir da `development`, com Pull Request próprio. Depois do merge, atualize a branch da atividade com a `development` e retome o trabalho.
+6. Só quando quem decide autorizar expressamente, e a correção for pequena e inseparável da atividade, ela pode entrar na mesma branch: em commit próprio, citada na seção **Desvios encontrados** do PR, com a Issue do bloqueio referenciada por `Closes #numero`.
 
 **Desvio de um design técnico (opcional, só com EGM):** quando a atividade implementa uma funcionalidade que tem design em `docs/designs/` (Elephant-Goldfish Model) e a implementação precisar divergir do design, atualize o design no mesmo Pull Request e registre a divergência em **Desvios encontrados**. O `/egm:egm-drift-report` pode ajudar a levantar as divergências. Atividades sem design EGM não têm essa exigência.
 
 **Regras para o agente:**
 
-- O agente redige a Issue de desvio (título, template e campos) e **pede confirmação ao operador antes de criá-la**. Sem confirmação, os desvios encontrados ficam listados no relatório final da atividade e no PR.
-- Diante de um desvio bloqueante, o agente interrompe a atividade e aguarda a decisão do operador, sem aplicar contornos.
+- **Desvio não bloqueante (classes B e D não bloqueante):** o agente **cria a Issue automaticamente**, sem pedir confirmação, com o template do tipo, a label `deviation` e o campo **Origem**, e **continua a atividade**. A Issue entra no relatório final da atividade e na seção **Desvios encontrados** do PR.
+- **Desvio bloqueante (classe C e D bloqueante):** o agente **para a atividade, cria a Issue** com as labels `deviation` e `blocker`, comenta na Issue da atividade bloqueada e **avisa o operador** com a evidência e o link da Issue. Depois, aguarda a decisão do operador, sem aplicar contornos.
+- Antes de criar qualquer Issue, o agente procura duplicatas (ver "Antes de classificar").
 - O agente não amplia o escopo da atividade para corrigir desvios das classes B e D sem pedido do operador.
 
 ---

@@ -42,10 +42,10 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
 - **Bloqueio em lacunas e contradições:** Se a seção necessária para a decisão atual estiver vazia, contiver só um placeholder ou `TODO`, ou se dois documentos do harness (ou o harness e o código) se contradisserem nesse ponto, **não invente padrões nem escolha uma versão por conta própria** — pare e pergunte ao operador (desvio classe D, `CONTRIBUTING.md` Seção 2.6).
 - **Desvios encontrados durante a tarefa** (resumo da `CONTRIBUTING.md` Seção 2.6). Antes de classificar, confirme se o problema já existia na `development` sem as suas alterações e procure Issues duplicadas.
   - **A. No escopo:** corrija na mesma branch, em commit próprio, e cite no PR.
-  - **B. Fora do escopo, não bloqueante:** não corrija; redija a Issue (campo **Origem**) e continue a tarefa.
-  - **C. Bloqueante:** pare, reporte ao operador com a evidência e aguarde a decisão. O padrão é corrigir numa branch `fix/…` própria antes de retomar. Nunca contorne o bloqueio (desabilitar teste, `--no-verify`, `HUSKY=0`, relaxar lint ou CI).
-  - **D. Inconsistência no harness:** pergunte ao operador e redija uma Issue `[DOCS]` ou `[CHORE]`.
-  - **Issues:** redija e **peça confirmação ao operador antes de criar**. Liste todos os desvios no relatório final e na seção **Desvios encontrados** do PR.
+  - **B. Fora do escopo, não bloqueante:** não corrija; **crie a Issue automaticamente** (template do tipo, label `deviation`, campo **Origem**) e continue a tarefa.
+  - **C. Bloqueante:** **pare, crie a Issue** `[FIX]` (labels `deviation` e `blocker`, campos **Origem** e **Atividade bloqueada**), comente na Issue da tarefa bloqueada e **avise o operador** com a evidência e o link. Aguarde a decisão; o padrão é corrigir numa branch `fix/…` própria antes de retomar. Nunca contorne o bloqueio (desabilitar teste, `--no-verify`, `HUSKY=0`, relaxar lint ou CI).
+  - **D. Inconsistência no harness:** crie uma Issue `[DOCS]` ou `[CHORE]` com a label `deviation`. Se a contradição estiver no ponto da decisão atual, ela é bloqueante: não escolha uma versão, trate como a classe C (label `blocker`) e avise o operador. Caso contrário, continue.
+  - **Issues:** não peça confirmação para criá-las; procure duplicatas antes. Liste todos os desvios no relatório final e na seção **Desvios encontrados** do PR.
   - **PRs:** o operador em nome de quem você atua é o responsável (*assignee*) do PR (`CONTRIBUTING.md` Seção 1.4).
 - **Fonte de verdade visual:** Nunca utilize valores literais (*hardcoded*) de cor, espaçamento, tipografia ou raio. Utilize exclusivamente os tokens definidos em `design-system/02-tokens.md`.
 - **Princípios de produto:** Preserve a personalização do estudante, garanta acessibilidade (contraste ≥ 4,5:1, múltiplos indicadores perceptíveis além de cor) e nunca introduza mecânicas ou mensagens punitivas (`design-system/01-principios.md`).
