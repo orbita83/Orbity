@@ -8,7 +8,7 @@ const DEFAULT_TASK: Task = Object.freeze({
   startTime: "08:00",
   endDate: "15/11/2026",
   endTime: "09:00",
-  category: "matematica",
+  category: "mathematics",
   completed: false,
   pinned: false,
   createdAt: "2026-11-15T08:00:00-03:00",

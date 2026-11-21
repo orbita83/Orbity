@@ -34,7 +34,7 @@ const setup = (initialDay = MONDAY) => {
 const createMath = (useCases: RoutineUseCases) =>
   useCases.createRoutine({
     title: "Matemática",
-    icon: "calculate",
+    icon: "mathematics",
     days: [1, 2, 3, 4, 5],
     tasks: ["Revisar", "Resolver", "Anotar"],
   });
@@ -47,7 +47,7 @@ describe("RoutineUseCases", () => {
     const { useCases, tasks } = setup();
     const routine = await createMath(useCases);
 
-    expect(routine).toMatchObject({ id: "id-1", title: "Matemática", icon: "calculate", days: [1, 2, 3, 4, 5] });
+    expect(routine).toMatchObject({ id: "id-1", title: "Matemática", icon: "mathematics", days: [1, 2, 3, 4, 5] });
     expect((await tasks.listByRoutine(routine.id)).map((task) => [task.title, task.position])).toEqual([
       ["Revisar", 0],
       ["Resolver", 1],

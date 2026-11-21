@@ -10,7 +10,15 @@ import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TextField } from "./components/TextField";
-import { ROUTINE_ICON_LABELS, ROUTINES_COPY, formatDays, formatRoutinesCopy, weekdayLong, weekdayShort } from "./routinesCopy";
+import {
+  ROUTINE_ICON_LABELS,
+  ROUTINE_ICON_SYMBOLS,
+  ROUTINES_COPY,
+  formatDays,
+  formatRoutinesCopy,
+  weekdayLong,
+  weekdayShort,
+} from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
@@ -113,7 +121,7 @@ export const NewRoutineScreenContent = ({
                       onPress={() => setIcon(option)}
                       style={({ pressed }) => [styles.option, selected && styles.optionOn, pressed && styles.pressed]}
                     >
-                      <MaterialSymbol name={option} filled color={selected ? theme.color["on-action"] : cosmicColors.focus} size={theme.navbar.iconSize} />
+                      <MaterialSymbol name={ROUTINE_ICON_SYMBOLS[option]} filled color={selected ? theme.color["on-action"] : cosmicColors.focus} size={theme.navbar.iconSize} />
                     </Pressable>
                   );
                 })}

@@ -9,7 +9,7 @@ import { MaterialSymbol, type MaterialSymbolName } from "./components/MaterialSy
 import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
-import { ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routinesCopy";
+import { ROUTINE_ICON_SYMBOLS, ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
@@ -102,7 +102,7 @@ export const RoutineDetailsScreenContent = ({
         <View style={styles.summary}>
           <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
           <View style={styles.summaryRow}>
-            <IconTile icon={routine.icon} />
+            <IconTile icon={ROUTINE_ICON_SYMBOLS[routine.icon]} />
             <View style={styles.summaryText}>
               <Text allowFontScaling style={styles.cardTitle}>
                 {routine.title}

@@ -3,7 +3,6 @@ import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { fn } from "storybook/test";
 import { LocalDate } from "../model/entities/localDate";
-import { validateCreateTaskInput } from "../model/entities/task";
 import type { IClockService } from "../model/services/iClockService";
 import type { ITaskUseCases } from "../usecase/iTaskUseCases";
 import { useNewTaskViewModel } from "../viewmodel/useNewTaskViewModel";
@@ -24,11 +23,12 @@ const storyClock: IClockService = {
 
 const createStoryTaskUseCases = (): ITaskUseCases => ({
   listTasks: async () => [],
+  // A validação de verdade fica no TaskUseCases (tarefas.md, G4); aqui só se devolve a tarefa criada.
   createTask: async (input) => {
-    const normalized = validateCreateTaskInput(input);
     return {
       id: "story-task",
-      ...normalized,
+      ...input,
+      title: input.title.trim(),
       completed: false,
       pinned: false,
       createdAt: storyClock.now(),

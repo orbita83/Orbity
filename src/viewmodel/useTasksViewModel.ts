@@ -4,10 +4,9 @@ import { BackHandler } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
 import {
   type Task,
+  type TaskCategoryId,
   type TaskFilter as DomainTaskFilter,
   filterAndSortTasks,
-  formatTaskDueLabel,
-  getTaskCategoryOption,
 } from "@/model/entities/task";
 import { DomainError } from "@/model/errors";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
@@ -18,8 +17,8 @@ export type TaskListItem = {
   title: string;
   /** Prazo já formatado, no padrão "19/10 · 08:00–09:00". */
   dueLabel?: string;
-  /** Rótulo legível da categoria (ex.: "Programação"). */
-  categoryLabel?: string;
+  /** Categoria de estudo; a view decide rótulo e ícone (issue #159). */
+  category?: TaskCategoryId;
   completed: boolean;
   pinned: boolean;
 };
@@ -59,11 +58,47 @@ export type TasksActions = {
   handleEditTask: (id: string) => void;
 };
 
+const shortDisplayDate = (displayDate: string): string => displayDate.slice(0, 5);
+
+/** Formata data e horário de prazo no padrão curto dos cards (ex.: `19/10 · 08:00–09:00`). */
+export function formatTaskDueLabel(
+  task: Pick<Task, "startDate" | "startTime" | "endDate" | "endTime">,
+): string | undefined {
+  const { startDate, startTime, endDate, endTime } = task;
+  const timeRange = startTime && endTime ? `${startTime}–${endTime}` : (startTime ?? (endTime ? `até ${endTime}` : undefined));
+
+  if (startDate && endDate && startDate !== endDate) {
+    const startPart = `${shortDisplayDate(startDate)}${startTime ? ` ${startTime}` : ""}`;
+    const endPart = `${shortDisplayDate(endDate)}${endTime ? ` ${endTime}` : ""}`;
+    return `${startPart} – ${endPart}`;
+  }
+
+  const singleDate = startDate ?? endDate;
+  if (singleDate) {
+    const dateLabel = !startDate && endDate ? `Até ${shortDisplayDate(singleDate)}` : shortDisplayDate(singleDate);
+    if (!startDate && endDate && !startTime && endTime) {
+      return `${dateLabel} · ${endTime}`;
+    }
+    return timeRange ? `${dateLabel} · ${timeRange}` : dateLabel;
+  }
+
+  if (startTime && endTime) {
+    return `${startTime}–${endTime}`;
+  }
+  if (startTime) {
+    return startTime;
+  }
+  if (endTime) {
+    return `Até ${endTime}`;
+  }
+  return undefined;
+}
+
 const toTaskListItem = (task: Task): TaskListItem => ({
   id: task.id,
   title: task.title,
   dueLabel: formatTaskDueLabel(task),
-  categoryLabel: getTaskCategoryOption(task.category)?.label,
+  category: task.category,
   completed: task.completed,
   pinned: task.pinned,
 });

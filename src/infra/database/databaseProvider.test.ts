@@ -22,10 +22,10 @@ describe("DatabaseProvider", () => {
     executor.close();
   });
 
-  it("aplica a v1, a v2 e a v3 num banco novo e grava user_version = 3", async () => {
+  it("aplica todas as migrações num banco novo e grava user_version = 4", async () => {
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(3);
+    expect(userVersion(executor)).toBe(4);
     expect(tableExists(executor, "daily_activity")).toBe(true);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(tableExists(executor, "routines")).toBe(true);
@@ -44,10 +44,34 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(3);
+    expect(userVersion(executor)).toBe(4);
     expect(executor.database.prepare("SELECT id, completed, routine_id, position FROM tasks").all()).toEqual([
       { id: "t1", completed: 1, routine_id: null, position: null },
     ]);
+  });
+
+  it("issue #159: a v4 converte categorias e ícones gravados na v3 para os ids em inglês", async () => {
+    await new DatabaseProvider(async () => executor, MIGRATIONS.filter((migration) => migration.version <= 3)).get();
+    const insertTask = executor.database.prepare(
+      "INSERT INTO tasks (id, title, category, created_at, updated_at) VALUES (?, 'Estudar', ?, 'a', 'a')",
+    );
+    const oldCategories = ["matematica", "leitura", "idiomas", "ciencias", "programacao", "musica", null, "outra"];
+    oldCategories.forEach((category, index) => insertTask.run(`t${index}`, category));
+    const insertRoutine = executor.database.prepare(
+      "INSERT INTO routines (id, title, icon, days, created_at, updated_at) VALUES (?, 'Rotina', ?, '[1]', 'a', 'a')",
+    );
+    const oldIcons = ["track_changes", "menu_book", "calculate", "translate", "science", "code", "music_note", "rocket"];
+    oldIcons.forEach((icon, index) => insertRoutine.run(`r${index}`, icon));
+
+    await new DatabaseProvider(async () => executor).get();
+
+    expect(userVersion(executor)).toBe(4);
+    expect(executor.database.prepare("SELECT category FROM tasks ORDER BY id").all().map((row) => (row as { category: string | null }).category)).toEqual(
+      ["mathematics", "reading", "languages", "science", "programming", "music", null, "outra"],
+    );
+    expect(executor.database.prepare("SELECT icon FROM routines ORDER BY id").all().map((row) => (row as { icon: string }).icon)).toEqual(
+      ["general", "reading", "mathematics", "languages", "science", "programming", "music", "rocket"],
+    );
   });
 
   it("atualiza um banco na v1 para a última versão preservando os registros anteriores", async () => {
@@ -63,7 +87,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(3);
+    expect(userVersion(executor)).toBe(4);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(executor.database.prepare("SELECT local_date FROM daily_activity").all()).toEqual([
       { local_date: "2026-11-14" },

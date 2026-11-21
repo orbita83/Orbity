@@ -3,12 +3,12 @@ import type { RoutineListItem } from "@/viewmodel/useRoutinesViewModel";
 
 /** Rotinas do protótipo 3 (Claude Design), só para histórias e testes; o app começa sem rotinas. */
 export const PROTOTYPE_ROUTINES: readonly RoutineListItem[] = [
-  { id: "mat", title: "Matemática", icon: "calculate", days: [1, 2, 3, 4, 5], taskCount: 3, activeToday: true, doneToday: true },
-  { id: "ing", title: "Inglês", icon: "translate", days: [1, 3, 5], taskCount: 2, activeToday: true, doneToday: false },
+  { id: "mat", title: "Matemática", icon: "mathematics", days: [1, 2, 3, 4, 5], taskCount: 3, activeToday: true, doneToday: true },
+  { id: "ing", title: "Inglês", icon: "languages", days: [1, 3, 5], taskCount: 2, activeToday: true, doneToday: false },
   {
     id: "leitura",
     title: "Leitura antes de dormir",
-    icon: "menu_book",
+    icon: "reading",
     days: [0, 1, 2, 3, 4, 5, 6],
     taskCount: 1,
     activeToday: true,
@@ -20,7 +20,7 @@ export const PROTOTYPE_ROUTINES: readonly RoutineListItem[] = [
 export const PROTOTYPE_INACTIVE_ROUTINE: RoutineListItem = {
   id: "fds",
   title: "Revisão de fim de semana",
-  icon: "track_changes",
+  icon: "general",
   days: [0, 6],
   taskCount: 2,
   activeToday: false,
@@ -32,7 +32,7 @@ export const PROTOTYPE_ROUTINE_DETAILS: RoutineDetails = {
   id: "mat",
   title: "Matemática",
   description: "Minha rotina diária de estudos de matemática.",
-  icon: "calculate",
+  icon: "mathematics",
   days: [1, 2, 3, 4, 5],
   timeLabel: "07:00–07:45",
   tasks: [

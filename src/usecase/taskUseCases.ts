@@ -3,17 +3,19 @@ import {
   type Task,
   type UpdateTaskInput,
   isStandaloneTask,
-  isValidTaskCategoryId,
-  normalizeDisplayDate,
-  normalizeDisplayTime,
-  validateCreateTaskInput,
-  validateDateTimeFields,
+  isTaskCategoryId,
 } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
+import {
+  normalizeDisplayDate,
+  normalizeDisplayTime,
+  validateCreateTaskInput,
+  validateDateTimeFields,
+} from "@/usecase/taskInputValidation";
 
 const defaultGenerateId = (): string => {
   if (typeof globalThis.crypto?.randomUUID === "function") {
@@ -92,7 +94,7 @@ export class TaskUseCases implements ITaskUseCases {
     if (input.category === null) {
       category = undefined;
     } else if (input.category !== undefined) {
-      if (!isValidTaskCategoryId(input.category)) {
+      if (!isTaskCategoryId(input.category)) {
         throw new ValidationError("Categoria de tarefa inválida.");
       }
       category = input.category;

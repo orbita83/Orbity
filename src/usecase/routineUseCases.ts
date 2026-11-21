@@ -6,8 +6,6 @@ import {
   type RoutineOverview,
   type UpdateRoutineInput,
   isRoutineActiveOn,
-  validateCreateRoutineInput,
-  validateUpdateRoutineInput,
 } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
@@ -16,6 +14,7 @@ import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource"
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
+import { validateCreateRoutineInput, validateUpdateRoutineInput } from "@/usecase/routineInputValidation";
 
 const defaultGenerateId = (): string => {
   if (typeof globalThis.crypto?.randomUUID === "function") {

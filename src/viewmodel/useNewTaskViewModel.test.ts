@@ -6,7 +6,7 @@ import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 import { TaskUseCases } from "@/usecase/taskUseCases";
-import { useNewTaskViewModel } from "@/viewmodel/useNewTaskViewModel";
+import { formatDisplayDateInput, formatDisplayTimeInput, useNewTaskViewModel } from "@/viewmodel/useNewTaskViewModel";
 
 // Navegação do Expo Router isolada.
 const mockNavigate = jest.fn();
@@ -79,9 +79,9 @@ describe("useNewTaskViewModel", () => {
     await act(async () => result.current[1].openPicker("category"));
     expect(result.current[0].activePicker).toBe("category");
 
-    await act(async () => result.current[1].selectCategory("programacao"));
+    await act(async () => result.current[1].selectCategory("programming"));
     expect(result.current[0].activePicker).toBeNull();
-    expect(result.current[0].fields.category).toBe("programacao");
+    expect(result.current[0].fields.category).toBe("programming");
 
     await act(async () => result.current[1].submit());
     await waitFor(() => expect(result.current[0].created).toBe(true));
@@ -92,7 +92,7 @@ describe("useNewTaskViewModel", () => {
       title: "Revisar SOLID",
       startDate: "15/11/2026",
       startTime: "08:00",
-      category: "programacao",
+      category: "programming",
     });
 
     await act(async () => result.current[1].reset());
@@ -138,7 +138,7 @@ describe("useNewTaskViewModel", () => {
       { id: "today", label: "Hoje", hint: "15/11/2026", value: "15/11/2026" },
       { id: "tomorrow", label: "Amanhã", hint: "16/11/2026", value: "16/11/2026" },
     ]);
-    expect(result.current[0].categoryOptions.some((option) => option.value === "programacao")).toBe(true);
+    expect(result.current[0].categoryOptions).toContain("programming");
     expect(result.current[0].timeOptions[1]).toEqual({ id: "00:00", label: "00:00", value: "00:00" });
   });
 
@@ -152,7 +152,7 @@ describe("useNewTaskViewModel", () => {
         startTime: "08:00",
         endDate: "15/11/2026",
         endTime: "09:00",
-        category: "matematica",
+        category: "mathematics",
         completed: false,
         pinned: true,
         createdAt: "2026-11-15T08:00:00-03:00",
@@ -171,7 +171,7 @@ describe("useNewTaskViewModel", () => {
       startTime: "08:00",
       endDate: "15/11/2026",
       endTime: "09:00",
-      category: "matematica",
+      category: "mathematics",
     });
 
     await act(async () => result.current[1].setField("title", "Estudar Cálculo II"));
@@ -248,5 +248,35 @@ describe("useNewTaskViewModel (navegação)", () => {
     expect(result.current[0].fields.title).toBe("");
     expect(mockSetParams).toHaveBeenCalledWith({ id: "" });
     expect(mockNavigate).toHaveBeenCalledWith("/tasks");
+  });
+});
+
+describe("máscaras de digitação (tarefas.md, T7)", () => {
+  it("formata progressivamente datas digitadas apenas com números ou separadores", () => {
+    expect(formatDisplayDateInput("")).toBe("");
+    expect(formatDisplayDateInput("16")).toBe("16");
+    expect(formatDisplayDateInput("16/")).toBe("16/");
+    expect(formatDisplayDateInput("161")).toBe("16/1");
+    expect(formatDisplayDateInput("1611")).toBe("16/11");
+    expect(formatDisplayDateInput("1611/")).toBe("16/11/");
+    expect(formatDisplayDateInput("16112026")).toBe("16/11/2026");
+    expect(formatDisplayDateInput("5/")).toBe("05/");
+    expect(formatDisplayDateInput("5/3/2026")).toBe("05/03/2026");
+    expect(formatDisplayDateInput("16-11-2026")).toBe("16/11/2026");
+    expect(formatDisplayDateInput("abc")).toBe("");
+  });
+
+  it("formata progressivamente horários digitados com ou sem separador", () => {
+    expect(formatDisplayTimeInput("")).toBe("");
+    expect(formatDisplayTimeInput("08")).toBe("08");
+    expect(formatDisplayTimeInput("08:")).toBe("08:");
+    expect(formatDisplayTimeInput("083")).toBe("08:3");
+    expect(formatDisplayTimeInput("0830")).toBe("08:30");
+    expect(formatDisplayTimeInput("8:")).toBe("08:");
+    expect(formatDisplayTimeInput("83")).toBe("08:3");
+    expect(formatDisplayTimeInput("830")).toBe("08:30");
+    expect(formatDisplayTimeInput("8:30")).toBe("08:30");
+    expect(formatDisplayTimeInput("08h30")).toBe("08:30");
+    expect(formatDisplayTimeInput("abc")).toBe("");
   });
 });

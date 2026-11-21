@@ -2,15 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
 import type { LocalDate } from "@/model/entities/localDate";
-import {
-  TASK_CATEGORIES,
-  formatDisplayDateInput,
-  formatDisplayTimeInput,
-  getTaskCategoryOption,
-  isValidTaskCategoryId,
-  type TaskCategoryIcon,
-  type TaskCategoryId,
-} from "@/model/entities/task";
+import { TASK_CATEGORY_IDS, isTaskCategoryId, type TaskCategoryId } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
@@ -24,7 +16,6 @@ export type TaskPickerOption = {
   readonly label: string;
   readonly value: string;
   readonly hint?: string;
-  readonly icon?: TaskCategoryIcon | "label";
 };
 
 export type NewTaskFields = {
@@ -46,9 +37,8 @@ export type NewTaskState = {
   activePicker: NewTaskPickerField | null;
   dateOptions: readonly TaskPickerOption[];
   timeOptions: readonly TaskPickerOption[];
-  categoryOptions: readonly TaskPickerOption[];
-  /** Categoria escolhida já pronta para exibir, ou `null` quando a tarefa está sem categoria. */
-  selectedCategory: { label: string; icon: TaskCategoryIcon } | null;
+  /** Ids das categorias do seletor; a view decide rótulo e ícone de cada uma (issue #159). */
+  categoryOptions: readonly TaskCategoryId[];
   submitting: boolean;
   created: boolean;
   editing?: boolean;
@@ -117,24 +107,67 @@ export const TIME_PICKER_OPTIONS: readonly TaskPickerOption[] = Object.freeze([
   }),
 ]);
 
-/** Opções de categoria disponíveis no seletor da tarefa. */
-export const CATEGORY_PICKER_OPTIONS: readonly TaskPickerOption[] = Object.freeze([
-  Object.freeze({ id: "none", label: "Sem categoria", value: "", icon: "label" as const }),
-  ...TASK_CATEGORIES.map((category) =>
-    Object.freeze({
-      id: category.id,
-      label: category.label,
-      value: category.id,
-      icon: category.icon,
-    }),
-  ),
-]);
+function extractDigitsFromSegments(value: string, separatorPattern: RegExp, maxPadIndex: number): string {
+  const rawSegments = value.split(separatorPattern);
+  return rawSegments
+    .map((segment, index) => {
+      const digits = segment.replace(/\D/g, "");
+      const hasFollowingSeparator = index < rawSegments.length - 1;
+      if (index <= maxPadIndex && hasFollowingSeparator && digits.length === 1) {
+        return `0${digits}`;
+      }
+      return digits;
+    })
+    .join("");
+}
+
+/** Máscara de digitação: formata aos poucos uma data no padrão brasileiro `dd/mm/aaaa` (tarefas.md, T7). */
+export function formatDisplayDateInput(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return "";
+  }
+
+  const trailingSeparator = /[/.-]$/.test(trimmed);
+  const digits = extractDigitsFromSegments(trimmed, /[/.-]+/, 1).slice(0, 8);
+  if (digits.length === 0) {
+    return "";
+  }
+  if (digits.length <= 2) {
+    return digits.length === 2 && trailingSeparator ? `${digits}/` : digits;
+  }
+  if (digits.length <= 4) {
+    const formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return digits.length === 4 && trailingSeparator ? `${formatted}/` : formatted;
+  }
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+}
+
+/** Máscara de digitação: formata aos poucos um horário 24h no padrão `hh:mm` (tarefas.md, T7). */
+export function formatDisplayTimeInput(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return "";
+  }
+
+  const trailingSeparator = /[:hH.-]$/.test(trimmed);
+  const hasSeparator = /[:hH.-]/.test(trimmed);
+  let digits = extractDigitsFromSegments(trimmed, /[:hH.-]+/, 0);
+  if (digits.length === 0) {
+    return "";
+  }
+  if (!hasSeparator && digits.length >= 2 && digits[0] >= "3") {
+    digits = `0${digits}`;
+  }
+  digits = digits.slice(0, 4);
+
+  if (digits.length <= 2) {
+    return digits.length === 2 && trailingSeparator ? `${digits}:` : digits;
+  }
+  return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
+}
 
 /** Estado e ações do formulário de Nova tarefa conectado ao domínio e à persistência. */
-const selectedCategoryOf = (id?: TaskCategoryId): NewTaskState["selectedCategory"] => {
-  const option = getTaskCategoryOption(id);
-  return option ? { label: option.label, icon: option.icon } : null;
-};
 
 export const useNewTaskViewModel = (
   taskUseCases?: ITaskUseCases,
@@ -229,7 +262,7 @@ export const useNewTaskViewModel = (
   }, []);
 
   const selectCategory = useCallback((value?: string) => {
-    const category = value && isValidTaskCategoryId(value) ? value : undefined;
+    const category = value && isTaskCategoryId(value) ? value : undefined;
     setFields((current) => ({ ...current, category }));
     setActivePicker(null);
     setFormError(null);
@@ -315,8 +348,7 @@ export const useNewTaskViewModel = (
       activePicker,
       dateOptions,
       timeOptions: TIME_PICKER_OPTIONS,
-      categoryOptions: CATEGORY_PICKER_OPTIONS,
-      selectedCategory: selectedCategoryOf(fields.category),
+      categoryOptions: TASK_CATEGORY_IDS,
       submitting,
       created,
       editing,

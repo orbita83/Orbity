@@ -1,4 +1,6 @@
 import type { RoutineIcon } from "../viewmodel/useRoutinesViewModel";
+import { TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
+import type { MaterialSymbolName } from "./components/MaterialSymbol";
 
 /**
  * Textos das telas de Rotinas (protótipo do Claude Design, telas 3 a 3.4).
@@ -117,13 +119,19 @@ export function formatDays(days: readonly number[]): string {
 export const taskCountLabel = (n: number) =>
   n === 1 ? ROUTINES_COPY["card.tasks.one"] : formatRoutinesCopy("card.tasks.other", { n });
 
-/** Nomes dos ícones que o estudante pode escolher para uma rotina. */
-export const ROUTINE_ICON_LABELS: Record<RoutineIcon, string> = {
-  track_changes: "Geral",
-  menu_book: "Livro",
-  calculate: "Cálculo",
-  translate: "Idiomas",
+/** Nomes dos ícones que o estudante pode escolher para uma rotina (rotinas.md, R8). */
+export const ROUTINE_ICON_LABELS: Readonly<Record<RoutineIcon, string>> = {
+  general: "Geral",
+  reading: "Livro",
+  mathematics: "Cálculo",
+  languages: "Idiomas",
   science: "Ciências",
-  code: "Programação",
-  music_note: "Música",
+  programming: "Programação",
+  music: "Música",
+};
+
+/** Símbolo do Material Symbols de cada ícone de rotina: os mesmos das categorias, mais "Geral". */
+export const ROUTINE_ICON_SYMBOLS: Readonly<Record<RoutineIcon, MaterialSymbolName>> = {
+  general: "track_changes",
+  ...TASK_CATEGORY_SYMBOLS,
 };

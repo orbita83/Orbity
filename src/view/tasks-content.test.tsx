@@ -2,16 +2,13 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LocalDate } from "@/model/entities/localDate";
+import { TASK_CATEGORY_IDS } from "@/model/entities/task";
 import { PROTOTYPE_TASKS } from "@/view/__fixtures__/taskList.fixture";
 import { NewTaskScreenContent, type NewTaskScreenContentProps } from "@/view/new-task-content";
 import { TASKS_COPY } from "@/view/tasksCopy";
 import { TasksScreenContent, type TasksScreenContentProps } from "@/view/tasks-content";
 import { cosmicBorders, themes } from "@/view/theme/tokens";
-import {
-  CATEGORY_PICKER_OPTIONS,
-  TIME_PICKER_OPTIONS,
-  buildDatePickerOptions,
-} from "@/viewmodel/useNewTaskViewModel";
+import { TIME_PICKER_OPTIONS, buildDatePickerOptions } from "@/viewmodel/useNewTaskViewModel";
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 
@@ -155,8 +152,7 @@ const formProps = (overrides: Partial<NewTaskScreenContentProps> = {}): NewTaskS
   activePicker: null,
   dateOptions: sampleDateOptions,
   timeOptions: TIME_PICKER_OPTIONS,
-  categoryOptions: CATEGORY_PICKER_OPTIONS,
-  selectedCategory: null,
+  categoryOptions: TASK_CATEGORY_IDS,
   submitting: false,
   created: false,
   setField: jest.fn(),
@@ -213,7 +209,12 @@ describe("NewTaskScreenContent", () => {
 
     expect(screen.getByRole("header", { name: TASKS_COPY["picker.category.title"] })).toBeTruthy();
     await fireEvent.press(screen.getByRole("radio", { name: "Programação" }));
-    expect(props.selectCategory).toHaveBeenCalledWith("programacao");
+    expect(props.selectCategory).toHaveBeenCalledWith("programming");
+  });
+
+  it("mostra rótulo e ícone da categoria escolhida a partir do id (issue #159)", async () => {
+    await renderInSafeArea(<NewTaskScreenContent {...formProps({ fields: { ...formProps().fields, category: "music" } })} />);
+    expect(screen.getByRole("button", { name: "Categoria: Música" })).toBeTruthy();
   });
 
   it("com erro, mostra a mensagem do título ou erro do formulário", async () => {
