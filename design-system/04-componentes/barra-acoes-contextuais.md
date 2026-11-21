@@ -14,7 +14,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 ## Anatomia
 
-1. **Cabeçalho fixo:** botão "✕" (48 dp) e texto "N selecionados" em `font.label`; fundo `navbar.bg`, fio inferior `color.border-subtle` e `shadow.bar-top`.
+1. **Cabeçalho fixo:** botão "✕" (48 dp) e texto "N selecionados" em `font.title` (24/32, 700; até a 1.2 era `font.label`, 14/20, pequeno demais para o título do cabeçalho); fundo `navbar.bg`, fio inferior `color.border-subtle` e `shadow.bar-top`.
 2. **Barra inferior:** ocupa exatamente o lugar da navbar; fundo `navbar.bg`, fio superior `color.border-subtle` e `shadow.bar`.
 3. **Ações:** Editar (habilitada apenas quando 1 tarefa está selecionada), Fixar, Marcar todas e Excluir (n), cada uma com ícone de 24 dp e rótulo visível em `font.label` e `color.on-surface`; o ícone de Excluir usa `color.error`.
 
