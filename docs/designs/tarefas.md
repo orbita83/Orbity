@@ -68,8 +68,9 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 - `datasources/iTaskDataSource.ts`: `listAll`, `findById`, `create`, `update`, `updateMany` e `deleteMany`.
 
 ### 2. Casos de uso (`src/usecase/`)
-- `ITaskUseCases` e `TaskUseCases`, que dependem de `ITaskDataSource`, `IDailyActivityDataSource` e `IClockService`.
-- `taskInputValidation.ts`: `validateCreateTaskInput`, `validateDateTimeFields`, `normalizeDisplayDate`, `normalizeDisplayTime`, `isValidDisplayDate` e `isValidDisplayTime`, usados pelo `TaskUseCases` na criação e na edição.
+- `ITaskUseCases` e `TaskUseCases`, que dependem de `ITaskDataSource`, `IDailyActivityDataSource` e `IClockService`. Além de listar, criar, editar, concluir, fixar e excluir, o contrato oferece `getTask(id)` (a tarefa avulsa em edição) e `todayLocal()` (a data de referência das opções de data), para a ViewModel depender só dele (issue #158).
+- `taskInputValidation.ts`: `validateTaskTitle`, `validateCreateTaskInput`, `validateDateTimeFields`, `normalizeDisplayDate`, `normalizeDisplayTime`, `isValidDisplayDate` e `isValidDisplayTime`, usados pelo `TaskUseCases` na criação e na edição.
+- O título em branco gera `ValidationError` com `field: "title"`, na criação e na edição.
 - Concluir (por `toggleTaskCompletion` ou `updateTask`) chama `recordDay` só na passagem de pendente para concluída.
 
 ### 3. Persistência (`src/infra/`)
@@ -83,7 +84,7 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)
 - `useTasksViewModel` carrega, filtra, conclui, seleciona, fixa e exclui pelo caso de uso, com estados de carregamento e erro. Também formata o prazo do card (`formatTaskDueLabel`, "19/10 · 08:00–09:00") e entrega a categoria como id.
-- `useNewTaskViewModel` cuida do formulário (criação e modo de edição quando recebe `taskId`), das máscaras de digitação de data e hora (`formatDisplayDateInput` e `formatDisplayTimeInput`) e das opções dos seletores. As categorias saem como ids, e a view monta rótulo e ícone pelo `categoryCopy.ts`; a view não importa regras do model.
+- `useNewTaskViewModel` recebe só o `ITaskUseCases` e cuida do formulário (criação e modo de edição quando a rota traz o `id`), das máscaras de digitação de data e hora (`formatDisplayDateInput` e `formatDisplayTimeInput`) e das opções dos seletores. As categorias saem como ids, e a view monta rótulo e ícone pelo `categoryCopy.ts`; a view não importa regras do model. O título obrigatório é validado só no caso de uso: a ViewModel mostra o erro no campo quando recebe um `ValidationError` com `field: "title"`.
 - `TasksScreen` e `HomeScreen` recarregam ao ganhar foco.
 
 ## Alternatives Considered

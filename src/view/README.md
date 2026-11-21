@@ -8,6 +8,7 @@ Camada de apresentação do Orbity. Contém os componentes de tela exportados co
 
 - Telas (exportação `default`, cada uma renderiza `PlaceholderScreen` com `title` e `message` em pt-BR):
   - `index.tsx` -> `HomeScreen` (título "Início"); importado por `src/app/index.tsx`.
+  - Animação e gesto do painel de foco da Home em `useFocusSheetMotion.ts` (`Animated` e `PanResponder`), com a geometria pura em `focusSheetGeometry.ts`. São apresentação: o estágio do painel (`FocusSheetStage`) vem de `useHomeViewModel`.
   - `tasks.tsx` -> `TasksScreen`; liga `useTasksViewModel` a `TasksScreenContent` (lista, filtros e seleção múltipla) e esconde a barra de abas na seleção; importado por `src/app/tasks.tsx`.
   - `new-task.tsx` -> `NewTaskScreen`; liga `useNewTaskViewModel` a `NewTaskScreenContent` (formulário e "Tarefa criada!"); importado por `src/app/new-task.tsx`.
   - Textos das telas de Tarefas em `tasksCopy.ts`; tarefas de exemplo só para histórias e testes em `__fixtures__/taskList.fixture.ts`.
