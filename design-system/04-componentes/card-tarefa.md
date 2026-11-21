@@ -55,7 +55,7 @@ O estilo atual ainda usa `focus.ring-width` (2 dp) como espessura do contorno do
 - Os alvos do checkbox e do menu têm ao menos `target.min-size` (48 dp).
 - Textos mantêm escala de fonte, podem quebrar linha e não são truncados.
 - A tag de categoria é anunciada como "Categoria: <rótulo>" junto com o conteúdo do card. Quando o conteúdo aceita toque longo, ele vira um único elemento acessível, e o iOS deixa de ler o rótulo próprio da tag. Por isso, o grupo recebe o rótulo "<título>, Categoria: <rótulo>, <prazo>", sem as partes que a tarefa não tiver. No modo de seleção, o card inteiro vira um `checkbox` com rótulo próprio ("Selecionar tarefa: <título>"), e a categoria não entra nesse rótulo.
-- No card selecionado (fundo `color.action-subtle`), a tag fica com a mesma cor do fundo. O texto e o ícone continuam legíveis, com o mesmo contraste da tag (ver [tag-categoria.md](tag-categoria.md#acessibilidade)).
+- Na 1.3, o card selecionado mantém o fundo normal do card (borda de 2 dp em `color.action`), então a tag continua se destacando do fundo. Na 1.2, com o fundo `color.action-subtle`, a tag ficava da mesma cor do fundo, mas o texto e o ícone seguiam legíveis (ver [tag-categoria.md](tag-categoria.md#acessibilidade)).
 - `color.on-surface` sobre `color.surface` tem contraste documentado de 17,17:1 nos dois temas. O par `color.surface` sobre `color.action` também deve manter o contraste documentado de 6,29:1 no claro e 6,50:1 no escuro.
 
 ## Elevação e plataformas
@@ -71,7 +71,7 @@ O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Na
 - A tipografia manuscrita aparente no protótipo não tem fonte ou token aprovado; o título usa `font.body`.
 - O tratamento tipográfico do prazo, prazos vencidos e formatação de datas não foi definido além de receber texto do chamador.
 - O conteúdo do menu foi especificado na 1.3 em [menu-opcoes.md](menu-opcoes.md); a abertura continua delegada a `onOptionsPress`.
-- Não foi definido se tocar no container abre detalhes. O long-press abre a seleção múltipla (F6).
+- Resolvido na 1.3: tocar no card abre o detalhe da tarefa (2.4); o long-press abre a seleção múltipla (F6); o "•••" abre o [menu de opções](menu-opcoes.md).
 - Não há estado desabilitado ou de carregamento especificado para o Card.
 
 ## Código
@@ -86,7 +86,7 @@ Desde a tela de Tarefas (protótipo 2 e 2.3):
 - `onLongPress` no texto abre a seleção múltipla (F6). **Na 1.3**, enquanto o dedo segura, o card se enche da esquerda para a direita com `color.action-subtle` (`#232052`) em `motion.duration.hold` (500 ms, linear), e o contorno passa para `color.action`; ao completar, abre a seleção. Se o dedo sair antes, o preenchimento volta em `motion.duration.short` com `motion.easing.standard`. Com movimento reduzido, não há animação: o contorno em `color.action` é o único sinal. Na 1.3, o "•••" (`onOptionsPress`) passa a abrir o [menu de opções](menu-opcoes.md) (Editar, Fixar e Excluir) para uma tarefa só; antes, ele abria a seleção múltipla.
 - `pinned` mostra o ícone `push_pin` antes do título. **Na 1.3**, o ícone passa para o fim do card, antes do "•••" (16 dp, `color.on-surface-variant`), para não deslocar o título.
 - `category` (issue #25) mostra a [CategoryTag](tag-categoria.md) antes do prazo. Antes, o rótulo era colado ao prazo como texto ("Programação · 19/10 · 08:00–09:00"). Na tela de Tarefas, `tasks-content.tsx` converte o id em rótulo e símbolo pelo `categoryCopy.ts`.
-- `selectionMode`, `selected` e `onToggleSelected`: o card inteiro vira um `checkbox` "Selecionar tarefa: <título>"; selecionado, ganha fundo `color.action-subtle`, borda de 2 dp `color.focus` e marca preenchida.
+- `selectionMode`, `selected` e `onToggleSelected`: o card inteiro vira um `checkbox` "Selecionar tarefa: <título>"; selecionado, ganha fundo `color.action-subtle`, borda de 2 dp `color.focus` e marca preenchida. **Na 1.3**, o selecionado passa a ter borda de 2 dp em `color.action` sobre o fundo normal do card, e a marca é igual ao [CheckCircle](circulo-concluir.md): preenchida em `color.action` com ✓ em `color.on-action`, ou só o aro de 2 dp quando não selecionado.
 
 ## Mudanças da 1.2
 

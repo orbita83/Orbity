@@ -50,7 +50,7 @@
 | **Sessão em andamento** | Contador regressivo, ação Encerrar foco e indicação textual de foco; navbar oculta | `cosmicTokens.color.action`, `cosmicTokens.color.text`, `cosmicTokens.font.button` |
 | **Carregando** | Esqueletos dos cards do painel e estado de carregamento anunciado | `cosmicTokens.color.card`, `cosmicTokens.color.track`, `cosmicTokens.radius.card` |
 | **Vazio** | Progresso zerado, ação Iniciar foco disponível e apresentação acolhedora da jornada | `cosmicTokens.font.title`, `cosmicTokens.font.body`, `cosmicTokens.color.muted` |
-| **Sucesso** | Contador textual de tarefas e rotinas concluídas sobre o total do dia, como "1 / 25", porcentagem fora da barra e preenchimento proporcional exato (1.2; antes "15 / 25 min"); conquistas identificáveis por estado, ícone e nome acessível | `cosmicTokens.color.progress`, `cosmicTokens.color.progressEnd`, `cosmicTokens.color.track`, `cosmicTokens.color.unlocked` |
+| **Sucesso** | Contador textual de tarefas e rotinas concluídas sobre o total do dia, como "1 / 25", porcentagem no meio da barra (1.3; fora da barra na 1.2) e preenchimento proporcional exato (1.2; antes "15 / 25 min"); conquistas identificáveis por estado, ícone e nome acessível | `cosmicTokens.color.progress`, `cosmicTokens.color.progressEnd`, `cosmicTokens.color.track`, `cosmicTokens.color.unlocked` |
 
 - **Faça:** Preserve o planeta e o contador central como elementos vetoriais e textuais independentes de uma imagem de fundo; mantenha a sequência escalável e perceptível além da cor.
 - **Faça:** Mantenha a navbar visível nos três estágios do painel e ofereça abertura e recolhimento por gesto, toque e teclado, respeitando a redução de movimento.
@@ -125,15 +125,18 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 
 ## 4. Gestão de Tarefas e Ações em Lote (F5, F6)
 
-- **Objetivo:** Filtrar, marcar conclusão pontual ou executar ações em massa (fixar, excluir).
+- **Objetivo:** Filtrar, marcar conclusão pontual, agir sobre uma tarefa pelo "•••" ou executar ações em massa (fixar, excluir).
 - **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), [Tag de categoria](04-componentes/tag-categoria.md) dentro do card (`color.action-subtle`, `color.on-surface`, `font.label`, `radius.md`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.on-surface`; desde a 1.2, ver [barra-acoes-contextuais.md](04-componentes/barra-acoes-contextuais.md)).
 - **Passos:**
   1. Toque no círculo marca/desmarca a tarefa imediatamente.
   2. Abas filtram a visualização da lista por status (*Todos / Pendentes / Concluídas*). **Não há filtro por categoria nesta iteração** (issue #25): a categoria só aparece no card. Um filtro por categoria, se vier, precisa de especificação própria.
-  3. *Long-press* entra no modo de seleção múltipla (2.3); navbar é substituída por:
-     - Topo: cabeçalho fixo "✕ · N selecionados" (`font.label`), com fio `color.border-subtle` e `shadow.bar-top` (1.2).
-     - Barra inferior: **Fixar**, **Marcar todas**, **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`), no lugar exato da navbar, com fio `color.border-subtle` e `shadow.bar` (1.2).
-  4. "✕" cancela a seleção e restaura a navbar.
+  3. Toque no card abre o **detalhe da tarefa** (2.4, 1.3), com Editar e "Marcar como concluída".
+  4. O "•••" abre o [menu de opções](04-componentes/menu-opcoes.md) para **uma** tarefa: Editar, Fixar (ou Desafixar) e Excluir, que pede confirmação ("Excluir tarefa?") (1.3).
+  5. *Long-press* (com o preenchimento de `motion.duration.hold`, 1.3) entra no modo de seleção múltipla (2.3), para **várias** tarefas; navbar é substituída por:
+     - Topo: cabeçalho fixo "✕ · N selecionadas" (`font.title` desde a 1.3; `font.label` na 1.2), com fio `color.border-subtle` e `shadow.bar-top` (1.2).
+     - Barra inferior: **Fixar**, **Marcar todas** (ícones em `color.on-surface-variant` desde a 1.3) e **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`), no lugar exato da navbar, com fio `color.border-subtle` e `shadow.bar` (1.2).
+  6. "✕" cancela a seleção e restaura a navbar. Editar não aparece na seleção (1.3): é sempre de uma tarefa só.
+  7. Card selecionado (1.3): borda de 2 dp em `color.action` sobre o fundo normal do card e marca igual ao [CheckCircle](04-componentes/circulo-concluir.md).
 - **Estados:**
 
 | Situação | O que vê | Tokens |
@@ -265,10 +268,10 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 2. **Modo Foco:** O padrão F1/F2 especifica cronômetro regressivo e encerramento no painel; a integração e a persistência das sessões ainda precisam ser entregues nesta branch.
 3. **Tarefas de Rotina vs. Gerais:** Definir se tarefas de rotinas aparecem ou não na aba geral de Tarefas.
 4. **Conquistas na ERS:** Fluxo desenhado precisa ser formalizado como requisito funcional.
-5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote. Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
+5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote (resolvido na 1.3: telas 2.5 e 3.5). Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
 6. **Decisões abertas da 1.2:**
    - Tipos de conquista além de dias de sequência. (Se conquistas dão estrelas foi resolvido na 1.3: dão, conforme o RF-0017.)
    - Carrossel de conquistas no painel: giro automático com pausa visível ou rolagem pelo dedo. Até a decisão, use rolagem pelo dedo, que não exige controle de pausa (WCAG 2.2.2).
-   - Desenho da confirmação de exclusão em lote.
+   - Desenho da confirmação de exclusão em lote. (Resolvido na 1.3: "Excluir N tarefas?" na 2.5 e "Excluir N rotinas?" na 3.5.)
    - Desenho da tela de sessão de foco ativa.
    - Glifo de Rotinas: a 1.2 mantém `autorenew`; o alvo do protótipo não foi adotado.

@@ -46,3 +46,7 @@ Origem no sistema base: Material 3, Checkbox. Situação: Adaptado (1.2). Motivo
 ## Código
 
 Implementado em [CheckCircle.tsx](../../src/view/components/CheckCircle.tsx). O `TaskCard` passa a usá-lo na tela de Tarefas.
+
+## Marca de seleção (1.3)
+
+Na seleção múltipla de tarefas (2.3) e de rotinas (3.5), a marca de cada card usa o mesmo desenho do `CheckCircle`: preenchida em `color.action` com ✓ em `color.on-action` quando selecionado, e só o aro de 2 dp em `color.action` quando não. Antes (1.2), a marca da seleção era lavanda (`color.focus`) e `inactive`, diferente do círculo das listas.

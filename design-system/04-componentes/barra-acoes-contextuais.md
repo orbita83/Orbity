@@ -1,6 +1,6 @@
 # Barra de ações contextuais (ContextualActionBar)
 
-Origem no sistema base: Material 3, Bottom app bar e Top app bar contextual. Situação: Novo (1.2). Motivo: substituir a navbar durante a seleção múltipla de tarefas (F6), com cabeçalho de contador e ações em lote.
+Origem no sistema base: Material 3, Bottom app bar e Top app bar contextual. Situação: Novo (1.2). Motivo: substituir a navbar durante a seleção múltipla de tarefas (F6) e, desde a 1.3, de rotinas (F8), com cabeçalho de contador e ações em lote.
 
 Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-ações-em-lote-f5-f6), [navbar.md](navbar.md) e [02-tokens.md](../02-tokens.md).
 
