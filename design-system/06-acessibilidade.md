@@ -101,6 +101,7 @@ Para garantir usabilidade por pessoas com deficiências motoras, tremores ou em 
 | Campo de texto (Input) | Altura 56 dp (Herdado - Material 3) | 56 dp de altura | Altura padrão de 56 dp do container de Input herdada do Material 3, superando a meta mínima de 48 dp. |
 | Checkbox / Conclusão de Tarefa | Caixa de 24 × 24 dp (`space-24`) | 48 × 48 dp (Herdado - Material 3) | Caixa delimitada ou expansão via `hitSlop: { top: 12, bottom: 12, left: 12, right: 12 }` (compensação calculada: $(48 - 24) / 2 = 12\text{ dp}$). |
 | Itens de Lista / Cards de Rotina | Variável (conteúdo dinâmico com padding `space.md`) | Altura mínima de 48 dp | Container de card clicável com `minHeight: 48` e área de toque contínua em toda a superfície. |
+| Estrela do Grafo de constelação (1.3) | Ponto de 8–12 dp ou estrela de 24 dp | **Exceção:** 28 × 28 dp (sequência) e 40 × 40 dp (conquista) | Alvos de 48 dp se sobreporiam num grafo denso. A exceção vale só para as estrelas e é compensada pela visualização em Lista, com cards de 48 dp ou mais, e pelo zoom. Ver [grafo-constelacao.md](04-componentes/grafo-constelacao.md). |
 
 ### Registro de tokens e lacunas de componente (Seção 9 do README)
 

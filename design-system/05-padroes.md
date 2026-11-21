@@ -194,24 +194,25 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 
 ## 7. Cosmos (F9)
 
-- **Objetivo:** Explorar o mapa visual de constelações, celebrando a evolução dos estudos por meio do desbloqueio progressivo de estrelas e curiosidades espaciais.
-- **Componentes:** Mapa interativo da constelação (`color.surface`, `space.lg`, `motion.duration.medium`), Pontos de estrela bloqueadas/desbloqueadas (`color.action`, `color.on-surface`, `motion.duration.short`), Modal [Detalhe da Estrela] (`radius.lg`, `elevation.card`, `space.lg`, `font.title`, `font.body`), Botão "✕" (Fechar) (`color.on-surface`, `font.label`).
+- **Objetivo:** mostrar a constelação do estudante, formada pelas estrelas que ele já ganhou, e contar a história de cada uma. Segue o RF-0017 (uma estrela a cada dia somado à sequência e uma a cada conquista), o RF-0018 (constelação em grafo, só com estrelas conquistadas) e o FL-0012.
+- **Componentes:** cabeçalho "Cosmos" com o subtítulo "Seu esforço, suas estrelas" e o total de estrelas; seletor Constelação / Lista (padrão de [chips-filtro.md](04-componentes/chips-filtro.md)); [Grafo de constelação](04-componentes/grafo-constelacao.md) com legenda, controles de zoom e detalhe da estrela; visualização em Lista; navbar com a aba Cosmos ativa.
 - **Passos:**
-  1. Estudante navega para a aba **Cosmos** na navbar fixa.
-  2. Visualiza a constelação com estrelas acesas (conquistadas) e estrelas em contorno neutro (a desbloquear conforme tarefas/rotinas cumpridas).
-  3. Toque em uma estrela desbloqueada abre o modal [Detalhe da Estrela], apresentando seu nome, curiosidade astronômica associada e data de desbloqueio.
-  4. Toque em uma estrela bloqueada indica o marco de sequência necessário para acendê-la.
-  5. Botão "✕" ou toque fora fecha o modal e devolve a interação ao mapa.
+  1. O estudante toca na aba **Cosmos** da navbar.
+  2. Vê a constelação: um ponto para cada dia somado à sequência e uma estrela de 4 pontas para cada conquista, ligados como num grafo. Uma pausa entre sequências aparece como ponte tracejada.
+  3. Toca numa estrela: ela e as vizinhas se destacam, o resto esmaece, e o detalhe mostra nome, origem, data e uma curiosidade astronômica.
+  4. Pode arrastar uma estrela (as vizinhas acompanham), arrastar o fundo para mover o mapa e usar o zoom.
+  5. Fecha o detalhe pelo "✕" ou tocando no fundo.
+  6. Na **Lista**, vê as mesmas estrelas em cards, da mais nova para a mais antiga; tocar num card volta ao grafo com a estrela selecionada.
 - **Estados:**
 
 | Situação | O que vê | Tokens |
 | :--- | :--- | :--- |
-| **Carregando** | Fundo espacial neutro com marcadores posicionais discretos | `color.surface`, `motion.duration.short` |
-| **Vazio** | Constelação inicial com primeira estrela-guia e instruções sutis de exploração | `color.on-surface`, `font.body`, `space.md` |
-| **Sucesso** | Estrelas acesas interligadas por traçados luminosos e modal de curiosidade detalhado | `color.action`, `radius.lg`, `elevation.card`, `font.title` |
+| **Carregando** | Área do grafo vazia, sem estrelas falsas | `constellation.bg` |
+| **Vazio** | Uma única estrela (o primeiro dia de sequência) e a dica "Toque numa estrela · arraste para explorar" | `constellation.node-streak`, `font.caption` |
+| **Sucesso** | Constelação completa; com uma estrela selecionada, vizinhas destacadas e detalhe aberto | `constellation.*`, `font.card-title`, `font.body-sm` |
 
-- **Faça:** Garanta que cada estrela tenha identificador visual perceptível além da cor (forma/ícone e texto explicativo).
-- **Evite:** Fazer o estudante perder estrelas já acesas ou regredir sua constelação por pausas na rotina.
+- **Faça:** diferencie sequência e conquista pela forma, pela legenda e pelo texto, além da cor; mantenha a Lista como alternativa acessível.
+- **Evite:** estrelas bloqueadas ou "a desbloquear" (RF-0018, CA-05); fazer o estudante perder estrelas ou ver a constelação regredir por pausas.
 
 ---
 
@@ -264,7 +265,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 4. **Conquistas na ERS:** Fluxo desenhado precisa ser formalizado como requisito funcional.
 5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote. Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
 6. **Decisões abertas da 1.2:**
-   - Tipos de conquista além de dias de sequência, e se conquistas dão estrelas como recompensa no Cosmos.
+   - Tipos de conquista além de dias de sequência. (Se conquistas dão estrelas foi resolvido na 1.3: dão, conforme o RF-0017.)
    - Carrossel de conquistas no painel: giro automático com pausa visível ou rolagem pelo dedo. Até a decisão, use rolagem pelo dedo, que não exige controle de pausa (WCAG 2.2.2).
    - Desenho da confirmação de exclusão em lote.
    - Desenho da tela de sessão de foco ativa.
