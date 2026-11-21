@@ -100,7 +100,7 @@ describe("RoutinesScreenContent", () => {
 
 const formProps = (overrides: Partial<NewRoutineScreenContentProps> = {}): NewRoutineScreenContentProps => ({
   name: "",
-  icon: "track_changes",
+  icon: "general",
   description: "",
   days: [],
   tasks: ["Revisar conteúdo de cálculo", "Finalizar anotações da aula"],

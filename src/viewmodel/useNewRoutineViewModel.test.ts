@@ -109,7 +109,7 @@ describe("useNewRoutineViewModel", () => {
   it("o ícone começa em Geral e pode ser trocado", async () => {
     const { useCases } = createUseCases();
     const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
-    expect(result.current[0].icon).toBe("track_changes");
+    expect(result.current[0].icon).toBe("general");
     await act(async () => result.current[1].setIcon("science"));
     expect(result.current[0].icon).toBe("science");
   });
@@ -119,7 +119,7 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
   const createMath = async (useCases: RoutineUseCases) => {
     const routine = await useCases.createRoutine({
       title: "Matemática",
-      icon: "calculate",
+      icon: "mathematics",
       description: "Diária",
       days: [1, 3],
       tasks: ["Revisar", "Resolver"],
@@ -136,7 +136,7 @@ describe("useNewRoutineViewModel (edição, #137)", () => {
     await waitFor(() => expect(result.current[0].loading).toBe(false));
     expect(result.current[0]).toMatchObject({
       name: "Matemática",
-      icon: "calculate",
+      icon: "mathematics",
       description: "Diária",
       days: [1, 3],
       tasks: ["Revisar", "Resolver"],

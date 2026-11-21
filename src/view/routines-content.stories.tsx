@@ -113,7 +113,7 @@ const storyRoutineUseCases: IRoutineUseCases = {
   createRoutine: async (input) => ({
     id: "story-routine",
     title: input.title,
-    icon: "track_changes",
+    icon: "general",
     days: [],
     createdAt: "2026-11-16T08:00:00-03:00",
     updatedAt: "2026-11-16T08:00:00-03:00",

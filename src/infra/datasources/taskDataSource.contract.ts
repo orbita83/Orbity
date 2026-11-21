@@ -22,7 +22,7 @@ export function runTaskDataSourceContractTests(createDataSource: () => Promise<I
         id: "t2",
         title: "Segunda",
         description: undefined,
-        category: "programacao",
+        category: "programming",
         createdAt: "2026-11-15T09:00:00-03:00",
         updatedAt: "2026-11-15T09:00:00-03:00",
       });

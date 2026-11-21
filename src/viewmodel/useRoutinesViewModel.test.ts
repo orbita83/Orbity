@@ -118,7 +118,7 @@ describe("useRoutinesViewModel (caso de uso)", () => {
     const { result } = await renderHook(() => useRoutinesViewModel(useCases));
     await waitFor(() => expect(result.current[0].loading).toBe(false));
     expect(result.current[0].visibleRoutines).toEqual([
-      { id: "id-1", title: "Matemática", icon: "track_changes", days: [1, 2, 3, 4, 5], taskCount: 1, activeToday: true, doneToday: false },
+      { id: "id-1", title: "Matemática", icon: "general", days: [1, 2, 3, 4, 5], taskCount: 1, activeToday: true, doneToday: false },
     ]);
 
     await act(async () => result.current[1].toggleDoneToday("id-1"));

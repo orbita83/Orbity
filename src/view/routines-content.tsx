@@ -8,7 +8,7 @@ import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { Snackbar } from "./components/Snackbar";
-import { ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routinesCopy";
+import { ROUTINE_ICON_SYMBOLS, ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 import { GradientSurface } from "./components/GradientSurface";
 
@@ -48,7 +48,7 @@ const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
         onPress={onOpen}
         style={({ pressed }) => [styles.cardMain, pressed && styles.pressed]}
       >
-        <IconTile icon={routine.icon} />
+        <IconTile icon={ROUTINE_ICON_SYMBOLS[routine.icon]} />
         <View style={styles.cardText}>
           <Text allowFontScaling style={[styles.cardTitle, routine.doneToday && styles.done]}>
             {routine.title}

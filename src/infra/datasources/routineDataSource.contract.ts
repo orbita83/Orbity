@@ -34,7 +34,7 @@ export function runRoutineDataSourceContractTests(createHarness: () => Promise<R
         id: "routine-2",
         title: "Inglês",
         description: undefined,
-        icon: "translate",
+        icon: "languages",
         days: [1, 3, 5],
         createdAt: "2026-11-16T09:00:00-03:00",
       });

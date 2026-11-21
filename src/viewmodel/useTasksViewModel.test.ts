@@ -8,7 +8,7 @@ import type { IClockService } from "@/model/services/iClockService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 import { TaskUseCases } from "@/usecase/taskUseCases";
 import { PROTOTYPE_TASKS } from "@/view/__fixtures__/taskList.fixture";
-import { useTasksViewModel } from "@/viewmodel/useTasksViewModel";
+import { formatTaskDueLabel, useTasksViewModel } from "@/viewmodel/useTasksViewModel";
 
 // Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
 const mockNavigate = jest.fn();
@@ -141,7 +141,7 @@ describe("useTasksViewModel", () => {
       createTaskFixture({
         id: "t1",
         title: "Estudar Cálculo",
-        category: "matematica",
+        category: "mathematics",
         startDate: "15/11/2026",
         startTime: "08:00",
         endTime: "09:00",
@@ -150,7 +150,7 @@ describe("useTasksViewModel", () => {
       createTaskFixture({
         id: "t2",
         title: "Revisar SOLID",
-        category: "programacao",
+        category: "programming",
         createdAt: "2026-11-15T07:00:00-03:00",
       }),
     ]);
@@ -164,7 +164,7 @@ describe("useTasksViewModel", () => {
     expect(result.current[0].visibleTasks[0]).toMatchObject({
       id: "t1",
       dueLabel: "15/11 · 08:00–09:00",
-      categoryLabel: "Matemática",
+      category: "mathematics",
     });
 
     await act(async () => result.current[1].toggleCompleted("t1"));
@@ -240,5 +240,31 @@ describe("useTasksViewModel (navegação)", () => {
       focusScreen();
     });
     expect(useCases.listTasks).toHaveBeenCalledTimes(callsBefore + 1);
+  });
+});
+
+describe("formatTaskDueLabel", () => {
+  it("formata data única com faixa de horário no padrão curto do card", () => {
+    expect(
+      formatTaskDueLabel({
+        startDate: "19/10/2026",
+        startTime: "08:00",
+        endDate: "19/10/2026",
+        endTime: "09:00",
+      }),
+    ).toBe("19/10 · 08:00–09:00");
+  });
+
+  it("formata intervalos entre dias diferentes e retorna undefined quando vazio", () => {
+    expect(
+      formatTaskDueLabel({
+        startDate: "19/10/2026",
+        startTime: "08:00",
+        endDate: "21/10/2026",
+        endTime: "18:00",
+      }),
+    ).toBe("19/10 08:00 – 21/10 18:00");
+
+    expect(formatTaskDueLabel({})).toBeUndefined();
   });
 });

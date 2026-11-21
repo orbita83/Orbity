@@ -80,4 +80,35 @@ export const MIGRATIONS: readonly Migration[] = [
       { sql: `CREATE INDEX idx_routine_task_checks_day ON routine_task_checks (routine_id, local_date)` },
     ],
   },
+  {
+    // Issue #159: o domínio guarda ids em inglês, sem rótulo em pt-BR nem nome de ícone do Material
+    // Symbols (tarefas.md, T8; rotinas.md, R8). Valores desconhecidos ficam como estão.
+    version: 4,
+    statements: [
+      {
+        sql: `UPDATE tasks SET category = CASE category
+  WHEN 'matematica'  THEN 'mathematics'
+  WHEN 'leitura'     THEN 'reading'
+  WHEN 'idiomas'     THEN 'languages'
+  WHEN 'ciencias'    THEN 'science'
+  WHEN 'programacao' THEN 'programming'
+  WHEN 'musica'      THEN 'music'
+  ELSE category
+END
+WHERE category IS NOT NULL`,
+      },
+      {
+        sql: `UPDATE routines SET icon = CASE icon
+  WHEN 'track_changes' THEN 'general'
+  WHEN 'menu_book'     THEN 'reading'
+  WHEN 'calculate'     THEN 'mathematics'
+  WHEN 'translate'     THEN 'languages'
+  WHEN 'science'       THEN 'science'
+  WHEN 'code'          THEN 'programming'
+  WHEN 'music_note'    THEN 'music'
+  ELSE icon
+END`,
+      },
+    ],
+  },
 ];

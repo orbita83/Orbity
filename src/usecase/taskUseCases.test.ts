@@ -25,7 +25,7 @@ describe("TaskUseCases", () => {
       startTime: "10:00",
       endDate: "16/11/2026",
       endTime: "11:00",
-      category: "programacao",
+      category: "programming",
     });
 
     expect(created).toEqual({
@@ -36,7 +36,7 @@ describe("TaskUseCases", () => {
       startTime: "10:00",
       endDate: "16/11/2026",
       endTime: "11:00",
-      category: "programacao",
+      category: "programming",
       completed: false,
       pinned: false,
       createdAt: "2026-11-15T09:30:00-03:00",
