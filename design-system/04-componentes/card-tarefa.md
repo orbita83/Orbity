@@ -84,7 +84,7 @@ Desde a tela de Tarefas (protótipo 2 e 2.3):
 - A conclusão usa o [CheckCircle](circulo-concluir.md).
 - O prazo usa `font.label` em `color.on-surface-variant`.
 - `onLongPress` no texto abre a seleção múltipla (F6). Na 1.3, o "•••" (`onOptionsPress`) passa a abrir o [menu de opções](menu-opcoes.md) (Editar, Fixar e Excluir) para uma tarefa só; antes, ele abria a seleção múltipla.
-- `pinned` mostra o ícone `push_pin` antes do título.
+- `pinned` mostra o ícone `push_pin` antes do título. **Na 1.3**, o ícone passa para o fim do card, antes do "•••" (16 dp, `color.on-surface-variant`), para não deslocar o título.
 - `category` (issue #25) mostra a [CategoryTag](tag-categoria.md) antes do prazo. Antes, o rótulo era colado ao prazo como texto ("Programação · 19/10 · 08:00–09:00"). Na tela de Tarefas, `tasks-content.tsx` converte o id em rótulo e símbolo pelo `categoryCopy.ts`.
 - `selectionMode`, `selected` e `onToggleSelected`: o card inteiro vira um `checkbox` "Selecionar tarefa: <título>"; selecionado, ganha fundo `color.action-subtle`, borda de 2 dp `color.focus` e marca preenchida.
 

@@ -35,7 +35,7 @@ Ordem dos itens: **Editar**, **Fixar** (vira "Desafixar" quando a tarefa já est
 ## Ações
 
 - **Editar:** abre a edição da tarefa. A tela ainda não existe (lacuna já registrada no detalhe da tarefa, 2.4).
-- **Fixar / Desafixar:** a tarefa fixada sobe para o topo da lista e mostra o `push_pin` de 16 dp em `color.on-surface-variant` antes do título, com o nome acessível "Fixada".
+- **Fixar / Desafixar:** a tarefa fixada sobe para o topo da lista e mostra o `push_pin` de 16 dp em `color.on-surface-variant` no fim do card, logo antes do "•••", com o nome acessível "Fixada". O ícone não fica antes do título, para não empurrar o texto e manter os títulos alinhados entre cards fixados e não fixados.
 - **Excluir:** abre a confirmação do [modal](modal.md) para uma tarefa: "Excluir tarefa?", com o título da tarefa no texto, "Excluir" (`PrimaryButton`) e "Manter tarefa" (secundário com contorno), como no `ConfirmDialog` (issue #151).
 
 ## Acessibilidade
