@@ -12,7 +12,7 @@ Código-fonte do Orbity (React Native + Expo + Expo Router + TypeScript), organi
 - `infra/`: DataSources em memória e em SQLite (Android, ADR-0001), banco e migrações, e o relógio do sistema.
 - `di/`: Composition Root (`container.ts` e `persistence.ts`), que liga a `infra/` aos Use Cases.
 
-Fluxo atual: `app/<rota>.tsx` → tela de `view/` → `use*ViewModel` → `container.useCases` → Use Case → contratos de `model/`, implementados pela `infra/`. Cosmos, Conquistas, Categorias e Configurações ainda são telas provisórias (`PlaceholderScreen`).
+Fluxo atual: `app/<rota>.tsx` → tela de `view/` → `use*ViewModel` → `container.useCases` → Use Case → contratos de `model/`, implementados pela `infra/`. Cosmos, Conquistas, Categorias e Configurações ainda são telas provisórias (`PlaceholderScreen` no Cosmos e `ProfilePlaceholderScreen` nas demais).
 
 ## Subdirectories & System Boundaries
 
