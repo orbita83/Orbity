@@ -47,7 +47,7 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 ### Declaração de Componentes
 * **Arrow Functions:** Todos os componentes React Native devem ser declarados como constantes utilizando *arrow functions*:
   ```typescript
-  const MeuComponente = () => {
+  const MyComponent = () => {
     return (
       <View>
         <Text>Conteúdo</Text>
@@ -77,7 +77,7 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
   * Utilizar preferencialmente **Export Nomeado** (*Named Export*) em arquivos `PascalCase.tsx`:
   ```typescript
   // src/view/components/UserProfile.tsx
-  export const UserProfile = ({ nome, tipo }: UserProfileProps) => { ... };
+  export const UserProfile = ({ name, role }: UserProfileProps) => { ... };
   ```
 
 ---
@@ -122,17 +122,17 @@ Seguindo o livro de referência (Cap. 10, Seções 10.3, 10.10 e 10.11), **quem 
 * **Props Explicitamente Tipadas:** Todo componente reutilizável deve definir um tipo para suas *props*:
   ```typescript
   type UserProfileProps = {
-    nome: string;
-    tipo: string;
-    imagemUrl: string;
+    name: string;
+    role: string;
+    imageUrl: string;
   };
 
-  export const UserProfile = ({ nome, tipo, imagemUrl }: UserProfileProps) => { ... };
+  export const UserProfile = ({ name, role, imageUrl }: UserProfileProps) => { ... };
   ```
 * **Estado Tipado:** Especificar o tipo no `useState` quando não puder ser inferido automaticamente:
   ```typescript
-  const [contador, setContador] = useState<number>(0);
-  const [usuario, setUsuario] = useState<User | null>(null);
+  const [count, setCount] = useState<number>(0);
+  const [user, setUser] = useState<User | null>(null);
   ```
 * **Parâmetros de Rota:** Lembrar que valores retornados por `useLocalSearchParams` sempre chegam como `string` e devem ser convertidos explicitamente caso o valor original seja numérico (ex: `Number(id)`).
 
@@ -143,7 +143,8 @@ Seguindo o livro de referência (Cap. 10, Seções 10.3, 10.10 e 10.11), **quem 
 ### Regras do StyleSheet
 * **`StyleSheet.create` ao Final:** Declarar as folhas de estilo no final do arquivo, após a definição do componente, mantendo a estrutura JSX visível primeiro.
 * **Sem CSS Inline:** Evitar objetos de estilo *inline* diretamente na propriedade `style` do JSX.
-* **Nomes semânticos baseados no PAPEL:** Nomear os estilos de acordo com a função do elemento na tela (`cartao`, `titulo`, `rodape`), **NUNCA** de acordo com a sua aparência visual (`caixaAzul`, `fonte20`).
+* **Nomes semânticos baseados no PAPEL:** Nomear os estilos em inglês, como os demais identificadores de `src/` (`AGENTS.md`, Seção 3), de acordo com a função do elemento na tela (`card`, `title`, `footer`), **NUNCA** de acordo com a sua aparência visual (`blueBox`, `font20`).
+* **Só tokens:** Cores, espaçamentos, raios, tipografia e sombras vêm do tema (`themes.<modo>` em `src/view/theme/tokens.ts`, espelho de `design-system/02-tokens.md`), nunca de valores literais.
 * **Unidades de Medida:** Números em `StyleSheet` representam *pixels independentes de densidade* (`dp`), sem especificação de string como `px` ou `rem`.
 
 ### Layout com Flexbox
@@ -151,21 +152,17 @@ Seguindo o livro de referência (Cap. 10, Seções 10.3, 10.10 e 10.11), **quem 
 * **Espaçamento Uniforme:** Dar preferência à propriedade `gap` (ou `rowGap`/`columnGap`) para espaçar elementos filhos em contêineres flex, em vez de aplicar `margin` individual em cada filho.
 * **Ajuste Proporcional:** Usar `flex: 1` para contêineres principais ocuparem todo o espaço disponível na tela.
 
-### Sombras Cross-Platform
-Para garantir compatibilidade visual entre iOS e Android, declarar ambas as configurações de sombra no mesmo objeto de estilo:
+### Sombras
+Usar os tokens de sombra do tema na propriedade `boxShadow` (ODS 1.2), que vale para Android e web. `elevation` continua disponível só como alternativa no Android, pelo token `theme.elevation.card`:
 ```typescript
+const theme = themes.cosmic;
+
 const styles = StyleSheet.create({
-  cartao: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    // Sombras para iOS
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    // Sombra para Android
-    elevation: 3,
+  dialog: {
+    backgroundColor: theme.color.surface,
+    borderRadius: theme.radius.lg,
+    padding: theme.space.md,
+    boxShadow: theme.shadow.modal,
   },
 });
 ```
@@ -176,17 +173,17 @@ const styles = StyleSheet.create({
   ```tsx
   <Pressable
     style={({ pressed }) => [
-      styles.botao,
-      pressed && styles.botaoPressionado,
+      styles.button,
+      pressed && styles.buttonPressed,
     ]}
     onPress={handlePress}
   >
-    <Text style={styles.textoBotao}>Enviar</Text>
+    <Text style={styles.buttonLabel}>Enviar</Text>
   </Pressable>
   ```
 * **Área Mínima de Toque (Material 3 e WCAG 2.5.5 / 2.5.8):** Todo elemento interativo tocável deve assegurar uma área de contato mínima de **48 × 48 dp** no Android (Material 3) ou **44 × 44 pt** no iOS (Apple HIG).
 * **Expansão com `hitSlop` ou Dimensões Mínimas:**
-  * Em controles com dimensão visual menor que 48 dp (ex.: botões de ícone de 24 dp, caixas de checkbox de 20–24 dp ou chips), utilize container delimitado com `minHeight: 48` / `minWidth: 48` ou expanda a área interativa via propriedade `hitSlop`:
+  * Em controles com dimensão visual menor que 48 dp (ex.: botões de ícone de 24 dp, caixas de checkbox de 20–24 dp ou chips), utilize container delimitado com `minHeight`/`minWidth` iguais a `theme.target.minSize` (48 dp) ou expanda a área interativa via propriedade `hitSlop`:
     ```tsx
     <Pressable
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}

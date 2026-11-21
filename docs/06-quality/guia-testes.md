@@ -71,7 +71,8 @@ describe("TimestampUseCase", () => {
   it("deve criar registro de carimbo de data/hora com formato ISO válido", async () => {
     // 1. Arrange (Preparação de entradas, dependências e fixtures)
     const fakeClockService: IClockService = {
-      nowIso: async () => "2026-11-06T12:00:00.000Z",
+      now: () => "2026-11-06T09:00:00-03:00",
+      todayLocal: () => LocalDate.parse("2026-11-06"),
     };
     const useCase = new TimestampUseCase(fakeClockService);
 
@@ -79,8 +80,8 @@ describe("TimestampUseCase", () => {
     const result = await useCase.createRecord("estudo");
 
     // 3. Assert (Verificação do comportamento observável e dados retornados)
-    expect(result.label).toBe("estudo:2026-11-06T12:00:00.000Z");
-    expect(result.isoDate).toBe("2026-11-06T12:00:00.000Z");
+    expect(result.label).toBe("estudo:2026-11-06T09:00:00-03:00");
+    expect(result.isoDate).toBe("2026-11-06T09:00:00-03:00");
   });
 });
 ```
@@ -279,26 +280,29 @@ Os exemplos a seguir utilizam as abstrações didáticas de carimbo de data/hora
 ```typescript
 // src/usecase/timestampUseCase.test.ts
 import { ValidationError } from "@/model/errors";
-import type { IClockService } from "@/model/services/clock-service";
+import { LocalDate } from "@/model/entities/localDate";
+import type { IClockService } from "@/model/services/iClockService";
 import { TimestampUseCase } from "@/usecase/timestampUseCase";
 
 describe("TimestampUseCase", () => {
   it("deve criar registro de carimbo de data/hora delegando ao servico de relogio", async () => {
     // Stub do contrato IClockService fornecendo resposta predeterminada
     const stubClockService: IClockService = {
-      nowIso: async () => "2026-11-06T10:00:00.000Z",
+      now: () => "2026-11-06T07:00:00-03:00",
+      todayLocal: () => LocalDate.parse("2026-11-06"),
     };
 
     const useCase = new TimestampUseCase(stubClockService);
     const record = await useCase.createRecord("estudo-diario");
 
-    expect(record.label).toBe("estudo-diario:2026-11-06T10:00:00.000Z");
-    expect(record.isoDate).toBe("2026-11-06T10:00:00.000Z");
+    expect(record.label).toBe("estudo-diario:2026-11-06T07:00:00-03:00");
+    expect(record.isoDate).toBe("2026-11-06T07:00:00-03:00");
   });
 
   it("deve lancar ValidationError quando o prefixo estiver vazio ou em branco", async () => {
     const dummyClockService: IClockService = {
-      nowIso: async () => "2026-11-06T10:00:00.000Z",
+      now: () => "2026-11-06T07:00:00-03:00",
+      todayLocal: () => LocalDate.parse("2026-11-06"),
     };
 
     const useCase = new TimestampUseCase(dummyClockService);
