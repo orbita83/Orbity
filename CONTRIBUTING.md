@@ -24,6 +24,7 @@ As regras descritas neste documento aplicam-se a todos os integrantes da equipe.
     - [2.3. Implementação e commits](#23-implementação-e-commits)
     - [2.4. Validação local](#24-validação-local)
     - [2.5. Integração na development](#25-integração-na-development)
+    - [2.6. Desvios encontrados durante uma atividade](#26-desvios-encontrados-durante-uma-atividade)
   - [3. Qualidade e Validação](#3-qualidade-e-validação)
     - [3.1. Padrões de qualidade](#31-padrões-de-qualidade)
     - [3.2. Testes](#32-testes)
@@ -79,7 +80,7 @@ Todas as mensagens de commit devem seguir o formato:
 - O prefixo e o escopo são obrigatórios.
 - O escopo deve identificar objetivamente a área afetada.
 - A descrição deve ser escrita em português brasileiro (pt-BR).
-- A descrição deve ser objetiva e iniciar com letra minúscula.
+- A descrição deve ser objetiva, iniciar com letra minúscula e não terminar com ponto final.
 - Não utilizar símbolos decorativos ou caracteres especiais desnecessários.
 - Cada commit deve representar uma alteração coerente e identificável.
 - Não incluir credenciais, tokens, senhas ou outras informações sensíveis nos commits.
@@ -139,7 +140,18 @@ Todas as Issues devem seguir o padrão de título:
 - `[FIX] Corrigir falha na autenticação`
 - `[FEATURE] Implementar recuperação de senha`
 - `[DOCS] Atualizar documentação da API`
-- `[TASK] Configurar ferramenta de análise estática`
+- `[CHORE] Configurar ferramenta de análise estática`
+
+**Tipos de Issue e templates:**
+
+| Prefixo | Template | Label | Quando usar |
+| :--- | :--- | :--- | :--- |
+| `[FEATURE]` | `feature.yml` | `feature` | Funcionalidade nova ou evolução de uma existente |
+| `[FIX]` | `fix.yml` | `fix` | Defeito ou regressão |
+| `[DOCS]` | `docs.yml` | `docs` | Alteração só de documentação |
+| `[CHORE]` | `chore.yml` | `chore` | Manutenção, configuração, automação, **refatoração** e **criação ou manutenção de testes** |
+
+Refatorações e testes não têm template próprio: use o `[CHORE]`. O prefixo `refactor` ou `test` continua valendo na branch, nos commits e no título do PR, que recebe a label correspondente.
 
 **Requisitos:**
 
@@ -151,6 +163,7 @@ Todas as Issues devem seguir o padrão de título:
 - As labels devem corresponder à classificação da Issue.
 - Antes de criar uma Issue, deve-se verificar a existência de registros duplicados.
 - A Issue deve apresentar informações suficientes para compreender a necessidade e orientar sua implementação.
+- Quando a Issue registra um desvio encontrado durante outra atividade, o campo **Origem** do template informa a Issue ou o Pull Request em que ele foi encontrado (ver [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade)).
 
 **Obrigatoriedade:**
 
@@ -191,7 +204,8 @@ Todos os Pull Requests de desenvolvimento devem seguir o padrão de título:
 
 **Requisitos:**
 
-- A criação do Pull Request deve ser realizada manualmente ou de forma automática pelo agente, seguindo o template descrito no workflow da pasta .github.
+- A criação do Pull Request pode ser feita manualmente pelo integrante ou pelo agente em nome dele, seguindo o template `.github/PULL_REQUEST_TEMPLATE/development.md`.
+- O autor do Pull Request deve constar como responsável (*assignee*). Quando o agente abre o PR, o responsável é o integrante em nome de quem ele atua.
 - A branch de destino deve ser `development`.
 - O prefixo deve corresponder ao tipo principal da alteração.
 - O escopo deve indicar objetivamente a área afetada.
@@ -199,6 +213,7 @@ Todos os Pull Requests de desenvolvimento devem seguir o padrão de título:
 - A descrição deve seguir os campos definidos pelo template oficial.
 - As principais alterações implementadas devem ser informadas.
 - As formas de validação e os testes realizados devem ser descritos.
+- Os desvios encontrados durante a atividade devem ser listados na seção **Desvios encontrados** do template, com a classe e a Issue de cada um (ver [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade)).
 - A documentação afetada deve ser atualizada, quando aplicável.
 - A Issue relacionada deve ser referenciada com `Closes #numero`, quando houver e quando o merge deva encerrar essa Issue.
 - A existência de uma Issue relacionada não é obrigatória.
@@ -325,7 +340,7 @@ Durante a implementação, o contribuidor deve manter as alterações relacionad
 - Atualizar testes e documentação quando necessário.
 - Utilizar mensagens de commit conforme a Seção 1.1.
 
-Caso sejam identificadas necessidades independentes durante a implementação, recomenda-se registrá-las separadamente, evitando ampliar excessivamente o escopo original.
+Bugs, inconsistências ou outras necessidades encontradas durante a implementação seguem a [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade), que define quando corrigir na própria branch, quando registrar uma Issue separada e quando interromper a atividade.
 
 ### 2.4. Validação local
 
@@ -337,6 +352,9 @@ A validação local deve incluir, quando aplicável:
 - Execução dos linters configurados (`npm run lint`).
 - Execução dos testes automatizados (`npm test`).
 - Verificação de compilação ou análise estática (`npx --no-install tsc --noEmit`).
+- Geração do Storybook (`npm run build-storybook`) ao alterar telas, componentes ou histórias, porque o CI falha com uma história quebrada.
+- Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`) ao alterar `src/view/theme/tokens.ts`. Esse teste não é coletado pelo Jest.
+- Verificação da arquitetura (`npm run lint:architecture`), sem introduzir violações além das já registradas em Issues abertas.
 - Testes manuais dos comportamentos afetados.
 - Revisão das alterações realizadas.
 - Verificação de arquivos sensíveis ou informações que não devem ser versionadas.
@@ -356,7 +374,7 @@ Após concluir a implementação e as validações locais, o contribuidor deve a
 O processo de integração deve seguir esta sequência:
 
 1. Enviar a branch de trabalho ao repositório remoto.
-2. Abrir manualmente o Pull Request de desenvolvimento.
+2. Abrir o Pull Request de desenvolvimento, manualmente ou pelo agente, conforme a [Seção 1.4](#14-pull-requests-de-desenvolvimento).
 3. Preencher o template correspondente.
 4. Aguardar as verificações automáticas.
 5. Solicitar ou aguardar a revisão da equipe.
@@ -382,6 +400,41 @@ git branch -d nome-da-branch
 ```
 
 Utilize `git branch -d`, que recusa a remoção de branches com commits não integrados; não utilize `-D`. Caso uma branch remota seja removida por engano, ela pode ser restaurada pelo botão **Restore branch** na página do Pull Request.
+
+### 2.6. Desvios encontrados durante uma atividade
+
+Um **desvio** é qualquer problema encontrado durante uma atividade que não faz parte do objetivo dela: um defeito, uma regra do harness violada no código, uma inconsistência entre documentos, uma dívida técnica ou um comportamento diferente do especificado. Esta seção vale para integrantes e para o agente.
+
+**Antes de classificar:**
+
+1. **Confirmar a origem.** Verifique se o problema já existia: reproduza-o na `development` atualizada, sem as alterações da atividade. Se ele só aparece com as suas alterações, não é desvio: é parte da atividade e deve ser corrigido nela.
+2. **Descartar instabilidade.** Se um teste falha só na suíte completa, rode-o isolado ou com `npx jest --maxWorkers=2` antes de concluir que há defeito.
+3. **Procurar duplicatas.** Busque Issues abertas e encerradas sobre o mesmo problema. Se existir, use-a em vez de abrir outra.
+
+**Classes de desvio:**
+
+| Classe | Quando | O que fazer |
+| :--- | :--- | :--- |
+| **A. No escopo** | O defeito está no código que a atividade já altera, ou corrigi-lo é necessário para cumprir o objetivo dela. | Corrigir na mesma branch, em commit próprio, e registrar no PR, na seção **Desvios encontrados**. |
+| **B. Fora do escopo, não bloqueante** | O problema está fora do objetivo e não impede concluir a atividade. | Não corrigir na branch atual. Registrar uma Issue com o template do tipo (Seção 1.3), preenchendo **Origem** com a Issue ou o PR da atividade. Listar a Issue no PR, em **Desvios encontrados**. A atividade continua. |
+| **C. Bloqueante** | O problema já existia e impede concluir ou validar a atividade (ex.: teste falhando na `development`, contrato errado, CI quebrado). | Interromper a atividade e seguir o procedimento abaixo. |
+| **D. Inconsistência no harness** | Documentos do harness (`AGENTS.md`, `RULES.md`, `ARCHITECTURE.md`, este guia, design system, templates) se contradizem, ou contradizem o código, no ponto necessário para a decisão atual. | Não escolher uma das versões por conta própria. Levar a dúvida a quem decide (o operador, no caso do agente) e registrar uma Issue `[DOCS]` ou `[CHORE]` para alinhar os documentos. |
+
+**Procedimento para desvio bloqueante (classe C):**
+
+1. Pare a atividade e reúna a evidência: comando executado, saída do erro e confirmação de que o problema ocorre na `development` sem as suas alterações.
+2. Comunique o bloqueio a quem decide (o operador, no caso do agente). Não contorne o problema: é proibido desabilitar ou remover testes, usar `--no-verify` ou `HUSKY=0`, relaxar regras de lint ou do CI, ou embutir a correção na atividade sem registrá-la.
+3. Registre uma Issue `[FIX]`, preenchendo **Origem** e indicando no campo de bloqueio a atividade afetada (ex.: `Bloqueia #158`). Comente na Issue da atividade bloqueada com a referência ao bloqueio (ex.: `Bloqueada por #200`). Use a palavra "Bloqueia", e não `fixes` ou `closes`, para a automação de fechamento não encerrar a Issue errada.
+4. Corrija o bloqueio numa branch `fix/<descricao-curta>` própria, criada a partir da `development`, com Pull Request próprio. Depois do merge, atualize a branch da atividade com a `development` e retome o trabalho.
+5. Só quando quem decide autorizar expressamente, e a correção for pequena e inseparável da atividade, ela pode entrar na mesma branch: em commit próprio, citada na seção **Desvios encontrados** do PR, com a Issue do bloqueio referenciada por `Closes #numero`.
+
+**Desvio de um design técnico (opcional, só com EGM):** quando a atividade implementa uma funcionalidade que tem design em `docs/designs/` (Elephant-Goldfish Model) e a implementação precisar divergir do design, atualize o design no mesmo Pull Request e registre a divergência em **Desvios encontrados**. O `/egm:egm-drift-report` pode ajudar a levantar as divergências. Atividades sem design EGM não têm essa exigência.
+
+**Regras para o agente:**
+
+- O agente redige a Issue de desvio (título, template e campos) e **pede confirmação ao operador antes de criá-la**. Sem confirmação, os desvios encontrados ficam listados no relatório final da atividade e no PR.
+- Diante de um desvio bloqueante, o agente interrompe a atividade e aguarda a decisão do operador, sem aplicar contornos.
+- O agente não amplia o escopo da atividade para corrigir desvios das classes B e D sem pedido do operador.
 
 ---
 
@@ -483,9 +536,11 @@ Nos Pull Requests direcionados à branch `development`, o workflow [`.github/wor
 1. Instalação reproduzível de dependências (`npm ci`).
 2. Verificação de lint (`npm run lint`).
 3. Verificação estrita de tipos (`npx --no-install tsc --noEmit`).
-4. Execução não interativa dos testes automatizados (`npm test`).
+4. Geração do Storybook (`npm run build-storybook`). Uma história quebrada falha o CI mesmo com os testes passando.
+5. Execução não interativa dos testes automatizados (`npm test`).
+6. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
-Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npx --no-install tsc --noEmit` e `npm test`. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
+Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npx --no-install tsc --noEmit`, `npm run build-storybook`, `npm test` e `node tests/ods-theme.test.cjs`. O `npm run lint:architecture` ainda não faz parte do CI. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
 
 Na configuração de proteção da branch `development` (Ruleset **Branch Protection (Development)**), o status check `validate` deve permanecer configurado como obrigatório (*Require status checks to pass*) junto às regras existentes de revisão e aprovação de Pull Requests.
 
@@ -669,7 +724,7 @@ Todos os integrantes da equipe devem:
 - Participar das revisões quando necessário.
 - Evitar mudanças diretas nas branches protegidas.
 - Preservar a integridade e a rastreabilidade do histórico do projeto.
-- Comunicar problemas identificados durante o desenvolvimento ou a publicação.
+- Comunicar problemas identificados durante o desenvolvimento ou a publicação, tratando os desvios encontrados numa atividade conforme a [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade).
 
 As responsabilidades individuais não substituem as decisões coletivas necessárias para alterações relevantes no processo ou na arquitetura do projeto.
 
