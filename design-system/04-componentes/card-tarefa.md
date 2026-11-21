@@ -54,7 +54,7 @@ O estilo atual ainda usa `focus.ring-width` (2 dp) como espessura do contorno do
 - O botão de opções anuncia a ação e o título da tarefa.
 - Os alvos do checkbox e do menu têm ao menos `target.min-size` (48 dp).
 - Textos mantêm escala de fonte, podem quebrar linha e não são truncados.
-- A tag de categoria é anunciada como "Categoria: <rótulo>" junto com o conteúdo do card. No modo de seleção, o card inteiro vira um `checkbox` com rótulo próprio ("Selecionar tarefa: <título>"), e a categoria não entra nesse rótulo.
+- A tag de categoria é anunciada como "Categoria: <rótulo>" junto com o conteúdo do card. Quando o conteúdo aceita toque longo, ele vira um único elemento acessível, e o iOS deixa de ler o rótulo próprio da tag. Por isso, o grupo recebe o rótulo "<título>, Categoria: <rótulo>, <prazo>", sem as partes que a tarefa não tiver. No modo de seleção, o card inteiro vira um `checkbox` com rótulo próprio ("Selecionar tarefa: <título>"), e a categoria não entra nesse rótulo.
 - No card selecionado (fundo `color.action-subtle`), a tag fica com a mesma cor do fundo. O texto e o ícone continuam legíveis, com o mesmo contraste da tag (ver [tag-categoria.md](tag-categoria.md#acessibilidade)).
 - `color.on-surface` sobre `color.surface` tem contraste documentado de 17,17:1 nos dois temas. O par `color.surface` sobre `color.action` também deve manter o contraste documentado de 6,29:1 no claro e 6,50:1 no escuro.
 

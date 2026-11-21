@@ -46,6 +46,11 @@ export const TaskCard = ({
 }: TaskCardProps) => {
   const styles = createStyles(theme, completed);
   const cosmic = Boolean(theme.componentOverrides?.cardSurface);
+  // Com toque longo, o conteúdo vira um único elemento acessível e o VoiceOver
+  // ignora o rótulo próprio da tag; por isso o rótulo do grupo repete "Categoria: …".
+  const contentLabel = [title, category ? `Categoria: ${category.label}` : null, dueDate ?? null]
+    .filter(Boolean)
+    .join(", ");
   const content = (
     <View style={styles.content}>
       <View style={styles.titleRow}>
@@ -98,6 +103,7 @@ export const TaskCard = ({
       />
       <Pressable
         accessible={Boolean(onLongPress)}
+        accessibilityLabel={onLongPress ? contentLabel : undefined}
         accessibilityHint={onLongPress ? "Toque longo para selecionar várias tarefas" : undefined}
         onLongPress={onLongPress}
         disabled={!onLongPress}
