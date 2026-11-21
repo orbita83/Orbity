@@ -44,7 +44,7 @@ Este arquivo é o seu **roteador operacional**. Mantenha o contexto limpo e **n�
   - **A. No escopo:** corrija na mesma branch, em commit próprio, e cite no PR.
   - **B. Fora do escopo, não bloqueante:** não corrija; **crie a Issue automaticamente** (template do tipo, label `deviation`, campo **Origem**) e continue a tarefa.
   - **C. Bloqueante:** **pare, crie a Issue** `[FIX]` (labels `deviation` e `blocker`, campos **Origem** e **Atividade bloqueada**), comente na Issue da tarefa bloqueada e **avise o operador** com a evidência e o link. Aguarde a decisão; o padrão é corrigir numa branch `fix/…` própria antes de retomar. Nunca contorne o bloqueio (desabilitar teste, `--no-verify`, `HUSKY=0`, relaxar lint ou CI).
-  - **D. Inconsistência no harness:** crie uma Issue `[DOCS]` ou `[CHORE]` com a label `deviation`. Se a contradição estiver no ponto da decisão atual, ela é bloqueante: não escolha uma versão, trate como a classe C (label `blocker`) e avise o operador. Caso contrário, continue.
+  - **D. Inconsistência no harness:** crie uma Issue `[DOCS]` ou `[CHORE]` com a label `deviation`. Se a contradição estiver no ponto da decisão atual, ela é bloqueante: não escolha uma versão; a Issue continua `[DOCS]`/`[CHORE]` (não vira `[FIX]`), recebe também `blocker`, e você para e avisa o operador como na classe C. Caso contrário, continue.
   - **Issues:** não peça confirmação para criá-las; procure duplicatas antes. Liste todos os desvios no relatório final e na seção **Desvios encontrados** do PR.
   - **PRs:** o operador em nome de quem você atua é o responsável (*assignee*) do PR (`CONTRIBUTING.md` Seção 1.4).
 - **Fonte de verdade visual:** Nunca utilize valores literais (*hardcoded*) de cor, espaçamento, tipografia ou raio. Utilize exclusivamente os tokens definidos em `design-system/02-tokens.md`.
@@ -60,7 +60,7 @@ EGM artifact directory: .dev/egm
 
 O Elephant-Goldfish Model (EGM) é **opcional**: nem toda atividade tem design técnico. As regras abaixo valem só quando a atividade usa o EGM.
 
-- **Design final:** `docs/designs/<funcionalidade>.md`, um por funcionalidade, registrado no índice `docs/designs/README.md`. É o único artefato EGM versionado.
+- **Design final:** `docs/designs/<funcionalidade>.md`, um por funcionalidade que usa o EGM, registrado no índice `docs/designs/README.md`. É o único artefato EGM versionado.
 - **Artefatos de trabalho** (`concepts_brief.md`, `design_draft.md`, relatórios de revisão e de drift): ficam em `.dev/egm/`, fora do Git. A pasta comporta uma tarefa por vez. Limpe-a antes de iniciar outra.
 - Antes de implementar uma funcionalidade com design EGM, o design deve estar em `docs/designs/` e ter passado por `/egm:egm-review`.
 - Se a implementação precisar divergir do design, atualize o design no mesmo PR (`CONTRIBUTING.md` Seção 2.6).
