@@ -58,6 +58,25 @@ describe("TasksScreenContent", () => {
     expect(props.toggleCompleted).toHaveBeenCalledWith("b");
   });
 
+  it("#25: mostra a tag de categoria antes do prazo, separada dele, só nas tarefas com categoria", async () => {
+    await renderInSafeArea(<TasksScreenContent {...listProps()} />);
+
+    expect(screen.getByLabelText("Categoria: Matemática")).toBeTruthy();
+    expect(screen.getByLabelText("Categoria: Programação")).toBeTruthy();
+    expect(screen.getAllByLabelText(/^Categoria: /)).toHaveLength(2);
+    // O prazo continua como texto próprio, sem o rótulo da categoria colado.
+    expect(screen.getByText("19/10 · 08:00–09:00")).toBeTruthy();
+    expect(screen.queryByText(/Matemática · /)).toBeNull();
+  });
+
+  it("#25: o conteúdo do card anuncia o título, a categoria com o prefixo e o prazo num rótulo só", async () => {
+    await renderInSafeArea(<TasksScreenContent {...listProps()} />);
+
+    // Com toque longo, o VoiceOver lê só o grupo; o prefixo "Categoria:" precisa estar nele.
+    expect(screen.getByLabelText("Estudar para a prova de Cálculo, Categoria: Matemática, 19/10 · 08:00–09:00")).toBeTruthy();
+    expect(screen.getByLabelText("Estudar para IHC, 20/10 · 14:00–15:00")).toBeTruthy();
+  });
+
   it("sem tarefas, mostra o estado vazio acolhedor", async () => {
     await renderInSafeArea(<TasksScreenContent {...listProps({ visibleTasks: [], pendingCount: 0, totalCount: 0 })} />);
     expect(screen.getByText(TASKS_COPY["empty.title"])).toBeTruthy();

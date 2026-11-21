@@ -1,13 +1,21 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
 import { CheckCircle } from "./CheckCircle";
+import { CategoryTag } from "./CategoryTag";
 import { GradientSurface } from "./GradientSurface";
-import { MaterialSymbol } from "./MaterialSymbol";
+import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
+
+/** Categoria já pronta para exibir: o chamador converte o id em rótulo e ícone. */
+export type TaskCardCategory = {
+  label: string;
+  symbol: MaterialSymbolName;
+};
 
 export type TaskCardProps = {
   title: string;
   dueDate?: string;
-  category?: string;
+  /** Categoria de estudo, mostrada como tag antes do prazo (tag-categoria.md). */
+  category?: TaskCardCategory;
   completed: boolean;
   onToggleCompleted: () => void;
   onOptionsPress?: () => void;
@@ -38,8 +46,11 @@ export const TaskCard = ({
 }: TaskCardProps) => {
   const styles = createStyles(theme, completed);
   const cosmic = Boolean(theme.componentOverrides?.cardSurface);
-  const secondaryMeta = [category, dueDate].filter(Boolean).join(" · ");
-
+  // Com toque longo, o conteúdo vira um único elemento acessível e o VoiceOver
+  // ignora o rótulo próprio da tag; por isso o rótulo do grupo repete "Categoria: …".
+  const contentLabel = [title, category ? `Categoria: ${category.label}` : null, dueDate ?? null]
+    .filter(Boolean)
+    .join(", ");
   const content = (
     <View style={styles.content}>
       <View style={styles.titleRow}>
@@ -48,10 +59,15 @@ export const TaskCard = ({
           {title}
         </Text>
       </View>
-      {secondaryMeta ? (
-        <Text allowFontScaling style={styles.dueDate}>
-          {secondaryMeta}
-        </Text>
+      {category || dueDate ? (
+        <View style={styles.meta}>
+          {category ? <CategoryTag label={category.label} symbol={category.symbol} theme={theme} /> : null}
+          {dueDate ? (
+            <Text allowFontScaling style={styles.dueDate}>
+              {dueDate}
+            </Text>
+          ) : null}
+        </View>
       ) : null}
     </View>
   );
@@ -87,6 +103,7 @@ export const TaskCard = ({
       />
       <Pressable
         accessible={Boolean(onLongPress)}
+        accessibilityLabel={onLongPress ? contentLabel : undefined}
         accessibilityHint={onLongPress ? "Toque longo para selecionar várias tarefas" : undefined}
         onLongPress={onLongPress}
         disabled={!onLongPress}
@@ -129,7 +146,15 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
     },
     pressed: { opacity: theme.motion.opacityPressed },
     contentPressable: { flex: 1, minWidth: 0 },
-    content: { flex: 1, minWidth: 0, paddingVertical: theme.primitive["space-4"] },
+    content: { flex: 1, gap: theme.primitive["space-4"], minWidth: 0, paddingVertical: theme.primitive["space-4"] },
+    // Tag e prazo na mesma linha; com texto ampliado, quebram em vez de truncar (tag-categoria.md).
+    meta: {
+      alignItems: "center",
+      columnGap: theme.space.sm,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      rowGap: theme.primitive["space-4"],
+    },
     titleRow: { flexDirection: "row", alignItems: "center", gap: theme.primitive["space-4"] },
     title: {
       ...theme.font.body,
