@@ -155,7 +155,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 - **Objetivo:** Cumprir hábitos diários com tarefas reordenáveis e controle flexível.
 - **Componentes:** Cards de turno (`radius.lg`, `elevation.card`, `space.md`, `font.title`), Alças de arraste (`⋮⋮`) (`color.on-surface`, `space.sm`), Botão "Marcar como concluída" (`button.bg`, `button.label`, `button.radius`), Botão secundário "Desmarcar todos" (`color.action`, `font.label`, `button.radius`).
 - **Passos:**
-  1. Toque na rotina abre tela de detalhes com lista de hábitos.
+  1. Toque na rotina abre tela de detalhes com lista de hábitos. Na lista (1.3), o "•••" do card abre o [menu de opções](04-componentes/menu-opcoes.md) para uma rotina (Editar, Fixar, Excluir), e o toque longo, com o preenchimento de `motion.duration.hold`, abre a seleção múltipla de rotinas com a [barra de ações contextuais](04-componentes/barra-acoes-contextuais.md) para excluir várias de uma vez.
   2. Tarefas podem ser reordenadas via alças `⋮⋮`.
   3. Conclusão pode ser individual (item a item) ou total ("Marcar como concluída").
   4. Estado concluído risca itens e exibe "Desmarcar todos" para reversão.

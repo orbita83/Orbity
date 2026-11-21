@@ -6,7 +6,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 ## Quando usar
 
-- Use apenas no modo de seleção múltipla, aberto por *long-press* em um card de tarefa.
+- Use apenas no modo de seleção múltipla, aberto por *long-press* em um card de tarefa ou, desde a 1.3, de rotina (protótipo 3.5 · Seleção de rotinas, com as mesmas ações: Editar, Fixar, Marcar todas e Excluir (n)).
 
 ## Quando não usar
 

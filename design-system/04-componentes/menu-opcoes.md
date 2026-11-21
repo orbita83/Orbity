@@ -5,6 +5,7 @@ Origem no sistema base: [Menu do Material 3](https://m3.material.io/components/m
 ## Quando usar
 
 - Use no "•••" do [CardTarefa](card-tarefa.md) para agir sobre uma única tarefa: Editar, Fixar (ou Desafixar) e Excluir.
+- Use no "•••" do card de rotina, com as mesmas ações (protótipo 3 · Rotinas). Excluir abre a confirmação da 3.3 ("Excluir a rotina X?", "Excluir rotina" e "Manter rotina").
 - Use quando as ações valem só para o item de onde o menu saiu.
 
 ## Quando não usar
@@ -54,7 +55,6 @@ Ordem dos itens: **Editar**, **Fixar** (vira "Desafixar" quando a tarefa já est
 ## Em aberto
 
 - **Implementação:** hoje o "•••" do `TaskCard` (`onOptionsPress`) abre a seleção múltipla em `src/`. A troca pelo menu vem numa issue de implementação.
-- **Rotinas:** se o menu também entra nos cards de Rotinas.
 - **Largura:** se os 200 dp viram token (`menu.width`).
 
 ## Código
