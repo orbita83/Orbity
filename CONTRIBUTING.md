@@ -230,7 +230,8 @@ O workflow [`.github/workflows/labels-pull-requests.yml`](.github/workflows/labe
 - A automação remove só as labels que ela mesma aplicou e que deixaram de valer (ex.: o título mudou de `fix` para `refactor`).
 - Labels adicionadas manualmente nunca são removidas, e uma label que alguém removeu à mão não é reaplicada naquele PR.
 - Continuam manuais as labels que dependem de julgamento: `accessibility`, `ux`, `bug`, `enhancement`, `development`, `good first issue`, `help wanted`, `question`, `duplicate`, `invalid` e `wontfix`.
-- O workflow usa `pull_request_target`, então roda com as regras da branch de destino. Mudanças em `.github/pr-labels.json` só passam a valer depois do merge.
+- O workflow usa o evento `pull_request` e roda com as regras da própria branch do PR. Por isso, um PR só recebe labels automáticas se a sua branch já contiver o workflow; branches criadas antes dele precisam ser atualizadas com a `development`.
+- PRs abertos a partir de forks não recebem labels automáticas, porque o GitHub entrega a eles um token só de leitura.
 
 ### 1.5. Pull Requests de Publicação
 

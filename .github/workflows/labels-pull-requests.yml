@@ -1,9 +1,10 @@
 name: Labels automáticas em Pull Requests
 
-# pull_request_target roda com o workflow e o código da branch de destino. O checkout abaixo
-# traz só as regras e o script dessa branch; nenhum código do PR é baixado ou executado.
+# Usa pull_request, e não pull_request_target: desde dezembro de 2025 o pull_request_target roda
+# sempre o workflow da branch padrão (main), e este repositório integra na development.
+# PRs vindos de fork recebem um token só de leitura, então o job é pulado para eles.
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - edited
@@ -20,9 +21,10 @@ concurrency:
 
 jobs:
   label:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar regras e script da branch de destino
+      - name: Baixar regras e script
         uses: actions/checkout@v4
         with:
           persist-credentials: false
