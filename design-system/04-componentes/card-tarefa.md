@@ -70,7 +70,7 @@ O estilo recebe `elevation.card` (2 dp) pela propriedade `elevation` do React Na
 - `elevation.card` não tem representação visual uniforme entre Android e iOS. A 1.2 não criou sombra para o card: no cósmico, a separação vem do gradiente e do contorno `cosmicBorders.card`.
 - A tipografia manuscrita aparente no protótipo não tem fonte ou token aprovado; o título usa `font.body`.
 - O tratamento tipográfico do prazo, prazos vencidos e formatação de datas não foi definido além de receber texto do chamador.
-- O conteúdo do menu e as ações disponíveis não estão especificados; a abertura é delegada a `onOptionsPress`.
+- O conteúdo do menu foi especificado na 1.3 em [menu-opcoes.md](menu-opcoes.md); a abertura continua delegada a `onOptionsPress`.
 - Não foi definido se tocar no container abre detalhes. O long-press abre a seleção múltipla (F6).
 - Não há estado desabilitado ou de carregamento especificado para o Card.
 
@@ -83,7 +83,7 @@ Desde a tela de Tarefas (protótipo 2 e 2.3):
 - O tema padrão passa a ser `themes.cosmic`, com gradiente `cosmicGradients.card` e contorno `cosmicBorders.card`.
 - A conclusão usa o [CheckCircle](circulo-concluir.md).
 - O prazo usa `font.label` em `color.on-surface-variant`.
-- `onLongPress` no texto abre a seleção múltipla (F6); o "•••" (`onOptionsPress`) abre as mesmas ações e serve de alternativa acessível ao toque longo.
+- `onLongPress` no texto abre a seleção múltipla (F6). Na 1.3, o "•••" (`onOptionsPress`) passa a abrir o [menu de opções](menu-opcoes.md) (Editar, Fixar e Excluir) para uma tarefa só; antes, ele abria a seleção múltipla.
 - `pinned` mostra o ícone `push_pin` antes do título.
 - `category` (issue #25) mostra a [CategoryTag](tag-categoria.md) antes do prazo. Antes, o rótulo era colado ao prazo como texto ("Programação · 19/10 · 08:00–09:00"). Na tela de Tarefas, `tasks-content.tsx` converte o id em rótulo e símbolo pelo `categoryCopy.ts`.
 - `selectionMode`, `selected` e `onToggleSelected`: o card inteiro vira um `checkbox` "Selecionar tarefa: <título>"; selecionado, ganha fundo `color.action-subtle`, borda de 2 dp `color.focus` e marca preenchida.
