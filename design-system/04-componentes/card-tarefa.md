@@ -2,11 +2,11 @@
 
 > Em `themes.cosmic`, o card usa `color.surface-variant` e a marca do checkbox usa `color.on-action`. Os temas legados mantêm sua superfície anterior. Os contrastes legados citados abaixo não se aplicam automaticamente ao tema cósmico.
 
-Origem no sistema base: listas e cards do Material 3. Situação: Adaptado. O padrão F5 define o card de tarefa, checkbox circular e tokens de forma/elevação. O protótipo de referência mostra título, prazo, conclusão e controle de opções.
+Origem no sistema base: listas e cards do Material 3. Situação: Adaptado. O padrão F5 define o card de tarefa, checkbox circular e tokens de forma/elevação. O protótipo de referência mostra título, prazo, conclusão e controle de opções. Desde a issue #25, o card também mostra a categoria de estudo como [tag](tag-categoria.md).
 
 ## Quando usar
 
-- Use para apresentar título, prazo opcional e estado de conclusão em uma lista de tarefas.
+- Use para apresentar título, categoria e prazo opcionais e estado de conclusão em uma lista de tarefas.
 - Forneça callbacks para que o chamador controle a conclusão e a abertura do menu.
 
 ## Quando não usar
@@ -19,7 +19,9 @@ Origem no sistema base: listas e cards do Material 3. Situação: Adaptado. O pa
 1. Container com `color.surface`, `radius.lg`, `elevation.card` e padding `space.md`.
 2. Indicador circular de conclusão com dimensão visual `space-24` (24 dp) e alvo interativo mínimo `target.min-size` (48 dp). `radius.md` (12 dp) corresponde à metade do diâmetro visual de 24 dp e produz a geometria circular indicada pelo padrão F5.
 3. Título escalável em `font.body`, sem truncamento; quando concluído, recebe tachado conforme F5.
-4. Prazo opcional como texto fornecido pelo chamador, em `font.label`; o componente não interpreta datas. Desde a 1.2, o formato recomendado é dia/mês, ponto médio e intervalo de horário: "19/10 · 08:00–09:00" (traço meia-risca entre os horários).
+4. Linha de metadados, abaixo do título com espaço `space-4` (4 dp), mostrada só quando há categoria ou prazo. Fica em linha com espaço horizontal `space.sm` e vertical `space-4`, e quebra de linha (`flexWrap`) com texto ampliado. Contém, nesta ordem:
+   - **Categoria** opcional: [tag de categoria](tag-categoria.md) com ícone e rótulo, recebidos prontos do chamador (`category: { label, symbol }`). O componente não conhece os ids de categoria (issue #25).
+   - **Prazo** opcional: texto fornecido pelo chamador, em `font.label`; o componente não interpreta datas. Desde a 1.2, o formato recomendado é dia/mês, ponto médio e intervalo de horário: "19/10 · 08:00–09:00" (traço meia-risca entre os horários).
 5. Controle de opções com reticências e alvo mínimo de 48 dp. O componente chama `onOptionsPress`; a abertura e o conteúdo do menu pertencem ao chamador.
 
 ## Variantes
@@ -27,7 +29,8 @@ Origem no sistema base: listas e cards do Material 3. Situação: Adaptado. O pa
 | Variante | Uso | Tokens |
 | --- | --- | --- |
 | Com prazo | Exibe o texto de prazo informado | `color.on-surface`, `font.body`, `font.label`, `space.sm`, `space.md` |
-| Sem prazo | Oculta a linha de prazo | `color.on-surface`, `font.body`, `space.md` |
+| Sem prazo | Oculta o prazo; sem categoria, oculta a linha de metadados | `color.on-surface`, `font.body`, `space.md` |
+| Com categoria (#25) | Mostra a tag antes do prazo, ou sozinha se não houver prazo | Tokens da [tag de categoria](tag-categoria.md): `color.action-subtle`, `color.on-surface`, `font.label`, `radius.md`, `space.sm`, `space-4` |
 | Concluída | Indicador preenchido e marca de verificação | `color.action`, `color.on-action`, `radius.md`, `space-24` |
 
 Os temas claro e escuro preservam os mesmos papéis semânticos. A conclusão é controlada pela propriedade `completed`; o título recebe tachado em `true` e texto normal em `false`.
@@ -51,6 +54,8 @@ O estilo atual ainda usa `focus.ring-width` (2 dp) como espessura do contorno do
 - O botão de opções anuncia a ação e o título da tarefa.
 - Os alvos do checkbox e do menu têm ao menos `target.min-size` (48 dp).
 - Textos mantêm escala de fonte, podem quebrar linha e não são truncados.
+- A tag de categoria é anunciada como "Categoria: <rótulo>" junto com o conteúdo do card. No modo de seleção, o card inteiro vira um `checkbox` com rótulo próprio ("Selecionar tarefa: <título>"), e a categoria não entra nesse rótulo.
+- No card selecionado (fundo `color.action-subtle`), a tag fica com a mesma cor do fundo. O texto e o ícone continuam legíveis, com o mesmo contraste da tag (ver [tag-categoria.md](tag-categoria.md#acessibilidade)).
 - `color.on-surface` sobre `color.surface` tem contraste documentado de 17,17:1 nos dois temas. O par `color.surface` sobre `color.action` também deve manter o contraste documentado de 6,29:1 no claro e 6,50:1 no escuro.
 
 ## Elevação e plataformas
@@ -80,6 +85,7 @@ Desde a tela de Tarefas (protótipo 2 e 2.3):
 - O prazo usa `font.label` em `color.on-surface-variant`.
 - `onLongPress` no texto abre a seleção múltipla (F6); o "•••" (`onOptionsPress`) abre as mesmas ações e serve de alternativa acessível ao toque longo.
 - `pinned` mostra o ícone `push_pin` antes do título.
+- `category` (issue #25) mostra a [CategoryTag](tag-categoria.md) antes do prazo. Antes, o rótulo era colado ao prazo como texto ("Programação · 19/10 · 08:00–09:00"). Na tela de Tarefas, `tasks-content.tsx` converte o id em rótulo e símbolo pelo `categoryCopy.ts`.
 - `selectionMode`, `selected` e `onToggleSelected`: o card inteiro vira um `checkbox` "Selecionar tarefa: <título>"; selecionado, ganha fundo `color.action-subtle`, borda de 2 dp `color.focus` e marca preenchida.
 
 ## Mudanças da 1.2

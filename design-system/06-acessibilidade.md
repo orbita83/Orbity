@@ -82,6 +82,18 @@ A porcentagem do progresso fica **fora da barra**, ao lado do contador, desde a 
 
 Os limiares e exceções são descritos em [WCAG 1.4.3 — Contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) e [WCAG 1.4.11 — Contraste de conteúdo não textual](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html). A verificação de cores sólidas não substitui os testes visuais e de acessibilidade em uma implementação real.
 
+#### Tag de categoria (issue #25)
+
+A [tag de categoria](04-componentes/tag-categoria.md) usa texto e ícone em `color.on-surface` sobre `color.action-subtle` nos três temas. O rótulo usa `font.label`, por isso o mínimo é 4,5:1. `tests/ods-theme.test.cjs` verifica os três pares.
+
+| Uso e tokens | Tema | Primeiro plano | Fundo | Razão | Mínimo | Resultado |
+| --- | --- | --- | --- | --- | --- | --- |
+| Rótulo e ícone `color.on-surface` / `color.action-subtle` | Cósmico | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
+| Rótulo e ícone `color.on-surface` / `color.action-subtle` | Escuro | `#FFFFFF` | `#9333EA` | 5,38:1 | 4,5:1 | Aprovado |
+| Rótulo e ícone `color.on-surface` / `color.action-subtle` | Claro | `#1B1B1F` | `#E9D5FF` | 12,61:1 | 4,5:1 | Aprovado |
+
+O fundo da tag é decorativo: sobre o card, dá 1,20:1 no cósmico, 3,19:1 no escuro e 1,24:1 no claro. A informação está no rótulo e no ícone, e a tag não é interativa, então o limite dela não precisa de 3:1 (WCAG 1.4.11). Não use `color.focus` no ícone da tag: no escuro, `#C084FC` sobre `#9333EA` dá 2,04:1.
+
 ---
 
 ## Alvos de toque
