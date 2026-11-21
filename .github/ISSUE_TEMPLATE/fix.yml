@@ -71,6 +71,20 @@ body:
         - Versão da aplicação:
         - Outros detalhes:
 
+  - type: input
+    id: origem
+    attributes:
+      label: Origem (opcional)
+      description: Se o problema foi encontrado durante outra atividade, informe a Issue ou o Pull Request de origem (CONTRIBUTING.md, Seção 2.6).
+      placeholder: "Ex.: encontrado durante #158 / PR #191"
+
+  - type: input
+    id: bloqueio
+    attributes:
+      label: Atividade bloqueada (opcional)
+      description: Se este problema impede concluir ou validar outra atividade (desvio bloqueante), informe qual. Use "Bloqueia", não "Closes" ou "Fixes".
+      placeholder: "Ex.: Bloqueia #158"
+
   - type: textarea
     id: informacoes-adicionais
     attributes:
