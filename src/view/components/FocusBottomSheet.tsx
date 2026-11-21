@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { FocusAvailability } from "../../model/entities/homeSummary";
-import type { FocusSheetStage } from "../../viewmodel/ActivitySheetGeometry";
+import type { FocusSheetStage } from "../../viewmodel/useHomeViewModel";
 import { HOME_COPY, formatCopy } from "../homeCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "../theme/tokens";
 import { GradientSurface } from "./GradientSurface";

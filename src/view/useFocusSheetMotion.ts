@@ -6,9 +6,9 @@ import {
   clampSheetTop,
   createSheetSnapPoints,
   resolveSheetRelease,
-  type FocusSheetStage,
   type SheetGeometryConfig,
-} from "./ActivitySheetGeometry";
+} from "./focusSheetGeometry";
+import type { FocusSheetStage } from "../viewmodel/useHomeViewModel";
 
 export type SheetMotionTiming = {
   /** Duração da transição entre estágios (ms); a View passa `motion.durationMedium`. */
@@ -17,7 +17,7 @@ export type SheetMotionTiming = {
   easing: readonly [number, number, number, number];
 };
 
-export type ActivitySheetMotionOptions = {
+export type FocusSheetMotionOptions = {
   stage: FocusSheetStage;
   geometry: SheetGeometryConfig;
   reduceMotion: boolean;
@@ -25,14 +25,17 @@ export type ActivitySheetMotionOptions = {
   onStageChange: (stage: FocusSheetStage) => void;
 };
 
-/** Lógica do gesto do painel. Não importa a View: geometria e tempos chegam por parâmetro. */
-export const useActivitySheetMotionViewModel = ({
+/**
+ * Animação e gesto do painel de foco da Home. É apresentação, por isso fica na View: o estágio
+ * vem da ViewModel (`useHomeViewModel`) e a geometria e os tempos chegam por parâmetro.
+ */
+export const useFocusSheetMotion = ({
   stage,
   geometry,
   reduceMotion,
   timing,
   onStageChange,
-}: ActivitySheetMotionOptions) => {
+}: FocusSheetMotionOptions) => {
   const { sceneHeight, expandedTop, collapsedHeight } = geometry;
   const snaps = useMemo(
     () => createSheetSnapPoints({ sceneHeight, expandedTop, collapsedHeight }),

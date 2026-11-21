@@ -1,10 +1,10 @@
 /**
- * Geometria pura do painel deslizante da Home (auxiliar da camada ViewModel).
+ * Geometria pura do painel deslizante da Home (apoio da animação em `useFocusSheetMotion`).
  * As proporções e os limiares do gesto são constantes de comportamento, não tokens visuais
  * (tabela de tokens da Etapa 0.2a em docs/designs/tela-inicial-base.md).
  */
 
-export type FocusSheetStage = "collapsed" | "stage1_1" | "stage1_2";
+import type { FocusSheetStage } from "../viewmodel/useHomeViewModel";
 
 export type SheetGeometryConfig = {
   /** Altura da área da cena, sem a barra de abas. */
