@@ -139,7 +139,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | Situação | O que vê | Tokens |
 | :--- | :--- | :--- |
 | **Carregando** | Cartões pulsantes em superfície neutra (*skeleton*) | `color.surface`, `radius.md`, `motion.duration.short` |
-| **Vazio** | Ilustração amigável e texto ("Nenhuma tarefa pendente") | `font.title`, `font.body`, `space.lg` |
+| **Vazio** | Planeta ao fundo (120 dp, decorativo) e mensagem embaixo, centralizados na área de conteúdo, na mesma posição em Tarefas e Rotinas (1.3). Textos por caso: sem tarefas, "Nenhuma tarefa em órbita"; filtro Pendentes, "Nenhuma tarefa pendente"; filtro Concluídas, "Nenhuma tarefa concluída ainda" | `font.card-title`, `font.body-sm`, `color.on-surface-variant`, `color.action-subtle`, `cosmicTokens.color.sheetBorder`, `cosmicTokens.color.inactive`, `space.md` |
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
 - **Faça (1.2):** Divida a linha de filtros em colunas de largura igual, alinhadas ao botão Criar e aos cards; escreva prazos no formato "19/10 · 08:00–09:00".
