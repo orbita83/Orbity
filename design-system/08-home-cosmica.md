@@ -40,7 +40,7 @@ No mobile, a tela ocupa a largura disponível e respeita as áreas seguras, util
 
 O visualizador usa `react-native-svg`, já presente no projeto. `PlanetIllustration` desenha esfera, iluminação, relevo e anéis em camadas vetoriais. `PlanetStreakView` centraliza o contador e recebe a sequência da ViewModel, sem manter uma cópia independente. `CosmicStarfield` produz o campo de estrelas de forma determinística. O deslocamento do planeta acompanha o painel; não há imagem de fundo ou textura raster. A ilustração PNG da iteração anterior foi preservada como arte de referência e não é mais importada pela tela. Este protótipo não implementa rotação axial ou evolução visual por ponto de sequência.
 
-`HomeScreen` liga a ViewModel a `HomeScreenContent`, `FocusBottomSheet` organiza os cards e `MaterialSymbol` fornece os ícones. `useActivitySheetMotionViewModel` coordena arraste, limites, velocidade de soltura, rolagem, transições e a pose do planeta. O registro diário fica no SQLite no Android. A sessão de foco ativa ainda não está implementada. As outras abas permitem demonstrar a seleção, sem implementar seus módulos.
+`HomeScreen` liga a ViewModel a `HomeScreenContent`, `FocusBottomSheet` organiza os cards e `MaterialSymbol` fornece os ícones. `useFocusSheetMotion` (na View) coordena arraste, limites, velocidade de soltura, rolagem, transições e a pose do planeta. O registro diário fica no SQLite no Android. A sessão de foco ativa ainda não está implementada. As outras abas permitem demonstrar a seleção, sem implementar seus módulos.
 
 ## Revisão
 

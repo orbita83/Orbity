@@ -2,9 +2,9 @@ import {
   clampSheetTop,
   createSheetSnapPoints,
   resolveSheetRelease,
-} from "@/viewmodel/ActivitySheetGeometry";
+} from "./focusSheetGeometry";
 
-describe("ActivitySheetGeometry", () => {
+describe("focusSheetGeometry", () => {
   it.each([
     [640, { collapsed: 640, stage1_1: 226.56, stage1_2: 92 }],
     [756, { collapsed: 756, stage1_1: 267.62, stage1_2: 92 }],

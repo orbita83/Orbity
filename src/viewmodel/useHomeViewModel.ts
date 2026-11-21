@@ -5,7 +5,9 @@ import { container, resolveUseCase } from "@/di/container";
 import type { HomeSummary } from "@/model/entities/homeSummary";
 import { SchemaVersionError } from "@/model/errors";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
-import type { FocusSheetStage } from "./ActivitySheetGeometry";
+
+/** Estágio do painel de foco da Home: recolhido, intermediário ou aberto. */
+export type FocusSheetStage = "collapsed" | "stage1_1" | "stage1_2";
 
 export type HomeErrorMessageKey = "error.persistence" | "error.schema";
 

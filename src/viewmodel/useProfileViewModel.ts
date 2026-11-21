@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
 import type { StudentProfile } from "@/model/entities/studentProfile";
 import { DomainError, ValidationError } from "@/model/errors";
-import type { IProfileUseCases } from "@/usecase/profileUseCases";
+import type { IProfileUseCases } from "@/usecase/iProfileUseCases";
 
 /**
  * Representação do estado observável da tela de Perfil.

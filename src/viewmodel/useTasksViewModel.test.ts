@@ -188,6 +188,8 @@ describe("useTasksViewModel", () => {
       .mockResolvedValueOnce([createTaskFixture({ id: "t1" })]);
     const failingUseCases: ITaskUseCases = {
       listTasks,
+      getTask: jest.fn(),
+      todayLocal: jest.fn(),
       createTask: jest.fn(),
       updateTask: jest.fn(),
       toggleTaskCompletion: jest.fn(),
@@ -227,6 +229,8 @@ describe("useTasksViewModel (navegação)", () => {
   it("recarrega a lista quando a aba ganha foco", async () => {
     const useCases: ITaskUseCases = {
       listTasks: jest.fn(async () => []),
+      getTask: jest.fn(),
+      todayLocal: jest.fn(),
       createTask: jest.fn(),
       updateTask: jest.fn(),
       toggleTaskCompletion: jest.fn(),

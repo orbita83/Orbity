@@ -56,22 +56,29 @@ const createVmDependencies = () => {
 };
 
 describe("useNewTaskViewModel", () => {
-  it("sem título, criar mostra o erro e mantém o que foi digitado", async () => {
-    const { useCases } = createVmDependencies();
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+  it("sem título, o erro do Use Case aparece no campo e mantém o que foi digitado", async () => {
+    const { taskRepo, useCases } = createVmDependencies();
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
 
     await act(async () => result.current[1].setField("description", "Capítulo 3"));
     expect(result.current[0].titleError).toBe(false);
 
     await act(async () => result.current[1].submit());
-    expect(result.current[0].titleError).toBe(true);
+    await waitFor(() => expect(result.current[0].titleError).toBe(true));
+    expect(result.current[0].formError).toBeNull();
+    expect(result.current[0].submitting).toBe(false);
     expect(result.current[0].created).toBe(false);
     expect(result.current[0].fields.description).toBe("Capítulo 3");
+    expect(await taskRepo.listAll()).toEqual([]);
+
+    // Digitar no título tira o erro do campo.
+    await act(async () => result.current[1].setField("title", "R"));
+    expect(result.current[0].titleError).toBe(false);
   });
 
   it("com título e dados válidos, cria e persiste a tarefa, e reset limpa o formulário", async () => {
     const { taskRepo, useCases } = createVmDependencies();
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
 
     await act(async () => result.current[1].setField("title", "Revisar SOLID"));
     await act(async () => result.current[1].setField("startDate", "15/11/2026"));
@@ -103,7 +110,7 @@ describe("useNewTaskViewModel", () => {
 
   it("data inválida ou falha ao persistir exibe formError e preserva o que foi preenchido", async () => {
     const { useCases } = createVmDependencies();
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
 
     await act(async () => result.current[1].setField("title", "Revisar grafos"));
     await act(async () => result.current[1].setField("startDate", "31/02/2026"));
@@ -115,13 +122,15 @@ describe("useNewTaskViewModel", () => {
 
     const failingUseCases: ITaskUseCases = {
       listTasks: jest.fn(),
+      getTask: jest.fn(),
+      todayLocal: fixedClock.todayLocal,
       createTask: jest.fn().mockRejectedValueOnce(new DataSourceError()),
       updateTask: jest.fn(),
       toggleTaskCompletion: jest.fn(),
       togglePinTasks: jest.fn(),
       deleteTasks: jest.fn(),
     };
-    const { result: failingResult } = await renderHook(() => useNewTaskViewModel(failingUseCases, fixedClock));
+    const { result: failingResult } = await renderHook(() => useNewTaskViewModel(failingUseCases));
     await act(async () => failingResult.current[1].setField("title", "Estudar"));
     await act(async () => failingResult.current[1].submit());
 
@@ -131,7 +140,7 @@ describe("useNewTaskViewModel", () => {
 
   it("gera opções de data começando em Hoje e Amanhã conforme a data local", async () => {
     const { useCases } = createVmDependencies();
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
 
     expect(result.current[0].dateOptions.slice(0, 3)).toEqual([
       { id: "clear", label: "Sem data", value: "" },
@@ -160,7 +169,8 @@ describe("useNewTaskViewModel", () => {
       },
     ]);
     const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), fixedClock);
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock, "t1"));
+    mockParams = { id: "t1" };
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
 
     expect(result.current[0].editing).toBe(true);
     await waitFor(() => expect(result.current[0].fields.title).toBe("Estudar Cálculo"));
@@ -193,7 +203,7 @@ describe("useNewTaskViewModel", () => {
 
   it("formata datas e horários digitados apenas com números ou separadores parciais e cria a tarefa", async () => {
     const { taskRepo, useCases } = createVmDependencies();
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
 
     await act(async () => result.current[1].setField("title", "Praticar redação"));
     await act(async () => result.current[1].setField("startDate", "15112026"));
@@ -235,14 +245,23 @@ describe("useNewTaskViewModel (navegação)", () => {
     ]);
     const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), fixedClock);
     mockParams = { id: "t1" };
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
     expect(result.current[0].editing).toBe(true);
     await waitFor(() => expect(result.current[0].fields.title).toBe("Estudar Cálculo"));
   });
 
+  it("id de tarefa que não existe mostra o erro de carregamento e mantém o formulário vazio", async () => {
+    const { useCases } = createVmDependencies();
+    mockParams = { id: "nao-existe" };
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
+
+    await waitFor(() => expect(result.current[0].formError).toBe("Não foi possível carregar a tarefa agora."));
+    expect(result.current[0].fields.title).toBe("");
+  });
+
   it("fechar limpa o formulário, tira o id da rota e volta para Tarefas", async () => {
     const { useCases } = createVmDependencies();
-    const { result } = await renderHook(() => useNewTaskViewModel(useCases, fixedClock));
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
     await act(async () => result.current[1].setField("title", "Ler capítulo 3"));
     await act(async () => result.current[1].handleClose());
     expect(result.current[0].fields.title).toBe("");

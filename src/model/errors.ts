@@ -10,9 +10,16 @@ export class DomainError extends Error {
   }
 }
 
-/** Entrada que viola uma regra de negócio. A mensagem já é a que a tela mostra. */
+/**
+ * Entrada que viola uma regra de negócio. A mensagem já é a que a tela mostra.
+ * `field` indica o campo da entrada que falhou, quando a regra é de um campo só,
+ * para a ViewModel mostrar o erro junto dele (ex.: `"title"`).
+ */
 export class ValidationError extends DomainError {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly field?: string,
+  ) {
     super(message);
     this.name = "ValidationError";
   }

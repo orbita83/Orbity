@@ -226,7 +226,7 @@ Regras de resolução:
                                           ▼
                                    src/view/HomeScreenContent.tsx (props puras; testes e histórias)
                                           ▲ estado e ações
-                     src/viewmodel/useHomeViewModel.ts ── useActivitySheetMotionViewModel.ts / ActivitySheetGeometry.ts
+                     src/viewmodel/useHomeViewModel.ts ── src/view/useFocusSheetMotion.ts / focusSheetGeometry.ts
                                           │ resolveUseCase(container.useCases.home)
                                           ▼
                      src/usecase/  iHomeUseCases · homeUseCases · iStreakUseCases · streakUseCases
@@ -313,8 +313,8 @@ Os arquivos:
     *   recalcula ao montar e quando o `AppState` volta para `active` (D17, D21);
     *   um recálculo em segundo plano **não** volta para `loading`, e um erro depois de `ready` não apaga o que já está na tela;
     *   na camada de apresentação, só esta ViewModel usa `try/catch` ([ARCHITECTURE.md](../../ARCHITECTURE.md) §5).
-*   **`ActivitySheetGeometry.ts`:** funções puras de geometria do painel e o tipo `FocusSheetStage` (`'collapsed' | 'stage1_1' | 'stage1_2'`). É um auxiliar da camada ViewModel.
-*   **`useActivitySheetMotionViewModel.ts`:** a lógica de gesto do protótipo, que recebe `SheetGeometryConfig` e `reduceMotion` como parâmetros.
+*   **`src/view/focusSheetGeometry.ts`:** funções puras de geometria do painel. O tipo `FocusSheetStage` (`'collapsed' | 'stage1_1' | 'stage1_2'`) é estado da Home e fica em `useHomeViewModel.ts`. Até a issue #158, o arquivo ficava em `src/viewmodel/ActivitySheetGeometry.ts`.
+*   **`src/view/useFocusSheetMotion.ts`:** a animação e o gesto do protótipo (`Animated`, `PanResponder`), que recebe `SheetGeometryConfig` e `reduceMotion` como parâmetros. É apresentação, por isso fica na View. Até a issue #158, era `src/viewmodel/useActivitySheetMotionViewModel.ts`.
 *   **`HomeScreen.tsx`** (`default`): chama `useHomeViewModel()` e `useReduceMotion()`, monta o `SheetGeometryConfig` a partir de `themes.cosmic` e renderiza o `HomeScreenContent`.
 *   **`HomeScreenContent.tsx`:** a tela do protótipo refatorada, só de apresentação, que recebe estado e ações por props. Testes e histórias renderizam este componente e nunca importam `@/di`. Ela:
     *   não tem `NavBar` própria;

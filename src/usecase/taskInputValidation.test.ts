@@ -84,8 +84,10 @@ describe("validações de entrada de tarefa (tarefas.md, G4)", () => {
       });
     });
 
-    it("rejeita título em branco com ValidationError", () => {
-      expect(() => validateCreateTaskInput({ title: "   " })).toThrow(ValidationError);
+    it("rejeita título em branco com ValidationError que aponta o campo do título", () => {
+      expect(() => validateCreateTaskInput({ title: "   " })).toThrow(
+        expect.objectContaining({ name: "ValidationError", field: "title" }),
+      );
     });
 
     it("rejeita data ou horário inválidos com ValidationError", () => {

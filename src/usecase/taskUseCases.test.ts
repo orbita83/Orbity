@@ -59,9 +59,35 @@ describe("TaskUseCases", () => {
     const taskRepo = new MemoryTaskDataSource();
     const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), createClock());
 
-    await expect(useCases.createTask({ title: "  " })).rejects.toThrow(ValidationError);
+    await expect(useCases.createTask({ title: "  " })).rejects.toMatchObject({
+      name: "ValidationError",
+      field: "title",
+    });
     await expect(useCases.createTask({ title: "Estudar", startDate: "31/02/2026" })).rejects.toThrow(ValidationError);
     expect(await taskRepo.listAll()).toEqual([]);
+  });
+
+  it("getTask busca a tarefa avulsa pelo id e recusa id inexistente ou tarefa de rotina", async () => {
+    const avulsa = createTaskFixture({ id: "avulsa" });
+    const taskRepo = new MemoryTaskDataSource([
+      avulsa,
+      createTaskFixture({ id: "da-rotina", routineId: "routine-1", position: 0 }),
+    ]);
+    const useCases = new TaskUseCases(taskRepo, new MemoryDailyActivityDataSource(), createClock());
+
+    expect(await useCases.getTask("avulsa")).toEqual(avulsa);
+    await expect(useCases.getTask("da-rotina")).rejects.toThrow(ValidationError);
+    await expect(useCases.getTask("nao-existe")).rejects.toThrow(ValidationError);
+  });
+
+  it("todayLocal devolve a data local do relógio injetado", () => {
+    const useCases = new TaskUseCases(
+      new MemoryTaskDataSource(),
+      new MemoryDailyActivityDataSource(),
+      createClock("2026-11-20T23:30:00-03:00", "2026-11-20"),
+    );
+
+    expect(useCases.todayLocal().toString()).toBe("2026-11-20");
   });
 
   it("concluir tarefa registra o dia local na sequência e reabrir preserva o dia registrado", async () => {
@@ -105,6 +131,10 @@ describe("TaskUseCases", () => {
     const updated = await useCases.updateTask({ id: "a", title: "Atualizada", category: null });
     expect(updated.title).toBe("Atualizada");
     expect(updated.category).toBeUndefined();
+    await expect(useCases.updateTask({ id: "a", title: "   " })).rejects.toMatchObject({
+      name: "ValidationError",
+      field: "title",
+    });
 
     await useCases.deleteTasks(["b"]);
     expect((await useCases.listTasks()).map((task) => task.id)).toEqual(["a"]);

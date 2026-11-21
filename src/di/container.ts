@@ -1,6 +1,7 @@
 import { MemoryProfileDataSource } from "@/infra/datasources/memoryProfileDataSource";
 import type { IProfileDataSource } from "@/model/datasources/iProfileDataSource";
-import { type IProfileUseCases, ProfileUseCases } from "@/usecase/profileUseCases";
+import type { IProfileUseCases } from "@/usecase/iProfileUseCases";
+import { ProfileUseCases } from "@/usecase/profileUseCases";
 
 /**
  * Composition Root e Container de Injeção de Dependências (`src/di/container.ts`).
