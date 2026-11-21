@@ -79,12 +79,18 @@ export function normalizeDisplayTime(value?: string | null): string | undefined 
   return trimmed;
 }
 
+/** Título obrigatório (tarefas.md, G4). Devolve o título sem espaços nas pontas. */
+export function validateTaskTitle(value: string): string {
+  const title = value.trim();
+  if (title.length === 0) {
+    throw new ValidationError("Dê um título para a tarefa.", "title");
+  }
+  return title;
+}
+
 /** Valida e normaliza a entrada de criação de tarefa (tarefas.md, G4). */
 export function validateCreateTaskInput(input: CreateTaskInput): NormalizedCreateTaskInput {
-  const title = input.title.trim();
-  if (title.length === 0) {
-    throw new ValidationError("Dê um título para a tarefa.");
-  }
+  const title = validateTaskTitle(input.title);
 
   const description = normalizeOptionalText(input.description);
   const startDate = normalizeDisplayDate(input.startDate);

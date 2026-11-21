@@ -1,3 +1,4 @@
+import type { LocalDate } from "@/model/entities/localDate";
 import {
   type CreateTaskInput,
   type Task,
@@ -15,6 +16,7 @@ import {
   normalizeDisplayTime,
   validateCreateTaskInput,
   validateDateTimeFields,
+  validateTaskTitle,
 } from "@/usecase/taskInputValidation";
 
 const defaultGenerateId = (): string => {
@@ -49,6 +51,19 @@ export class TaskUseCases implements ITaskUseCases {
     return (await this.taskDataSource.listAll()).filter(isStandaloneTask);
   }
 
+  /** Só tarefas avulsas, como em `listTasks`: as de rotina são editadas na aba Rotinas. */
+  async getTask(id: string): Promise<Task> {
+    const task = await this.taskDataSource.findById(id);
+    if (!task || !isStandaloneTask(task)) {
+      throw new ValidationError("Tarefa não encontrada.");
+    }
+    return task;
+  }
+
+  todayLocal(): LocalDate {
+    return this.clock.todayLocal();
+  }
+
   async createTask(input: CreateTaskInput): Promise<Task> {
     const normalized = validateCreateTaskInput(input);
     const now = this.clock.now();
@@ -77,10 +92,7 @@ export class TaskUseCases implements ITaskUseCases {
       throw new ValidationError("Tarefa não encontrada.");
     }
 
-    const title = input.title !== undefined ? input.title.trim() : existing.title;
-    if (title.length === 0) {
-      throw new ValidationError("Dê um título para a tarefa.");
-    }
+    const title = input.title !== undefined ? validateTaskTitle(input.title) : existing.title;
 
     const description = resolveOptionalPatch(input.description, existing.description);
     const startDate = normalizeDisplayDate(resolveOptionalPatch(input.startDate, existing.startDate));

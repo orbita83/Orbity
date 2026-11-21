@@ -4,7 +4,6 @@ import { container, resolveUseCase } from "@/di/container";
 import type { LocalDate } from "@/model/entities/localDate";
 import { TASK_CATEGORY_IDS, isTaskCategoryId, type TaskCategoryId } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
-import type { IClockService } from "@/model/services/iClockService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 
 export type NewTaskPickerField = "startDate" | "startTime" | "endDate" | "endTime" | "category";
@@ -167,26 +166,21 @@ export function formatDisplayTimeInput(value: string): string {
   return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
 }
 
-/** Estado e ações do formulário de Nova tarefa conectado ao domínio e à persistência. */
-
-export const useNewTaskViewModel = (
-  taskUseCases?: ITaskUseCases,
-  clockService?: IClockService,
-  taskId?: string,
-): [NewTaskState, NewTaskActions] => {
+/**
+ * Estado e ações do formulário de Nova tarefa conectado ao domínio e à persistência.
+ * As regras (título obrigatório, datas válidas) ficam no Use Case; a ViewModel só mostra o erro.
+ */
+export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState, NewTaskActions] => {
   const useCases = resolveUseCase(taskUseCases, container.useCases.tasks);
-  const clock = resolveUseCase(clockService, container.services.clock);
-  // O `id` vem da rota (`/new-task?id=...`); o parâmetro `taskId` substitui a rota em testes e histórias.
+  // O `id` vem da rota (`/new-task?id=...`).
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const routeTaskId = Array.isArray(params.id) ? params.id[0] : params.id;
-  const requestedTaskId = taskId ?? routeTaskId;
-  const normalizedTaskId =
-    requestedTaskId && requestedTaskId.trim().length > 0 ? requestedTaskId.trim() : undefined;
+  const normalizedTaskId = routeTaskId && routeTaskId.trim().length > 0 ? routeTaskId.trim() : undefined;
   const editing = Boolean(normalizedTaskId);
 
   const [trackedTaskId, setTrackedTaskId] = useState<string | undefined>(normalizedTaskId);
   const [fields, setFields] = useState<NewTaskFields>(EMPTY_FIELDS);
-  const [showErrors, setShowErrors] = useState(false);
+  const [titleError, setTitleError] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [activePicker, setActivePicker] = useState<NewTaskPickerField | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -196,7 +190,7 @@ export const useNewTaskViewModel = (
   if (trackedTaskId !== normalizedTaskId) {
     setTrackedTaskId(normalizedTaskId);
     setFields(EMPTY_FIELDS);
-    setShowErrors(false);
+    setTitleError(false);
     setFormError(null);
     setActivePicker(null);
     setSubmitting(false);
@@ -216,14 +210,9 @@ export const useNewTaskViewModel = (
     }
 
     let active = true;
-    useCases.listTasks().then(
-      (loaded) => {
+    useCases.getTask(normalizedTaskId).then(
+      (found) => {
         if (!active) {
-          return;
-        }
-        const found = loaded.find((item) => item.id === normalizedTaskId);
-        if (!found) {
-          setFormError("Não foi possível carregar a tarefa agora.");
           return;
         }
         setFields({
@@ -248,7 +237,7 @@ export const useNewTaskViewModel = (
     };
   }, [normalizedTaskId, useCases]);
 
-  const dateOptions = useMemo(() => buildDatePickerOptions(clock.todayLocal()), [clock]);
+  const dateOptions = useMemo(() => buildDatePickerOptions(useCases.todayLocal()), [useCases]);
 
   const setField = useCallback((field: NewTaskTextField, value: string) => {
     const formatted =
@@ -258,6 +247,9 @@ export const useNewTaskViewModel = (
           ? formatDisplayTimeInput(value)
           : value;
     setFields((current) => ({ ...current, [field]: formatted }));
+    if (field === "title") {
+      setTitleError(false);
+    }
     setFormError(null);
   }, []);
 
@@ -276,19 +268,12 @@ export const useNewTaskViewModel = (
     setActivePicker(null);
   }, []);
 
-  const titleMissing = fields.title.trim() === "";
-
   const submit = useCallback(() => {
     if (submitting) {
       return;
     }
-    if (titleMissing) {
-      setShowErrors(true);
-      setFormError(null);
-      return;
-    }
 
-    setShowErrors(false);
+    setTitleError(false);
     setFormError(null);
     setSubmitting(true);
 
@@ -312,7 +297,13 @@ export const useNewTaskViewModel = (
           setCreated(true);
         }
       } catch (caught) {
-        if (mountedRef.current) {
+        if (!mountedRef.current) {
+          return;
+        }
+        if (caught instanceof ValidationError && caught.field === "title") {
+          // O texto do erro do título fica na View (TASKS_COPY), junto do campo.
+          setTitleError(true);
+        } else {
           setFormError(
             caught instanceof ValidationError ? caught.message : "Não foi possível salvar a tarefa agora.",
           );
@@ -323,11 +314,11 @@ export const useNewTaskViewModel = (
         }
       }
     })();
-  }, [fields, normalizedTaskId, submitting, titleMissing, useCases]);
+  }, [fields, normalizedTaskId, submitting, useCases]);
 
   const reset = useCallback(() => {
     setFields(EMPTY_FIELDS);
-    setShowErrors(false);
+    setTitleError(false);
     setFormError(null);
     setActivePicker(null);
     setSubmitting(false);
@@ -343,7 +334,7 @@ export const useNewTaskViewModel = (
   return [
     {
       fields,
-      titleError: showErrors && titleMissing,
+      titleError,
       formError,
       activePicker,
       dateOptions,

@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { fn } from "storybook/test";
 import { LocalDate } from "../model/entities/localDate";
-import type { IClockService } from "../model/services/iClockService";
+import { ValidationError } from "../model/errors";
 import type { ITaskUseCases } from "../usecase/iTaskUseCases";
 import { useNewTaskViewModel } from "../viewmodel/useNewTaskViewModel";
 import { useTasksViewModel } from "../viewmodel/useTasksViewModel";
@@ -16,15 +16,23 @@ import { themes } from "./theme/tokens";
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, bottom: 0, left: 0, right: 0 } };
 const noop = () => undefined;
 
-const storyClock: IClockService = {
+const storyClock = {
   now: () => "2026-11-15T10:00:00-03:00",
   todayLocal: () => LocalDate.parse("2026-11-15"),
 };
 
 const createStoryTaskUseCases = (): ITaskUseCases => ({
   listTasks: async () => [],
-  // A validação de verdade fica no TaskUseCases (tarefas.md, G4); aqui só se devolve a tarefa criada.
+  getTask: async () => {
+    throw new ValidationError("Tarefa não encontrada.");
+  },
+  todayLocal: storyClock.todayLocal,
+  // A validação completa fica no TaskUseCases (tarefas.md, G4). Aqui só o título obrigatório,
+  // para a história mostrar o erro no campo, e a tarefa criada é devolvida.
   createTask: async (input) => {
+    if (input.title.trim() === "") {
+      throw new ValidationError("Dê um título para a tarefa.", "title");
+    }
     return {
       id: "story-task",
       ...input,
@@ -130,7 +138,7 @@ export const Interativa: Story = {
 const storyTaskUseCases = createStoryTaskUseCases();
 
 const InteractiveForm = () => {
-  const [state, actions] = useNewTaskViewModel(storyTaskUseCases, storyClock);
+  const [state, actions] = useNewTaskViewModel(storyTaskUseCases);
   return <NewTaskScreenContent {...state} {...actions} onClose={actions.reset} onFinish={actions.reset} />;
 };
 export const NovaTarefa: Story = {

@@ -22,4 +22,9 @@ describe("erros de domínio", () => {
     expect(new DataSourceError().message).toBe("Falha ao acessar o armazenamento local.");
     expect(new DataSourceError("Falha ao salvar.").message).toBe("Falha ao salvar.");
   });
+
+  it("informa o campo que falhou só quando a regra é de um campo", () => {
+    expect(new ValidationError("Informe o título.", "title").field).toBe("title");
+    expect(new ValidationError("Término antes do início.").field).toBeUndefined();
+  });
 });
