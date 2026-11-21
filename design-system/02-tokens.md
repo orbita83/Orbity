@@ -147,7 +147,7 @@ Esta paleta é a direção global escura do Orbity, aplicável a qualquer tela. 
 | `color.on-surface` | `#FAF9FF` | Conteúdo principal |
 | `color.on-surface-variant` | `#BBB6E3` | Conteúdo secundário |
 | `color.action` / `color.on-action` | `#7137F5` / `#FAF9FF` | Ação sólida e seu conteúdo |
-| `color.action-subtle` | `#232052` | Fundo do indicador ativo |
+| `color.action-subtle` | `#232052` | Fundo do indicador ativo e da tag de categoria |
 | `color.focus` / `color.border` | `#D4A3FF` | Foco e contorno de controle |
 
 `button.bg` usa uma cor sólida; o gradiente `#7137F5` → `#703BF6` foi validado no protótipo 1.2 e está exportado em `cosmicGradients.action`, mas o `PrimaryButton` só passa a desenhá-lo quando houver um componente de gradiente no app. A navbar usa fundo `#0D0D29`, indicador `#232052` ocupando a aba inteira, texto ativo `#FAF9FF`, inativo `#9990CB` e fio superior `color.border-subtle` (1.2; antes `#D4A3FF`). Cards de tarefa usam `color.surface-variant`, com gradiente `cosmicGradients.card` e contorno `cosmicBorders.card` como alvo da 1.2.

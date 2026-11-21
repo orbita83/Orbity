@@ -126,10 +126,10 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 ## 4. Gestão de Tarefas e Ações em Lote (F5, F6)
 
 - **Objetivo:** Filtrar, marcar conclusão pontual ou executar ações em massa (fixar, excluir).
-- **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.on-surface`; desde a 1.2, ver [barra-acoes-contextuais.md](04-componentes/barra-acoes-contextuais.md)).
+- **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), [Tag de categoria](04-componentes/tag-categoria.md) dentro do card (`color.action-subtle`, `color.on-surface`, `font.label`, `radius.md`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.on-surface`; desde a 1.2, ver [barra-acoes-contextuais.md](04-componentes/barra-acoes-contextuais.md)).
 - **Passos:**
   1. Toque no círculo marca/desmarca a tarefa imediatamente.
-  2. Abas filtram a visualização da lista.
+  2. Abas filtram a visualização da lista por status (*Todos / Pendentes / Concluídas*). **Não há filtro por categoria nesta iteração** (issue #25): a categoria só aparece no card. Um filtro por categoria, se vier, precisa de especificação própria.
   3. *Long-press* entra no modo de seleção múltipla (2.3); navbar é substituída por:
      - Topo: cabeçalho fixo "✕ · N selecionados" (`font.label`), com fio `color.border-subtle` e `shadow.bar-top` (1.2).
      - Barra inferior: **Fixar**, **Marcar todas**, **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`), no lugar exato da navbar, com fio `color.border-subtle` e `shadow.bar` (1.2).
@@ -143,6 +143,8 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
 - **Faça (1.2):** Divida a linha de filtros em colunas de largura igual, alinhadas ao botão Criar e aos cards; escreva prazos no formato "19/10 · 08:00–09:00".
+- **Faça (#25):** Mostre a categoria da tarefa como [tag](04-componentes/tag-categoria.md), com ícone e rótulo, antes do prazo na linha de metadados do card. Tarefa sem categoria não mostra tag. Com texto ampliado, tag e prazo quebram de linha, e o título nunca é truncado.
+- **Evite (#25):** Colar o rótulo da categoria ao prazo como texto solto, ou distinguir categorias só por cor.
 - **Faça:** Exija confirmação antes de apagar itens (individual ou em lote) com a variante Confirmação do [modal](04-componentes/modal.md), mantendo o botão "Excluir" no estilo primário existente (`PrimaryButton`) e "Manter tarefas" no estilo secundário existente.
 - **Evite:** Mensagens ou alertas punitivos ao desmarcar tarefas concluídas.
 
@@ -247,7 +249,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 - **F2 (Foco/Progresso):** Planeta → toque ou swipe para cima (1.1 Foco/Progresso) → expansão (1.2 com Última sessão e Como funciona?); swipe para baixo reduz ou recolhe o painel.
 - **F3 (Conquistas):** 1.2 / Perfil → 1.3 Lista → 1.4 Ver Conquista (detalhes e compartilhar).
 - **F4 (Criar Tarefa):** 2. Lista → 2.1 Nova Tarefa → 2.2 Modal Sucesso → Lista atualizada.
-- **F5 (Gestão Tarefa):** Checkbox simples (concluir/desmarcar); abas de filtro; menu "…".
+- **F5 (Gestão Tarefa):** Checkbox simples (concluir/desmarcar); abas de filtro por status; tag de categoria no card (sem filtro por categoria); menu "…".
 - **F6 (Seleção Múltipla):** Long-press na tarefa → 2.3 Barra contextual (Fixar, Marcar todas, Excluir).
 - **F7 (Criar Rotina):** [Rotinas] → [Nova Rotina] (nome, dias, tarefas arrastáveis `⋮⋮`).
 - **F8 (Executar Rotina):** [Detalhe Rotina] → marcar itens ou "Marcar como concluída" → reverter via "Desmarcar todos".

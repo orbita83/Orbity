@@ -70,6 +70,19 @@ export const Concluida: Story = {
   args: { completed: true },
 };
 export const SemPrazo: Story = { args: { dueDate: undefined } };
+export const ComCategoria: Story = {
+  name: "Com categoria",
+  args: { category: { label: "Ciências", symbol: "science" }, dueDate: "19/10 · 08:00–09:00" },
+};
+export const ComCategoriaCosmico: Story = {
+  name: "Com categoria (cósmico)",
+  args: { category: { label: "Programação", symbol: "code" }, dueDate: "19/10 · 08:00–09:00" },
+  render: (args) => <TaskCard {...args} theme={themes.cosmic} />,
+};
+export const SoCategoria: Story = {
+  name: "Só categoria, sem prazo",
+  args: { category: { label: "Música", symbol: "music_note" }, dueDate: undefined },
+};
 export const SemOpcoes: Story = { args: { onOptionsPress: undefined } };
 export const TituloLongo: Story = {
   name: "Título longo",
