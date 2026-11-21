@@ -61,6 +61,7 @@
     "build-storybook": "storybook build",
     "lint": "expo lint",
     "lint:architecture": "node scripts/lint-architecture.mjs",
+    "typecheck": "expo customize tsconfig.json && tsc --noEmit",
     "test": "jest --watchAll=false",
     "test:watch": "jest --watch"
   },
