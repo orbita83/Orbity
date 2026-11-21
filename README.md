@@ -41,7 +41,7 @@ A proposta nasce de uma convicção simples: **organização deve acolher, não 
 | | Princípio | Na prática |
 | :---: | :--- | :--- |
 | 🎯 | **Foco e clareza cognitiva** | Uma tela inicial com o essencial: sua sequência, o progresso do dia e o atalho para o Modo Foco. |
-| 🌌 | **Acolhimento visual** | Identidade cósmica em roxo e azul, com tema claro, escuro e cósmico. |
+| 🌌 | **Acolhimento visual** | Identidade cósmica em roxo e azul, com fundo espacial escuro aplicado a todas as telas. |
 | 🧭 | **Autonomia do estudante** | Você define categorias, dias da rotina e o próprio ritmo. O app sugere, nunca impõe. |
 | ♿ | **Acessibilidade nativa** | Contraste mínimo de 4,5:1, alvos de toque de 48 × 48 dp, leitores de tela e respeito à redução de movimento. |
 | 💜 | **Zero mecânicas punitivas** | Nada de mensagens de culpa ou perda de progresso como castigo. A trajetória é sempre valorizada. |
@@ -232,9 +232,10 @@ O **ODS** adapta o **Material Design 3** à identidade cósmica do Orbity e defi
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | `purple-500` | `purple-400` | `purple-200` | `blue-600` | `neutral-900` | `success-500` |
 
-**Temas:** ☀️ claro · 🌙 escuro · 🌌 cósmico
-
 </div>
+
+> [!NOTE]
+> **Tema:** o app usa a identidade 🌌 **cósmica** (`themes.cosmic`) em todas as telas. `themes.light` e `themes.dark` são contratos legados da versão 1.0, mantidos apenas para migração. Ainda não há troca de tema pelo estudante, e o modo claro cósmico ainda não foi definido.
 
 | Documento | Conteúdo |
 | :--- | :--- |
