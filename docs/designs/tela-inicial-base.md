@@ -14,7 +14,7 @@ A branch `origin/feat/tela-principal-prototipo` tem um protótipo da tela, com 9
 *   painel deslizante com gestos (`activity-sheet-geometry.ts`, `use-activity-sheet-motion.ts`);
 *   visualizador de planeta (`planet-streak-view.tsx`) e `focus-bottom-sheet.tsx`;
 *   tokens cósmicos próprios (`cosmicTokens`);
-*   domínio, use case, repositório em memória e DI próprios.
+*   domínio, use case, DataSource em memória e DI próprios.
 
 Este design parte desse protótipo (D4).
 
@@ -72,12 +72,12 @@ Os pontos de entrada que Tarefas e Rotinas vão usar ficam definidos desde já. 
     | CA-03 | não soma mais de uma vez no mesmo dia | `calculateStreak` + chave única por data |
     | CA-04 | mantém o valor no dia seguinte à última atividade | `calculateStreak` |
     | CA-05 | zera depois de um dia inteiro sem atividade | `calculateStreak` |
-    | CA-06 | recalcula ao abrir o app | `HomeViewModel` (D17) |
+    | CA-06 | recalcula ao abrir o app | `useHomeViewModel` (D17) |
     | CA-07 | recomeça em 1 depois de uma interrupção | `calculateStreak` |
     | CA-08 | o dia é o calendário local do estudante | `IClockService.todayLocal()` |
 
     Cada linha tem um teste automatizado com o ID do critério no nome.
-*   **G2 — Registro diário idempotente.** Registrar atividade várias vezes no mesmo dia gera um único dia registrado (RF-0014 CA-03). O `IDailyActivityRepository` não tem operação de apagar (RF-0014 CA-04). O comportamento de desfazer uma conclusão será testado na mudança de Tarefas.
+*   **G2 — Registro diário idempotente.** Registrar atividade várias vezes no mesmo dia gera um único dia registrado (RF-0014 CA-03). O `IDailyActivityDataSource` não tem operação de apagar (RF-0014 CA-04). O comportamento de desfazer uma conclusão será testado na mudança de Tarefas.
 *   **G3 — Persistência local verificada pelo contrato.** A suíte de contrato roda o SQL real no `better-sqlite3` e mostra que os dias continuam registrados depois de fechar e reabrir a conexão com o banco ([RNF-0004](../02-requirements/non-functional/RNF-0004.md), [ADR-0001](../05-architecture/decisions/ADR-0001.md)). Nesta iteração não há checagem no aparelho (E6).
 *   **G4 — Ponto de entrada pronto para Tarefas e Rotinas.** Existe um único caso de uso para registrar atividade. O tipo da origem só admite tarefa sem rotina ou rotina ([RN-0002](../02-requirements/business-rules/RN-0002.md)), então sessões de foco não conseguem registrar atividade (RF-0019 CA-04). Classificar uma tarefa como avulsa ou de rotina é responsabilidade de quem chama.
 *   **G5 — Barra de progresso conforme o RN-0007.** Mostra `concluídas/total` sobre o total geral, e `0/0` quando não há nada cadastrado, sem dividir por zero e sempre com o texto visível, não só a cor.
@@ -96,7 +96,6 @@ Os pontos de entrada que Tarefas e Rotinas vão usar ficam definidos desde já. 
 *   Teste manual no aparelho: ainda não há como testar manualmente (E6).
 *   Build de dev client ou EAS. O autor faz o build quando quiser (E7).
 *   Sincronização, backup, conta de usuário ou backend.
-*   Persistência na web: os dados ficam só em memória e se perdem ao recarregar (D8).
 
 ## Decisions & Open Questions
 
@@ -109,7 +108,7 @@ Os rótulos "(era Qn)" apontam para as perguntas do brainstorm e do draft. As de
 *   **D5 — retirada (E1):** a marcação "sessão ativa" do RN-0006 sai junto com o motor.
 *   **D6 (era Q9):** a constelação **não volta** quando a sequência zera. O RN-0003 CA-02 é atualizado nesta mudança. A constelação em si fica fora do código.
 *   **D7 (era Q11):** o botão Iniciar fica desabilitado, com o texto de apoio sempre visível.
-*   **D8 (era Q5):** na web, os dados ficam só em memória e se perdem ao recarregar.
+*   **D8 — retirada:** o suporte exclusivo à web foi removido por o projeto ser unicamente mobile.
 *   **D9 (era Q6, corrigida na revisão):** os nomes de arquivo seguem o [`RULES.md`](../../RULES.md):
     *   **PascalCase** em `src/view/` e `src/viewmodel/`;
     *   **kebab-case** em `src/model/`, `src/usecase/`, `src/infra/` e `src/app/`;
@@ -137,7 +136,7 @@ Os rótulos "(era Qn)" apontam para as perguntas do brainstorm e do draft. As de
     *   o card Modo Foco perde os chips de duração; a escolha da duração (RF-0019) fica para a tela da sessão de foco;
     *   Conquistas, Última sessão e Como funciona? aparecem com o layout do protótipo em estado vazio: medalhas bloqueadas, texto de vazio e setas desabilitadas até existirem as telas de destino (atualiza a D16);
     *   o cabeçalho ganha o botão de Configurações, desabilitado até existir a tela;
-    *   os textos são os do protótipo e ficam em `src/view/home-copy.ts`, que passa a ser a fonte da tabela de textos;
+    *   os textos são os do protótipo e ficam em `src/view/homeCopy.ts`, que passa a ser a fonte da tabela de textos;
     *   tipografia nova no ODS: `font.card-title` (16/24/600) e `font.body-sm` (14/20/400); a marca usa `font.title`;
     *   o planeta e o fundo redesenham o componente "Planeta da sequência" do protótipo; no estágio intermediário o planeta encolhe para 190/320 e no expandido some sob o painel;
     *   espaçamentos de 12 dp do protótipo seguem a grade de 8 pontos do ODS (8 dp), e o alvo da alça continua com 48 dp.
@@ -145,7 +144,7 @@ Os rótulos "(era Qn)" apontam para as perguntas do brainstorm e do draft. As de
 
 ### Ainda em aberto
 
-*   **RN-0007, pontos pendentes:** como uma rotina recorrente conta como "concluída" no total geral, e se as tarefas de uma rotina entram no total por conta própria. Isso fica para a mudança de Tarefas e Rotinas. O contrato `IActivityCatalog.getProgressCounts()` pode mudar então.
+*   **RN-0007, pontos pendentes:** como uma rotina recorrente conta como "concluída" no total geral, e se as tarefas de uma rotina entram no total por conta própria. Isso fica para a mudança de Tarefas e Rotinas. O contrato `IActivityDataSource.getProgressCounts()` pode mudar então.
 
 ## Critical User Journeys (CUJs)
 
@@ -227,48 +226,48 @@ Regras de resolução:
                                           ▼
                                    src/view/HomeScreenContent.tsx (props puras; testes e histórias)
                                           ▲ estado e ações
-                     src/viewmodel/HomeViewModel.ts ── ActivitySheetMotionViewModel.ts / ActivitySheetGeometry.ts
+                     src/viewmodel/useHomeViewModel.ts ── useActivitySheetMotionViewModel.ts / ActivitySheetGeometry.ts
                                           │ resolveUseCase(container.useCases.home)
                                           ▼
-                     src/usecase/  i-home-use-cases · home-use-cases · i-streak-use-cases · streak-use-cases
+                     src/usecase/  iHomeUseCases · homeUseCases · iStreakUseCases · streakUseCases
                                           │ dependem só de contratos de src/model/
                                           ▼
-                     src/model/    entities (local-date, streak, progress, activity-source, focus-duration,
-                                             home-summary) · repositories (i-daily-activity-repository,
-                                             i-activity-catalog) · services (i-clock-service) · errors
+                     src/model/    entities (localDate, streak, progress, activitySource, focusDuration,
+                                             homeSummary) · datasources (iDailyActivityDataSource,
+                                             iActivityDataSource) · services (iClockService) · errors
                                           ▲ implementam
-                     src/infra/    repositories/ (sqlite-*, in-memory-*, empty-activity-catalog)
-                                   services/ (system-clock-service) · database/ (i-sql-executor,
-                                   expo-sql-executor, database-provider, migrations)
+                     src/infra/    datasources/ (sqlite*, memory*, emptyActivityDataSource)
+                                   services/ (systemClockService) · database/ (iSqlExecutor,
+                                   expoSqlExecutor, databaseProvider, migrations)
                                           ▲ compõe: o único ponto de composição
-                     src/DI/container.ts + src/DI/persistence.ts (Android) / persistence.web.ts (web)
+                     src/di/container.ts + src/di/persistence.ts (Android)
 ```
 
 ### 3. Domínio (`src/model/`)
 
 O domínio não depende de React, Expo nem de SDKs ([ARCHITECTURE.md](../../ARCHITECTURE.md) §2, Domínio).
 
-*   **`LocalDate`** (`entities/local-date.ts`): data de calendário `AAAA-MM-DD`, sem hora e sem fuso. É a única forma de representar "um dia" no domínio. O `toISOString()` é proibido para datas locais, porque devolve UTC e joga a atividade feita à noite para o dia errado.
-*   **`ActivitySource`** (`entities/activity-source.ts`): `{ kind: 'standalone-task' | 'routine'; id: string }`. O tipo impede que sessões de foco registrem atividade (G4).
+*   **`LocalDate`** (`entities/localDate.ts`): data de calendário `AAAA-MM-DD`, sem hora e sem fuso. É a única forma de representar "um dia" no domínio. O `toISOString()` é proibido para datas locais, porque devolve UTC e joga a atividade feita à noite para o dia errado.
+*   **`ActivitySource`** (`entities/activitySource.ts`): `{ kind: 'standalone-task' | 'routine'; id: string }`. O tipo impede que sessões de foco registrem atividade (G4).
 *   **`StreakSnapshot`** e **`calculateStreak`** (`entities/streak.ts`): função pura. Ignora datas maiores que hoje (D17) e cobre a tabela do G1.
 *   **`Progress`** (`entities/progress.ts`): `{ completed; total; ratio: number | null }`. O `ratio` é `null` quando `total = 0`.
-*   **`FocusDuration`** (`entities/focus-duration.ts`): o tipo `5 | 10 | 15 | 20 | 25 | 30`, mais `FOCUS_DURATIONS`, `DEFAULT_FOCUS_DURATION = 15` e `isFocusDuration(n)`.
-*   **`FocusAvailability`** e **`HomeSummary`** (`entities/home-summary.ts`): `FocusAvailability = { canStart: boolean; reason: 'no-targets' | null; durations: readonly FocusDuration[]; defaultDuration: FocusDuration }`, e `HomeSummary = { streak: StreakSnapshot; progress: Progress; focus: FocusAvailability }`.
+*   **`FocusDuration`** (`entities/focusDuration.ts`): o tipo `5 | 10 | 15 | 20 | 25 | 30`, mais `FOCUS_DURATIONS`, `DEFAULT_FOCUS_DURATION = 15` e `isFocusDuration(n)`.
+*   **`FocusAvailability`** e **`HomeSummary`** (`entities/homeSummary.ts`): `FocusAvailability = { canStart: boolean; reason: 'no-targets' | null; durations: readonly FocusDuration[]; defaultDuration: FocusDuration }`, e `HomeSummary = { streak: StreakSnapshot; progress: Progress; focus: FocusAvailability }`.
 *   **Erros** (`errors/domain-error.ts`): `DomainError`, com `code` e `retryable`, e `ValidationError extends DomainError`. Os códigos são `VALIDATION_ERROR`, `PERSISTENCE_FAILURE` (passível de nova tentativa) e `SCHEMA_VERSION_UNSUPPORTED` (não passível).
 *   **Contratos:**
-    *   `IDailyActivityRepository`: `recordDay` é idempotente, e `listDays` lista os dias. Não existe operação de apagar.
-    *   `IActivityCatalog`: somente leitura, com `getProgressCounts()` (`{ completed; total }`, lidos juntos) e `hasFocusTargets()`.
+    *   `IDailyActivityDataSource`: `recordDay` é idempotente, e `listDays` lista os dias. Não existe operação de apagar.
+    *   `IActivityDataSource`: somente leitura, com `getProgressCounts()` (`{ completed; total }`, lidos juntos) e `hasFocusTargets()`.
     *   `IClockService`: `now()` (instante ISO com o deslocamento do fuso) e `todayLocal()`.
 
 ### 4. Casos de uso (`src/usecase/`)
 
 *   **`IStreakUseCases`:** `recordActivity(source)` grava `clock.todayLocal()` e valida que o `source.id` não está vazio. É o ponto de entrada que Tarefas e Rotinas vão chamar. Nesta iteração, só os testes chamam. O `getStreak()` aplica `calculateStreak` sobre `listDays()`.
-*   **`IHomeUseCases`:** `loadHome(): Promise<HomeSummary>`. Depende **direto** dos contratos `IDailyActivityRepository`, `IActivityCatalog` e `IClockService`, e não de outros use cases ([ARCHITECTURE.md](../../ARCHITECTURE.md) §3.1). O `focus.canStart` vem de `hasFocusTargets()`.
+*   **`IHomeUseCases`:** `loadHome(): Promise<HomeSummary>`. Depende **direto** dos contratos `IDailyActivityDataSource`, `IActivityDataSource` e `IClockService`, e não de outros use cases ([ARCHITECTURE.md](../../ARCHITECTURE.md) §3.1). O `focus.canStart` vem de `hasFocusTargets()`.
 *   Os métodos `loadDashboard` e `completeFocusSession` do protótipo deixam de existir.
 
 ### 5. Persistência (`src/infra/`)
 
-*   **`ISqlExecutor`** (`database/i-sql-executor.ts`): `all(sql, params)`, `run(sql, params)` e `runInTransaction(statements)`. A transação é um **lote declarativo**: os dois executores rodam `BEGIN`, os comandos e `COMMIT`, e em caso de erro `ROLLBACK`. Sem callback, o `better-sqlite3` (síncrono) e o `expo-sqlite` (assíncrono) se comportam igual (D15).
+*   **`ISqlExecutor`** (`database/iSqlExecutor.ts`): `all(sql, params)`, `run(sql, params)` e `runInTransaction(statements)`. A transação é um **lote declarativo**: os dois executores rodam `BEGIN`, os comandos e `COMMIT`, e em caso de erro `ROLLBACK`. Sem callback, o `better-sqlite3` (síncrono) e o `expo-sqlite` (assíncrono) se comportam igual (D15).
 *   **Esquema v1** (`database/migrations.ts`): só a tabela `daily_activity` (D14).
 
     ```sql
@@ -280,7 +279,7 @@ O domínio não depende de React, Expo nem de SDKs ([ARCHITECTURE.md](../../ARCH
     ```
 
     O `recorded_at` guarda o deslocamento do fuso para permitir, no futuro, investigar dias contados em dobro ou pulados depois de uma viagem.
-*   **`DatabaseProvider`** (`database/database-provider.ts`):
+*   **`DatabaseProvider`** (`database/databaseProvider.ts`):
     *   abre o banco e aplica as migrações pendentes no primeiro uso, e não na importação;
     *   compartilha uma única tentativa entre chamadas simultâneas;
     *   grava o `user_version` depois de cada migração;
@@ -288,21 +287,16 @@ O domínio não depende de React, Expo nem de SDKs ([ARCHITECTURE.md](../../ARCH
     *   `SCHEMA_VERSION_UNSUPPORTED` fica guardado, sem nova tentativa (D14);
     *   qualquer outra exceção do driver vira `PERSISTENCE_FAILURE`.
 *   **Repositórios:**
-    *   `sqlite-daily-activity-repository` usa `INSERT OR IGNORE`;
-    *   `in-memory-daily-activity-repository` tem o mesmo comportamento, em memória;
-    *   `empty-activity-catalog` é provisório e devolve `{ completed: 0, total: 0 }` e `false`.
-*   **`system-clock-service`:** monta a data local pelo calendário local do aparelho.
+    *   `sqliteDailyActivityDataSource` usa `INSERT OR IGNORE`;
+    *   `memoryDailyActivityDataSource` tem o mesmo comportamento, em memória;
+    *   `emptyActivityDataSource` é provisório e devolve `{ completed: 0, total: 0 }` e `false`.
+*   **`systemClockService`:** monta a data local pelo calendário local do aparelho.
 
-### 6. Composição (`src/DI/`)
+### 6. Composição (`src/di/`)
 
-*   O `container.ts` troca os registros genéricos `Record<string, unknown>` pelos tipos `AppRepositories` (`dailyActivity`, `activityCatalog`), `AppServices` (`clock`) e `AppUseCases` (`streak`, `home`).
-*   **Troca por plataforma dentro do DI** (ADR-0001 §5):
-    *   `src/DI/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos repositórios SQLite;
-    *   `src/DI/persistence.web.ts` devolve os repositórios em memória (D8);
-    *   o Metro escolhe o `.web.ts` na web, inclusive na renderização estática.
-
-    Os dois arquivos só são importados pelo `container.ts`. É o único mecanismo para manter o `expo-sqlite` fora da web, dos testes e do Storybook. A F11 verifica isso com `npm test` e `build-storybook`.
-*   O `createContainer` congela (`Object.freeze`) cada registro, para nenhuma camada trocar uma dependência em tempo de execução. Os testes substituem repositórios ou o relógio por `ContainerOverrides`. O `resolveUseCase(override, padrão)` devolve o override quando ele é passado e, se não, o use case do container.
+*   O `container.ts` troca os registros genéricos `Record<string, unknown>` pelos tipos `AppDataSources` (`dailyActivity`, `activities`), `AppServices` (`clock`) e `AppUseCases` (`streak`, `home`).
+*   `src/di/persistence.ts` liga `DatabaseProvider` + `ExpoSqlExecutor` aos DataSources SQLite e só é importado pelo `container.ts` (ADR-0001 §5).
+*   O `createContainer` congela (`Object.freeze`) cada registro, para nenhuma camada trocar uma dependência em tempo de execução. Os testes substituem DataSources ou o relógio por `ContainerOverrides`. O `resolveUseCase(override, padrão)` devolve o override quando ele é passado e, se não, o use case do container.
 *   O `src/di/home-factory.ts` do protótipo é removido (Technical Plan §1).
 
 ### 7. Apresentação (`src/viewmodel/` e `src/view/`)
@@ -313,16 +307,16 @@ Correções obrigatórias de camada no protótipo:
 *   o hook de gesto para de importar `view/theme/tokens`. A geometria e o `reduceMotion` passam a chegar por parâmetro.
 
 Os arquivos:
-*   **`HomeViewModel.ts` → `useHomeViewModel(homeUseCases = resolveUseCase(undefined, container.useCases.home))`:**
+*   **`useHomeViewModel.ts` → `useHomeViewModel(homeUseCases = resolveUseCase(undefined, container.useCases.home))`:**
     *   estado: `status: 'loading' | 'error' | 'ready'`, `error: { messageKey; retryable } | null`, `summary: HomeSummary | null`, `progressLabel`, `selectedDuration` e `sheetStage`;
     *   ações: `retry()`, `selectDuration(d)` e as ações do painel do protótipo;
     *   recalcula ao montar e quando o `AppState` volta para `active` (D17, D21);
     *   um recálculo em segundo plano **não** volta para `loading`, e um erro depois de `ready` não apaga o que já está na tela;
     *   na camada de apresentação, só esta ViewModel usa `try/catch` ([ARCHITECTURE.md](../../ARCHITECTURE.md) §5).
 *   **`ActivitySheetGeometry.ts`:** funções puras de geometria do painel e o tipo `FocusSheetStage` (`'collapsed' | 'stage1_1' | 'stage1_2'`). É um auxiliar da camada ViewModel.
-*   **`ActivitySheetMotionViewModel.ts`:** a lógica de gesto do protótipo, que recebe `SheetGeometryConfig` e `reduceMotion` como parâmetros.
+*   **`useActivitySheetMotionViewModel.ts`:** a lógica de gesto do protótipo, que recebe `SheetGeometryConfig` e `reduceMotion` como parâmetros.
 *   **`HomeScreen.tsx`** (`default`): chama `useHomeViewModel()` e `useReduceMotion()`, monta o `SheetGeometryConfig` a partir de `themes.cosmic` e renderiza o `HomeScreenContent`.
-*   **`HomeScreenContent.tsx`:** a tela do protótipo refatorada, só de apresentação, que recebe estado e ações por props. Testes e histórias renderizam este componente e nunca importam `@/DI`. Ela:
+*   **`HomeScreenContent.tsx`:** a tela do protótipo refatorada, só de apresentação, que recebe estado e ações por props. Testes e histórias renderizam este componente e nunca importam `@/di`. Ela:
     *   não tem `NavBar` própria;
     *   tem estados de carregando, erro e pronto;
     *   não tem os diálogos de conquista nem de "última sessão".
@@ -408,13 +402,7 @@ Os arquivos:
 
 *   **Pros**: Mantém a infraestrutura autocontida.
 *   **Cons**: Cria um segundo ponto de composição, contra o ADR-0001 §5 e o ARCHITECTURE §6.1.
-*   **Reason for Rejection**: Rejected na revisão: a troca fica em `src/DI/persistence(.web).ts`.
-
-### Alternative M: Web com `expo-sqlite` (WASM) ou IndexedDB
-
-*   **Pros**: Os dados sobreviveriam a recarregar a página.
-*   **Cons**: Exige cabeçalhos COOP/COEP e configuração de bundler na web e no Storybook, e o alvo do produto é o Android.
-*   **Reason for Rejection**: Rejected by author: na web, só memória (D8).
+*   **Reason for Rejection**: Rejected na revisão: a composição fica em `src/di/persistence.ts`.
 
 ### Alternative N: Construir Tarefas e Rotinas mínimas, ou semear dados fictícios para teste manual
 
@@ -463,7 +451,7 @@ Os demais riscos de persistência estão no [ADR-0001](../05-architecture/decisi
 ## Future Improvements
 
 *   **Mudança de Tarefas e Rotinas:**
-    *   trocar o `EmptyActivityCatalog` por uma implementação real;
+    *   trocar o `EmptyActivityDataSource` por uma implementação real;
     *   chamar `recordActivity`;
     *   desenhar o seletor de alvo e o motor do foco (o G9 e as decisões D5, D10, D11 e D19, retiradas);
     *   resolver o EC-0007, o EC-0008 e os pontos pendentes do RN-0007;
@@ -472,7 +460,7 @@ Os demais riscos de persistência estão no [ADR-0001](../05-architecture/decisi
 *   **PR de manutenção:**
     *   corrigir o `defaultContainer`, usado sem definição no ARCHITECTURE §4.2;
     *   rodar o `/egm:egm-bootstrap` para atualizar os READMEs de contrato por pasta;
-    *   renomear para PascalCase os componentes kebab-case de `src/view/` (`primary-button.tsx`, `nav-bar.tsx`, `card-tarefa.tsx`, `filter-chips.tsx`, `material-symbol.tsx`, `src/view/theme/use-reduce-motion.ts`).
+    *   renomear para PascalCase os componentes kebab-case de `src/view/` (`primary-button.tsx`, `nav-bar.tsx`, `card-tarefa.tsx`, `filter-chips.tsx`, `material-symbol.tsx`, `src/view/theme/useReduceMotion.ts`).
 
 --------------------------------------------------------------------------------
 
@@ -507,7 +495,7 @@ Os demais riscos de persistência estão no [ADR-0001](../05-architecture/decisi
     *   `npm install -D --save-exact better-sqlite3 @types/better-sqlite3`, numa versão com binário pronto para linux-x64 e win32-x64 no Node 22;
     *   regenerar o lockfile com o npm do Node 22. O motivo é o commit `aac51ad`: um lockfile gerado com outro npm quebrou o `npm ci`.
 *   **`app.json` (Modify, condicional: o `expo install` acrescentou `"expo-sqlite"` em `plugins`):** aceitar a alteração.
-*   **`eslint.config.js` (Modify):** um bloco de flat config com `files: ["src/**"]`, `ignores: ["src/infra/database/expo-sql-executor.ts"]` e `no-restricted-imports` para `expo-sqlite` e `better-sqlite3`.
+*   **`eslint.config.js` (Modify):** um bloco de flat config com `files: ["src/**"]`, `ignores: ["src/infra/database/expoSqlExecutor.ts"]` e `no-restricted-imports` para `expo-sqlite` e `better-sqlite3`.
 *   **`jest.config.js` (Modify):** acrescentar `globalSetup: '<rootDir>/tests/setup/timezone.cjs'`.
 *   **`tests/setup/timezone.cjs` (Create):** `process.env.TZ = 'America/Sao_Paulo'`, para os testes de data rodarem fora de UTC.
 *   **`.github/workflows/ci.yml` (Modify, condicional: o `npm ci` falha ao instalar `better-sqlite3`):**
@@ -519,7 +507,7 @@ Os demais riscos de persistência estão no [ADR-0001](../05-architecture/decisi
 **Assinaturas:**
 
 ```ts
-// entities/local-date.ts
+// entities/localDate.ts
 export class LocalDate {
   static parse(value: string): LocalDate;          // ValidationError se não for AAAA-MM-DD válido
   toString(): string;                              // "AAAA-MM-DD"
@@ -537,9 +525,9 @@ export function createProgress(completed: number, total: number): Progress; // V
 export type DomainErrorCode = 'VALIDATION_ERROR' | 'PERSISTENCE_FAILURE' | 'SCHEMA_VERSION_UNSUPPORTED';
 export class DomainError extends Error { constructor(code: DomainErrorCode, message?: string); readonly retryable: boolean }
 export class ValidationError extends DomainError {}
-// repositories
-export interface IDailyActivityRepository { recordDay(date: LocalDate, recordedAt: string): Promise<void>; listDays(): Promise<LocalDate[]> }
-export interface IActivityCatalog { getProgressCounts(): Promise<{ completed: number; total: number }>; hasFocusTargets(): Promise<boolean> }
+// dataSources
+export interface IDailyActivityDataSource { recordDay(date: LocalDate, recordedAt: string): Promise<void>; listDays(): Promise<LocalDate[]> }
+export interface IActivityDataSource { getProgressCounts(): Promise<{ completed: number; total: number }>; hasFocusTargets(): Promise<boolean> }
 // services
 export interface IClockService { now(): string; todayLocal(): LocalDate }
 ```
@@ -547,9 +535,9 @@ export interface IClockService { now(): string; todayLocal(): LocalDate }
 O `retryable` de `DomainError` é `true` só para `PERSISTENCE_FAILURE`.
 
 **Arquivos:**
-*   **Create:** `src/model/entities/local-date.ts`, `streak.ts`, `progress.ts`, `activity-source.ts`, `focus-duration.ts` e `home-summary.ts`; `src/model/errors/domain-error.ts`; `src/model/repositories/i-daily-activity-repository.ts` e `i-activity-catalog.ts`; `src/model/services/i-clock-service.ts`.
+*   **Create:** `src/model/entities/localDate.ts`, `streak.ts`, `progress.ts`, `activitySource.ts`, `focusDuration.ts` e `homeSummary.ts`; `src/model/errors/domain-error.ts`; `src/model/datasources/iDailyActivityDataSource.ts` e `iActivityDataSource.ts`; `src/model/services/iClockService.ts`.
 *   **Testes (Create):**
-    *   `local-date.test.ts`: virada de mês, de ano e ano bissexto com `addDays`, e `parse` inválido.
+    *   `localDate.test.ts`: virada de mês, de ano e ano bissexto com `addDays`, e `parse` inválido.
     *   `progress.test.ts`: `createProgress(0, 0)` → `{ completed: 0, total: 0, ratio: null }`; `(3, 30)` → `ratio: 0.1`; `(-1, 0)` e `(4, 3)` → `ValidationError`.
     *   `streak.test.ts`: a tabela-verdade, com hoje = D e um teste por linha:
 
@@ -571,7 +559,7 @@ O `retryable` de `DomainError` é `true` só para `PERSISTENCE_FAILURE`.
 **Assinaturas:**
 
 ```ts
-// database/i-sql-executor.ts
+// database/iSqlExecutor.ts
 export type SqlStatement = { sql: string; params?: readonly unknown[] };
 export interface ISqlExecutor {
   all<T>(sql: string, params?: readonly unknown[]): Promise<T[]>;
@@ -581,7 +569,7 @@ export interface ISqlExecutor {
 // database/migrations.ts
 export type Migration = { version: number; statements: readonly SqlStatement[] };
 export const MIGRATIONS: readonly Migration[]; // v1: CREATE TABLE daily_activity (Technical Plan §5)
-// database/database-provider.ts
+// database/databaseProvider.ts
 export class DatabaseProvider {
   constructor(openExecutor: () => Promise<ISqlExecutor>, migrations?: readonly Migration[]);
   get(): Promise<ISqlExecutor>;
@@ -591,25 +579,25 @@ export class DatabaseProvider {
 O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último comando do lote é `PRAGMA user_version = <versão>`.
 
 **Arquivos (Create):**
-*   `src/infra/database/i-sql-executor.ts`, `migrations.ts` e `database-provider.ts`.
-*   `src/infra/database/expo-sql-executor.ts`: único arquivo que importa `expo-sqlite`, com import estático.
-*   `src/infra/database/database-provider.test.ts`, com o `BetterSqliteExecutor` em `:memory:`:
+*   `src/infra/database/iSqlExecutor.ts`, `migrations.ts` e `databaseProvider.ts`.
+*   `src/infra/database/expoSqlExecutor.ts`: único arquivo que importa `expo-sqlite`, com import estático.
+*   `src/infra/database/databaseProvider.test.ts`, com o `BetterSqliteExecutor` em `:memory:`:
     *   banco novo → `user_version = 1`;
     *   chamar `get()` duas vezes → as migrações rodam uma vez só;
     *   `user_version = 99` → `SCHEMA_VERSION_UNSUPPORTED`, sem alterar as tabelas;
     *   migração com o segundo comando inválido → `ROLLBACK`, e a tabela não existe;
     *   a primeira abertura falha, a segunda funciona → `get()` resolve na segunda chamada;
     *   duas chamadas simultâneas → uma só abertura.
-*   `src/infra/repositories/sqlite-daily-activity-repository.ts`: `constructor(provider: DatabaseProvider)`, usando `INSERT OR IGNORE`.
-*   `src/infra/repositories/in-memory-daily-activity-repository.ts`.
-*   `src/infra/repositories/daily-activity-repository.contract.ts`: `describeDailyActivityRepositoryContract(name, factory)`. Casos:
+*   `src/infra/datasources/sqliteDailyActivityDataSource.ts`: `constructor(provider: DatabaseProvider)`, usando `INSERT OR IGNORE`.
+*   `src/infra/datasources/memoryDailyActivityDataSource.ts`.
+*   `src/infra/datasources/dailyActivityDataSource.contract.ts`: `describeDailyActivityDataSourceContract(name, factory)`. Casos:
     *   o mesmo dia duas vezes → um dia só;
     *   ordem decrescente;
     *   lista vazia;
     *   para SQLite: fechar e reabrir o banco no mesmo arquivo temporário → os dias continuam (G3).
-*   `src/infra/repositories/sqlite-daily-activity-repository.test.ts` e `in-memory-daily-activity-repository.test.ts`: cada um roda o contrato.
-*   `src/infra/repositories/empty-activity-catalog.ts`.
-*   `src/infra/services/system-clock-service.ts` e `system-clock-service.test.ts` (fuso `America/Sao_Paulo` pela Etapa 1):
+*   `src/infra/datasources/sqliteDailyActivityDataSource.test.ts` e `memoryDailyActivityDataSource.test.ts`: cada um roda o contrato.
+*   `src/infra/datasources/emptyActivityDataSource.ts`.
+*   `src/infra/services/systemClockService.ts` e `systemClockService.test.ts` (fuso `America/Sao_Paulo` pela Etapa 1):
     *   `new Date(2026, 10, 14, 23, 59)` → `todayLocal()` = `2026-11-14`;
     *   `new Date(2026, 10, 15, 0, 1)` → `2026-11-15`;
     *   `new Date(2026, 10, 14, 22, 0)` → `2026-11-14`, embora o instante em UTC já seja dia 15;
@@ -621,43 +609,41 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 ### Etapa 4 — Casos de uso (`src/usecase/`)
 
 **Construtores:**
-*   `new StreakUseCases(dailyActivity: IDailyActivityRepository, clock: IClockService)`;
-*   `new HomeUseCases(dailyActivity: IDailyActivityRepository, activityCatalog: IActivityCatalog, clock: IClockService)`.
+*   `new StreakUseCases(dailyActivity: IDailyActivityDataSource, clock: IClockService)`;
+*   `new HomeUseCases(dailyActivity: IDailyActivityDataSource, activities: IActivityDataSource, clock: IClockService)`.
 
 **Arquivos:**
-*   **Create:** `src/usecase/i-streak-use-cases.ts` e `streak-use-cases.ts`.
-*   **Rename e Modify:** `src/usecase/i-home-use-cases.ts` e `home-use-cases.ts`, do protótipo, reescritos para `loadHome(): Promise<HomeSummary>`.
-*   **`streak-use-cases.test.ts` (Create):**
+*   **Create:** `src/usecase/iStreakUseCases.ts` e `streakUseCases.ts`.
+*   **Rename e Modify:** `src/usecase/iHomeUseCases.ts` e `homeUseCases.ts`, do protótipo, reescritos para `loadHome(): Promise<HomeSummary>`.
+*   **`streakUseCases.test.ts` (Create):**
     *   três `recordActivity` no mesmo dia → `listDays()` com um dia, e `getStreak().currentDays` = 1;
     *   `source.id` vazio → `ValidationError`;
     *   dia registrado às 23h59 de D, relógio falso avança para 00h01 de D+1 → `getStreak().currentDays` = 1;
     *   avança para D+2 → 0.
-*   **`home-use-cases.test.ts` (Create):**
+*   **`homeUseCases.test.ts` (Create):**
     *   catálogo vazio → `progress` `{ completed: 0, total: 0, ratio: null }`, `focus.canStart = false`, `reason = 'no-targets'`, `defaultDuration = 15` e `streak.currentDays = 0`;
     *   catálogo falso com `{ completed: 3, total: 30 }` → `ratio: 0.1`;
-    *   repositório que rejeita com `PERSISTENCE_FAILURE` → `loadHome()` rejeita com o mesmo `DomainError`.
+    *   DataSource que rejeita com `PERSISTENCE_FAILURE` → `loadHome()` rejeita com o mesmo `DomainError`.
 *   **Delete:** `src/usecase/.gitkeep`.
 
-### Etapa 5 — Composição (`src/DI/`)
+### Etapa 5 — Composição (`src/di/`)
 
-*   **`src/DI/container.ts` (Modify):** os tipos `AppRepositories { dailyActivity; activityCatalog }`, `AppServices { clock }` e `AppUseCases { streak; home }`. O `appContainerDefinition` usa `createPersistence()` de `./persistence`, `EmptyActivityCatalog` e `SystemClockService`. A API pública não muda.
-*   **`src/DI/persistence.ts` (Create):** `createPersistence(): { dailyActivity: IDailyActivityRepository }`, com `DatabaseProvider(() => ExpoSqlExecutor.open('orbity.db'))`.
-*   **`src/DI/persistence.web.ts` (Create):** a mesma assinatura, com `InMemoryDailyActivityRepository`.
-*   **`src/DI/container.test.ts` (Create):**
-    *   com `jest.isolateModules` e `jest.spyOn(DatabaseProvider.prototype, 'get')` antes de `require('@/DI/container')`, importar o módulo não abre o banco (0 chamadas);
+*   **`src/di/container.ts` (Modify):** os tipos `AppDataSources { dailyActivity; activities }`, `AppServices { clock }` e `AppUseCases { streak; home }`. O `appContainerDefinition` usa `createPersistence()` de `./persistence`, `EmptyActivityDataSource` e `SystemClockService`. A API pública não muda.
+*   **`src/di/persistence.ts` (Create):** `createPersistence(): { dailyActivity: IDailyActivityDataSource }`, com `DatabaseProvider(() => ExpoSqlExecutor.open('orbity.db'))`.
+*   **`src/di/container.test.ts` (Create):**
+    *   com `jest.isolateModules` e `jest.spyOn(DatabaseProvider.prototype, 'get')` antes de `require('@/di/container')`, importar o módulo não abre o banco (0 chamadas);
     *   `container.useCases.streak` usa o `dailyActivity` em memória passado em `overrides`;
     *   o container está congelado.
-*   **`src/DI/persistence.web.test.ts` (Create):** `createPersistence()` devolve um `InMemoryDailyActivityRepository`.
 
 ### Etapa 6 — ViewModel (`src/viewmodel/`)
 
-*   **`src/viewmodel/HomeViewModel.ts` (Rename de `use-home-view-model.ts`, depois Modify):** o estado e as ações do Technical Plan §7. Mapeia `DomainError.code` para as chaves `error.persistence` e `error.schema`. Remove do protótipo:
+*   **`src/viewmodel/useHomeViewModel.ts` (Rename de `use-home-view-model.ts`, depois Modify):** o estado e as ações do Technical Plan §7. Mapeia `DomainError.code` para as chaves `error.persistence` e `error.schema`. Remove do protótipo:
     *   `activeTab` e `handleSelectTab`;
     *   `selectedAchievement`;
     *   `isFocusMode`, `focusStartedAt`, `elapsedSeconds` e `focusTimerLabel`;
     *   `handleToggleFocusMode`;
     *   o import de `PROTOTYPE_HOME_DASHBOARD` e de `NavTabId`.
-*   **`src/viewmodel/HomeViewModel.test.ts` (Create):** `renderHook` do RNTL, com um `IHomeUseCases` falso:
+*   **`src/viewmodel/useHomeViewModel.test.ts` (Create):** `renderHook` do RNTL, com um `IHomeUseCases` falso:
     *   `loading` → `ready`;
     *   rejeição com `PERSISTENCE_FAILURE` → `status: 'error'`, `retryable: true` e `summary: null`;
     *   `retry()` com sucesso → `ready`;
@@ -668,12 +654,12 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   `jest.restoreAllMocks()` no `afterEach`.
 *   **`src/viewmodel/ActivitySheetGeometry.ts` (Rename de `activity-sheet-geometry.ts`, depois Modify):** recebe um `SheetGeometryConfig { sceneHeight; expandedTop; collapsedHeight }` por parâmetro e passa a declarar o `FocusSheetStage`.
 *   **`src/viewmodel/ActivitySheetGeometry.test.ts` (Create):** os pontos de parada para três alturas de cena, mais a decisão de soltar acima e abaixo da metade.
-*   **`src/viewmodel/ActivitySheetMotionViewModel.ts` (Rename de `use-activity-sheet-motion.ts`, depois Modify):** exporta `useActivitySheetMotionViewModel({ stage, geometry, reduceMotion, onStageChange })`, sem importar `view/`.
+*   **`src/viewmodel/useActivitySheetMotionViewModel.ts` (Rename de `use-activity-sheet-motion.ts`, depois Modify):** exporta `useActivitySheetMotionViewModel({ stage, geometry, reduceMotion, onStageChange })`, sem importar `view/`.
 *   **Delete:** `src/viewmodel/use-reduced-motion.ts` (protótipo) e `src/viewmodel/.gitkeep`.
 
 ### Etapa 7 — View, textos e rotas
 
-**Textos da interface (aprovados pelo autor, D22).** Ficam em `src/view/home-copy.ts`, junto com `PUNITIVE_TERMS = ['zerou', 'perdeu', 'falhou', 'fracasso', 'quebrou']`.
+**Textos da interface (aprovados pelo autor, D22).** Ficam em `src/view/homeCopy.ts`, junto com `PUNITIVE_TERMS = ['zerou', 'perdeu', 'falhou', 'fracasso', 'quebrou']`.
 
 | Chave | Texto | Uso |
 | :--- | :--- | :--- |
@@ -687,8 +673,8 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 | `sheet.open` / `sheet.close` | "Abrir painel" / "Fechar painel" | Botão alternativo ao gesto (`accessibilityRole="button"`) |
 
 **Arquivos:**
-*   **`src/view/home-copy.ts` (Create):** a tabela acima e o `PUNITIVE_TERMS`.
-*   **`src/view/home-copy.test.ts` (Create):** nenhum texto contém um termo de `PUNITIVE_TERMS`, sem diferenciar maiúsculas e minúsculas.
+*   **`src/view/homeCopy.ts` (Create):** a tabela acima e o `PUNITIVE_TERMS`.
+*   **`src/view/homeCopy.test.ts` (Create):** nenhum texto contém um termo de `PUNITIVE_TERMS`, sem diferenciar maiúsculas e minúsculas.
 *   **`src/view/HomeScreen.tsx` (Modify):** o `default` só chama `useHomeViewModel()` e `useReduceMotion()` e renderiza o `HomeScreenContent`.
 *   **`src/view/HomeScreenContent.tsx` (Rename de `src/view/home-screen.tsx`, depois Modify):** a tela do protótipo, só de apresentação, com estado e ações por props. Não tem `NavBar` própria, `makeHomeUseCases` nem `HomeDialog`. O `showPreviewChrome` fica desligado por padrão.
 *   **`src/view/HomeScreenContent.test.tsx` (Create):**
@@ -697,7 +683,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
     *   estado de erro do esquema → `error.schema`, sem botão;
     *   botão do painel → alterna entre `sheet.open` e `sheet.close`;
     *   o texto renderizado não contém termos de `PUNITIVE_TERMS`.
-*   **`src/view/HomeScreenContent.stories.tsx` (Rename de `home-screen.stories.tsx`, depois Modify):** histórias "vazio", "com sequência (12 dias, 3/30)", "erro" e "erro de esquema", montadas com props fixas e sem importar `@/DI`.
+*   **`src/view/HomeScreenContent.stories.tsx` (Rename de `home-screen.stories.tsx`, depois Modify):** histórias "vazio", "com sequência (12 dias, 3/30)", "erro" e "erro de esquema", montadas com props fixas e sem importar `@/di`.
 *   **`src/view/components/FocusBottomSheet.tsx` (Rename de `focus-bottom-sheet.tsx`, depois Modify):** as props passam a ser `progressLabel`, `progressRatio`, `focus: FocusAvailability`, `selectedDuration`, `onSelectDuration`, `stage` e as ações do painel. Saem `DailyFocusProgress`, `achievements`, `onToggleFocus`, `onSelectAchievement` e `lastSessionLabel`.
 *   **`src/view/components/FocusBottomSheet.test.tsx` (Create):**
     *   seis durações, com 15 marcado (`accessibilityState.checked`);
@@ -716,10 +702,10 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 
 *   **`docs/05-architecture/decisions/ADR-0001.md` (Modify):**
     *   status `Accepted` (2026-11-14);
-    *   nomes `IDailyActivityRepository`, com prefixo `I`, e arquivos kebab-case;
+    *   nomes `IDailyActivityDataSource`, com prefixo `I`, e arquivos kebab-case;
     *   esquema v1 só com `daily_activity`;
     *   `ISqlExecutor` com transação em lote e `better-sqlite3` nos testes (D15);
-    *   troca por plataforma em `src/DI/persistence(.web).ts` (D8);
+    *   composição em `src/di/persistence.ts`;
     *   o motor do foco e a sessão saem do contexto.
 *   **`docs/05-architecture/decisions/README.md` (Modify):** o status do ADR-0001 passa a `Accepted`.
 *   **`docs/02-requirements/business-rules/RN-0003.md` (Modify):** o CA-02 passa a ser "o progresso da constelação acompanha cada incremento da sequência e não volta quando a sequência zera" (D6).
@@ -729,7 +715,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 *   **`docs/02-requirements/functional/RF-0015.md` (Modify):** um critério novo, CA-09: "A sequência deve ser recalculada quando o aplicativo volta do segundo plano, e registros com data posterior à data local atual não devem ser contabilizados (D17)." Não há critério sobre meia-noite (E3).
 *   **`docs/02-requirements/functional/RF-0019.md` (Modify):** o ponto pendente vira o CA-05: "A duração selecionada por padrão deve ser de 15 minutos (D12)."
 *   **`docs/04-specifications/use-cases/UC-0011-atualizar-sequencia-estudos.md` e `docs/04-specifications/flows/FL-0011.md` (Modify):** "incrementa o contador" vira "registra o dia; a sequência é recalculada na leitura", com links para o RF-0014 e o RF-0015. Fica anotado que a parte de constelação e conquistas não é entregue nesta mudança.
-*   **`ARCHITECTURE.md` (Modify):** a árvore do §3 ganha `infra/database/` e os arquivos `DI/persistence(.web).ts`.
+*   **`ARCHITECTURE.md` (Modify):** a árvore do §3 ganha `infra/database/` e o arquivo `di/persistence.ts`.
 *   **`design-system/README.md` (Modify):** o índice registra o `08-home-cosmica.md` (Etapa 0.2a).
 
 ### Verification Plan
@@ -738,7 +724,7 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 *   **Lint:** `npm run lint`, com as regras novas de importação proibida.
 *   **Testes:** `npm test`. Inclui as suítes de contrato, que executam o SQL real no `better-sqlite3`, a tabela-verdade do RF-0015, a ViewModel e a tela.
 *   **Contraste dos tokens:** `node tests/ods-theme.test.cjs`.
-*   **Storybook:** `npm run build-storybook`, que também mostra que o bundle web usa o `persistence.web.ts`.
+*   **Storybook:** `npm run build-storybook`.
 *   **Cobertura por requisito:** cada teste ligado a um critério traz o ID no nome, por exemplo `RF-0015 CA-05: …`.
 *   **Build e checagem no aparelho:** não fazem parte desta mudança (E6, E7).
 *   **Hooks:** não se aplica. `.husky/`, `scripts/` e `commitlint.config.cjs` não mudam.
@@ -749,15 +735,15 @@ O `DatabaseProvider` aplica cada migração com `runInTransaction`, e o último 
 O que mudou em relação ao plano acima, e por quê:
 
 *   **Ordem das remoções.** `home-dashboard.ts`, `i-home-repository.ts`, `in-memory-home-repository.ts` e `use-reduced-motion.ts` saíram na Etapa 7, e não nas Etapas 2, 3 e 6, porque o código antigo da tela ainda dependia deles e todo commit precisa compilar. Pelo mesmo motivo, os casos de uso e a ViewModel do protótipo ficaram com nomes temporários (`PrototypeHomeUseCases`, `PrototypeHomeViewModel`) entre as Etapas 4 e 7.
-*   **Arquivo a mais na infraestrutura.** `src/infra/database/persistence-error.ts` (`toDomainError`) concentra a conversão de falhas do driver em `PERSISTENCE_FAILURE`, usada pelo `DatabaseProvider` e pelo repositório SQLite.
+*   **Arquivo a mais na infraestrutura.** `src/infra/database/persistenceError.ts` (`toDomainError`) concentra a conversão de falhas do driver em `PERSISTENCE_FAILURE`, usada pelo `DatabaseProvider` e pelo repositório SQLite.
 *   **Fila no executor do Expo.** O `ExpoSqlExecutor` passa as operações por uma fila, para nada se intercalar dentro de uma transação em lote.
 *   **Tempo da animação por parâmetro.** `useActivitySheetMotionViewModel` recebe também `timing` (`motion.durationMedium` e `motion.easingStandard`), para a ViewModel não importar tokens da View.
-*   **Durações com o `FilterChips`.** O seletor de duração reaproveita o `FilterChips` (`radiogroup`, setas do teclado na web). O componente ganhou a prop opcional `itemAccessibilityLabel`, para o nome acessível ser "15 minutos" e não "Filtrar por 15 minutos".
-*   **Textos de apoio.** Além da tabela da Etapa 7, entraram no `home-copy.ts` os textos aprovados pelo autor na implementação ("dia/dias de sequência", "Seu progresso", "Seu próximo passo começa aqui.", "Cada atividade concluída conta.", "Modo Foco", "Concentre-se no que importa.", "Iniciar foco", "Deslize para explorar") e três nomes acessíveis: "Duração do foco", "{completed} de {total} atividades concluídas" e "Carregando seu progresso".
+*   **Durações com o `FilterChips`.** O seletor de duração reaproveita o `FilterChips` (`radiogroup`). O componente ganhou a prop opcional `itemAccessibilityLabel`, para o nome acessível ser "15 minutos" e não "Filtrar por 15 minutos".
+*   **Textos de apoio.** Além da tabela da Etapa 7, entraram no `homeCopy.ts` os textos aprovados pelo autor na implementação ("dia/dias de sequência", "Seu progresso", "Seu próximo passo começa aqui.", "Cada atividade concluída conta.", "Modo Foco", "Concentre-se no que importa.", "Iniciar foco", "Deslize para explorar") e três nomes acessíveis: "Duração do foco", "{completed} de {total} atividades concluídas" e "Carregando seu progresso".
 *   **Engrenagem removida.** Sem o diálogo de configurações (D16), o botão do cabeçalho saiu até existir a tela de Ajustes. A tela segue só a preferência de movimento reduzido do sistema.
 *   **Falha num recálculo depois de pronto.** A tela mantém o valor anterior, sem aviso; a próxima volta ao app tenta de novo.
 *   **Tokens (Etapa 0.2a).** Tabela aprovada com a regra da grade de 8 pontos: alça do painel 40 × 4 dp (antes 40 × 5), tokens novos `font.brand`, `font.caption`, `size.header-height`, `size.icon-lg`, `border.width-thin` e as cores `iconAccent`, `streakFlame` e `streakFlameCore`; botão desabilitado sólido só no tema cósmico (7,80:1). A sombra escura do número da sequência usa os raios `space.md` e `space.sm`, porque o ODS não tem token de sombra de texto.
-*   **Verificações não executadas localmente.** O `npm run build-storybook` foi bloqueado pela permissão da sessão e fica para o CI. O passo condicional do `ci.yml` (`build-essential` para o `better-sqlite3`) não foi adicionado, porque não deu para testar o `npm ci` no Linux; o `better-sqlite3` 13.2.0 publica binário pronto para linux-x64 no Node 22.
+*   **Verificações não executadas localmente.** O passo condicional do `ci.yml` (`build-essential` para o `better-sqlite3`) não foi adicionado, porque não deu para testar o `npm ci` no Linux; o `better-sqlite3` 13.2.0 publica binário pronto para linux-x64 no Node 22.
 
 --------------------------------------------------------------------------------
 

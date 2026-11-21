@@ -77,25 +77,25 @@ As cores e lacunas estão em [02-tokens.md](02-tokens.md#variante-cósmica). `th
 | Visualizador | Desenho do protótipo em grade de 280 × 280 (aspecto 1); 320/390 da largura quando recolhido, 190/320 no intermediário e oculto sob o painel no expandido; sequência como texto real |
 | Swipe | Ativação após 10 dp; movimento intencional de 48 dp ou velocidade de 0,55 dp/ms; projeção de 160 ms; limites nos três pontos de ancoragem |
 
-No navegador, a tela é centralizada com largura máxima de 430 dp. No mobile, ocupa a largura disponível e respeita as áreas seguras. A barra de status ilustrativa “9:41” aparece apenas no preview web; Android/iOS usam a barra real do sistema.
+No mobile, a tela ocupa a largura disponível e respeita as áreas seguras, utilizando a barra de status real do sistema (Android/iOS).
 
 ### Arte e implementação de referência
 
-No protótipo de referência, o visualizador usa `react-native-svg`, já presente no projeto. `PlanetIllustration` desenha esfera, iluminação, relevo e anéis em camadas vetoriais. `PlanetStreakView` centraliza o contador e recebe a sequência da ViewModel, sem manter uma cópia independente. `CosmicStarfield` produz o campo de estrelas de forma determinística. O deslocamento do planeta acompanha o painel; não há imagem de fundo, textura raster ou contexto WebGL. A ilustração PNG da iteração anterior foi preservada como arte de referência e não é mais importada pela tela. Este protótipo não implementa rotação axial ou evolução visual por ponto de sequência.
+No protótipo de referência, o visualizador usa `react-native-svg`, já presente no projeto. `PlanetIllustration` desenha esfera, iluminação, relevo e anéis em camadas vetoriais. `PlanetStreakView` centraliza o contador e recebe a sequência da ViewModel, sem manter uma cópia independente. `CosmicStarfield` produz o campo de estrelas de forma determinística. O deslocamento do planeta acompanha o painel; não há imagem de fundo ou textura raster. A ilustração PNG da iteração anterior foi preservada como arte de referência e não é mais importada pela tela. Este protótipo não implementa rotação axial ou evolução visual por ponto de sequência.
 
 `HomeScreen` compõe a tela, `FocusBottomSheet` organiza os cards e `CosmicIcon` fornece os ícones. `useActivitySheetMotion` coordena arraste, limites, velocidade de soltura, rolagem e transições. O estado fica na ViewModel; dados e sessões usam o repositório em memória. Encerrar foco registra somente minutos efetivamente decorridos, sem adicionar os dez minutos fixos da versão anterior. Não há persistência entre recarregamentos. As outras abas permitem demonstrar a seleção, sem implementar seus módulos.
 
-Os arquivos específicos da tela e do visualizador descritos acima não estão presentes nesta branch documental. Esta seção especifica o protótipo de referência; não comprova que a integração já está disponível neste checkout. A prévia web para revisão não altera a definição das plataformas de produto no [README](README.md).
+Os arquivos específicos da tela e do visualizador descritos acima não estão presentes nesta branch documental. Esta seção especifica o protótipo de referência; não comprova que a integração já está disponível neste checkout.
 
 ### Revisão e evidências do protótipo
 
-Na branch que disponibilizar a implementação de referência, execute `npm run storybook` e abra **Telas → Início cósmico → Referência · três estados lado a lado**. Há também histórias individuais para os estágios, foco ativo, estado vazio, carregamento e uma história com interação automatizada. `npm run web` abre o protótipo na rota inicial do Expo quando a tela estiver integrada.
+Na branch que disponibilizar a implementação de referência, execute `npm run storybook` e abra **Telas → Início cósmico → Referência · três estados lado a lado**. Há também histórias individuais para os estágios, foco ativo, estado vazio, carregamento e uma história com interação automatizada.
 
 O visualizador isolado fica em **Design System → Planeta e sequência**, com controle do número de dias e exemplos de 0, 12 e 365 dias.
 
-As verificações de lint, tipos e builds são registradas na entrega. A existência de uma história de interação não comprova sua execução; validação real em navegador e em Android/iOS deve ser identificada separadamente.
+As verificações de lint, tipos e builds são registradas na entrega. A existência de uma história de interação não comprova sua execução; validação real em Android/iOS deve ser identificada separadamente.
 
-Na primeira iteração, lint, tipos, builds do Expo/Storybook e três verificações da ViewModel passaram. Na revisão do visualizador, lint, tipos e ambos os builds passaram novamente, assim como as três verificações existentes da ViewModel. Cinco verificações isoladas adicionais cobriram resolução de swipe/flick, limites em viewport pequeno, acompanhamento do dedo e recolhimento, interação com rolagem e retorno após cancelamento. Os testes usam um adaptador de animação sem duração real; não substituem a validação por toque em aparelho. O SVG do planeta foi renderizado e inspecionado visualmente de forma isolada. Não houve captura da tela completa no navegador ou em aparelho nesta sessão.
+Na primeira iteração, lint, tipos, builds do Expo/Storybook e três verificações da ViewModel passaram. Na revisão do visualizador, lint, tipos e ambos os builds passaram novamente, assim como as três verificações existentes da ViewModel. Cinco verificações isoladas adicionais cobriram resolução de swipe/flick, limites em viewport pequeno, acompanhamento do dedo e recolhimento, interação com rolagem e retorno após cancelamento. Os testes usam um adaptador de animação sem duração real; não substituem a validação por toque em aparelho. O SVG do planeta foi renderizado e inspecionado visualmente de forma isolada.
 
 As verificações relatadas acima pertencem ao histórico do protótipo de referência e não foram reexecutadas nesta alteração documental. A disponibilidade dos componentes, das histórias e da rota inicial deve ser confirmada na branch de implementação.
 
@@ -143,7 +143,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
 - **Faça (1.2):** Divida a linha de filtros em colunas de largura igual, alinhadas ao botão Criar e aos cards; escreva prazos no formato "19/10 · 08:00–09:00".
-- **Faça:** Exija confirmação antes de apagar itens em lote e garanta que ações destrutivas combinem ícone e texto com contraste acessível.
+- **Faça:** Exija confirmação antes de apagar itens (individual ou em lote) com a variante Confirmação do [modal](04-componentes/modal.md), mantendo o botão "Excluir" no estilo primário existente (`PrimaryButton`) e "Manter tarefas" no estilo secundário existente.
 - **Evite:** Mensagens ou alertas punitivos ao desmarcar tarefas concluídas.
 
 ---
@@ -165,7 +165,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 | **Vazio** | "Nenhuma tarefa nesta rotina" com atalho para adicionar | `font.body`, `button.bg`, `button.label`, `space.md` |
 | **Sucesso** | Tarefas riscadas e feedback comemorativo de avanço no Cosmos | `color.action`, `radius.lg`, `font.body`, `motion.duration.short` |
 
-- **Faça:** Permita reverter a conclusão sem perda punitiva de sequência.
+- **Faça:** Permita reverter a conclusão sem perda punitiva de sequência e confirme a exclusão da rotina pelo [modal](04-componentes/modal.md) compartilhado (`ConfirmDialog`), com "Excluir rotina" no estilo primário existente (`PrimaryButton`), "Manter rotina" no estilo secundário existente e aviso com "Desfazer" após excluir.
 - **Evite:** Bloquear a reorganização de hábitos na rotina.
 
 ---

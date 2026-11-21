@@ -6,20 +6,21 @@ import type {
   NewTaskPickerField,
   NewTaskState,
   NewTaskTextField,
-} from "../viewmodel/NewTaskViewModel";
+} from "../viewmodel/useNewTaskViewModel";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
-import { TaskPickerModal } from "./components/TaskPickerModal";
+import { TaskPickerModal, type TaskPickerModalOption } from "./components/TaskPickerModal";
+import { NO_CATEGORY_SYMBOL, TASK_CATEGORY_LABELS, TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
 import { TextField } from "./components/TextField";
-import { TASKS_COPY, formatTasksCopy } from "./tasks-copy";
+import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicColors, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
 
 export type NewTaskScreenContentProps = NewTaskState &
-  NewTaskActions & {
+  Omit<NewTaskActions, "handleClose"> & {
     /** Fecha o formulário sem criar e volta para Tarefas. */
     onClose: () => void;
     /** Depois do sucesso: limpa o formulário e volta para a lista. */
@@ -91,7 +92,6 @@ export const NewTaskScreenContent = ({
   dateOptions,
   timeOptions,
   categoryOptions,
-  selectedCategory,
   submitting,
   created,
   editing = false,
@@ -104,14 +104,26 @@ export const NewTaskScreenContent = ({
   onFinish,
 }: NewTaskScreenContentProps) => {
   const insets = useSafeAreaInsets();
-  const categoryLabel = selectedCategory?.label ?? TASKS_COPY["form.category.empty"];
+  const categoryLabel = fields.category
+    ? TASK_CATEGORY_LABELS[fields.category]
+    : TASKS_COPY["form.category.empty"];
+  const categorySymbol = fields.category ? TASK_CATEGORY_SYMBOLS[fields.category] : NO_CATEGORY_SYMBOL;
+  const categoryPickerOptions: readonly TaskPickerModalOption[] = [
+    { id: "none", label: TASKS_COPY["form.category.empty"], value: "", icon: NO_CATEGORY_SYMBOL },
+    ...categoryOptions.map((id) => ({
+      id,
+      label: TASK_CATEGORY_LABELS[id],
+      value: id,
+      icon: TASK_CATEGORY_SYMBOLS[id],
+    })),
+  ];
 
   const activePickerOptions =
     activePicker === "startDate" || activePicker === "endDate"
       ? dateOptions
       : activePicker === "startTime" || activePicker === "endTime"
         ? timeOptions
-        : categoryOptions;
+        : categoryPickerOptions;
 
   const activeSelectedValue =
     activePicker === "category"
@@ -187,7 +199,7 @@ export const NewTaskScreenContent = ({
           >
             <View style={styles.selectIcon}>
               <MaterialSymbol
-                name={selectedCategory?.icon ?? "label"}
+                name={categorySymbol}
                 filled
                 color={cosmicColors.focus}
                 size={theme.space.lg}

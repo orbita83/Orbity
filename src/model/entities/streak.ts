@@ -1,4 +1,4 @@
-import type { LocalDate } from "@/model/entities/local-date";
+import type { LocalDate } from "@/model/entities/localDate";
 
 export type StreakSnapshot = {
   currentDays: number;

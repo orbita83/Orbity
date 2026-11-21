@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { mockStudentProfile } from "@/model/__fixtures__/student-profile.fixture";
+import { mockStudentProfile } from "@/model/__fixtures__/studentProfile.fixture";
 import ProfileScreen from "./profile";
 
 // A navegação real é exercitada em profile-navigation.test.tsx.
@@ -9,10 +9,6 @@ jest.mock("./components/MaterialSymbol", () => ({ MaterialSymbol: () => null }))
 
 jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: jest.requireActual<typeof import("react-native")>("react-native").View,
-}));
-
-jest.mock("expo-router", () => ({
-  Link: ({ children }: { children: import("react").ReactNode }) => children,
 }));
 
 describe("ProfileScreen", () => {
@@ -34,6 +30,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: jest.fn(async () => true),
       clearError: jest.fn(),
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     // Act
@@ -63,6 +62,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: jest.fn(async () => true),
       clearError: jest.fn(),
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     await render(<ProfileScreen viewModel={mockViewModel} />);
@@ -92,6 +94,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: saveNameMock,
       clearError: jest.fn(),
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     await render(<ProfileScreen viewModel={mockViewModel} />);
@@ -126,6 +131,9 @@ describe("ProfileScreen", () => {
       setNameInput: jest.fn(),
       saveName: jest.fn(async () => false),
       clearError: clearErrorMock,
+      handleOpenAchievements: jest.fn(),
+      handleOpenCategories: jest.fn(),
+      handleOpenSettings: jest.fn(),
     };
 
     await render(<ProfileScreen viewModel={mockViewModel} />);

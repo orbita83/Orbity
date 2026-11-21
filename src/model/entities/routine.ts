@@ -1,11 +1,14 @@
-import type { LocalDate } from "@/model/entities/local-date";
-import type { Task } from "@/model/entities/task";
-import { ValidationError } from "@/model/errors/domain-error";
+import type { LocalDate } from "@/model/entities/localDate";
+import type { Task, TaskCategoryId } from "@/model/entities/task";
 
-/** Ícones que o estudante pode escolher para uma rotina (protótipo 3.1). "Geral" é o padrão. */
-export const ROUTINE_ICONS = ["track_changes", "menu_book", "calculate", "translate", "science", "code", "music_note"] as const;
+/**
+ * Ícones que o estudante pode escolher para uma rotina (protótipo 3.1), na ordem do formulário.
+ * São ids: os mesmos das categorias de tarefa, mais "general", o padrão (rotinas.md, R8). O símbolo
+ * e o rótulo de cada id ficam na apresentação (issue #159).
+ */
+export const ROUTINE_ICONS = ["general", "reading", "mathematics", "languages", "science", "programming", "music"] as const satisfies readonly ("general" | TaskCategoryId)[];
 export type RoutineIcon = (typeof ROUTINE_ICONS)[number];
-export const DEFAULT_ROUTINE_ICON: RoutineIcon = "track_changes";
+export const DEFAULT_ROUTINE_ICON: RoutineIcon = "general";
 
 /** Dia da semana, 0 = domingo (RF-0012). */
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -92,45 +95,4 @@ export function weekdayOf(date: LocalDate): Weekday {
 /** A rotina acontece nesta data (RF-0012 CA-04)? */
 export function isRoutineActiveOn(routine: Pick<Routine, "days">, date: LocalDate): boolean {
   return routine.days.includes(weekdayOf(date));
-}
-
-type RoutineFields = Omit<CreateRoutineInput, "tasks">;
-type NormalizedRoutineFields = Omit<NormalizedCreateRoutineInput, "tasks">;
-
-/** Nome e pelo menos um dia são obrigatórios; ícone e dias precisam ser válidos (RF-0007, RF-0012). */
-function validateRoutineFields(input: RoutineFields): NormalizedRoutineFields {
-  const title = input.title.trim();
-  if (title.length === 0) {
-    throw new ValidationError("Dê um nome para a rotina.");
-  }
-
-  const icon = input.icon ?? DEFAULT_ROUTINE_ICON;
-  if (!isRoutineIcon(icon)) {
-    throw new ValidationError("Ícone de rotina inválido.");
-  }
-
-  if (!input.days.every(isWeekday)) {
-    throw new ValidationError("Dia da semana inválido.");
-  }
-  const days = [...new Set(input.days as readonly Weekday[])].sort((a, b) => a - b);
-  if (days.length === 0) {
-    throw new ValidationError("Escolha pelo menos um dia.");
-  }
-
-  const description = input.description?.trim() || undefined;
-  return { title, description, icon, days };
-}
-
-/** Valida e normaliza a criação de rotina (RF-0007, RF-0012). Tarefas vazias são ignoradas. */
-export function validateCreateRoutineInput(input: CreateRoutineInput): NormalizedCreateRoutineInput {
-  const tasks = input.tasks.map((task) => task.trim()).filter((task) => task.length > 0);
-  return { ...validateRoutineFields(input), tasks };
-}
-
-/** Valida e normaliza a edição de rotina com as mesmas regras da criação (RF-0009 CA-03 e CA-04). */
-export function validateUpdateRoutineInput(input: UpdateRoutineInput): NormalizedUpdateRoutineInput {
-  const tasks = input.tasks
-    .map((task) => ({ ...(task.id ? { id: task.id } : {}), title: task.title.trim() }))
-    .filter((task) => task.title.length > 0);
-  return { ...validateRoutineFields(input), id: input.id, tasks };
 }

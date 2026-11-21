@@ -2,7 +2,7 @@
 
 ## Overview
 
-Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, repositórios ou serviços.
+Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, DataSources ou serviços.
 
 Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton`, `OdsGlobal` e outros) são histórias do Storybook (`@storybook/react-native-web-vite`), não fazem parte do código de produção e não são importados pelo app. Os arquivos `*.test.tsx` contêm testes Jest.
 
@@ -14,7 +14,7 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
   - Mapeamentos internos (não exportados) `routeByTab` / `tabByRoute`: `inicio` <-> `index`, `tarefas` <-> `tasks`, `rotinas` <-> `routines`, `cosmos` <-> `cosmos`, `perfil` <-> `profile`.
 - `CheckCircle.tsx`: `CheckCircle({ checked, onToggle, accessibilityLabel, disabled? })`, círculo de concluir com papel `checkbox` e alvo de 48 dp.
 - `SuccessDialog.tsx`: `SuccessDialog({ visible, title, message, actionLabel, onClose })`, variante de sucesso do Modal ("Tarefa criada!").
-- `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; o ✕ e a ação segura chamam `onCancel`, a ação destrutiva chama `onConfirm`.
+- `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; a ação de confirmação (`confirmLabel`) recebe `PrimaryButton` (`onConfirm`) e o ✕ e a ação de cancelamento (`cancelLabel`, estilo secundário com borda) chamam `onCancel`.
 - `ContextualActionBar.tsx`: `ContextualHeader({ countLabel, onCancel })` e `ContextualActionBar({ actions })` para a seleção múltipla; `ContextualAction` = `{ id, label, icon, onPress, destructive?, disabled? }`.
 - `IconTile.tsx`: `IconTile({ icon })`, quadro decorativo com o ícone de uma rotina.
 - `ScreenHeader.tsx`: `ScreenHeader({ title, onBack, variant?, backLabel })`, cabeçalho das telas empilhadas (seta ou ✕).
@@ -52,17 +52,16 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
 - Estilos derivam de tokens do tema (`theme.color`, `theme.space`, `theme.radius`, `theme.font`, `theme.target`, `theme.focus`, `theme.button`, `theme.navbar`, `theme.primitive`, `theme.componentOverrides`). Exceções literais presentes no código: opacidade de pressionado (`chipPressed: 0.85`, `tabItemPressed: 0.7`), sombra/borda de `NavBar` (`borderTopWidth: 1`, `shadowOpacity: 0.06`, `shadowRadius: 4`, `shadowOffset`), `borderColor: "transparent"` no `focusContainer` da `NavBar` e `fontWeight` `"700"`/`"500"` nos rótulos de `FilterChipItem`.
 - Alvos de toque interativos respeitam `theme.target.minSize` (48) via `minHeight`/`minWidth` (`TaskCard`, `FilterChipItem`, `NavBar`), ou `theme.button.minHeight`/`minWidth` (`PrimaryButton`).
 - Estado não depende apenas de cor: `TaskCard` mostra "✓" e `textDecorationLine: "line-through"` quando `completed`; `FilterChipItem` muda `fontWeight` quando `selected`; `NavBar` alterna `MaterialSymbol` `filled`, o indicador `iconIndicatorActive` e o peso do rótulo para a aba ativa, e o rótulo textual fica sempre visível.
-- Acessibilidade: `TaskCard` expõe `accessibilityState={{ checked }}` e rótulo "Concluir/Desmarcar tarefa: <title>"; `FilterChipItem` expõe `accessibilityState={{ checked, disabled }}`; `NavBar` expõe `accessibilityState={{ selected }}` e rótulo "Aba <label>, <n> de <total>"; textos usam `allowFontScaling`; `MaterialSymbol` é `accessible={false}` (e `aria-hidden` na web).
+- Acessibilidade: `TaskCard` expõe `accessibilityState={{ checked }}` e rótulo "Concluir/Desmarcar tarefa: <title>"; `FilterChipItem` expõe `accessibilityState={{ checked, disabled }}`; `NavBar` expõe `accessibilityState={{ selected }}` e rótulo "Aba <label>, <n> de <total>"; textos usam `allowFontScaling`; `MaterialSymbol` é `accessible={false}`.
 - `NavBar` retorna `null` quando `visible` é `false`.
 - `FilterChips` marca como selecionado o chip cujo `filter.id === selectedFilter` e chama `onSelectFilter(filter.id)` no toque; não guarda o filtro selecionado em estado próprio.
 - `MainTabBar` retorna `null` nas rotas fora das abas (`new-task`, `new-routine`, `routine-details`) e quando a tela ativa define `tabBarStyle: { display: "none" }` (seleção múltipla de Tarefas).
 - `MainTabBar` só navega quando a rota alvo existe em `state.routes`, é diferente da rota ativa e o evento `tabPress` não teve `defaultPrevented`.
-- `MaterialSymbol` usa o caminho `filled` quando `filled` é `true` (com fallback para `outlined`); na web renderiza `<svg>` nativo do DOM, nos demais plataformas `Svg`/`Path` de `react-native-svg`.
+- `MaterialSymbol` usa o caminho `filled` quando `filled` é `true` (com fallback para `outlined`) e renderiza `Svg`/`Path` de `react-native-svg`.
 
 ## Side Effects
 
 - `MainTabBar`: chama `navigation.emit({ type: "tabPress", target, canPreventDefault: true })` e `navigation.navigate(route.name)` (navegação do Expo Router/React Navigation); lê insets de área segura via `useSafeAreaInsets`.
-- `FilterChips` (apenas `Platform.OS === "web"`): o handler `handleWebKeyDown` intercepta setas (`ArrowRight`/`ArrowDown`/`ArrowLeft`/`ArrowUp`), chama `event.preventDefault()`, consulta o DOM (`querySelectorAll('[role="radio"]')`) e dispara `focus()` e `click()` no chip vizinho (navegação circular).
 - Estado local de foco via `useState`: `isFocused` em `FilterChipItem` e `PrimaryButton`, `focusedTabId` em `NavBar`.
 - Demais componentes não têm efeitos colaterais além de invocar os callbacks recebidos por props.
 

@@ -1,5 +1,3 @@
-@RULES
-
 # Guias e Convenções de Código: React Native, Expo Router e MVVM
 
 Este documento estabelece as convenções oficiais de código e arquitetura para o desenvolvimento de aplicativos mobile com **React Native**, **TypeScript**, **Expo Router** e **MVVM**, baseadas na estrutura adotada no livro *Tutoriais de PDM: Desenvolvimento Mobile com React Native e Expo*.
@@ -10,7 +8,16 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 
 - **Funções normais:** `camelCase` (ex: `handleSubmit`, `fetchData`)
 - **Componentes funcionais:** `PascalCase` (ex: `Button`, `UserProfile`)
-- **Arquivos gerais:** `kebab-case` com extensão apropriada para módulos de domínio, use cases, infraestrutura e rotas do app (`src/app/`) (ex: `timestamp-use-case.ts`, `timestamp-record.ts`)
+- **Arquivos gerais:** `camelCase` em `src/model/`, `src/usecase/`, `src/infra/` e `src/di/`, incluindo testes (`.test.ts`), suítes de contrato (`.contract.ts`) e fixtures (`.fixture.ts`), como no livro (Cap. 10, Figura 10.2). Arquivos que contêm **só uma interface** recebem o prefixo `i` (Seção 10.4).
+
+  | Camada | Exemplos |
+  | :--- | :--- |
+  | `src/model/` | `entities/localDate.ts`, `entities/studentProfile.ts`, `datasources/iTaskDataSource.ts`, `services/iClockService.ts`, `errors.ts`, `__fixtures__/task.fixture.ts` |
+  | `src/usecase/` | `iTaskUseCases.ts`, `taskUseCases.ts`, `taskUseCases.test.ts` |
+  | `src/infra/` | `datasources/sqliteTaskDataSource.ts`, `datasources/taskDataSource.contract.ts`, `services/systemClockService.ts`, `database/iSqlExecutor.ts` |
+  | `src/di/` | `container.ts`, `persistence.ts` |
+
+  - **Arquivos da `view` que não são telas nem componentes** (textos, hooks e fixtures) também usam `camelCase`: `src/view/homeCopy.ts`, `src/view/theme/useReduceMotion.ts`, `src/view/__fixtures__/taskList.fixture.ts`. Assim, `kebab-case` fica só para rotas e telas, e `PascalCase` só para componentes.
 - **Arquivos de View e ViewModel:**
 
   | Tipo de arquivo | Nome do arquivo | Exemplo |
@@ -18,12 +25,19 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
   | Componente de **tela** em `src/view/` | `kebab-case.tsx`, **idêntico** ao do módulo de rota em `src/app/` que o re-exporta | `src/view/tasks.tsx` ↔ `src/app/tasks.tsx` |
   | Parte de apresentação de uma tela em `src/view/` (usada só por ela) | `kebab-case.tsx`: nome da tela + `-content` | `src/view/tasks-content.tsx` |
   | Componente **reutilizável** em `src/view/components/` | `PascalCase.tsx` | `src/view/components/PrimaryButton.tsx` |
-  | Arquivo da ViewModel em `src/viewmodel/` | `PascalCase.ts` com sufixo `ViewModel` | `src/viewmodel/TasksViewModel.ts` |
+  | Arquivo da ViewModel em `src/viewmodel/` | `camelCase.ts` com o **mesmo nome** do hook exportado (`useNomeViewModel.ts`) | `src/viewmodel/useTasksViewModel.ts` |
 
   - **Telas na View (`src/view/`):** só o **arquivo** segue o nome da rota; o identificador do componente continua em `PascalCase` com sufixo `Screen` (ex.: `src/view/tasks.tsx` exporta `TasksScreen`; `src/view/index.tsx` exporta `HomeScreen`, a tela da rota inicial `src/app/index.tsx`). Histórias e testes da tela usam o mesmo nome (`tasks-content.stories.tsx`, `tasks-content.test.tsx`).
   - **Componentes de UI na View (`src/view/components/`):** Identificador do componente e arquivo em `PascalCase.tsx` (ex: `src/view/components/UserProfile.tsx`, `src/view/components/PrimaryButton.tsx`). Histórias e testes usam o mesmo nome (`PrimaryButton.stories.tsx`, `PrimaryButton.test.tsx`).
-  - **Arquivos da ViewModel (`src/viewmodel/`):** Arquivo em `PascalCase.ts` com sufixo `ViewModel` (ex: `src/viewmodel/HomeViewModel.ts`, `src/viewmodel/LoginViewModel.ts`, `src/viewmodel/TimestampViewModel.ts`).
+  - **Arquivos da ViewModel (`src/viewmodel/`):** Arquivo em `camelCase.ts` com o mesmo nome do hook que exporta, no formato `useNomeViewModel.ts` (ex: `src/viewmodel/useHomeViewModel.ts` exporta `useHomeViewModel`; `src/viewmodel/useLoginViewModel.ts` exporta `useLoginViewModel`; `src/viewmodel/useTimestampViewModel.ts` exporta `useTimestampViewModel`). Testes usam o mesmo nome (`useHomeViewModel.test.ts`), um por arquivo de ViewModel.
   - **Hooks da ViewModel:** Função exportada em `camelCase` com prefixo `use` seguido do nome da tela em PascalCase e sufixo `ViewModel` (ex: `useHomeViewModel()`, `useTimestampViewModel()`).
+  - **Retorno da ViewModel:** dois tipos exportados, `NomeState` e `NomeActions`, e retorno em tupla `[state, actions]`, como no livro (Cap. 10, Seção 10.10). A tela desestrutura `const [state, actions] = useNomeViewModel();` e repassa estado e ações à apresentação. Uma ViewModel sem estado próprio declara `NomeState = Record<never, never>` e retorna `[{}, { ...ações }]`.
+    ```ts
+    export function useTimestampViewModel(): [TimestampState, TimestampActions] {
+      // ...
+      return [{ label, loading, error }, { handleGenerate }];
+    }
+    ```
 - **Módulos de rota em `src/app/`:** Arquivos em `kebab-case.tsx` (ex: `src/app/index.tsx`, `src/app/tasks.tsx`, `src/app/new-task.tsx`) que determinam a rota no Expo Router, importam como `default` a tela da `view` **de mesmo nome** e a exportam novamente como `default`.
 
 ---
@@ -77,25 +91,28 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
 4. **`(grupo)` (Parênteses)**: Organiza rotas e aplica layouts específicos sem adicionar o nome do grupo à URL.
 5. **`+not-found.tsx`**: Rota tratadora de endereços inexistentes (404).
 
-### Boas Práticas de Navegação
-* **Navegação Declarativa (`<Link>`)**:
-  * Usar quando a navegação é uma consequência direta de um toque na interface.
-  * Utilizar a propriedade `asChild` ao envolver componentes customizados como `<Pressable>`.
-  * Passar rotas dinâmicas como objeto para garantir validação de *typed routes*:
-    ```tsx
-    <Link 
-      href={{ pathname: '/ifpimons/[id]', params: { id: String(item.id) } }} 
-      asChild
-    >
-      <Pressable style={styles.item}>
-        <Text>{item.nome}</Text>
-      </Pressable>
-    </Link>
+### Navegação na ViewModel
+Seguindo o livro de referência (Cap. 10, Seções 10.3, 10.10 e 10.11), **quem navega é a ViewModel**. A View recebe apenas estado e ações e **não chama hooks de navegação**.
+
+* **Na ViewModel (`src/viewmodel/`)**:
+  * Navegar com o objeto `router` do `expo-router` dentro de ações expostas à tela (ex.: `handleCreateTask`, `handleOpenRoutine(id)`, `handleClose`).
+  * Métodos comuns: `router.navigate()`, `router.push()`, `router.replace()`, `router.back()`, `router.setParams()`, `router.dismissTo()`.
+  * Usar `router.replace()` para fluxos lineares onde não faz sentido retornar (ex.: tela de Login para Home).
+  * Ler os parâmetros da rota com `useLocalSearchParams` na própria ViewModel. Quando a ViewModel também aceita o valor por parâmetro (para testes e histórias), o parâmetro substitui a rota.
+  * Reagir à tela ganhando foco (`useFocusEffect`), ajustar opções do navegador (`useNavigation().setOptions`) e tratar o voltar do Android (`BackHandler`) também na ViewModel.
+  * Passar rotas dinâmicas como objeto, para manter a validação de *typed routes*:
+    ```ts
+    const handleOpenRoutine = useCallback((id: string) => {
+      router.navigate({ pathname: "/routine-details", params: { id } });
+    }, []);
     ```
-* **Navegação Pragmática (`router`)**:
-  * Usar o objeto `router` (de `expo-router`) quando houver execução de lógica prévia (validação, requisição de API, verificação de permissão).
-  * Métodos comuns: `router.push()`, `router.replace()`, `router.back()`, `router.canGoBack()`, `router.dismissTo()`.
-  * Usar `router.replace()` para fluxos lineares onde não faz sentido retornar (ex: tela de Login para Home).
+* **Na View (`src/view/`)**:
+  * Não importar `useRouter`, `useLocalSearchParams`, `useNavigation`, `useFocusEffect` nem `<Link>`. Um toque que navega chama uma ação da ViewModel (ex.: `onPress={handleOpenSettings}`).
+  * Componentes reutilizáveis que levam a outro lugar recebem a ação por props (ex.: `onPress`, `onReturn`), sem conhecer a rota.
+  * **Exceção:** a `MainTabBar` é a barra de abas do próprio navegador. Ela recebe `navigation` e `state` por props do `<Tabs />` (em `src/app/_layout.tsx`) e não chama hooks de navegação.
+* **Testes e histórias**:
+  * Nos testes de ViewModel, mockar o `expo-router` (`router`, `useLocalSearchParams`, `useFocusEffect`, `useNavigation`) e verificar as ações de navegação.
+  * O Storybook substitui o `expo-router` por `.storybook/mocks/expo-router.ts`, que registra a navegação no painel *Actions*.
 
 ---
 

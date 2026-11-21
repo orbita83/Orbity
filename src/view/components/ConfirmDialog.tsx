@@ -7,16 +7,21 @@ import { PrimaryButton } from "./PrimaryButton";
 const theme = themes.cosmic;
 
 export type ConfirmDialogProps = {
+  /** Controla se o diálogo está aberto. */
   visible: boolean;
+  /** Título centralizado do diálogo (`font.title`). */
   title: string;
+  /** Mensagem explicativa centralizada (`font.body`). */
   message: string;
   /** Ícone central de 96 dp. Em confirmações destrutivas, aparece em `color.error`. */
   icon: MaterialSymbolName;
-  /** Ação segura e em destaque (ex.: "Manter rotina"). Também é o que o ✕ e o voltar fazem. */
+  /** Rótulo da ação secundária de cancelamento (ex.: "Manter rotina", "Cancelar"). Também é o que o ✕ e o voltar fazem. */
   cancelLabel: string;
-  /** Ação destrutiva, secundária, com ícone em `color.error` e texto claro (ex.: "Excluir rotina"). */
+  /** Rótulo da ação primária de confirmação (ex.: "Excluir", "Excluir rotina"). Recebe o destaque de `PrimaryButton`. */
   confirmLabel: string;
+  /** Callback acionado ao cancelar (botão secundário, ✕ ou gesto de voltar). */
   onCancel: () => void;
+  /** Callback acionado ao confirmar explicitamente pela ação primária. */
   onConfirm: () => void;
   /** Conteúdo extra entre o texto e as ações (ex.: aviso de que a sequência não muda). */
   children?: ReactNode;
@@ -24,7 +29,8 @@ export type ConfirmDialogProps = {
 
 /**
  * Variante "Confirmação" do Modal do ODS (modal.md): véu, superfície com raio de painel, ✕ visível
- * e ações empilhadas. A ação segura vem primeiro e em destaque, para evitar exclusões por engano.
+ * e ações empilhadas. A confirmação usa o estilo primário existente (`PrimaryButton`) e o cancelamento
+ * usa o estilo secundário com borda, mantendo o componente reutilizável entre Tarefas, Rotinas e futuras telas.
  */
 export const ConfirmDialog = ({
   visible,
@@ -61,16 +67,15 @@ export const ConfirmDialog = ({
         </View>
         {children}
         <View style={styles.actions}>
-          <PrimaryButton theme={theme} label={cancelLabel} onPress={onCancel} />
+          <PrimaryButton theme={theme} label={confirmLabel} onPress={onConfirm} />
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={confirmLabel}
-            onPress={onConfirm}
-            style={({ pressed }) => [styles.destructive, pressed && styles.pressed]}
+            accessibilityLabel={cancelLabel}
+            onPress={onCancel}
+            style={({ pressed }) => [styles.secondary, pressed && styles.pressed]}
           >
-            <MaterialSymbol name={icon} color={theme.color.error} size={theme.navbar.iconSize} />
-            <Text allowFontScaling style={styles.destructiveLabel}>
-              {confirmLabel}
+            <Text allowFontScaling style={styles.secondaryLabel}>
+              {cancelLabel}
             </Text>
           </Pressable>
         </View>
@@ -87,7 +92,7 @@ const styles = StyleSheet.create({
     padding: theme.space.lg,
   },
   surface: {
-    // Ocupa a largura entre as margens do véu; sem isso, o Modal da Web encolhe a superfície ao texto.
+    // Ocupa a largura disponível entre as margens do véu.
     width: "100%",
     gap: theme.space.md,
     padding: theme.space.lg,
@@ -122,17 +127,16 @@ const styles = StyleSheet.create({
   title: { ...theme.font.title, color: theme.color["on-surface"], textAlign: "center" },
   message: { ...theme.font.body, color: theme.color["on-surface-variant"], textAlign: "center" },
   actions: { gap: theme.space.sm },
-  destructive: {
+  secondary: {
     minHeight: theme.target.minSize,
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: theme.space.sm,
     paddingHorizontal: theme.space.md,
+    paddingVertical: theme.space.sm,
     borderRadius: theme.radius.md,
     borderWidth: theme.border.widthThin,
     borderColor: cosmicBorders.sheet,
   },
-  destructiveLabel: { ...theme.font.label, color: theme.color["on-surface"] },
+  secondaryLabel: { ...theme.font.label, color: theme.color["on-surface"] },
   pressed: { opacity: theme.motion.opacityPressed, transform: [{ scale: theme.motion.scalePressed }] },
 });

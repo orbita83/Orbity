@@ -44,6 +44,12 @@ Os comandos normais do Expo continuam iniciando o aplicativo.
 Roboto é carregada localmente no catálogo pelo pacote `@fontsource/roboto`;
 a integração nativa deverá carregar a fonte com Expo Font.
 
+As ViewModels navegam com o Expo Router (`RULES.md`, "Navegação na ViewModel"), mas as histórias
+renderizam as telas sem um navegador montado. Por isso, o `.storybook/main.ts` substitui o
+`expo-router` por `.storybook/mocks/expo-router.ts`: a navegação aparece no painel *Actions*, o foco
+da tela roda uma vez ao montar e a rota não tem parâmetros. Para testar os destinos de verdade, use o
+aplicativo ou um teste com `renderRouter` (ex.: `src/view/profile-navigation.test.tsx`).
+
 ## Catálogo atual
 
 O catálogo possui histórias para `PrimaryButton`, `TaskCard`, `FilterChips`,

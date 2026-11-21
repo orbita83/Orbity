@@ -36,4 +36,4 @@ O spike em Skia (branch `feat/spike-planeta-skia`, sem merge) validou os parâme
 | Brilho | `shadow.glow-planet` (`0 0 72px rgba(130, 54, 217, 0.55)`), o único brilho colorido do ODS |
 | Movimento reduzido | Rotação e pulso desligados |
 
-Na Web, o Skia precisa carregar o CanvasKit antes de desenhar; no spike, isso é feito por um portão de carregamento com versão do `canvaskit-wasm` fixada. A escolha da biblioteca e a implementação no app pertencem à integração da Tela Inicial, não a esta versão do ODS.
+A escolha da biblioteca e a implementação no app pertencem à integração da Tela Inicial, não a esta versão do ODS.

@@ -1,13 +1,14 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/TasksViewModel";
+import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/useTasksViewModel";
 import { TaskCard } from "./components/TaskCard";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "./components/ContextualActionBar";
 import { FilterChips, type FilterChipOption } from "./components/FilterChips";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
-import { TASKS_COPY, formatTasksCopy } from "./tasks-copy";
+import { TASK_CATEGORY_LABELS } from "./categoryCopy";
+import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicBorders, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
@@ -19,7 +20,7 @@ const FILTERS: readonly FilterChipOption<TaskFilter>[] = [
 ];
 
 export type TasksScreenContentProps = TasksState &
-  TasksActions & {
+  Omit<TasksActions, "handleCreateTask" | "handleEditTask"> & {
     onCreateTask: () => void;
     onEditTask?: (id: string) => void;
   };
@@ -120,7 +121,7 @@ export const TasksScreenContent = ({
               theme={theme}
               title={task.title}
               dueDate={task.dueLabel}
-              category={task.categoryLabel}
+              category={task.category ? TASK_CATEGORY_LABELS[task.category] : undefined}
               completed={task.completed}
               pinned={task.pinned}
               onToggleCompleted={() => toggleCompleted(task.id)}

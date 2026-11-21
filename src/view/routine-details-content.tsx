@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { RoutineDetailsActions, RoutineDetailsState } from "../viewmodel/RoutineDetailsViewModel";
+import type { RoutineDetailsActions, RoutineDetailsState } from "../viewmodel/useRoutineDetailsViewModel";
 import { CheckCircle } from "./components/CheckCircle";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { GradientSurface } from "./components/GradientSurface";
@@ -9,13 +9,13 @@ import { MaterialSymbol, type MaterialSymbolName } from "./components/MaterialSy
 import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
-import { ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routines-copy";
+import { ROUTINE_ICON_SYMBOLS, ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
 
 export type RoutineDetailsScreenContentProps = RoutineDetailsState &
-  RoutineDetailsActions & {
+  Omit<RoutineDetailsActions, "handleBack" | "handleEdit" | "handleDeleted"> & {
     onBack: () => void;
     /** Abre a edição da rotina (RF-0009, UC-0007, #137). */
     onEdit: (id: string) => void;
@@ -102,7 +102,7 @@ export const RoutineDetailsScreenContent = ({
         <View style={styles.summary}>
           <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
           <View style={styles.summaryRow}>
-            <IconTile icon={routine.icon} />
+            <IconTile icon={ROUTINE_ICON_SYMBOLS[routine.icon]} />
             <View style={styles.summaryText}>
               <Text allowFontScaling style={styles.cardTitle}>
                 {routine.title}

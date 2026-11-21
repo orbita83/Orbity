@@ -12,7 +12,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 
 ## The Problem
 
-- A Início mostrava "0/0" e o Modo Foco bloqueado porque o `EmptyActivityCatalog` não tinha tarefas para contar (D7 de [tela-inicial-base.md](tela-inicial-base.md)).
+- A Início mostrava "0/0" e o Modo Foco bloqueado porque o `EmptyActivityDataSource` não tinha tarefas para contar (D7 de [tela-inicial-base.md](tela-inicial-base.md)).
 - A tela de Tarefas guardava as ações só em memória, e tudo se perdia ao fechar o app.
 - A sequência (RN-0002, RF-0014) não tinha nenhuma atividade real para registrar.
 
@@ -21,25 +21,26 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 - **G1:** Criar, listar, editar, concluir, desconcluir, fixar, desafixar e excluir tarefas, com os dados mantidos entre aberturas do app no Android.
 - **G2:** Concluir uma tarefa registra o dia local na sequência; desmarcar não apaga o dia (RN-0002, RF-0014 CA-04).
 - **G3:** A Início mostra o progresso e libera o Modo Foco a partir das tarefas reais, e recarrega ao voltar para a aba.
-- **G4:** Validações no domínio: título obrigatório, data `dd/mm/aaaa` existente no calendário, hora `hh:mm` e término igual ou depois do início.
-- **G5:** Manter a arquitetura MVVM do [ARCHITECTURE.md](../../ARCHITECTURE.md): a view só apresenta, a ViewModel guarda o estado da tela e as regras ficam no domínio e nos casos de uso.
+- **G4:** Validações nos casos de uso (`ARCHITECTURE.md`, §5): título obrigatório, data `dd/mm/aaaa` existente no calendário, hora `hh:mm` e término igual ou depois do início.
+- **G5:** Manter a arquitetura MVVM do [ARCHITECTURE.md](../../ARCHITECTURE.md): a view só apresenta, a ViewModel guarda o estado da tela, o domínio guarda só tipos e regras de negócio puras, e as validações de entrada ficam nos casos de uso.
 
 ## Non-Goals
 
 - Tarefas dentro de rotinas e a relação entre as duas abas (lacuna "Tarefas de Rotina vs. Gerais" do `05-padroes.md`).
 - Categorias criadas pelo estudante; a lista é fixa nesta iteração.
 - Sessão de foco ligada a uma tarefa (fica para o motor do Modo Foco).
-- Sincronização entre aparelhos e persistência na web (a web continua em memória, como na D8 da Início).
+- Sincronização entre aparelhos.
 
 ## Decisions & Open Questions
 
-- **T1:** A tarefa guarda datas e horas como texto no formato de exibição (`dd/mm/aaaa` e `hh:mm`), validado no domínio. A ordenação usa `pinned` e `created_at`, não o prazo.
+- **T1:** A tarefa guarda datas e horas como texto no formato de exibição (`dd/mm/aaaa` e `hh:mm`), validado nos casos de uso. A ordenação usa `pinned` e `created_at`, não o prazo.
 - **T2:** A tabela `tasks` entra pela migração v2 no mesmo banco do registro diário (ADR-0001), com índice `(pinned DESC, created_at DESC)`.
-- **T3:** Seis categorias iniciais de estudo (Matemática, Leitura, Idiomas, Ciências, Programação e Música), mais "Sem categoria". Os ids ficam no domínio (`TaskCategoryId`).
+- **T3:** Seis categorias iniciais de estudo (Matemática, Leitura, Idiomas, Ciências, Programação e Música), mais "Sem categoria". O domínio conhece só os ids, em inglês (`TASK_CATEGORY_IDS`: `mathematics`, `reading`, `languages`, `science`, `programming` e `music`). Rótulo e ícone de cada id ficam na apresentação (`src/view/categoryCopy.ts`), e as ViewModels expõem só o id (issue #159).
 - **T4:** Fixar em lote alterna: se todas as selecionadas já estão fixadas, a ação desafixa (o rótulo vira "Desafixar").
-- **T5:** O `TaskActivityCatalog` substitui o `EmptyActivityCatalog` na composição. Há Modo Foco disponível quando existe ao menos uma tarefa.
+- **T5:** O `TaskActivityDataSource` substitui o `EmptyActivityDataSource` na composição. Há Modo Foco disponível quando existe ao menos uma tarefa.
 - **T6:** A Início e a lista de Tarefas recarregam ao ganhar foco (`useFocusEffect`), para refletir mudanças feitas em outra aba.
-- **T7:** Datas e horas aceitam digitação direta (com máscara automática na ViewModel para `dd/mm/aaaa` e `hh:mm` e normalização de entradas equivalentes no domínio) e também um seletor em modal (`TaskPickerModal`, ver `design-system/04-componentes/seletor-opcoes.md`).
+- **T7:** Datas e horas aceitam digitação direta (com máscara automática na ViewModel para `dd/mm/aaaa` e `hh:mm` e normalização de entradas equivalentes nos casos de uso) e também um seletor em modal (`TaskPickerModal`, ver `design-system/04-componentes/seletor-opcoes.md`).
+- **T8 (issue #159):** A migração v4 (`database/migrations.ts`) converte os ids de categoria gravados antes da troca (`matematica`, `leitura`, `idiomas`, `ciencias`, `programacao` e `musica`), na mesma transação que converte os ícones de rotina (`rotinas.md`, R8). Sem ela, o `SqliteTaskDataSource` descartaria a categoria das tarefas antigas sem avisar.
 
 ### Ainda em aberto
 
@@ -63,25 +64,26 @@ O estudante fecha e reabre o app no Android e encontra as mesmas tarefas.
 ## Technical Plan (Architecture)
 
 ### 1. Domínio (`src/model/`)
-- `entities/task.ts`: `Task`, `CreateTaskInput`, `UpdateTaskInput`, `TASK_CATEGORIES`, validações (`validateCreateTaskInput`, `validateDateTimeFields`), `formatTaskDueLabel` e `filterAndSortTasks`.
-- `repositories/i-task-repository.ts`: `listAll`, `findById`, `create`, `update`, `updateMany` e `deleteMany`.
+- `entities/task.ts`: `Task`, `CreateTaskInput`, `UpdateTaskInput`, `TASK_CATEGORY_IDS`, `isTaskCategoryId`, `isStandaloneTask` e `filterAndSortTasks`. Sem rótulos, ícones, máscaras nem texto de tela (issue #159).
+- `datasources/iTaskDataSource.ts`: `listAll`, `findById`, `create`, `update`, `updateMany` e `deleteMany`.
 
 ### 2. Casos de uso (`src/usecase/`)
-- `ITaskUseCases` e `TaskUseCases`, que dependem de `ITaskRepository`, `IDailyActivityRepository` e `IClockService`.
+- `ITaskUseCases` e `TaskUseCases`, que dependem de `ITaskDataSource`, `IDailyActivityDataSource` e `IClockService`.
+- `taskInputValidation.ts`: `validateCreateTaskInput`, `validateDateTimeFields`, `normalizeDisplayDate`, `normalizeDisplayTime`, `isValidDisplayDate` e `isValidDisplayTime`, usados pelo `TaskUseCases` na criação e na edição.
 - Concluir (por `toggleTaskCompletion` ou `updateTask`) chama `recordDay` só na passagem de pendente para concluída.
 
 ### 3. Persistência (`src/infra/`)
-- Migração v2 em `database/migrations.ts`.
-- `SqliteTaskRepository` (Android) e `InMemoryTaskRepository` (web e testes), validados pela mesma suíte de contrato (`task-repository.contract.ts`).
-- `TaskActivityCatalog` implementa `IActivityCatalog` sobre o repositório de tarefas.
+- Migração v2 em `database/migrations.ts`. A v4 converte os ids de categoria para inglês (T8).
+- `SqliteTaskDataSource` (Android) e `MemoryTaskDataSource` (testes), validados pela mesma suíte de contrato (`taskDataSource.contract.ts`).
+- `TaskActivityDataSource` implementa `IActivityDataSource` sobre o DataSource de tarefas.
 
-### 4. Composição (`src/DI/`)
-- `createPersistence()` devolve `tasks` e `activityCatalog` além de `dailyActivity`, nas duas plataformas.
+### 4. Composição (`src/di/`)
+- `createPersistence()` devolve `tasks` e `activities` além de `dailyActivity`, nas duas plataformas.
 - O container registra o caso de uso `tasks`.
 
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)
-- `useTasksViewModel` carrega, filtra, conclui, seleciona, fixa e exclui pelo caso de uso, com estados de carregamento e erro.
-- `useNewTaskViewModel` cuida do formulário (criação e modo de edição quando recebe `taskId`), das opções dos seletores e da categoria escolhida já pronta para exibir; a view não importa regras do model.
+- `useTasksViewModel` carrega, filtra, conclui, seleciona, fixa e exclui pelo caso de uso, com estados de carregamento e erro. Também formata o prazo do card (`formatTaskDueLabel`, "19/10 · 08:00–09:00") e entrega a categoria como id.
+- `useNewTaskViewModel` cuida do formulário (criação e modo de edição quando recebe `taskId`), das máscaras de digitação de data e hora (`formatDisplayDateInput` e `formatDisplayTimeInput`) e das opções dos seletores. As categorias saem como ids, e a view monta rótulo e ícone pelo `categoryCopy.ts`; a view não importa regras do model.
 - `TasksScreen` e `HomeScreen` recarregam ao ganhar foco.
 
 ## Alternatives Considered
@@ -96,4 +98,5 @@ Isolaria as migrações, mas duplicaria o `DatabaseProvider` e a fila de execuç
 
 - **Migração em aparelhos com o banco v1:** o `DatabaseProvider` aplica a v2 em transação e testa a passagem de v1 para v2.
 - **Testes de arquivo no Windows:** os testes que abrem o banco em arquivo fecham as conexões antes de apagar a pasta (issue #131).
+- **Troca dos ids de categoria (T8):** a migração v4 converte os valores já gravados e tem teste da passagem de v3 para v4. Um valor desconhecido continua descartado na leitura, como antes.
 - **Recarga ao trocar de aba:** pode buscar os dados duas vezes ao abrir a tela; o custo é baixo com o volume esperado de tarefas.

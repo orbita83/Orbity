@@ -1,4 +1,4 @@
-import { ValidationError } from "@/model/errors/domain-error";
+import { ValidationError } from "@/model/errors";
 
 /** Progresso geral de tarefas e rotinas (RN-0007). `ratio` é `null` quando não há nada a contar. */
 export type Progress = {

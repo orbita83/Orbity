@@ -16,7 +16,7 @@ Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais
 - **Texto grande (≥ 24 px em peso normal ou ≥ 18,67 px em negrito, como `font.title`):** Mínimo de **3,0:1** (WCAG 1.4.3).
 - **Elementos de interface gráficos e foco (`color.focus`):** Mínimo de **3,0:1** em relação ao fundo adjacente (WCAG 1.4.11 Contraste de Não-Texto — Nível AA).
 
-> **Equivalência tipográfica (WCAG vs. Orbity):** A especificação original da WCAG adota pontos tipográficos (18 pt para texto normal e 14 pt para negrito). Em telas digitais e ecossistemas web/mobile com escala em pixels CSS ($1\text{ pt} = \frac{4}{3}\text{ px} \approx 1{,}333\text{ px}$), os limiares correspondem a **24 px** para peso normal e **18,67 px** para negrito (peso $\ge 700$). Portanto, o token `font.title` (24 px, peso 700) qualifica-se como texto grande por ambos os parâmetros. Já os tokens `font.label` (14 px, peso 500) e `font.body` (16 px, peso 400) enquadram-se estritamente como texto normal, exigindo razão de contraste mínima de 4,5:1.
+> **Equivalência tipográfica (WCAG vs. Orbity):** A especificação original da WCAG adota pontos tipográficos (18 pt para texto normal e 14 pt para negrito). Em telas digitais e ecossistemas mobile com escala em pixels independentes de densidade ($1\text{ pt} = \frac{4}{3}\text{ px} \approx 1{,}333\text{ px}$), os limiares correspondem a **24 px** para peso normal e **18,67 px** para negrito (peso $\ge 700$). Portanto, o token `font.title` (24 px, peso 700) qualifica-se como texto grande por ambos os parâmetros. Já os tokens `font.label` (14 px, peso 500) e `font.body` (16 px, peso 400) enquadram-se estritamente como texto normal, exigindo razão de contraste mínima de 4,5:1.
 
 ### Tabela de validação de pares semânticos
 
@@ -128,7 +128,7 @@ A indicação e a ordem de foco asseguram a navegabilidade completa por teclado 
   - Espessura de **2 dp** em linha sólida.
   - Afastamento (*outline offset*) de **2 dp** em relação à borda do componente, prevenindo sobreposição com o fundo ou a borda nativa do componente.
   - A curvatura do anel acompanha o raio do elemento correspondente (`radius.md` para botões e campos, `radius.lg` para cards).
-- **Sem ocultação de foco:** É proibido suprimir o indicador visual de foco (`outline: none` na web ou remoção de realce nativo) sem fornecer uma alternativa com contraste superior a 3:1. (Herdado)
+- **Sem ocultação de foco:** É proibido suprimir o indicador visual de foco ou o realce nativo sem fornecer uma alternativa com contraste superior a 3:1. (Herdado)
 
 ### Ordem e gestão do foco (WCAG 2.4.3 e 2.1.2)
 
@@ -141,7 +141,7 @@ A indicação e a ordem de foco asseguram a navegabilidade completa por teclado 
 
 ## Leitor de tela
 
-O Orbity oferece suporte completo aos leitores de tela padrão das plataformas suportadas (TalkBack no Android, VoiceOver no iOS e leitores no ambiente Web), alinhando-se ao critério WCAG 4.1.2 (Nome, Papel, Valor).
+O Orbity oferece suporte completo aos leitores de tela padrão das plataformas móveis suportadas (TalkBack no Android e VoiceOver no iOS), alinhando-se ao critério WCAG 4.1.2 (Nome, Papel, Valor).
 
 ### Papéis e atributos semânticos (`accessibilityRole`)
 
@@ -191,12 +191,12 @@ A interface do Orbity é flexível e se adapta às necessidades sensoriais e cog
 
 ### Redução de movimento (WCAG 2.3.3 e Material 3)
 
-- **Detecção de preferência:** A aplicação deve consultar o estado de preferência do sistema (por meio de `AccessibilityInfo.isReduceMotionEnabled()` no React Native ou media query `@media (prefers-reduced-motion: reduce)` na Web). (Herdado)
+- **Detecção de preferência:** A aplicação deve consultar o estado de preferência do sistema (por meio de `AccessibilityInfo.isReduceMotionEnabled()` no React Native). (Herdado)
 - **Comportamento com movimento reduzido ativo:**
   - Desativar animações complexas, como transições de constelações, efeitos de partículas, translações laterais longas e zooms.
   - Substituir transições de tela por transições instantâneas ou por um desvanecimento suave de opacidade (*crossfade*) com duração ultra curta (`motion.duration.short` de 100 ms ou 0 ms).
   - Manter feedback de interação instantâneo para preservar a percepção de resposta tátil da interface sem deslocamento espacial. (Adaptado)
-  - Desligar a escala `motion.scale-pressed` e manter apenas `motion.opacity-pressed` no toque; o hook `useReduceMotion` (`src/view/theme/use-reduce-motion.ts`) expõe a preferência aos componentes. (Novo, 1.2)
+  - Desligar a escala `motion.scale-pressed` e manter apenas `motion.opacity-pressed` no toque; o hook `useReduceMotion` (`src/view/theme/useReduceMotion.ts`) expõe a preferência aos componentes. (Novo, 1.2)
   - Parar a rotação (24 s) e o pulso (4 s) do planeta, exibindo-o estático. (Novo, 1.2)
 - **Conteúdo em movimento automático (WCAG 2.2.2):** se o carrossel de conquistas girar sozinho, ofereça pausa visível; até a decisão aberta da 1.2, use rolagem pelo dedo. (Novo, 1.2)
 - **Modais (1.2):** confine o foco no modal, feche por "✕", `Escape` e gesto de voltar, anuncie o título e devolva o foco ao elemento de origem. (Novo)

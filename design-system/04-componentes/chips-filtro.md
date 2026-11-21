@@ -22,7 +22,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 
 ## Anatomia
 
-1. **Container do grupo (`FilterChips`):** desde a 1.2, grade de colunas de largura igual que ocupa a linha inteira (`repeat(n, minmax(0, 1fr))` na Web; `flex: 1` com `minWidth: 0` por item no app), alinhada às bordas do botão Criar e dos cards, com espaçamento `space.sm` (8 dp). Com texto ampliado, os rótulos quebram linha dentro da coluna em vez de transbordar.
+1. **Container do grupo (`FilterChips`):** desde a 1.2, grade de colunas de largura igual que ocupa a linha inteira (`flex: 1` com `minWidth: 0` por item no app), alinhada às bordas do botão Criar e dos cards, com espaçamento `space.sm` (8 dp). Com texto ampliado, os rótulos quebram linha dentro da coluna em vez de transbordar.
 2. **Item do chip (`FilterChipItem`):**
    - **Dimensões e alvo:** altura mínima `target.min-size` (48 dp) e largura mínima de 48 dp, assegurando a área de contato recomendada pelo Material 3 e critérios WCAG 2.5.5 / 2.5.8 sem depender de truncamento.
    - **Bordas e geometria:** cantos arredondados definidos por `radius.md` (12 dp), contorno com espessura `focus.ring-width` (2 dp) em `color.action`.
@@ -49,7 +49,6 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
   - Tema claro: atinge contrastes documentados de 17,17:1 (não selecionado) e 6,29:1 (selecionado).
 - **Independência de cor (WCAG 1.4.1):** O chip selecionado combina mudança de cor de fundo com alteração no peso da fonte (negrito `700` vs médio `500`) e anúncio semântico de seleção.
 - **Leitor de tela:** O grupo declara `accessibilityRole="radiogroup"` com rótulo "Filtros de tarefas". Cada chip declara `accessibilityRole="radio"`, `accessibilityLabel="Filtrar por [Rótulo]"` e estado dinâmico `accessibilityState={{ checked: selected }}`.
-- **Teclado na Web:** Com o foco em uma opção, setas para a direita/baixo selecionam a próxima e setas para a esquerda/cima selecionam a anterior, com retorno circular entre as extremidades. A opção selecionada recebe foco. Validação em leitores de tela e dispositivos nativos continua necessária.
 - **Texto ampliado:** Utiliza `allowFontScaling={true}`, sem truncamento fixo e com `flexWrap: "wrap"` no contêiner para suportar escalas de fonte até 200%.
 - **Listas vazias:** Quando um filtro selecionado não retorna tarefas (ex.: "Concluídas" sem itens finalizados), a interface apresenta mensagem acolhedora em `color.on-surface` e `font.body` ("Nenhuma tarefa concluída"), sem mensagens punitivas.
 
