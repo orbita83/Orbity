@@ -1,0 +1,55 @@
+name: Auto-assign do autor em Pull Requests
+
+# Atribui o próprio autor ao PR, em qualquer branch de destino (development, main ou outra).
+# Só adiciona o autor: não remove nem substitui quem já foi atribuído manualmente e nunca
+# atribui outra pessoa.
+# Usa pull_request, e não pull_request_target: desde dezembro de 2025 o pull_request_target roda
+# sempre o workflow da branch padrão (main), e este repositório integra na development.
+# PRs vindos de fork recebem um token só de leitura, então o job é pulado para eles.
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+
+permissions:
+  pull-requests: write
+
+concurrency:
+  group: auto-assign-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  assign-author:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.type != 'Bot'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Atribuir o autor do PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pullRequest = context.payload.pull_request;
+            const author = pullRequest.user.login;
+            const assignees = (pullRequest.assignees || []).map((assignee) => assignee.login);
+
+            if (assignees.includes(author)) {
+              core.info(`@${author} já está atribuído ao PR #${pullRequest.number}.`);
+              return;
+            }
+
+            const { data } = await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullRequest.number,
+              assignees: [author],
+            });
+
+            // A API ignora em silêncio quem não pode ser atribuído (ex.: sem acesso ao repositório).
+            if (!data.assignees.some((assignee) => assignee.login === author)) {
+              core.warning(`Não foi possível atribuir @${author} ao PR #${pullRequest.number}.`);
+              return;
+            }
+
+            core.info(`@${author} atribuído ao PR #${pullRequest.number}.`);
