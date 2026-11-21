@@ -60,6 +60,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "lint": "expo lint",
+    "lint:architecture": "node scripts/lint-architecture.mjs",
     "test": "jest --watchAll=false",
     "test:watch": "jest --watch"
   },

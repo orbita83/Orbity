@@ -1,23 +1,8 @@
-# Guia Completo: MVVM Sofisticado (Capítulo 10)
-
-> **Fonte:** *Tutoriais de PDM: Desenvolvimento Mobile com React Native e Expo*  
-> **Capítulo 10:** *MVVM Sofisticado com React Native, TypeScript e Expo* (versão V5, pp. 135–171)
+# Arquitetura do Orbity com MVVM sofisticado
 
 ---
 
 ## 1. Visão Geral e Evolução
-
-O **MVVM Sofisticado** evolui o padrão simplificado (vista no Capítulo 8) incorporando princípios fundamentais da Engenharia de Software, como **Clean Architecture**, **Inversão de Dependências (DIP)** e **Testabilidade Unitária**.
-
-### Diferenças Principais: MVVM Simplificado vs. Sofisticado
-
-| Aspecto | MVVM Simplificado (Cap. 8) | MVVM Sofisticado (Cap. 10) |
-| :--- | :--- | :--- |
-| **ViewModel** | Concentra estado da tela + chamadas diretas a serviços. | Gerencia **apenas o estado da tela**; delega toda lógica aos *Use Cases*. |
-| **Regras de Negócio** | Misturadas na ViewModel ou no Serviço. | Isoladas exclusivamente na camada de **Use Cases**. |
-| **Model** | Continha entidades e serviços concretos. | Contém **apenas entidades puras e interfaces (contratos)**. |
-| **Acesso a Dados** | Direto nos serviços/DataSources dentro do Model. | Isolado na camada de **Infraestrutura** (*Firebase, SQLite, REST, Memory*). |
-| **Dependências** | Classes concretas importadas diretamente. | **Inversão de Dependência (DIP)** via interfaces e Container de Injeção (*DI*). |
 
 ---
 
@@ -27,9 +12,9 @@ O **MVVM Sofisticado** evolui o padrão simplificado (vista no Capítulo 8) inco
 View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 ```
 
-1. **View (Interface):** Componentes e telas React Native. Responsável apenas por renderizar estado e disparar ações (*fire-and-forget*). Não possui blocos `try/catch` nem regras de negócio e **não chama hooks de navegação**.
-2. **ViewModel (Apresentação):** Custom Hooks que gerenciam estado de interface (`loading`, `error`, `data`), expõem funções de ação (retorno em tupla `[state, actions]`, com os tipos `XState` e `XActions` exportados) e **cuidam da navegação** (`router` do `expo-router`, parâmetros de rota e foco da tela). Depende **apenas de abstrações** (interfaces de Use Cases).
-3. **Use Cases (Casos de Uso / Orquestração):** Contratos (`I*UseCase` / `I*UseCases`) e implementações de regras de negócio puras e validações do sistema. Orquestram DataSources e serviços exclusivamente através de interfaces do domínio.
+1. **View (Interface):** Componentes e telas React Native. Renderiza estado, encaminha interações às ações e pode manter estado visual local, como os campos de texto do exemplo do livro (§ 10.11). A navegação da tela e o tratamento de erros ficam na ViewModel. A View não usa `try/catch` (§ 10.12).
+2. **ViewModel (Apresentação):** Custom Hooks que gerenciam estado de interface (`loading`, `error`, `data`), expõem funções de ação (retorno em tupla `[state, actions]`, com os tipos `XState` e `XActions` exportados) e **cuidam da navegação** (`router` do `expo-router`, parâmetros de rota e foco da tela). Recebe os contratos dos Use Cases por parâmetro, com a implementação padrão fornecida pela composição, e usa os erros do domínio para produzir feedback (§ 10.10).
+3. **Use Cases.** Expõem contratos (`I*UseCase` ou `I*UseCases`) e implementam as operações e validações da aplicação. Coordenam DataSources e Services por meio dos contratos de domínio.
 4. **Domínio / Model (Core do Negócio):** Entidades puras (`src/model/entities/`), erros de domínio (`src/model/errors.ts`), interfaces de DataSources (`src/model/datasources/`) e interfaces de serviços (`src/model/services/`). **Zero dependência de bibliotecas externas** (React, Expo, SDKs).
 5. **Infraestrutura:**
    Implementa:
@@ -50,7 +35,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 
 ```
 └── src/
-    ├── app/                  # Módulos de rota do Expo Router (kebab-case.tsx)
+    ├── app/                  # Rotas finas e layouts do Expo Router
     │   ├── _layout.tsx
     │   └── index.tsx
     ├── infra/                # Implementações concretas (Infraestrutura)
@@ -74,7 +59,7 @@ View  -->  ViewModel  -->  Use Cases  -->  Domínio (Model)  <--  Infraestrutura
 
 ### 3.1. Limites Arquiteturais e Regras de Dependência
 
-O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
+A Figura 10.1 descreve o fluxo principal entre as cinco camadas. `app/` adapta o roteamento e `di/` é o ponto de composição. Os exemplos do capítulo também mostram a ViewModel importando `DomainError` e o Use Case já composto (§ 10.10).
 
 | Camada (`src/`) | Responsabilidade e Limite Estrito | Dependências Permitidas | Dependências Proibidas |
 | :--- | :--- | :--- | :--- |
@@ -93,10 +78,10 @@ O alias `@/*` aponta para `./src/*` (`tsconfig.json`).
 ### 4.1. Convenções de Contratos e Implementações
 
 1. **Contratos de Domínio (`src/model/datasources/` e `src/model/services/`):**
-   - Definem interfaces puras prefixadas com `I` (`IClockService`, `IDataSource`), operando apenas com tipos primitivos, entidades de `src/model/entities/` e erros de `src/model/errors.ts`.
+   - Definem interfaces puras prefixadas com `I` (`IClockService`, `IDataSource`). Suas assinaturas usam tipos do domínio e da linguagem. O arquivo `iNome.ts` pode incluir tipos auxiliares da própria interface.
    - Não expõem DTOs externos, tipos de banco de dados, objetos HTTP ou detalhes de bibliotecas.
 2. **Contratos e Orquestração de Use Cases (`src/usecase/`):**
-   - Cada caso de uso expõe uma interface pública (`I*UseCases` ou `I*UseCase`) consumida pela ViewModel e uma classe concreta (`*UseCases` ou `*UseCase`) que depende exclusivamente das interfaces de `src/model/` injetadas via construtor.
+   - Cada caso de uso expõe uma interface pública (`I*UseCases` ou `I*UseCase`) consumida pela ViewModel. A implementação recebe DataSources e Services pelos contratos do domínio. Operações relacionadas podem compartilhar uma interface e uma implementação (§ 10.7.1).
 3. **Repositórios, Services e Adapters na Infraestrutura (`src/infra/`):**
    - Classes em `src/infra/datasources/` e `src/infra/services/` atuam como **adapters**: implementam explicitamente (`implements`) as interfaces de `src/model/`, convertem estruturas brutas externas (JSON, linhas SQLite, SDKs) em entidades puras de `src/model/entities/` e traduzem falhas técnicas na subclasse de erro de `src/model/errors.ts` do seu tipo.
 
@@ -318,7 +303,7 @@ const styles = StyleSheet.create({
 | **2. Infraestrutura (`src/infra/`)** | Captura falhas técnicas (rede, SQLite, AsyncStorage, SDKs) em blocos `try/catch` internos e **sempre** as converte na subclasse de `src/model/errors.ts` do seu tipo (ex.: `DataSourceError` em falhas de dados, via `toDataSourceError`). **Nunca propaga erros brutos de infraestrutura.** |
 | **3. Use Cases (`src/usecase/`)** | Valida parâmetros de entrada e invariantes de negócio (lançando `ValidationError` ou erros de domínio) e repassa erros de domínio originados nos contratos invocados. |
 | **4. ViewModel (`src/viewmodel/`)** | Único ponto da camada de apresentação que utiliza `try/catch`. Captura erros lançados pelos Use Cases e os converte em estado reativo (`error: string \| null`, `loading: boolean`) com mensagens claras e não-punitivas (`design-system/01-principios.md`). Separa erros previstos de inesperados com `instanceof DomainError` e escolhe a mensagem pela subclasse (ex.: `instanceof SchemaVersionError`), nunca por código. |
-| **5. View (`src/view/`)** | Apenas lê o estado `error` e `loading` exposto pela ViewModel para renderizar feedback visual e acessível. **Nunca utiliza `try/catch` para lógica de negócio.** |
+| **5. View (`src/view/`)** | Apenas lê o estado `error` e `loading` exposto pela ViewModel para renderizar feedback visual e acessível. Os blocos `try/catch` ficam na ViewModel e nas camadas internas. |
 
 ---
 
@@ -335,8 +320,8 @@ O arquivo `src/di/container.ts` materializa o **Composition Root** mínimo do Or
    - Os Use Cases em `src/usecase/` declaram suas dependências exclusivamente por meio de interfaces de `src/model/datasources/` e `src/model/services/`.
    - Nunca importam classes concretas de `src/infra/` nem o próprio `src/di/container.ts`.
 3. **Abstrações de Use Cases → ViewModels (`resolveUseCase` / parâmetro padrão):**
-   - As ViewModels em `src/viewmodel/` dependem exclusivamente de interfaces `I*UseCases` definidas em `src/usecase/`.
-   - Recebem a abstração por parâmetro opcional (com valor padrão vindo do container ou resolvido via `resolveUseCase`), sem instanciar DataSources ou serviços diretamente.
+   - Para operações de negócio, as ViewModels dependem das interfaces `I*UseCase` ou `I*UseCases` definidas em `src/usecase/`.
+   - Recebem a abstração por parâmetro opcional e obtêm o valor padrão em `container.useCases`, diretamente ou por meio de `resolveUseCase`.
 4. **Isolamento da View (`src/view/`):**
    - Componentes e telas invocam os hooks da ViewModel sem conhecer `src/di/`, `src/usecase/` ou `src/infra/`.
 
