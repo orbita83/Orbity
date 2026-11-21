@@ -50,7 +50,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (Seção 4: Gestão de Ta
 - **Independência de cor (WCAG 1.4.1):** O chip selecionado combina mudança de cor de fundo com alteração no peso da fonte (negrito `700` vs médio `500`) e anúncio semântico de seleção.
 - **Leitor de tela:** O grupo declara `accessibilityRole="radiogroup"` com rótulo "Filtros de tarefas". Cada chip declara `accessibilityRole="radio"`, `accessibilityLabel="Filtrar por [Rótulo]"` e estado dinâmico `accessibilityState={{ checked: selected }}`.
 - **Texto ampliado:** Utiliza `allowFontScaling={true}`, sem truncamento fixo e com `flexWrap: "wrap"` no contêiner para suportar escalas de fonte até 200%.
-- **Listas vazias:** Quando um filtro selecionado não retorna tarefas (ex.: "Concluídas" sem itens finalizados), a interface apresenta mensagem acolhedora em `color.on-surface` e `font.body` ("Nenhuma tarefa concluída"), sem mensagens punitivas.
+- **Listas vazias:** Quando um filtro selecionado não retorna tarefas (ex.: "Concluídas" sem itens finalizados), a interface apresenta mensagem acolhedora, sem mensagens punitivas. Desde a 1.3, é o estado vazio com planeta do padrão F5/F6 ("Nenhuma tarefa concluída ainda", "Nenhuma tarefa pendente").
 
 ## Código
 

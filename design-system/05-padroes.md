@@ -50,7 +50,7 @@
 | **Sessão em andamento** | Contador regressivo, ação Encerrar foco e indicação textual de foco; navbar oculta | `cosmicTokens.color.action`, `cosmicTokens.color.text`, `cosmicTokens.font.button` |
 | **Carregando** | Esqueletos dos cards do painel e estado de carregamento anunciado | `cosmicTokens.color.card`, `cosmicTokens.color.track`, `cosmicTokens.radius.card` |
 | **Vazio** | Progresso zerado, ação Iniciar foco disponível e apresentação acolhedora da jornada | `cosmicTokens.font.title`, `cosmicTokens.font.body`, `cosmicTokens.color.muted` |
-| **Sucesso** | Contador textual de tarefas e rotinas concluídas sobre o total do dia, como "1 / 25", porcentagem fora da barra e preenchimento proporcional exato (1.2; antes "15 / 25 min"); conquistas identificáveis por estado, ícone e nome acessível | `cosmicTokens.color.progress`, `cosmicTokens.color.progressEnd`, `cosmicTokens.color.track`, `cosmicTokens.color.unlocked` |
+| **Sucesso** | Contador textual de tarefas e rotinas concluídas sobre o total do dia, como "1 / 25", porcentagem no meio da barra (1.3; fora da barra na 1.2) e preenchimento proporcional exato (1.2; antes "15 / 25 min"); conquistas identificáveis por estado, ícone e nome acessível | `cosmicTokens.color.progress`, `cosmicTokens.color.progressEnd`, `cosmicTokens.color.track`, `cosmicTokens.color.unlocked` |
 
 - **Faça:** Preserve o planeta e o contador central como elementos vetoriais e textuais independentes de uma imagem de fundo; mantenha a sequência escalável e perceptível além da cor.
 - **Faça:** Mantenha a navbar visível nos três estágios do painel e ofereça abertura e recolhimento por gesto, toque e teclado, respeitando a redução de movimento.
@@ -125,21 +125,24 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 
 ## 4. Gestão de Tarefas e Ações em Lote (F5, F6)
 
-- **Objetivo:** Filtrar, marcar conclusão pontual ou executar ações em massa (fixar, excluir).
+- **Objetivo:** Filtrar, marcar conclusão pontual, agir sobre uma tarefa pelo "•••" ou executar ações em massa (fixar, excluir).
 - **Componentes:** Filtros segmentados (*Todos / Pendentes / Concluídas*) (`radius.md`, `space.sm`, `font.label`), Checkboxes circulares (`color.action`, `color.surface`, `radius.md`), Cards de tarefa (`radius.lg`, `elevation.card`, `space.md`, `font.body`), [Tag de categoria](04-componentes/tag-categoria.md) dentro do card (`color.action-subtle`, `color.on-surface`, `font.label`, `radius.md`), Barra contextual CAB (`color.surface`, `elevation.card`, `space.md`, `font.label`, `color.on-surface`; desde a 1.2, ver [barra-acoes-contextuais.md](04-componentes/barra-acoes-contextuais.md)).
 - **Passos:**
   1. Toque no círculo marca/desmarca a tarefa imediatamente.
   2. Abas filtram a visualização da lista por status (*Todos / Pendentes / Concluídas*). **Não há filtro por categoria nesta iteração** (issue #25): a categoria só aparece no card. Um filtro por categoria, se vier, precisa de especificação própria.
-  3. *Long-press* entra no modo de seleção múltipla (2.3); navbar é substituída por:
-     - Topo: cabeçalho fixo "✕ · N selecionados" (`font.label`), com fio `color.border-subtle` e `shadow.bar-top` (1.2).
-     - Barra inferior: **Fixar**, **Marcar todas**, **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`), no lugar exato da navbar, com fio `color.border-subtle` e `shadow.bar` (1.2).
-  4. "✕" cancela a seleção e restaura a navbar.
+  3. Toque no card abre o **detalhe da tarefa** (2.4, 1.3), com Editar e "Marcar como concluída".
+  4. O "•••" abre o [menu de opções](04-componentes/menu-opcoes.md) para **uma** tarefa: Editar, Fixar (ou Desafixar) e Excluir, que pede confirmação ("Excluir tarefa?") (1.3).
+  5. *Long-press* (com o preenchimento de `motion.duration.hold`, 1.3) entra no modo de seleção múltipla (2.3), para **várias** tarefas; navbar é substituída por:
+     - Topo: cabeçalho fixo "✕ · N selecionadas" (`font.title` desde a 1.3; `font.label` na 1.2), com fio `color.border-subtle` e `shadow.bar-top` (1.2).
+     - Barra inferior: **Fixar**, **Marcar todas** (ícones em `color.on-surface-variant` desde a 1.3) e **Excluir (n)** com ícone em `color.error` e rótulo legível em `color.on-surface` (`font.label`), no lugar exato da navbar, com fio `color.border-subtle` e `shadow.bar` (1.2).
+  6. "✕" cancela a seleção e restaura a navbar. Editar não aparece na seleção (1.3): é sempre de uma tarefa só.
+  7. Card selecionado (1.3): borda de 2 dp em `color.action` sobre o fundo normal do card e marca igual ao [CheckCircle](04-componentes/circulo-concluir.md).
 - **Estados:**
 
 | Situação | O que vê | Tokens |
 | :--- | :--- | :--- |
 | **Carregando** | Cartões pulsantes em superfície neutra (*skeleton*) | `color.surface`, `radius.md`, `motion.duration.short` |
-| **Vazio** | Ilustração amigável e texto ("Nenhuma tarefa pendente") | `font.title`, `font.body`, `space.lg` |
+| **Vazio** | Planeta ao fundo (120 dp, decorativo) e mensagem embaixo, centralizados na horizontal e com o centro do bloco a 468 dp do topo, na mesma posição em Tarefas e Rotinas (1.3). Textos por caso: sem tarefas, "Nenhuma tarefa em órbita"; filtro Pendentes, "Nenhuma tarefa pendente"; filtro Concluídas, "Nenhuma tarefa concluída ainda" | `font.card-title`, `font.body-sm`, `color.on-surface-variant`, `color.action-subtle`, `cosmicTokens.color.sheetBorder`, `cosmicTokens.color.inactive`, `space.md` |
 | **Sucesso** | Rótulo riscado e feedback sutil ao concluir o item | `color.action`, `font.body`, `motion.duration.short` |
 
 - **Faça (1.2):** Divida a linha de filtros em colunas de largura igual, alinhadas ao botão Criar e aos cards; escreva prazos no formato "19/10 · 08:00–09:00".
@@ -155,7 +158,7 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 - **Objetivo:** Cumprir hábitos diários com tarefas reordenáveis e controle flexível.
 - **Componentes:** Cards de turno (`radius.lg`, `elevation.card`, `space.md`, `font.title`), Alças de arraste (`⋮⋮`) (`color.on-surface`, `space.sm`), Botão "Marcar como concluída" (`button.bg`, `button.label`, `button.radius`), Botão secundário "Desmarcar todos" (`color.action`, `font.label`, `button.radius`).
 - **Passos:**
-  1. Toque na rotina abre tela de detalhes com lista de hábitos.
+  1. Toque na rotina abre tela de detalhes com lista de hábitos. Na lista (1.3), o "•••" do card abre o [menu de opções](04-componentes/menu-opcoes.md) para uma rotina (Editar, Fixar, Excluir), e o toque longo, com o preenchimento de `motion.duration.hold`, abre a seleção múltipla de rotinas com a [barra de ações contextuais](04-componentes/barra-acoes-contextuais.md) para excluir várias de uma vez.
   2. Tarefas podem ser reordenadas via alças `⋮⋮`.
   3. Conclusão pode ser individual (item a item) ou total ("Marcar como concluída").
   4. Estado concluído risca itens e exibe "Desmarcar todos" para reversão.
@@ -196,24 +199,25 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 
 ## 7. Cosmos (F9)
 
-- **Objetivo:** Explorar o mapa visual de constelações, celebrando a evolução dos estudos por meio do desbloqueio progressivo de estrelas e curiosidades espaciais.
-- **Componentes:** Mapa interativo da constelação (`color.surface`, `space.lg`, `motion.duration.medium`), Pontos de estrela bloqueadas/desbloqueadas (`color.action`, `color.on-surface`, `motion.duration.short`), Modal [Detalhe da Estrela] (`radius.lg`, `elevation.card`, `space.lg`, `font.title`, `font.body`), Botão "✕" (Fechar) (`color.on-surface`, `font.label`).
+- **Objetivo:** mostrar a constelação do estudante, formada pelas estrelas que ele já ganhou, e contar a história de cada uma. Segue o RF-0017 (uma estrela a cada dia somado à sequência e uma a cada conquista), o RF-0018 (constelação em grafo, só com estrelas conquistadas) e o FL-0012.
+- **Componentes:** cabeçalho "Cosmos" com o subtítulo "Seu esforço, suas estrelas" e o total de estrelas; seletor Constelação / Lista (padrão de [chips-filtro.md](04-componentes/chips-filtro.md)); [Grafo de constelação](04-componentes/grafo-constelacao.md) com legenda, controles de zoom e detalhe da estrela; visualização em Lista; navbar com a aba Cosmos ativa.
 - **Passos:**
-  1. Estudante navega para a aba **Cosmos** na navbar fixa.
-  2. Visualiza a constelação com estrelas acesas (conquistadas) e estrelas em contorno neutro (a desbloquear conforme tarefas/rotinas cumpridas).
-  3. Toque em uma estrela desbloqueada abre o modal [Detalhe da Estrela], apresentando seu nome, curiosidade astronômica associada e data de desbloqueio.
-  4. Toque em uma estrela bloqueada indica o marco de sequência necessário para acendê-la.
-  5. Botão "✕" ou toque fora fecha o modal e devolve a interação ao mapa.
+  1. O estudante toca na aba **Cosmos** da navbar.
+  2. Vê a constelação: um ponto para cada dia somado à sequência e uma estrela de 4 pontas para cada conquista, ligados como num grafo. Uma pausa entre sequências aparece como ponte tracejada.
+  3. Toca numa estrela: ela e as vizinhas se destacam, o resto esmaece, e o detalhe mostra nome, origem, data e uma curiosidade astronômica.
+  4. Pode arrastar uma estrela (as vizinhas acompanham), arrastar o fundo para mover o mapa e usar o zoom.
+  5. Fecha o detalhe pelo "✕" ou tocando no fundo.
+  6. Na **Lista**, vê as mesmas estrelas em cards, da mais nova para a mais antiga; tocar num card volta ao grafo com a estrela selecionada.
 - **Estados:**
 
 | Situação | O que vê | Tokens |
 | :--- | :--- | :--- |
-| **Carregando** | Fundo espacial neutro com marcadores posicionais discretos | `color.surface`, `motion.duration.short` |
-| **Vazio** | Constelação inicial com primeira estrela-guia e instruções sutis de exploração | `color.on-surface`, `font.body`, `space.md` |
-| **Sucesso** | Estrelas acesas interligadas por traçados luminosos e modal de curiosidade detalhado | `color.action`, `radius.lg`, `elevation.card`, `font.title` |
+| **Carregando** | Área do grafo vazia, sem estrelas falsas | `constellation.bg` |
+| **Vazio** | Uma única estrela (o primeiro dia de sequência) e a dica "Toque numa estrela · arraste para explorar" | `constellation.node-streak`, `font.caption` |
+| **Sucesso** | Constelação completa; com uma estrela selecionada, vizinhas destacadas e detalhe aberto | `constellation.*`, `font.card-title`, `font.body-sm` |
 
-- **Faça:** Garanta que cada estrela tenha identificador visual perceptível além da cor (forma/ícone e texto explicativo).
-- **Evite:** Fazer o estudante perder estrelas já acesas ou regredir sua constelação por pausas na rotina.
+- **Faça:** diferencie sequência e conquista pela forma, pela legenda e pelo texto, além da cor; mantenha a Lista como alternativa acessível.
+- **Evite:** estrelas bloqueadas ou "a desbloquear" (RF-0018, CA-05); fazer o estudante perder estrelas ou ver a constelação regredir por pausas.
 
 ---
 
@@ -264,10 +268,10 @@ As verificações relatadas acima pertencem ao histórico do protótipo de refer
 2. **Modo Foco:** O padrão F1/F2 especifica cronômetro regressivo e encerramento no painel; a integração e a persistência das sessões ainda precisam ser entregues nesta branch.
 3. **Tarefas de Rotina vs. Gerais:** Definir se tarefas de rotinas aparecem ou não na aba geral de Tarefas.
 4. **Conquistas na ERS:** Fluxo desenhado precisa ser formalizado como requisito funcional.
-5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote. Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
+5. **Ajustes de UI:** Corrigir busca da tela 1.3 ("Buscar conquistas") e prever modal de confirmação na exclusão em lote (resolvido na 1.3: telas 2.5 e 3.5). Desde a 1.2, no padrão F1/F2, o progresso é expresso como tarefas e rotinas concluídas sobre o total do dia, por exemplo, "1 / 25".
 6. **Decisões abertas da 1.2:**
-   - Tipos de conquista além de dias de sequência, e se conquistas dão estrelas como recompensa no Cosmos.
+   - Tipos de conquista além de dias de sequência. (Se conquistas dão estrelas foi resolvido na 1.3: dão, conforme o RF-0017.)
    - Carrossel de conquistas no painel: giro automático com pausa visível ou rolagem pelo dedo. Até a decisão, use rolagem pelo dedo, que não exige controle de pausa (WCAG 2.2.2).
-   - Desenho da confirmação de exclusão em lote.
+   - Desenho da confirmação de exclusão em lote. (Resolvido na 1.3: "Excluir N tarefas?" na 2.5 e "Excluir N rotinas?" na 3.5.)
    - Desenho da tela de sessão de foco ativa.
    - Glifo de Rotinas: a 1.2 mantém `autorenew`; o alvo do protótipo não foi adotado.

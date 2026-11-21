@@ -1,12 +1,12 @@
 # Barra de ações contextuais (ContextualActionBar)
 
-Origem no sistema base: Material 3, Bottom app bar e Top app bar contextual. Situação: Novo (1.2). Motivo: substituir a navbar durante a seleção múltipla de tarefas (F6), com cabeçalho de contador e ações em lote.
+Origem no sistema base: Material 3, Bottom app bar e Top app bar contextual. Situação: Novo (1.2). Motivo: substituir a navbar durante a seleção múltipla de tarefas (F6) e, desde a 1.3, de rotinas (F8), com cabeçalho de contador e ações em lote.
 
 Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-ações-em-lote-f5-f6), [navbar.md](navbar.md) e [02-tokens.md](../02-tokens.md).
 
 ## Quando usar
 
-- Use apenas no modo de seleção múltipla, aberto por *long-press* em um card de tarefa.
+- Use apenas no modo de seleção múltipla, aberto por *long-press* em um card de tarefa ou, desde a 1.3, de rotina (protótipo 3.5 · Seleção de rotinas, com as mesmas ações: Fixar, Marcar todas e Excluir (n)).
 
 ## Quando não usar
 
@@ -14,9 +14,9 @@ Referências locais: [05-padroes.md](../05-padroes.md#4-gestão-de-tarefas-e-aç
 
 ## Anatomia
 
-1. **Cabeçalho fixo:** botão "✕" (48 dp) e texto "N selecionados" em `font.label`; fundo `navbar.bg`, fio inferior `color.border-subtle` e `shadow.bar-top`.
+1. **Cabeçalho fixo:** botão "✕" (48 dp) e texto "N selecionados" em `font.title` (24/32, 700; até a 1.2 era `font.label`, 14/20, pequeno demais para o título do cabeçalho); fundo `navbar.bg`, fio inferior `color.border-subtle` e `shadow.bar-top`.
 2. **Barra inferior:** ocupa exatamente o lugar da navbar; fundo `navbar.bg`, fio superior `color.border-subtle` e `shadow.bar`.
-3. **Ações:** Editar (habilitada apenas quando 1 tarefa está selecionada), Fixar, Marcar todas e Excluir (n), cada uma com ícone de 24 dp e rótulo visível em `font.label` e `color.on-surface`; o ícone de Excluir usa `color.error`.
+3. **Ações:** Fixar, Marcar todas e Excluir (n), cada uma com ícone de 24 dp e rótulo visível em `font.label` e `color.on-surface`. Na 1.3, os ícones passam de `color.focus` (`#D4A3FF`, o lavanda-rosado que destoava da barra) para `color.on-surface-variant` (`#BBB6E3`, 9,4:1 sobre `navbar.bg`); o de Excluir continua em `color.error`. **Editar sai da barra na 1.3:** editar vale para um item só, então fica no detalhe da tarefa ou da rotina e no [menu de opções](menu-opcoes.md) do "•••".
 
 ## Variantes
 

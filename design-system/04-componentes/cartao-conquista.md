@@ -52,7 +52,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (F1/F2 e F3), [modal.md](
 
 ## Lacunas
 
-- Tipos de conquista além de dias de sequência e se conquistas dão estrelas no Cosmos.
+- Tipos de conquista além de dias de sequência. Cada conquista desbloqueada dá uma estrela no Cosmos (RF-0017; ver [grafo-constelacao.md](grafo-constelacao.md)).
 - Carrossel automático com pausa ou rolagem pelo dedo (até decidir, rolagem pelo dedo).
 
 ## Código

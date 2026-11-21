@@ -129,6 +129,7 @@ Os temas exportam `divider.width` e `feedback.pressedOpacity`. Validar o contras
 | `motion.duration.short`  | 100 ms                       | Feedback de toque       | Adaptado |
 | `motion.duration.medium` | 300 ms                       | Transições entre telas  | Adaptado |
 | `motion.easing.standard` | `cubic-bezier(0.2, 0, 0, 1)` | Curva padrão            | Adaptado |
+| `motion.duration.hold`   | 500 ms, curva linear         | Toque longo: tempo para ativar e duração do preenchimento (fill-on-hold) | Novo (1.3) |
 | `motion.scale-pressed`   | `0.96`                       | Escala de botões, ícones, abas e links ao toque | Novo (1.2) |
 | `motion.opacity-pressed` | `0.8`                        | Opacidade aplicada junto da escala ao toque     | Novo (1.2) |
 | `motion.planet.rotation` | 24 s, linear, contínua       | Volta das crateras do planeta | Novo (1.2) |
@@ -232,6 +233,19 @@ No código, `cosmicColors` exporta `iconAccent`, `streakFlame`, `streakFlameCore
 | `achievement.unlocked-bg` | `color.action-subtle` (1.2)                  | Novo     |
 | `achievement.unlocked-border` | cósmico `cosmicColors.unlocked`; legados `color.action` (1.2) | Novo |
 | `achievement.locked-border` | `color.border-subtle` (1.2)                | Novo     |
+| `constellation.bg`        | `color.surface` (cósmico `#030417`, 1.3)     | Novo     |
+| `constellation.node-streak` | `color.on-surface-variant` (cósmico `#BBB6E3`, 10,56:1, 1.3) | Novo |
+| `constellation.node-achievement` | cósmico `#D4A3FF` (mesmo valor de `color.focus`, 10,14:1, 1.3) | Novo |
+| `constellation.node-selected` | `color.on-surface` com anel de `focus.ring-width` em `color.action` (1.3) | Novo |
+| `constellation.node-streak-size` | 8 dp; 12 dp com 4 ligações ou mais (1.3) | Novo |
+| `constellation.node-achievement-size` | 24 dp (1.3)                       | Novo     |
+| `constellation.hit-streak` / `constellation.hit-achievement` | 28 dp / 40 dp: exceção a `target.min-size`, compensada pela visualização em Lista (1.3) | Novo |
+| `constellation.edge`      | `rgba(250, 249, 255, 0.16)`, 1 dp (`border.width-thin`), decorativa (1.3) | Novo |
+| `constellation.edge-bridge` | `rgba(250, 249, 255, 0.28)`, 1 dp, tracejada 4/4: ponte entre sequências (1.3) | Novo |
+| `constellation.edge-active` | `color.action`, 2 dp (1.3)                 | Novo     |
+| `constellation.dim-opacity` | `0.2`: estrelas e ligações fora da seleção (1.3) | Novo |
+| `constellation.label`     | `font.caption`; `color.on-surface-variant`, ou `color.on-surface` em conquistas e na seleção (1.3) | Novo |
+| `constellation.control-size` | `target.min-size` (48 dp), fundo `cosmicTokens.color.sheet`, contorno `cosmicTokens.color.sheetBorder` (1.3) | Novo |
 
 ## 4. Modo escuro
 
