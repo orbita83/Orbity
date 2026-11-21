@@ -37,6 +37,13 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: origem
+    attributes:
+      label: Origem (opcional)
+      description: Se a falta desta funcionalidade foi notada durante outra atividade, informe a Issue ou o Pull Request de origem e aplique a label `deviation` (CONTRIBUTING.md, Seção 2.6).
+      placeholder: "Ex.: encontrado durante #158 / PR #191"
+
   - type: textarea
     id: informacoes-adicionais
     attributes:

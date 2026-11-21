@@ -78,7 +78,7 @@ body:
     id: origem
     attributes:
       label: Origem (opcional)
-      description: Se o problema na documentação foi encontrado durante outra atividade, informe a Issue ou o Pull Request de origem (CONTRIBUTING.md, Seção 2.6).
+      description: Se o problema na documentação foi encontrado durante outra atividade, informe a Issue ou o Pull Request de origem e aplique a label `deviation` (CONTRIBUTING.md, Seção 2.6).
       placeholder: "Ex.: encontrado durante #158 / PR #191"
 
   - type: textarea
