@@ -20,6 +20,7 @@ const PRESENTATION_PACKAGES = [
 const LAYOUT_PACKAGES = ["react", "expo-router", "expo-status-bar", "expo-system-ui"];
 const VIEWMODEL_PACKAGES = ["react", "react-native", "expo-router"];
 const SQLITE_EXECUTOR = "src/infra/database/expoSqlExecutor.ts";
+const NOTIFICATION_SERVICE = "src/infra/services/expoNotificationService.ts";
 const SUPPORT_SUFFIX = /\.(?:test|spec|stories|contract|fixture|factory)$/;
 const CODE_EXTENSION = /\.[cm]?[jt]sx?$/;
 const CAMEL_CASE = /^[a-z][a-zA-Z0-9]*$/;
@@ -151,6 +152,9 @@ function resolveTarget(specifier, importer, rootDir, options, cache) {
 function checkPackage(layer, file, pkg, node) {
   if (pkg === "better-sqlite3" || (pkg === "expo-sqlite" && file !== SQLITE_EXECUTOR)) {
     return "Restrição do ADR-0001. Só o executor do Expo importa expo-sqlite e better-sqlite3 é exclusivo de testes.";
+  }
+  if (pkg === "expo-notifications" && file !== NOTIFICATION_SERVICE) {
+    return "Restrição do ADR-0002. Só o serviço de notificações da infraestrutura importa expo-notifications.";
   }
   const allowed = {
     app: LAYOUT_PACKAGES,
