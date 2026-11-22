@@ -14,12 +14,14 @@ import { ProfileUseCases } from "@/usecase/profileUseCases";
  * View -> ViewModel -> Use Cases -> Domínio (Model) <- Infraestrutura
  */
 
+import { ExpoNotificationService } from "@/infra/services/expoNotificationService";
 import { SystemClockService } from "@/infra/services/systemClockService";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
+import type { INotificationService } from "@/model/services/iNotificationService";
 import { HomeUseCases } from "@/usecase/homeUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
@@ -183,6 +185,7 @@ export type AppDataSources = {
 /** Serviços da aplicação. */
 export type AppServices = {
   clock: IClockService;
+  notifications: INotificationService;
 };
 
 /** Casos de uso expostos às ViewModels. */
@@ -205,7 +208,10 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
       // Perfil ainda sem persistência: memória em todas as plataformas.
       profile: new MemoryProfileDataSource(),
     }),
-    services: () => ({ clock: new SystemClockService() }),
+    services: () => ({
+      clock: new SystemClockService(),
+      notifications: new ExpoNotificationService(),
+    }),
     useCases: ({ dataSources, services }: InfrastructureDependencies<AppDataSources, AppServices>) => ({
       streak: composeUseCase(
         ({ dailyActivity, clock }: { dailyActivity: IDailyActivityDataSource; clock: IClockService }) =>
