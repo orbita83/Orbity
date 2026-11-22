@@ -5,6 +5,7 @@ import type {
   RoutineOverview,
   UpdateRoutineInput,
 } from "@/model/entities/routine";
+import type { DayChangeListener } from "@/model/services/iDayChangeService";
 
 /** Casos de uso de Rotinas (rotinas.md). O "hoje" é sempre a data local do relógio. */
 export interface IRoutineUseCases {
@@ -31,4 +32,6 @@ export interface IRoutineUseCases {
   toggleRoutineTask(routineId: string, taskId: string): Promise<RoutineDetails>;
   /** Sobe a tarefa uma posição (alça do protótipo 3.2). */
   moveRoutineTaskUp(routineId: string, index: number): Promise<RoutineDetails>;
+  /** Inscreve um ouvinte para recarregar as rotinas na virada do dia local (issue #210). */
+  subscribeDayChange?(listener: DayChangeListener): () => void;
 }

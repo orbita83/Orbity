@@ -15,11 +15,13 @@ import { ProfileUseCases } from "@/usecase/profileUseCases";
  */
 
 import { SystemClockService } from "@/infra/services/systemClockService";
+import { SystemDayChangeService } from "@/infra/services/systemDayChangeService";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
+import type { IDayChangeService } from "@/model/services/iDayChangeService";
 import { HomeUseCases } from "@/usecase/homeUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
@@ -183,6 +185,7 @@ export type AppDataSources = {
 /** Serviços da aplicação. */
 export type AppServices = {
   clock: IClockService;
+  dayChange: IDayChangeService;
 };
 
 /** Casos de uso expostos às ViewModels. */
@@ -205,7 +208,13 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
       // Perfil ainda sem persistência: memória em todas as plataformas.
       profile: new MemoryProfileDataSource(),
     }),
-    services: () => ({ clock: new SystemClockService() }),
+    services: () => {
+      const clock = new SystemClockService();
+      return {
+        clock,
+        dayChange: new SystemDayChangeService(clock),
+      };
+    },
     useCases: ({ dataSources, services }: InfrastructureDependencies<AppDataSources, AppServices>) => ({
       streak: composeUseCase(
         ({ dailyActivity, clock }: { dailyActivity: IDailyActivityDataSource; clock: IClockService }) =>
@@ -213,12 +222,17 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
         { dailyActivity: dataSources.dailyActivity, clock: services.clock },
       ),
       home: composeUseCase(
-        (deps: { dailyActivity: IDailyActivityDataSource; activities: IActivityDataSource; clock: IClockService }) =>
-          new HomeUseCases(deps.dailyActivity, deps.activities, deps.clock),
+        (deps: {
+          dailyActivity: IDailyActivityDataSource;
+          activities: IActivityDataSource;
+          clock: IClockService;
+          dayChange: IDayChangeService;
+        }) => new HomeUseCases(deps.dailyActivity, deps.activities, deps.clock, deps.dayChange),
         {
           dailyActivity: dataSources.dailyActivity,
           activities: dataSources.activities,
           clock: services.clock,
+          dayChange: services.dayChange,
         },
       ),
       tasks: composeUseCase(
@@ -240,12 +254,14 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           tasks: ITaskDataSource;
           dailyActivity: IDailyActivityDataSource;
           clock: IClockService;
-        }) => new RoutineUseCases(deps.routines, deps.tasks, deps.dailyActivity, deps.clock),
+          dayChange: IDayChangeService;
+        }) => new RoutineUseCases(deps.routines, deps.tasks, deps.dailyActivity, deps.clock, undefined, deps.dayChange),
         {
           routines: dataSources.routines,
           tasks: dataSources.tasks,
           dailyActivity: dataSources.dailyActivity,
           clock: services.clock,
+          dayChange: services.dayChange,
         },
       ),
     }),
