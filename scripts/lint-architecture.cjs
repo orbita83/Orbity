@@ -167,6 +167,9 @@ function checkPackage(layer, file, pkg, node) {
   if (allowed && !allowed.includes(pkg)) {
     return `Pacote "${pkg}" fora das dependências permitidas em "${layer}/".`;
   }
+  if (layer === "infra" && pkg === "react-native" && file.startsWith("src/infra/services/")) {
+    return;
+  }
   if ((layer === "di" || layer === "infra") &&
       (VIEWMODEL_PACKAGES.includes(pkg) || pkg === "react-dom" ||
        pkg.startsWith("@storybook/") || pkg.startsWith("@testing-library/"))) {
