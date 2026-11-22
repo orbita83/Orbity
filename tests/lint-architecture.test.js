@@ -92,6 +92,7 @@ test("rejeita dependências proibidas mesmo com alias, re-exportação e imports
     "src/infra/dataSource.ts": `
       import "@/model/__fixtures__/task.fixture";
       import("expo-sqlite/next", { with: {} });
+      import("expo-notifications");
     `,
     "src/usecase/internal.ts": 'export { TaskUseCases } from "@/usecase/taskUseCases";',
   });
@@ -101,7 +102,7 @@ test("rejeita dependências proibidas mesmo com alias, re-exportação e imports
   expect(rules("src/viewmodel/reference.ts")).toEqual(["ARCH-002", "ARCH-001", "ARCH-002", "ARCH-002", "ARCH-002"]);
   expect(rules("src/view/components/TaskCard.tsx")).toEqual(["ARCH-001", "ARCH-001", "ARCH-001", "ARCH-005", "ARCH-007"]);
   expect(rules("src/model/entities/task.ts")).toEqual(["ARCH-001", "ARCH-001"]);
-  expect(rules("src/infra/dataSource.ts")).toEqual(["ARCH-004", "ARCH-001"]);
+  expect(rules("src/infra/dataSource.ts")).toEqual(["ARCH-004", "ARCH-001", "ARCH-001"]);
   expect(rules("src/usecase/internal.ts")).toEqual(["ARCH-002"]);
 });
 

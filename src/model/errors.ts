@@ -40,3 +40,11 @@ export class SchemaVersionError extends DomainError {
     this.name = "SchemaVersionError";
   }
 }
+
+/** Falha técnica ao consultar, agendar ou cancelar notificações locais (ADR-0002). */
+export class NotificationServiceError extends DomainError {
+  constructor(message: string = "Falha ao acessar o serviço de notificações locais.") {
+    super(message);
+    this.name = "NotificationServiceError";
+  }
+}

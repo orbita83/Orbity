@@ -14,6 +14,7 @@ import { ProfileUseCases } from "@/usecase/profileUseCases";
  * View -> ViewModel -> Use Cases -> Domínio (Model) <- Infraestrutura
  */
 
+import { ExpoNotificationService } from "@/infra/services/expoNotificationService";
 import { SystemClockService } from "@/infra/services/systemClockService";
 import { SystemDayChangeService } from "@/infra/services/systemDayChangeService";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
@@ -22,6 +23,7 @@ import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource"
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { IDayChangeService } from "@/model/services/iDayChangeService";
+import type { INotificationService } from "@/model/services/iNotificationService";
 import { HomeUseCases } from "@/usecase/homeUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
@@ -186,6 +188,7 @@ export type AppDataSources = {
 export type AppServices = {
   clock: IClockService;
   dayChange: IDayChangeService;
+  notifications: INotificationService;
 };
 
 /** Casos de uso expostos às ViewModels. */
@@ -213,6 +216,7 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
       return {
         clock,
         dayChange: new SystemDayChangeService(clock),
+        notifications: new ExpoNotificationService(),
       };
     },
     useCases: ({ dataSources, services }: InfrastructureDependencies<AppDataSources, AppServices>) => ({

@@ -18,8 +18,9 @@ const PRESENTATION_PACKAGES = [
   "expo-font", "expo-image", "expo-glass-effect", "expo-symbols",
 ];
 const LAYOUT_PACKAGES = ["react", "expo-router", "expo-status-bar", "expo-system-ui"];
-const VIEWMODEL_PACKAGES = ["react", "expo-router"];
+const VIEWMODEL_PACKAGES = ["react", "react-native", "expo-router"];
 const SQLITE_EXECUTOR = "src/infra/database/expoSqlExecutor.ts";
+const NOTIFICATION_SERVICE = "src/infra/services/expoNotificationService.ts";
 const SUPPORT_SUFFIX = /\.(?:test|spec|stories|contract|fixture|factory)$/;
 const CODE_EXTENSION = /\.[cm]?[jt]sx?$/;
 const CAMEL_CASE = /^[a-z][a-zA-Z0-9]*$/;
@@ -152,6 +153,9 @@ function checkPackage(layer, file, pkg, node) {
   if (pkg === "better-sqlite3" || (pkg === "expo-sqlite" && file !== SQLITE_EXECUTOR)) {
     return "Restrição do ADR-0001. Só o executor do Expo importa expo-sqlite e better-sqlite3 é exclusivo de testes.";
   }
+  if (pkg === "expo-notifications" && file !== NOTIFICATION_SERVICE) {
+    return "Restrição do ADR-0002. Só o serviço de notificações da infraestrutura importa expo-notifications.";
+  }
   const allowed = {
     app: LAYOUT_PACKAGES,
     view: PRESENTATION_PACKAGES,
@@ -181,6 +185,7 @@ function checkDependency({ node, specifier, target, layer, file, support, checke
   const issue = (id, message) => report(id, message + ` Dependência: "${specifier.text}".`, specifier);
   if (support) {
     if (["model", "usecase", "infra", "di"].includes(layer) &&
+        !(layer === "infra" && target.packageName === "react-native" && file.startsWith("src/infra/services/")) &&
         (/^src\/(?:app|view|viewmodel)\//.test(target.file ?? "") ||
          VIEWMODEL_PACKAGES.includes(target.packageName) || target.packageName === "react-dom" ||
          target.packageName?.startsWith("@testing-library/"))) {
