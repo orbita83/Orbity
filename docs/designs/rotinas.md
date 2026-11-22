@@ -33,14 +33,16 @@ Concluir a rotina do dia registra o dia na sequência (RN-0002). As tarefas de u
 ## Decisions & Open Questions
 
 - **R1 — Tarefas da rotina:** são `Task` com `routineId` e `position`. A tabela `tasks` ganha as colunas `routine_id` e `position`. Tarefas com `routineId` não aparecem na tela Tarefas e não contam como tarefa avulsa para a sequência (RN-0002, D1 de [tela-inicial-base.md](tela-inicial-base.md)). Isso resolve a lacuna "Tarefas de Rotina vs. Gerais" do `05-padroes.md`. "+ Adicionar tarefa" cria uma tarefa nova, ligada à rotina, e não associa uma tarefa já existente (pendência do FL-0005).
-- **R2 — Estado por dia:** a conclusão da ocorrência (`routine_occurrences`) e as marcações das tarefas (`routine_task_checks`) são guardadas por data local. No dia seguinte, tudo começa desmarcado. O campo `completed` do `Task` não é usado pelas tarefas de rotina.
+- **R2 — Estado por dia e virada do dia (issue #210):** a conclusão da ocorrência (`routine_occurrences`) e as marcações das tarefas (`routine_task_checks`) são guardadas por data local. No dia seguinte, tudo começa desmarcado. O campo `completed` do `Task` não é usado pelas tarefas de rotina. O serviço `IDayChangeService` (`src/model/services/iDayChangeService.ts`), implementado por `SystemDayChangeService` (`src/infra/services/systemDayChangeService.ts`), combina `AppState` (retorno do segundo plano), agendamento para a próxima meia-noite local e detecção de mudança de data/fuso do aparelho. As ViewModels de Rotinas, Detalhe da rotina e Tela Inicial assinam a mudança de dia via Use Cases (`subscribeDayChange`) e recarregam automaticamente quando a data local muda, sem alterar ocorrências nem a sequência dos dias anteriores.
 - **R3 — Desmarcar uma tarefa depois de concluir (EC-0006):** só aquela tarefa volta a pendente, e a ocorrência continua concluída. Marcar todas as tarefas, uma a uma, **não** conclui a rotina sozinha. A rotina só é concluída por "Marcar como concluída" ou pelo círculo da lista.
 - **R4 — "Desmarcar todos" e o círculo de uma rotina concluída:** reabrem a ocorrência e desmarcam as tarefas do dia. O dia continua na sequência (RF-0014 CA-04).
 - **R5 — Concluir de novo no mesmo dia:** não faz nada. Não há segundo registro nem mensagem de erro, para ficar sem punição (RF-0011 CA-05, EC-0004).
-- **R6 — Dia não configurado (RF-0012 CA-04):**
+- **R6 — Dia não configurado e indicação de próximo retorno (RF-0012 CA-04 e CA-05, issue #210):**
   - A lista mostra todas as rotinas.
   - O resumo "X de Y concluídas" conta só as rotinas de hoje.
-  - Em dia inativo, o círculo da lista, os círculos das tarefas e o "Marcar como concluída" ficam desabilitados, com o texto de apoio "Esta rotina não é de hoje."
+  - A função pura `nextActiveDay(routine, from)` calcula no domínio (`src/model/entities/routine.ts`) a próxima data local em que a rotina volta (`date`, `weekday`, `daysAhead` de 1 a 7).
+  - Em dia inativo ou quando a ocorrência de hoje já foi concluída, o card e o detalhe exibem quando a rotina volta (`"Volta amanhã"`, `"Volta na quarta-feira"`, `"Volta no sábado"`, `"Volta na próxima segunda-feira"` quando `daysAhead === 7`), substituindo o antigo texto estático `"Esta rotina não é de hoje."`.
+  - Em dia inativo, o círculo da lista, os círculos das tarefas e o "Marcar como concluída" ficam desabilitados.
   - O domínio também recusa a conclusão nesses dias (`ValidationError`).
   - A reordenação continua liberada.
 - **R7 — Excluir com "Desfazer":**
