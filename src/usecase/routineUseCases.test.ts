@@ -53,7 +53,19 @@ describe("RoutineUseCases", () => {
       ["Resolver", 1],
       ["Anotar", 2],
     ]);
-    expect(await useCases.listRoutines()).toEqual([{ routine, taskCount: 3, activeToday: true, doneToday: false }]);
+    expect(await useCases.listRoutines()).toEqual([
+      {
+        routine,
+        taskCount: 3,
+        activeToday: true,
+        doneToday: false,
+        nextActiveDay: {
+          date: LocalDate.parse(TUESDAY),
+          weekday: 2,
+          daysAhead: 1,
+        },
+      },
+    ]);
   });
 
   it("rejeita a criação sem nome ou sem dia, sem gravar nada", async () => {
@@ -278,5 +290,28 @@ describe("RoutineUseCases", () => {
     const { useCases } = setup();
     expect(await useCases.getRoutine("nada")).toBeNull();
     await expect(useCases.completeOccurrence("nada")).rejects.toThrow(new ValidationError("Rotina não encontrada."));
+  });
+
+  it("issue #210: delega a inscrição de mudança de dia para o IDayChangeService", () => {
+    const tasks = new MemoryTaskDataSource();
+    const routines = new MemoryRoutineDataSource(tasks);
+    const dailyActivity = new MemoryDailyActivityDataSource();
+    const { clock } = createClock(MONDAY);
+    let capturedListener: ((today: LocalDate) => void) | undefined;
+    const unsubscribeSpy = jest.fn();
+    const useCases = new RoutineUseCases(routines, tasks, dailyActivity, clock, undefined, {
+      subscribe: (listener) => {
+        capturedListener = listener;
+        return unsubscribeSpy;
+      },
+    });
+    const received: string[] = [];
+    const unsubscribe = useCases.subscribeDayChange((today) => received.push(today.toString()));
+
+    capturedListener?.(LocalDate.parse(TUESDAY));
+    expect(received).toEqual([TUESDAY]);
+
+    unsubscribe();
+    expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
   });
 });

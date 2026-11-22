@@ -171,6 +171,9 @@ function checkPackage(layer, file, pkg, node) {
   if (allowed && !allowed.includes(pkg)) {
     return `Pacote "${pkg}" fora das dependências permitidas em "${layer}/".`;
   }
+  if (layer === "infra" && pkg === "react-native" && file.startsWith("src/infra/services/")) {
+    return;
+  }
   if ((layer === "di" || layer === "infra") &&
       (VIEWMODEL_PACKAGES.includes(pkg) || pkg === "react-dom" ||
        pkg.startsWith("@storybook/") || pkg.startsWith("@testing-library/"))) {
@@ -182,6 +185,7 @@ function checkDependency({ node, specifier, target, layer, file, support, checke
   const issue = (id, message) => report(id, message + ` Dependência: "${specifier.text}".`, specifier);
   if (support) {
     if (["model", "usecase", "infra", "di"].includes(layer) &&
+        !(layer === "infra" && target.packageName === "react-native" && file.startsWith("src/infra/services/")) &&
         (/^src\/(?:app|view|viewmodel)\//.test(target.file ?? "") ||
          VIEWMODEL_PACKAGES.includes(target.packageName) || target.packageName === "react-dom" ||
          target.packageName?.startsWith("@testing-library/"))) {

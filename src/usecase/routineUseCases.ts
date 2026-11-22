@@ -6,6 +6,7 @@ import {
   type RoutineOverview,
   type UpdateRoutineInput,
   isRoutineActiveOn,
+  nextActiveDay,
 } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
@@ -13,6 +14,7 @@ import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivit
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
+import type { DayChangeListener, IDayChangeService } from "@/model/services/iDayChangeService";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 import { validateCreateRoutineInput, validateUpdateRoutineInput } from "@/usecase/routineInputValidation";
 
@@ -35,7 +37,12 @@ export class RoutineUseCases implements IRoutineUseCases {
     private readonly dailyActivityDataSource: IDailyActivityDataSource,
     private readonly clock: IClockService,
     private readonly generateId: () => string = defaultGenerateId,
+    private readonly dayChangeService?: IDayChangeService,
   ) {}
+
+  subscribeDayChange(listener: DayChangeListener): () => void {
+    return this.dayChangeService ? this.dayChangeService.subscribe(listener) : () => undefined;
+  }
 
   async listRoutines(): Promise<RoutineOverview[]> {
     const today = this.clock.todayLocal();
@@ -50,6 +57,7 @@ export class RoutineUseCases implements IRoutineUseCases {
         taskCount: (await this.taskDataSource.listByRoutine(routine.id)).length,
         activeToday: isRoutineActiveOn(routine, today),
         doneToday: done.has(routine.id),
+        nextActiveDay: nextActiveDay(routine, today),
       })),
     );
   }
@@ -219,6 +227,7 @@ export class RoutineUseCases implements IRoutineUseCases {
       taskCount: tasks.length,
       activeToday: isRoutineActiveOn(routine, today),
       doneToday: completed.includes(routine.id),
+      nextActiveDay: nextActiveDay(routine, today),
       tasks: tasks.map((task) => ({ task, checkedToday: checked.has(task.id) })),
     };
   }

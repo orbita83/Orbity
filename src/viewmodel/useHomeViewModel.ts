@@ -1,6 +1,5 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppState } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
 import type { HomeSummary } from "@/model/entities/homeSummary";
 import { SchemaVersionError } from "@/model/errors";
@@ -83,14 +82,14 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): [HomeState, Home
     mounted.current = true;
     // O estado inicial já é "carregando".
     void fetchHome();
-    const subscription = AppState.addEventListener("change", (state) => {
-      if (state === "active") void fetchHome();
+    const unsubscribe = useCases.subscribeDayChange?.(() => {
+      void fetchHome();
     });
     return () => {
       mounted.current = false;
-      subscription.remove();
+      unsubscribe?.();
     };
-  }, [fetchHome]);
+  }, [fetchHome, useCases]);
 
   // Recalcula ao voltar para a aba, para refletir o que mudou em Tarefas e Rotinas.
   useFocusEffect(

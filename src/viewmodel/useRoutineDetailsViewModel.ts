@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import type { RoutineIcon, RoutineDetails as RoutineDetailsEntity } from "@/model/entities/routine";
+import type { NextActiveDay, RoutineIcon, RoutineDetails as RoutineDetailsEntity } from "@/model/entities/routine";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
 export type RoutineTaskItem = { id: string; title: string; done: boolean };
@@ -20,6 +20,8 @@ export type RoutineDetails = {
   activeToday: boolean;
   /** Ocorrência de hoje concluída (RF-0011). Não depende de todas as tarefas estarem marcadas (R3). */
   doneToday: boolean;
+  /** Próximo retorno da rotina após a data de hoje (issue #210). */
+  nextActiveDay?: NextActiveDay;
 };
 
 export type RoutineDetailsErrorKey = "error.load" | "error.save";
@@ -59,6 +61,7 @@ const toDetails = (entity: RoutineDetailsEntity): RoutineDetails => ({
   tasks: entity.tasks.map(({ task, checkedToday }) => ({ id: task.id, title: task.title, done: checkedToday })),
   activeToday: entity.activeToday,
   doneToday: entity.doneToday,
+  ...(entity.nextActiveDay ? { nextActiveDay: entity.nextActiveDay } : {}),
 });
 
 const swapUp = <T,>(items: T[], index: number): T[] => {
@@ -130,6 +133,13 @@ export const useRoutineDetailsViewModel = (
   useEffect(() => {
     void reload();
   }, [reload]);
+
+  useEffect(() => {
+    if (isPrototypeMode || routineId === null || !useCases.subscribeDayChange) return;
+    return useCases.subscribeDayChange(() => {
+      void reload();
+    });
+  }, [isPrototypeMode, reload, routineId, useCases]);
 
   /** Mostra o resultado na hora e confirma pelo caso de uso; em falha, recarrega o estado verdadeiro. */
   const act = useCallback(

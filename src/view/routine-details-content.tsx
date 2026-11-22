@@ -9,7 +9,13 @@ import { MaterialSymbol, type MaterialSymbolName } from "./components/MaterialSy
 import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
-import { ROUTINE_ICON_SYMBOLS, ROUTINES_COPY, formatDays, formatRoutinesCopy } from "./routinesCopy";
+import {
+  ROUTINE_ICON_SYMBOLS,
+  ROUTINES_COPY,
+  formatDays,
+  formatRoutineReturn,
+  formatRoutinesCopy,
+} from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
@@ -92,8 +98,12 @@ export const RoutineDetailsScreenContent = ({
     percentLabel === null
       ? formatRoutinesCopy("details.progress", { done: completedCount, total })
       : formatRoutinesCopy("details.progress.a11y", { done: completedCount, total, percent: percentLabel });
-  // Fora dos dias da rotina, concluir e marcar ficam bloqueados, com o motivo em texto (rotinas.md, R6; botao.md).
+  // Fora dos dias da rotina, concluir e marcar ficam bloqueados, com o retorno em texto (rotinas.md, R6; botao.md).
   const inactive = !routine.activeToday;
+  const returnText =
+    inactive || (doneToday && routine.nextActiveDay !== undefined)
+      ? formatRoutineReturn(routine.nextActiveDay)
+      : null;
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -232,9 +242,9 @@ export const RoutineDetailsScreenContent = ({
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
-        {inactive ? (
+        {returnText ? (
           <Text allowFontScaling style={[styles.muted, styles.centered]}>
-            {ROUTINES_COPY["inactive.today"]}
+            {returnText}
           </Text>
         ) : null}
         {doneToday ? (

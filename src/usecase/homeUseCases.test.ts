@@ -84,4 +84,28 @@ describe("HomeUseCases", () => {
 
     await expect(useCases.loadHome()).rejects.toBe(failure);
   });
+
+  it("issue #210: delega a inscrição de mudança de dia para o IDayChangeService", () => {
+    let capturedListener: ((day: LocalDate) => void) | undefined;
+    const unsubscribeSpy = jest.fn();
+    const useCases = new HomeUseCases(
+      dataSourceWith([]),
+      activitiesWith({ completed: 0, total: 0 }),
+      clock,
+      {
+        subscribe: (listener) => {
+          capturedListener = listener;
+          return unsubscribeSpy;
+        },
+      },
+    );
+    const received: string[] = [];
+    const unsubscribe = useCases.subscribeDayChange((day) => received.push(day.toString()));
+
+    capturedListener?.(LocalDate.parse("2026-11-15"));
+    expect(received).toEqual(["2026-11-15"]);
+
+    unsubscribe();
+    expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+  });
 });
