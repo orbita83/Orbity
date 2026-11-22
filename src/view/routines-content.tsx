@@ -8,7 +8,14 @@ import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { Snackbar } from "./components/Snackbar";
-import { ROUTINE_ICON_SYMBOLS, ROUTINES_COPY, formatDays, formatRoutinesCopy, taskCountLabel } from "./routinesCopy";
+import {
+  ROUTINE_ICON_SYMBOLS,
+  ROUTINES_COPY,
+  formatDays,
+  formatRoutineReturn,
+  formatRoutinesCopy,
+  taskCountLabel,
+} from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 import { GradientSurface } from "./components/GradientSurface";
 
@@ -39,12 +46,17 @@ type RoutineCardProps = {
 const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
   const detail = `${taskCountLabel(routine.taskCount)} · ${formatDays(routine.days)}`;
   const inactive = !routine.activeToday;
+  const returnText =
+    inactive || (routine.doneToday && routine.nextActiveDay !== undefined)
+      ? formatRoutineReturn(routine.nextActiveDay)
+      : null;
+  const openDetail = returnText ? `${detail}, ${returnText}` : detail;
   return (
     <View style={styles.card}>
       <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
       <Pressable
         accessibilityRole="link"
-        accessibilityLabel={formatRoutinesCopy("card.open", { name: routine.title, detail })}
+        accessibilityLabel={formatRoutinesCopy("card.open", { name: routine.title, detail: openDetail })}
         onPress={onOpen}
         style={({ pressed }) => [styles.cardMain, pressed && styles.pressed]}
       >
@@ -56,9 +68,9 @@ const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
           <Text allowFontScaling style={styles.muted}>
             {detail}
           </Text>
-          {inactive ? (
+          {returnText ? (
             <Text allowFontScaling style={styles.muted}>
-              {ROUTINES_COPY["inactive.today"]}
+              {returnText}
             </Text>
           ) : null}
         </View>

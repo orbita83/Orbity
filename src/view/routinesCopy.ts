@@ -1,3 +1,4 @@
+import type { NextActiveDay } from "@/model/entities/routine";
 import type { RoutineIcon } from "../viewmodel/useRoutinesViewModel";
 import { TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
 import type { MaterialSymbolName } from "./components/MaterialSymbol";
@@ -26,6 +27,11 @@ export const ROUTINES_COPY = {
   "card.complete": "Concluir rotina {name} hoje",
   "card.uncomplete": "Desmarcar rotina {name} hoje",
   "inactive.today": "Esta rotina não é de hoje.",
+  "return.tomorrow": "Volta amanhã",
+  "return.weekday.feminine": "Volta na {day}",
+  "return.weekday.masculine": "Volta no {day}",
+  "return.nextWeek.feminine": "Volta na próxima {day}",
+  "return.nextWeek.masculine": "Volta no próximo {day}",
   loading: "Carregando suas rotinas…",
   "error.load": "Não foi possível carregar suas rotinas agora. Tente de novo em instantes.",
   "error.save": "Não foi possível salvar agora. Nada do que você fez antes se perdeu.",
@@ -118,6 +124,27 @@ export function formatDays(days: readonly number[]): string {
 
 export const taskCountLabel = (n: number) =>
   n === 1 ? ROUTINES_COPY["card.tasks.one"] : formatRoutinesCopy("card.tasks.other", { n });
+
+/**
+ * Texto acolhedor indicando quando a rotina volta a ficar ativa (issue #210).
+ * - 1 dia à frente: "Volta amanhã"
+ * - 2 a 6 dias à frente: "Volta na quarta-feira" / "Volta no sábado"
+ * - 7 dias à frente (mesmo dia na semana que vem): "Volta na próxima segunda-feira" / "Volta no próximo domingo"
+ */
+export function formatRoutineReturn(nextActiveDay?: NextActiveDay): string {
+  if (!nextActiveDay) {
+    return ROUTINES_COPY["inactive.today"];
+  }
+  if (nextActiveDay.daysAhead === 1) {
+    return ROUTINES_COPY["return.tomorrow"];
+  }
+  const day = DAY_LONG[nextActiveDay.weekday];
+  const isMasculine = nextActiveDay.weekday === 0 || nextActiveDay.weekday === 6;
+  if (nextActiveDay.daysAhead === 7) {
+    return formatRoutinesCopy(isMasculine ? "return.nextWeek.masculine" : "return.nextWeek.feminine", { day });
+  }
+  return formatRoutinesCopy(isMasculine ? "return.weekday.masculine" : "return.weekday.feminine", { day });
+}
 
 /** Nomes dos ícones que o estudante pode escolher para uma rotina (rotinas.md, R8). */
 export const ROUTINE_ICON_LABELS: Readonly<Record<RoutineIcon, string>> = {

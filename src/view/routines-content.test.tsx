@@ -1,10 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { LocalDate } from "@/model/entities/localDate";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
 import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/view/new-routine-content";
 import { RoutineDetailsScreenContent, type RoutineDetailsScreenContentProps } from "@/view/routine-details-content";
-import { ROUTINES_COPY } from "@/view/routinesCopy";
+import { ROUTINES_COPY, formatRoutineReturn } from "@/view/routinesCopy";
 import { RoutinesScreenContent, type RoutinesScreenContentProps } from "@/view/routines-content";
 import { cosmicBorders, themes } from "@/view/theme/tokens";
 
@@ -95,6 +96,41 @@ describe("RoutinesScreenContent", () => {
       </SafeAreaProvider>,
     );
     expect(screen.getByRole("alert")).toHaveTextContent(ROUTINES_COPY["error.load"]);
+  });
+
+  it("issue #210: mostra quando a rotina volta tanto fora do dia quanto concluída hoje, acessível ao leitor de tela", async () => {
+    expect(formatRoutineReturn({ date: LocalDate.parse("2026-11-17"), weekday: 2, daysAhead: 1 })).toBe("Volta amanhã");
+    expect(formatRoutineReturn({ date: LocalDate.parse("2026-11-18"), weekday: 3, daysAhead: 2 })).toBe("Volta na quarta-feira");
+    expect(formatRoutineReturn({ date: LocalDate.parse("2026-11-21"), weekday: 6, daysAhead: 5 })).toBe("Volta no sábado");
+    expect(formatRoutineReturn({ date: LocalDate.parse("2026-11-23"), weekday: 1, daysAhead: 7 })).toBe(
+      "Volta na próxima segunda-feira",
+    );
+    expect(formatRoutineReturn({ date: LocalDate.parse("2026-11-22"), weekday: 0, daysAhead: 7 })).toBe(
+      "Volta no próximo domingo",
+    );
+
+    const completedWithNext = {
+      ...PROTOTYPE_ROUTINES[0],
+      doneToday: true,
+      nextActiveDay: { date: LocalDate.parse("2026-11-17"), weekday: 2 as const, daysAhead: 1 as const },
+    };
+    const inactiveWithNext = {
+      ...PROTOTYPE_INACTIVE_ROUTINE,
+      nextActiveDay: { date: LocalDate.parse("2026-11-21"), weekday: 6 as const, daysAhead: 5 as const },
+    };
+
+    await inSafeArea(
+      <RoutinesScreenContent
+        {...listProps({ visibleRoutines: [completedWithNext, inactiveWithNext], totalCount: 1, doneTodayCount: 1 })}
+      />,
+    );
+
+    expect(screen.getByText("Volta amanhã")).toBeTruthy();
+    expect(screen.getByText("Volta no sábado")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Abrir rotina Matemática, 3 tarefas · Seg a Sex, Volta amanhã" })).toBeTruthy();
+    expect(
+      screen.getByRole("link", { name: "Abrir rotina Revisão de fim de semana, 2 tarefas · Dom e Sáb, Volta no sábado" }),
+    ).toBeTruthy();
   });
 });
 
@@ -259,11 +295,20 @@ describe("RoutineDetailsScreenContent", () => {
     expect(props.requestDelete).toHaveBeenCalledTimes(1);
   });
 
-  it("rotina concluída hoje: comemora e troca o rodapé por Desmarcar todos", async () => {
-    const props = detailsProps({ completedCount: 3, doneToday: true });
+  it("rotina concluída hoje: comemora, indica quando volta e troca o rodapé por Desmarcar todos", async () => {
+    const props = detailsProps({
+      completedCount: 3,
+      doneToday: true,
+      routine: {
+        ...PROTOTYPE_ROUTINE_DETAILS,
+        doneToday: true,
+        nextActiveDay: { date: LocalDate.parse("2026-11-18"), weekday: 3, daysAhead: 2 },
+      },
+    });
     await inSafeArea(<RoutineDetailsScreenContent {...props} />);
 
     expect(screen.getByText(ROUTINES_COPY["details.allDone"])).toBeTruthy();
+    expect(screen.getByText("Volta na quarta-feira")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["details.undoAll"] }));
     expect(props.undoAll).toHaveBeenCalledTimes(1);
   });
