@@ -9,6 +9,7 @@ import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 import { RoutineUseCases } from "@/usecase/routineUseCases";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
 import { UNDO_WINDOW_MS, useRoutinesViewModel } from "@/viewmodel/useRoutinesViewModel";
+import { FakeDayChangeService } from "../../tests/fixtures/fakeDayChangeService";
 
 // Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
 const mockNavigate = jest.fn();
@@ -47,19 +48,25 @@ beforeEach(() => {
 const ids = (items: { id: string }[]) => items.map((item) => item.id);
 
 /** Segunda-feira: a rotina de Seg a Sex é de hoje. */
-const monday: IClockService = {
-  now: () => "2026-11-16T08:00:00-03:00",
-  todayLocal: () => LocalDate.parse("2026-11-16"),
+const createClock = (initial = "2026-11-16") => {
+  let current = initial;
+  const clock: IClockService = {
+    now: () => `${current}T08:00:00-03:00`,
+    todayLocal: () => LocalDate.parse(current),
+  };
+  return { clock, setDay: (next: string) => (current = next) };
 };
 
 /** Caso de uso real sobre DataSources em memória (Fake), sem banco e sem o container. */
-const createUseCases = () => {
+const createUseCases = (initialDay = "2026-11-16") => {
   const tasks = new MemoryTaskDataSource();
   const routines = new MemoryRoutineDataSource(tasks);
   const dailyActivity = new MemoryDailyActivityDataSource();
+  const dayChange = new FakeDayChangeService();
+  const { clock, setDay } = createClock(initialDay);
   let seq = 0;
-  const useCases = new RoutineUseCases(routines, tasks, dailyActivity, monday, () => `id-${++seq}`);
-  return { useCases, dailyActivity };
+  const useCases = new RoutineUseCases(routines, tasks, dailyActivity, clock, () => `id-${++seq}`, dayChange);
+  return { useCases, dailyActivity, dayChange, setDay };
 };
 
 describe("useRoutinesViewModel (protótipo)", () => {
@@ -118,12 +125,53 @@ describe("useRoutinesViewModel (caso de uso)", () => {
     const { result } = await renderHook(() => useRoutinesViewModel(useCases));
     await waitFor(() => expect(result.current[0].loading).toBe(false));
     expect(result.current[0].visibleRoutines).toEqual([
-      { id: "id-1", title: "Matemática", icon: "general", days: [1, 2, 3, 4, 5], taskCount: 1, activeToday: true, doneToday: false },
+      {
+        id: "id-1",
+        title: "Matemática",
+        icon: "general",
+        days: [1, 2, 3, 4, 5],
+        taskCount: 1,
+        activeToday: true,
+        doneToday: false,
+        nextActiveDay: {
+          date: LocalDate.parse("2026-11-17"),
+          weekday: 2,
+          daysAhead: 1,
+        },
+      },
     ]);
 
     await act(async () => result.current[1].toggleDoneToday("id-1"));
     await waitFor(() => expect(result.current[0].doneTodayCount).toBe(1));
     expect((await dailyActivity.listDays()).map(String)).toEqual(["2026-11-16"]);
+  });
+
+  it("issue #210: com a tela Rotinas aberta na virada do dia, lista, resumo e estado de cada rotina atualizam sozinhos", async () => {
+    const { useCases, dayChange, setDay } = createUseCases("2026-11-16"); // segunda
+    await useCases.createRoutine({ title: "Matemática", days: [1, 2], tasks: ["Revisar"] });
+    await useCases.createRoutine({ title: "Inglês", days: [1, 3], tasks: ["Ler"] });
+
+    const { result } = await renderHook(() => useRoutinesViewModel(useCases));
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+
+    // Na segunda, as duas são de hoje; o estudante conclui ambas.
+    await act(async () => result.current[1].toggleDoneToday("id-1"));
+    await act(async () => result.current[1].toggleDoneToday("id-3"));
+    await waitFor(() => expect(result.current[0].doneTodayCount).toBe(2));
+    expect(result.current[0].totalCount).toBe(2);
+
+    // Virada para terça (2026-11-17) sem trocar de aba: Matemática volta como pendente e Inglês fica fora do dia.
+    setDay("2026-11-17");
+    await act(async () => {
+      dayChange.emitDayChange(LocalDate.parse("2026-11-17"));
+    });
+
+    await waitFor(() => expect(result.current[0].totalCount).toBe(1));
+    expect(result.current[0].doneTodayCount).toBe(0);
+    expect(result.current[0].visibleRoutines).toEqual([
+      expect.objectContaining({ id: "id-1", activeToday: true, doneToday: false }),
+      expect.objectContaining({ id: "id-3", activeToday: false, doneToday: false }),
+    ]);
   });
 
   it("R7: excluir e desfazer passam pelo caso de uso", async () => {

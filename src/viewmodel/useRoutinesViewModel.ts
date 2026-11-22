@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import { ROUTINE_ICONS, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
+import { ROUTINE_ICONS, type NextActiveDay, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
 export { ROUTINE_ICONS, type RoutineIcon };
@@ -23,6 +23,8 @@ export type RoutineListItem = {
   activeToday: boolean;
   /** Ocorrência de hoje concluída (RF-0011). */
   doneToday: boolean;
+  /** Próximo dia em que a rotina volta (issue #210). */
+  nextActiveDay?: NextActiveDay;
 };
 
 export type RoutinesState = {
@@ -50,7 +52,7 @@ export type RoutinesActions = {
   handleOpenRoutine: (id: string) => void;
 };
 
-const toListItem = ({ routine, taskCount, activeToday, doneToday }: RoutineOverview): RoutineListItem => ({
+const toListItem = ({ routine, taskCount, activeToday, doneToday, nextActiveDay }: RoutineOverview): RoutineListItem => ({
   id: routine.id,
   title: routine.title,
   icon: routine.icon,
@@ -58,6 +60,7 @@ const toListItem = ({ routine, taskCount, activeToday, doneToday }: RoutineOverv
   taskCount,
   activeToday,
   doneToday,
+  ...(nextActiveDay ? { nextActiveDay } : {}),
 });
 
 /**
@@ -111,6 +114,13 @@ export const useRoutinesViewModel = (
   useEffect(() => {
     void reload();
   }, [reload]);
+
+  useEffect(() => {
+    if (isPrototypeMode || !useCases.subscribeDayChange) return;
+    return useCases.subscribeDayChange(() => {
+      void reload();
+    });
+  }, [isPrototypeMode, reload, useCases]);
 
   /** Roda uma ação do caso de uso; em falha, mostra o aviso e recarrega o estado verdadeiro. */
   const runAction = useCallback(

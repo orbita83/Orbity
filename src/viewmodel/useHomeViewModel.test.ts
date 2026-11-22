@@ -1,10 +1,10 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { AppState, type AppStateStatus } from "react-native";
 import { LocalDate } from "@/model/entities/localDate";
 import type { HomeSummary } from "@/model/entities/homeSummary";
 import { DataSourceError, SchemaVersionError } from "@/model/errors";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import { useHomeViewModel } from "@/viewmodel/useHomeViewModel";
+import { FakeDayChangeService } from "../../tests/fixtures/fakeDayChangeService";
 
 // Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
 const mockNavigate = jest.fn();
@@ -51,22 +51,18 @@ const summaryWith = (currentDays: number, completed = 0, total = 0): HomeSummary
   focus: { canStart: false, reason: "no-targets", durations: [5, 10, 15, 20, 25, 30], defaultDuration: 15 },
 });
 
-const useCasesFrom = (...results: (HomeSummary | Error)[]): IHomeUseCases => {
+const useCasesFrom = (...results: (HomeSummary | Error)[]): IHomeUseCases & { dayChange: FakeDayChangeService } => {
   const loadHome = jest.fn<Promise<HomeSummary>, []>();
+  const dayChange = new FakeDayChangeService();
   for (const result of results) {
     if (result instanceof Error) loadHome.mockRejectedValueOnce(result);
     else loadHome.mockResolvedValueOnce(result);
   }
-  return { loadHome };
-};
-
-const captureAppStateListener = () => {
-  let listener: ((state: AppStateStatus) => void) | undefined;
-  jest.spyOn(AppState, "addEventListener").mockImplementation((_type, handler) => {
-    listener = handler as (state: AppStateStatus) => void;
-    return { remove: jest.fn() } as ReturnType<typeof AppState.addEventListener>;
-  });
-  return (state: AppStateStatus) => listener?.(state);
+  return {
+    loadHome,
+    subscribeDayChange: (listener) => dayChange.subscribe(listener),
+    dayChange,
+  };
 };
 
 describe("useHomeViewModel", () => {
@@ -115,15 +111,14 @@ describe("useHomeViewModel", () => {
     expect(result.current[0].error).toEqual({ messageKey: "error.schema", retryable: false });
   });
 
-  it("RF-0015 CA-06 e D17: volta do segundo plano recalcula sem passar por carregando", async () => {
-    const emit = captureAppStateListener();
+  it("RF-0015 CA-06, D17 e issue #210: mudança de dia recalcula sem passar por carregando", async () => {
     const useCases = useCasesFrom(summaryWith(5), summaryWith(0));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
     await waitFor(() => expect(result.current[0].status).toBe("ready"));
 
     const statuses: string[] = [];
     await act(async () => {
-      emit("active");
+      useCases.dayChange.emitDayChange(LocalDate.parse("2026-11-15"));
       statuses.push(result.current[0].status);
     });
 
@@ -133,26 +128,23 @@ describe("useHomeViewModel", () => {
     expect(result.current[0].status).toBe("ready");
   });
 
-  it("ir para segundo plano não recalcula", async () => {
-    const emit = captureAppStateListener();
+  it("remove a assinatura do serviço de mudança de dia ao desmontar", async () => {
     const useCases = useCasesFrom(summaryWith(5));
-    const { result } = await renderHook(() => useHomeViewModel(useCases));
+    const { result, unmount } = await renderHook(() => useHomeViewModel(useCases));
     await waitFor(() => expect(result.current[0].status).toBe("ready"));
+    expect(useCases.dayChange.listenerCount).toBe(1);
 
-    await act(async () => {
-      emit("background");
-    });
-    expect(useCases.loadHome).toHaveBeenCalledTimes(1);
+    await unmount();
+    expect(useCases.dayChange.listenerCount).toBe(0);
   });
 
   it("erro num recálculo depois de pronto mantém o valor anterior", async () => {
-    const emit = captureAppStateListener();
     const useCases = useCasesFrom(summaryWith(5), new DataSourceError());
     const { result } = await renderHook(() => useHomeViewModel(useCases));
     await waitFor(() => expect(result.current[0].status).toBe("ready"));
 
     await act(async () => {
-      emit("active");
+      useCases.dayChange.emitDayChange(LocalDate.parse("2026-11-15"));
     });
 
     await waitFor(() => expect(useCases.loadHome).toHaveBeenCalledTimes(2));

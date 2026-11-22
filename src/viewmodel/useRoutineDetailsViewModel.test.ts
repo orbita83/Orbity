@@ -8,6 +8,7 @@ import type { IClockService } from "@/model/services/iClockService";
 import { RoutineUseCases } from "@/usecase/routineUseCases";
 import { PROTOTYPE_ROUTINE_DETAILS } from "@/view/__fixtures__/routines.fixture";
 import { useRoutineDetailsViewModel } from "@/viewmodel/useRoutineDetailsViewModel";
+import { FakeDayChangeService } from "../../tests/fixtures/fakeDayChangeService";
 
 // Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
 const mockNavigate = jest.fn();
@@ -44,19 +45,25 @@ beforeEach(() => {
 });
 
 /** Segunda-feira: a rotina de Seg a Sex é de hoje. */
-const monday: IClockService = {
-  now: () => "2026-11-16T08:00:00-03:00",
-  todayLocal: () => LocalDate.parse("2026-11-16"),
+const createClock = (initial = "2026-11-16") => {
+  let current = initial;
+  const clock: IClockService = {
+    now: () => `${current}T08:00:00-03:00`,
+    todayLocal: () => LocalDate.parse(current),
+  };
+  return { clock, setDay: (next: string) => (current = next) };
 };
 
 /** Caso de uso real sobre DataSources em memória (Fake), sem banco e sem o container. */
-const createUseCases = () => {
+const createUseCases = (initialDay = "2026-11-16") => {
   const tasks = new MemoryTaskDataSource();
   const routines = new MemoryRoutineDataSource(tasks);
   const dailyActivity = new MemoryDailyActivityDataSource();
+  const dayChange = new FakeDayChangeService();
+  const { clock, setDay } = createClock(initialDay);
   let seq = 0;
-  const useCases = new RoutineUseCases(routines, tasks, dailyActivity, monday, () => `id-${++seq}`);
-  return { useCases, dailyActivity };
+  const useCases = new RoutineUseCases(routines, tasks, dailyActivity, clock, () => `id-${++seq}`, dayChange);
+  return { useCases, dailyActivity, dayChange, setDay };
 };
 
 describe("useRoutineDetailsViewModel (protótipo)", () => {
@@ -135,6 +142,27 @@ describe("useRoutineDetailsViewModel (caso de uso)", () => {
     await act(async () => result.current[1].completeAll());
     await waitFor(() => expect(result.current[0].errorKey).toBe("error.save"));
     await waitFor(() => expect(result.current[0].doneToday).toBe(false));
+  });
+
+  it("issue #210: detalhe aberto na virada do dia desmarca as tarefas e atualiza o estado de hoje (R2)", async () => {
+    const { useCases, dayChange, setDay } = createUseCases("2026-11-16"); // segunda
+    await useCases.createRoutine({ title: "Matemática", days: [1, 2], tasks: ["Revisar", "Resolver"] });
+    const { result } = await renderHook(() => useRoutineDetailsViewModel("id-1", useCases));
+    await waitFor(() => expect(result.current[0].routine?.title).toBe("Matemática"));
+
+    await act(async () => result.current[1].completeAll());
+    await waitFor(() => expect(result.current[0].doneToday).toBe(true));
+    expect(result.current[0].completedCount).toBe(2);
+
+    // Virada para terça (2026-11-17) com o detalhe aberto: recomeça pendente com tarefas desmarcadas.
+    setDay("2026-11-17");
+    await act(async () => {
+      dayChange.emitDayChange(LocalDate.parse("2026-11-17"));
+    });
+
+    await waitFor(() => expect(result.current[0].doneToday).toBe(false));
+    expect(result.current[0].completedCount).toBe(0);
+    expect(result.current[0].routine?.tasks.every((task) => !task.done)).toBe(true);
   });
 });
 

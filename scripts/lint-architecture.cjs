@@ -18,7 +18,7 @@ const PRESENTATION_PACKAGES = [
   "expo-font", "expo-image", "expo-glass-effect", "expo-symbols",
 ];
 const LAYOUT_PACKAGES = ["react", "expo-router", "expo-status-bar", "expo-system-ui"];
-const VIEWMODEL_PACKAGES = ["react", "react-native", "expo-router"];
+const VIEWMODEL_PACKAGES = ["react", "expo-router"];
 const SQLITE_EXECUTOR = "src/infra/database/expoSqlExecutor.ts";
 const SUPPORT_SUFFIX = /\.(?:test|spec|stories|contract|fixture|factory)$/;
 const CODE_EXTENSION = /\.[cm]?[jt]sx?$/;
