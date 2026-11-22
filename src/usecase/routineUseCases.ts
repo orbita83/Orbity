@@ -8,10 +8,12 @@ import {
   isRoutineActiveOn,
   nextActiveDay,
 } from "@/model/entities/routine";
+import { createStreakStar } from "@/model/entities/star";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
+import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { DayChangeListener, IDayChangeService } from "@/model/services/iDayChangeService";
@@ -38,6 +40,7 @@ export class RoutineUseCases implements IRoutineUseCases {
     private readonly clock: IClockService,
     private readonly generateId: () => string = defaultGenerateId,
     private readonly dayChangeService?: IDayChangeService,
+    private readonly starDataSource?: IStarDataSource,
   ) {}
 
   subscribeDayChange(listener: DayChangeListener): () => void {
@@ -141,8 +144,9 @@ export class RoutineUseCases implements IRoutineUseCases {
       const now = this.clock.now();
       const tasks = await this.taskDataSource.listByRoutine(id);
       await this.routineDataSource.completeOccurrence(id, today, tasks.map((task) => task.id), now);
-      // Concluir a rotina conta para a sequência (RN-0002); o registro do dia é idempotente.
+      // Concluir a rotina conta para a sequência e concede a estrela do dia (RN-0002, RN-0003); o registro é idempotente.
       await this.dailyActivityDataSource.recordDay(today, now);
+      await this.starDataSource?.awardIfNew(createStreakStar(today, now));
     }
     return this.loadDetails(routine, today);
   }

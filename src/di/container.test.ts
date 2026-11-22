@@ -2,6 +2,7 @@ import { container, createAppContainer } from "@/di/container";
 import { DatabaseProvider } from "@/infra/database/databaseProvider";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
+import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
 import { TaskActivityDataSource } from "@/infra/datasources/taskActivityDataSource";
 import { LocalDate } from "@/model/entities/localDate";
@@ -17,6 +18,7 @@ const memoryDataSources = () => {
   const routines = new MemoryRoutineDataSource(tasks);
   return {
     dailyActivity: new MemoryDailyActivityDataSource(),
+    stars: new MemoryStarDataSource(),
     tasks,
     routines,
     activities: new TaskActivityDataSource(tasks, routines),
@@ -90,6 +92,7 @@ describe("container da aplicação", () => {
       focus: { canStart: true },
       progress: { completed: 1, total: 1 },
       streak: { currentDays: 1 },
+      stars: { total: 1, earnedToday: true },
     });
   });
 

@@ -4,6 +4,7 @@ import { createProgress } from "@/model/entities/progress";
 import { calculateStreak } from "@/model/entities/streak";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { DayChangeListener, IDayChangeService } from "@/model/services/iDayChangeService";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
@@ -15,6 +16,7 @@ export class HomeUseCases implements IHomeUseCases {
     private readonly activities: IActivityDataSource,
     private readonly clock: IClockService,
     private readonly dayChangeService?: IDayChangeService,
+    private readonly stars?: IStarDataSource,
   ) {}
 
   subscribeDayChange(listener: DayChangeListener): () => void {
@@ -22,13 +24,26 @@ export class HomeUseCases implements IHomeUseCases {
   }
 
   async loadHome(): Promise<HomeSummary> {
-    const [days, counts, hasFocusTargets] = await Promise.all([
+    const today = this.clock.todayLocal();
+    const [days, counts, hasFocusTargets, starList] = await Promise.all([
       this.dailyActivity.listDays(),
-      this.activities.getProgressCounts(this.clock.todayLocal()),
+      this.activities.getProgressCounts(today),
       this.activities.hasFocusTargets(),
+      this.stars?.listAll(),
     ]);
+    const streak = calculateStreak(days, today);
+    const starsSummary = starList
+      ? {
+          total: starList.length,
+          earnedToday: starList.some((star) => star.sourceType === "streak" && star.earnedDate.equals(today)),
+        }
+      : {
+          total: days.length,
+          earnedToday: days.some((day) => day.equals(today)),
+        };
+
     return {
-      streak: calculateStreak(days, this.clock.todayLocal()),
+      streak,
       progress: createProgress(counts.completed, counts.total),
       focus: {
         canStart: hasFocusTargets,
@@ -36,6 +51,7 @@ export class HomeUseCases implements IHomeUseCases {
         durations: FOCUS_DURATIONS,
         defaultDuration: DEFAULT_FOCUS_DURATION,
       },
+      stars: starsSummary,
     };
   }
 }

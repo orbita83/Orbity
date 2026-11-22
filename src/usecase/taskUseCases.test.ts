@@ -1,4 +1,5 @@
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
+import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/localDate";
@@ -90,19 +91,28 @@ describe("TaskUseCases", () => {
     expect(useCases.todayLocal().toString()).toBe("2026-11-20");
   });
 
-  it("concluir tarefa registra o dia local na sequência e reabrir preserva o dia registrado", async () => {
+  it("concluir tarefa registra o dia local na sequência e concede estrela; reabrir preserva ambos (RF-0017, RN-0003)", async () => {
     const initial = createTaskFixture({ id: "t1", completed: false });
     const taskRepo = new MemoryTaskDataSource([initial]);
     const activityRepo = new MemoryDailyActivityDataSource();
-    const useCases = new TaskUseCases(taskRepo, activityRepo, createClock("2026-11-15T18:00:00-03:00", "2026-11-15"));
+    const starRepo = new MemoryStarDataSource();
+    const useCases = new TaskUseCases(
+      taskRepo,
+      activityRepo,
+      createClock("2026-11-15T18:00:00-03:00", "2026-11-15"),
+      undefined,
+      starRepo,
+    );
 
     const completed = await useCases.toggleTaskCompletion("t1");
     expect(completed.completed).toBe(true);
     expect((await activityRepo.listDays()).map(String)).toEqual(["2026-11-15"]);
+    expect((await starRepo.listAll()).map((star) => star.eventKey)).toEqual(["streak:2026-11-15"]);
 
     const reopened = await useCases.toggleTaskCompletion("t1");
     expect(reopened.completed).toBe(false);
     expect((await activityRepo.listDays()).map(String)).toEqual(["2026-11-15"]);
+    expect(await starRepo.countAll()).toBe(1);
   });
 
   it("togglePinTasks fixa quando há pelo menos uma não fixada e desafixa quando todas já estão fixadas", async () => {
