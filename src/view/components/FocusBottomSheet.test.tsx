@@ -90,4 +90,10 @@ describe("FocusBottomSheet", () => {
     expect(start.props.accessibilityState.disabled).toBe(false);
     expect(screen.queryByText(HOME_COPY["focus.blocked"])).toBeNull();
   });
+
+  it("RF-0017 CA-05: exibe retorno acolhedor quando a estrela do dia foi conquistada", async () => {
+    await render(<FocusBottomSheet {...propsWith({ starEarnedToday: true })} />);
+
+    expect(screen.getByText(HOME_COPY["progress.starEarnedToday"])).toBeTruthy();
+  });
 });

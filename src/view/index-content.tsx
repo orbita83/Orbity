@@ -189,6 +189,7 @@ export const HomeScreenContent = ({
             progressRatio={summary.progress.ratio}
             progressCompleted={summary.progress.completed}
             progressTotal={summary.progress.total}
+            starEarnedToday={summary.stars?.earnedToday ?? false}
             focus={summary.focus}
             onToggleStage={onCycleSheetStage}
             onCollapseSheet={onCollapseSheet}

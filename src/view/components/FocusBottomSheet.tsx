@@ -22,6 +22,8 @@ export type FocusBottomSheetProps = {
   progressRatio: number | null;
   progressCompleted: number;
   progressTotal: number;
+  /** Indica se o estudante conquistou a estrela de sequência hoje (RF-0017 CA-05). */
+  starEarnedToday?: boolean;
   focus: FocusAvailability;
   onToggleStage: () => void;
   onCollapseSheet: () => void;
@@ -76,6 +78,7 @@ export const FocusBottomSheet = ({
   progressRatio,
   progressCompleted,
   progressTotal,
+  starEarnedToday = false,
   focus,
   onToggleStage,
   onCollapseSheet,
@@ -197,6 +200,11 @@ export const FocusBottomSheet = ({
                   </View>
                 ) : null}
               </View>
+              {starEarnedToday ? (
+                <Text allowFontScaling style={styles.description}>
+                  {HOME_COPY["progress.starEarnedToday"]}
+                </Text>
+              ) : null}
             </Card>
 
             <Card>
