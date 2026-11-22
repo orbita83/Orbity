@@ -22,15 +22,16 @@ describe("DatabaseProvider", () => {
     executor.close();
   });
 
-  it("aplica todas as migrações num banco novo e grava user_version = 4", async () => {
+  it("aplica todas as migrações num banco novo e grava user_version = 5", async () => {
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(4);
+    expect(userVersion(executor)).toBe(5);
     expect(tableExists(executor, "daily_activity")).toBe(true);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(tableExists(executor, "routines")).toBe(true);
     expect(tableExists(executor, "routine_occurrences")).toBe(true);
     expect(tableExists(executor, "routine_task_checks")).toBe(true);
+    expect(tableExists(executor, "stars")).toBe(true);
   });
 
   it("rotinas.md: atualiza um banco na v2 para a v3 e as tarefas existentes continuam avulsas", async () => {
@@ -44,7 +45,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(4);
+    expect(userVersion(executor)).toBe(5);
     expect(executor.database.prepare("SELECT id, completed, routine_id, position FROM tasks").all()).toEqual([
       { id: "t1", completed: 1, routine_id: null, position: null },
     ]);
@@ -65,7 +66,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(4);
+    expect(userVersion(executor)).toBe(5);
     expect(executor.database.prepare("SELECT category FROM tasks ORDER BY id").all().map((row) => (row as { category: string | null }).category)).toEqual(
       ["mathematics", "reading", "languages", "science", "programming", "music", null, "outra"],
     );
@@ -74,7 +75,7 @@ describe("DatabaseProvider", () => {
     );
   });
 
-  it("atualiza um banco na v1 para a última versão preservando os registros anteriores", async () => {
+  it("atualiza um banco na v1 para a última versão preservando os registros anteriores e concedendo estrelas retroativas (issue #214)", async () => {
     executor.database.exec(`
       CREATE TABLE daily_activity (
         local_date  TEXT PRIMARY KEY
@@ -87,10 +88,18 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(4);
+    expect(userVersion(executor)).toBe(5);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(executor.database.prepare("SELECT local_date FROM daily_activity").all()).toEqual([
       { local_date: "2026-11-14" },
+    ]);
+    expect(executor.database.prepare("SELECT id, source_type, event_key, earned_date FROM stars").all()).toEqual([
+      {
+        id: "star-streak-2026-11-14",
+        source_type: "streak",
+        event_key: "streak:2026-11-14",
+        earned_date: "2026-11-14",
+      },
     ]);
   });
 
