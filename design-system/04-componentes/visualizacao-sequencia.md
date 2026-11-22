@@ -23,7 +23,7 @@ Oculte camadas decorativas do leitor de tela e exponha contagem e ação por nom
 
 ## Especificações futuras e implementação
 
-A evolução visual por ponto e a rotação axial durante o foco são propostas futuras: faltam limiares, mapeamento de cada estágio e duração do ciclo. Quando definidas, devem preservar conquistas após pausas e desativar rotação com movimento reduzido. Não as apresente como comportamento existente. O visualizador não está implementado nesta branch; o desenho segue o componente "Planeta da sequência" do protótipo do Claude Design, em grade de 280 × 280.
+A evolução visual por ponto e a rotação axial durante o foco são propostas futuras: faltam limiares, mapeamento de cada estágio e duração do ciclo. Quando definidas, devem preservar conquistas após pausas e desativar rotação com movimento reduzido. Não as apresente como comportamento existente. A implementação está em `PlanetStreakView` e `PlanetIllustration`, com o desenho do componente "Planeta da sequência" do protótipo do Claude Design (grade de 280 × 280; ver [08-home-cosmica.md](../08-home-cosmica.md)).
 
 ## Animação validada no spike (1.2)
 
@@ -36,4 +36,4 @@ O spike em Skia (branch `feat/spike-planeta-skia`, sem merge) validou os parâme
 | Brilho | `shadow.glow-planet` (`0 0 72px rgba(130, 54, 217, 0.55)`), o único brilho colorido do ODS |
 | Movimento reduzido | Rotação e pulso desligados |
 
-Na Web, o Skia precisa carregar o CanvasKit antes de desenhar; no spike, isso é feito por um portão de carregamento com versão do `canvaskit-wasm` fixada. A escolha da biblioteca e a implementação no app pertencem à integração da Tela Inicial, não a esta versão do ODS.
+A escolha da biblioteca e a implementação no app pertencem à integração da Tela Inicial, não a esta versão do ODS.

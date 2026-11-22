@@ -6,7 +6,6 @@ node_modules/
 # Expo
 .expo/
 dist/
-web-build/
 storybook-static/
 *storybook.log
 expo-env.d.ts
@@ -19,6 +18,13 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+
+# Assinatura Android e artefatos de build (T0012)
+*.keystore
+credentials.json
+credentials/
+*.apk
+*.aab
 
 # Metro
 .metro-health-check*
@@ -49,3 +55,9 @@ example
 
 # Agents
 .agents
+
+# Documentos de revisao local
+/.revisao-local/
+
+# EGM (artefatos de trabalho; o design final fica em docs/designs/)
+.dev/

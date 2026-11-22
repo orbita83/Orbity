@@ -34,8 +34,8 @@ da branch `development`.
 
 1. Especifique o componente em `design-system/04-componentes/`.
 2. Implemente-o em `src/view/components/`, usando os tokens de `src/view/theme/`.
-3. Adicione um arquivo `nome-do-componente.stories.tsx` ao lado do componente,
-   usando `kebab-case` (por exemplo, `primary-button.stories.tsx`).
+3. Adicione um arquivo `NomeDoComponente.stories.tsx` ao lado do componente,
+   com o mesmo nome do arquivo do componente (por exemplo, `PrimaryButton.stories.tsx`).
 4. Declare `title`, `component`, `args` e `tags: ["autodocs"]`, seguindo o botão.
 5. Documente variantes e limitações; exponha propriedades editáveis em Controls.
 
@@ -44,9 +44,15 @@ Os comandos normais do Expo continuam iniciando o aplicativo.
 Roboto é carregada localmente no catálogo pelo pacote `@fontsource/roboto`;
 a integração nativa deverá carregar a fonte com Expo Font.
 
+As ViewModels navegam com o Expo Router (`RULES.md`, "Navegação na ViewModel"), mas as histórias
+renderizam as telas sem um navegador montado. Por isso, o `.storybook/main.ts` substitui o
+`expo-router` por `.storybook/mocks/expo-router.ts`: a navegação aparece no painel *Actions*, o foco
+da tela roda uma vez ao montar e a rota não tem parâmetros. Para testar os destinos de verdade, use o
+aplicativo ou um teste com `renderRouter` (ex.: `src/view/profile-navigation.test.tsx`).
+
 ## Catálogo atual
 
-O catálogo possui histórias para `PrimaryButton`, `CardTarefa`, `FilterChips`,
+O catálogo possui histórias para `PrimaryButton`, `TaskCard`, `FilterChips`,
 `NavBar` e a composição global do ODS. Elas demonstram variantes, estados
 interativos e os temas claro, escuro ou cósmico quando aplicáveis. Os valores de
 cor, espaço, tipografia e raio implementados vêm de

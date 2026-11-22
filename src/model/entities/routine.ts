@@ -1,0 +1,98 @@
+import type { LocalDate } from "@/model/entities/localDate";
+import type { Task, TaskCategoryId } from "@/model/entities/task";
+
+/**
+ * Ícones que o estudante pode escolher para uma rotina (protótipo 3.1), na ordem do formulário.
+ * São ids: os mesmos das categorias de tarefa, mais "general", o padrão (rotinas.md, R8). O símbolo
+ * e o rótulo de cada id ficam na apresentação (issue #159).
+ */
+export const ROUTINE_ICONS = ["general", "reading", "mathematics", "languages", "science", "programming", "music"] as const satisfies readonly ("general" | TaskCategoryId)[];
+export type RoutineIcon = (typeof ROUTINE_ICONS)[number];
+export const DEFAULT_ROUTINE_ICON: RoutineIcon = "general";
+
+/** Dia da semana, 0 = domingo (RF-0012). */
+export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export type Routine = {
+  readonly id: string;
+  readonly title: string;
+  readonly description?: string;
+  readonly icon: RoutineIcon;
+  /** Dias ativos, sem repetição e em ordem crescente. */
+  readonly days: readonly Weekday[];
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
+export type CreateRoutineInput = {
+  readonly title: string;
+  readonly description?: string;
+  readonly icon?: string;
+  readonly days: readonly number[];
+  /** Títulos das tarefas, na ordem em que devem aparecer. */
+  readonly tasks: readonly string[];
+};
+
+export type NormalizedCreateRoutineInput = {
+  readonly title: string;
+  readonly description?: string;
+  readonly icon: RoutineIcon;
+  readonly days: readonly Weekday[];
+  readonly tasks: readonly string[];
+};
+
+/** Tarefa no formulário de edição: com `id`, é uma tarefa que já existe; sem, é nova (#137). */
+export type RoutineTaskDraft = {
+  readonly id?: string;
+  readonly title: string;
+};
+
+/** Edição de rotina (RF-0009, UC-0007): os mesmos campos da criação, e as tarefas na ordem final. */
+export type UpdateRoutineInput = Omit<CreateRoutineInput, "tasks"> & {
+  readonly id: string;
+  readonly tasks: readonly RoutineTaskDraft[];
+};
+
+export type NormalizedUpdateRoutineInput = Omit<NormalizedCreateRoutineInput, "tasks"> & {
+  readonly id: string;
+  readonly tasks: readonly RoutineTaskDraft[];
+};
+
+/** Rotina como a lista a apresenta: o estado de hoje já calculado. */
+export type RoutineOverview = {
+  readonly routine: Routine;
+  readonly taskCount: number;
+  /** Hoje é um dos dias configurados (RF-0012 CA-04). */
+  readonly activeToday: boolean;
+  /** A ocorrência de hoje está concluída (RF-0011). */
+  readonly doneToday: boolean;
+};
+
+export type RoutineTaskState = {
+  readonly task: Task;
+  /** Marcada na ocorrência de hoje; recomeça desmarcada no dia seguinte (R2). */
+  readonly checkedToday: boolean;
+};
+
+/** Rotina como o detalhe a apresenta, com as tarefas em ordem. */
+export type RoutineDetails = RoutineOverview & {
+  readonly tasks: readonly RoutineTaskState[];
+};
+
+export function isRoutineIcon(value: string): value is RoutineIcon {
+  return (ROUTINE_ICONS as readonly string[]).includes(value);
+}
+
+export function isWeekday(value: number): value is Weekday {
+  return Number.isInteger(value) && value >= 0 && value <= 6;
+}
+
+/** Dia da semana de uma data local, sem depender do fuso do aparelho. */
+export function weekdayOf(date: LocalDate): Weekday {
+  return new Date(Date.UTC(date.year, date.month - 1, date.day)).getUTCDay() as Weekday;
+}
+
+/** A rotina acontece nesta data (RF-0012 CA-04)? */
+export function isRoutineActiveOn(routine: Pick<Routine, "days">, date: LocalDate): boolean {
+  return routine.days.includes(weekdayOf(date));
+}

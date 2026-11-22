@@ -1,0 +1,42 @@
+name: Labels automáticas em Pull Requests
+
+# Usa pull_request, e não pull_request_target: desde dezembro de 2025 o pull_request_target roda
+# sempre o workflow da branch padrão (main), e este repositório integra na development.
+# PRs vindos de fork recebem um token só de leitura, então o job é pulado para eles.
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: labels-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  label:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar regras e script
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/pr-labels.json
+            scripts/pr-labels.cjs
+          sparse-checkout-cone-mode: false
+
+      - name: Aplicar labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { syncPullRequestLabels } = require(`${process.env.GITHUB_WORKSPACE}/scripts/pr-labels.cjs`);
+            const config = require(`${process.env.GITHUB_WORKSPACE}/.github/pr-labels.json`);
+            await syncPullRequestLabels({ github, context, core, config });

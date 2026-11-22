@@ -15,7 +15,7 @@ Aplicação no Orbity: o componente corresponde à ação “+ Nova tarefa” do
 - Não use para os filtros “Todos”, “Pendentes” e “Concluídas”: eles representam seleção.
 - Não use para marcar uma tarefa como concluída, abrir o menu de opções ou compor a navegação inferior.
 - Não use a mesma ênfase para várias ações concorrentes na mesma tela.
-- Não use esta variante para exclusão de tarefas; ações destrutivas precisam de especificação própria.
+- Não use nos controles de tela que apenas abrem uma confirmação de exclusão; dentro do diálogo de confirmação ([modal.md](modal.md)), o estilo primário existente é aplicado à ação explícita de confirmação, sem criar variante destrutiva vermelha.
 
 ## Anatomia
 
@@ -82,7 +82,7 @@ Os cálculos e as regras completas estão em [06-acessibilidade.md](../06-acessi
 
 ## Código
 
-A implementação está em [primary-button.tsx](../../src/view/components/primary-button.tsx) e pode ser visualizada pelas [histórias do Storybook](../../src/view/components/primary-button.stories.tsx). Execute `npm run storybook`, abra `http://localhost:6006` e use Tab para inspecionar o foco.
+A implementação está em [PrimaryButton.tsx](../../src/view/components/PrimaryButton.tsx) e pode ser visualizada pelas [histórias do Storybook](../../src/view/components/PrimaryButton.stories.tsx). Execute `npm run storybook`, abra `http://localhost:6006` e use Tab para inspecionar o foco.
 
 Trecho real da variante com texto:
 
@@ -113,5 +113,5 @@ Validação necessária em integração: interação por toque e teclado, anúnc
 ## Mudanças da 1.2
 
 - Sombra escura `shadow.button` no lugar do halo roxo: o destaque vem do fundo sólido.
-- Pressionado com `motion.scale-pressed` e `motion.opacity-pressed` em `motion.duration.short`, implementado em `primary-button.tsx`.
+- Pressionado com `motion.scale-pressed` e `motion.opacity-pressed` em `motion.duration.short`, implementado em `PrimaryButton.tsx`.
 - Gradiente `action` → `action-end` validado e exportado em `cosmicGradients.action`; desenho pendente de componente de gradiente.

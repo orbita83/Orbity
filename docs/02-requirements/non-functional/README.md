@@ -21,7 +21,7 @@ Os requisitos são organizados por categoria conforme a norma de qualidade de so
 | RNF-0003 | Acessibilidade                         | Acessibilidade                    | Cumprir critérios da WCAG 2.1 AA (contraste ≥ 4,5:1, áreas de toque ≥ 48 dp e suporte a leitores de tela).  | [`docs/02-requirements/non-functional/RNF-0003.md`](./RNF-0003.md) |
 | RNF-0004 | Persistência local e disponibilidade   | Confiabilidade / Disponibilidade  | Garantir funcionamento offline-first e persistência íntegra de tarefas, rotinas e progresso no dispositivo. | [`docs/02-requirements/non-functional/RNF-0004.md`](./RNF-0004.md) |
 | RNF-0005 | Confiabilidade e integridade de dados  | Integridade / Tolerância a Falhas | Assegurar atomicidade em operações de escrita, preservação de dados em formulários e contenção de falhas.   | [`docs/02-requirements/non-functional/RNF-0005.md`](./RNF-0005.md) |
-| RNF-0006 | Compatibilidade e responsividade       | Portabilidade / Compatibilidade   | Assegurar execução consistente em Android 8.0+, iOS 14+ e navegadores web com layout adaptável.             | [`docs/02-requirements/non-functional/RNF-0006.md`](./RNF-0006.md) |
+| RNF-0006 | Compatibilidade e responsividade       | Portabilidade / Compatibilidade   | Assegurar execução consistente em dispositivos móveis Android 8.0+ e iOS 14+ com layout adaptável.          | [`docs/02-requirements/non-functional/RNF-0006.md`](./RNF-0006.md) |
 | RNF-0007 | Segurança e privacidade dos dados      | Segurança / Privacidade           | Proteger dados locais do estudante na sandbox do dispositivo e impor comunicação criptografada (HTTPS/TLS). | [`docs/02-requirements/non-functional/RNF-0007.md`](./RNF-0007.md) |
 
 ## 3. Rastreabilidade

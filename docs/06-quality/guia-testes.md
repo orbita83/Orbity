@@ -35,7 +35,7 @@ Os testes automatizados acompanham a divisão em camadas da arquitetura MVVM Sof
 ```text
 src/
 ├── infra/
-│   ├── repositories/                         # Testes *.test.ts junto dos adapters
+│   ├── datasources/                          # Testes *.test.ts junto dos adapters
 │   └── services/                             # Testes *.test.ts junto dos serviços
 ├── model/
 │   └── __fixtures__/                         # Fixtures de entidades puras do domínio
@@ -46,10 +46,10 @@ src/
 │   │   ├── MainTabBar.test.tsx
 │   │   ├── PlaceholderScreen.tsx
 │   │   ├── PlaceholderScreen.test.tsx
-│   │   ├── primary-button.tsx
-│   │   └── primary-button.test.tsx
+│   │   ├── PrimaryButton.tsx
+│   │   └── PrimaryButton.test.tsx
 │   └── ...                                   # Testes *Screen.test.tsx junto das telas
-└── viewmodel/                                # Testes *ViewModel.test.ts junto dos hooks
+└── viewmodel/                                # Testes use*ViewModel.test.ts junto dos hooks
 tests/
 ├── fixtures/                                 # Quando necessárias, fixtures compartilhadas
 └── pure-logic.test.ts                         # Exemplo sem módulo de produção associado
@@ -58,10 +58,10 @@ tests/
 A árvore indica a organização dos testes e dos arquivos de apoio quando necessários; não exige criar fixtures ou módulos de funcionalidades futuras. Testes de telas ficam na camada `view/`, fora de `src/app/`, para não serem interpretados como rotas pelo Expo Router.
 
 ### Convenções de Nomenclatura de Arquivos
-- **Lógica Pura, Use Cases e Infraestrutura:** Arquivos TypeScript em `kebab-case` sob a extensão `*.test.ts` (ex.: `timestamp-use-case.test.ts`, `system-clock-service.test.ts`).
-- **ViewModels (Hooks de Apresentação):** Arquivos TypeScript em `PascalCase` sob a extensão `*ViewModel.test.ts`, espelhando o módulo `*ViewModel.ts` (ex.: `TimestampViewModel.test.ts` para testar o hook `useTimestampViewModel`).
-- **Componentes e Telas React Native:** Arquivos TSX sob a extensão `*.test.tsx` (ex.: `TimestampScreen.test.tsx`, `primary-button.test.tsx`).
-- **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestamp-record.fixture.ts`); fixtures compartilhadas entre camadas podem ficar em `tests/fixtures/`.
+- **Lógica Pura, Use Cases e Infraestrutura:** Arquivos TypeScript em `camelCase` sob a extensão `*.test.ts` (ex.: `timestampUseCase.test.ts`, `systemClockService.test.ts`).
+- **ViewModels (Hooks de Apresentação):** Arquivos TypeScript em `camelCase` com o mesmo nome do hook testado, sob a extensão `use*ViewModel.test.ts`, espelhando o módulo `use*ViewModel.ts` (ex.: `useTimestampViewModel.test.ts` para testar o hook `useTimestampViewModel`). Um arquivo de teste por ViewModel.
+- **Componentes e Telas React Native:** Arquivos TSX sob a extensão `*.test.tsx` (ex.: `TimestampScreen.test.tsx`, `PrimaryButton.test.tsx`).
+- **Fixtures e Fábricas de Dados:** Arquivos sob a extensão `*.fixture.ts` ou `*.factory.ts` dentro de subdiretórios `__fixtures__/` (ex.: `timestampRecord.fixture.ts`); fixtures compartilhadas entre camadas podem ficar em `tests/fixtures/`.
 
 ### Estrutura Interna das Suítes (Padrão AAA)
 Toda suíte deve ser organizada através dos blocos `describe`, `it` (ou `test`) com títulos expressivos em **Português Brasileiro (`pt-BR`)**, seguindo o ciclo **AAA (Arrange, Act, Assert)**:
@@ -71,7 +71,8 @@ describe("TimestampUseCase", () => {
   it("deve criar registro de carimbo de data/hora com formato ISO válido", async () => {
     // 1. Arrange (Preparação de entradas, dependências e fixtures)
     const fakeClockService: IClockService = {
-      nowIso: async () => "2026-11-06T12:00:00.000Z",
+      now: () => "2026-11-06T09:00:00-03:00",
+      todayLocal: () => LocalDate.parse("2026-11-06"),
     };
     const useCase = new TimestampUseCase(fakeClockService);
 
@@ -79,8 +80,8 @@ describe("TimestampUseCase", () => {
     const result = await useCase.createRecord("estudo");
 
     // 3. Assert (Verificação do comportamento observável e dados retornados)
-    expect(result.label).toBe("estudo:2026-11-06T12:00:00.000Z");
-    expect(result.isoDate).toBe("2026-11-06T12:00:00.000Z");
+    expect(result.label).toBe("estudo:2026-11-06T09:00:00-03:00");
+    expect(result.isoDate).toBe("2026-11-06T09:00:00-03:00");
   });
 });
 ```
@@ -122,14 +123,14 @@ Test Doubles são objetos substitutos que substituem dependências reais durante
 
 5. **Fake (Adapters In-Memory):**
    - **O que é:** Uma implementação real, simplificada e funcional de um contrato de domínio, que mantém estado interno na memória da aplicação sem utilizar serviços externos, rede ou armazenamento em disco.
-   - **Quando usar:** Para contratos de repositórios (`src/model/repositories/`) em testes de integração de Use Cases ou cenários complexos onde estados precisam persistir entre múltiplos passos.
+   - **Quando usar:** Para contratos de DataSources (`src/model/datasources/`) em testes de integração de Use Cases ou cenários complexos onde estados precisam persistir entre múltiplos passos.
 
 ### 4.2. Matriz de Decisão: Qual Test Double Escolher?
 
 | Necessidade do Teste | Double Recomendado | Ferramenta Jest | Justificativa |
 |---|---|---|---|
 | Fornecer dados constantes ou simular falha em serviço | **Stub** | Objeto literal ou `jest.fn().mockResolvedValue(...)` | Não acopla o teste a detalhes internos de quantas vezes o método foi lido. |
-| Testar fluxo complexo com persistência de estado transitório | **Fake** | Classe In-Memory (`InMemory*Repository`) | Reproduz contratos fielmente sem complexidade de infraestrutura. |
+| Testar fluxo complexo com persistência de estado transitório | **Fake** | Classe em memória (`Memory*DataSource`) | Reproduz contratos fielmente sem complexidade de infraestrutura. |
 | Validar se uma função de callback ou serviço externo foi invocado com argumentos corretos | **Mock** | `jest.fn()` | O critério de aceitação do teste é a verificação comportamental de disparo. |
 | Observar chamadas a utilitários de sistema ou métodos existentes sem substituir a execução | **Spy** | `jest.spyOn(objeto, "metodo")` | Garante rastreabilidade sem quebrar o comportamento original. |
 | Preencher dependência não exercitada pelo teste | **Dummy** | `{}` tipado como `never` ou objeto vazio | Evita criar estruturas desnecessárias para testes unitários focados. |
@@ -155,8 +156,8 @@ Test Doubles são objetos substitutos que substituem dependências reais durante
 ### 5.2. Exemplo Padronizado de Fixture
 
 ```typescript
-// src/model/__fixtures__/timestamp-record.fixture.ts
-import type { TimestampRecord } from "@/model/entities/timestamp-record";
+// src/model/__fixtures__/timestampRecord.fixture.ts
+import type { TimestampRecord } from "@/model/entities/timestampRecord";
 
 /**
  * Cria uma fixture imutável de TimestampRecord para utilização em testes.
@@ -192,7 +193,7 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 │ 3. Use Cases (Regras de Negócio e Orquestração)                       │
 │    -> Testes Unitários Puros em TypeScript (Jest puro)                 │
 │    -> Sem React, sem Expo, sem dependências de UI                     │
-│    -> Recebe interfaces de repositórios e serviços via construtor      │
+│    -> Recebe interfaces de DataSources e serviços via construtor      │
 ├────────────────────────────────────────────────────────────────────────┤
 │ 4. Domínio / Model (Entidades, Tipos e Erros Puros)                   │
 │    -> Testes Unitários de cálculo, validação e exceções de domínio    │
@@ -204,13 +205,13 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 
 ### 6.1. Como Testar Use Cases (`src/usecase/`)
 - Os Use Cases contêm regras de negócio e validações puras.
-- Devem ser testados isoladamente, instanciando diretamente a classe concreta do Use Case e passando dublês (Stubs ou Fakes) de seus contratos de domínio (`src/model/repositories/` e `src/model/services/`).
+- Devem ser testados isoladamente, instanciando diretamente a classe concreta do Use Case e passando dublês (Stubs ou Fakes) de seus contratos de domínio (`src/model/datasources/` e `src/model/services/`).
 - Não utilize React, React Native Testing Library ou instâncias do container global para testes unitários de Use Cases.
 
 ### 6.2. Como Testar ViewModels (`src/viewmodel/`)
-- ViewModels são implementadas em arquivos `*ViewModel.ts` (ex.: `TimestampViewModel.ts`) e expostas como Custom Hooks (`use*ViewModel`).
+- ViewModels são implementadas em arquivos `use*ViewModel.ts` com o mesmo nome do hook (ex.: `useTimestampViewModel.ts`) e expostas como Custom Hooks (`use*ViewModel`) que retornam a tupla `[state, actions]`.
 - Devem ser testadas utilizando o utilitário `renderHook` de `@testing-library/react-native`.
-- Devem receber a interface do Use Case (`I*UseCase` / `I*UseCases`) via injeção por parâmetro opcional (resolvido internamente com `resolveUseCase` de `src/DI/container.ts`), passando um dublê da abstração.
+- Devem receber a interface do Use Case (`I*UseCase` / `I*UseCases`) via injeção por parâmetro opcional (resolvido internamente com `resolveUseCase` de `src/di/container.ts`), passando um dublê da abstração.
 - Verifique as transições de estado:
   - Estado inicial (dados nulos/vazios, `loading: false`, `error: null`).
   - Durante o carregamento (`loading: true`, `error: null`).
@@ -225,10 +226,10 @@ A arquitetura **MVVM Sofisticado** separa rigorosamente as responsabilidades do 
 - **Isolamento Completo:** A View não deve executar regras de negócio nem conter blocos `try/catch`. O teste de componente deve validar se a UI reflete fielmente o estado (`label`, `loading`, `error`) provido pela ViewModel.
 
 ### 6.4. Como Testar a Infraestrutura e Adapters Concretos (`src/infra/`)
-- Serviços (`src/infra/services/`) e repositórios (`src/infra/repositories/`) concretos devem ser criados e testados somente quando existir um contrato real previamente definido em `src/model/services/` ou `src/model/repositories/`.
-- Conforme a **Regra de Ouro da Infraestrutura** em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), os testes de infraestrutura devem validar tanto o mapeamento para entidades puras de `src/model/entities/` quanto a conversão de falhas técnicas/nativas para instâncias de `DomainError` (`src/model/errors/`), garantindo que exceções brutas nunca vazem para as camadas superiores.
+- Serviços (`src/infra/services/`) e DataSources (`src/infra/datasources/`) concretos devem ser criados e testados somente quando existir um contrato real previamente definido em `src/model/services/` ou `src/model/datasources/`.
+- Conforme a **Regra de Ouro da Infraestrutura** em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), os testes de infraestrutura devem validar tanto o mapeamento para entidades puras de `src/model/entities/` quanto a conversão de falhas técnicas/nativas para a subclasse de `DomainError` do seu tipo (`src/model/errors.ts`, ex.: `toBeInstanceOf(DataSourceError)`), garantindo que exceções brutas nunca vazem para as camadas superiores.
 
-### 6.5. Inversão de Dependências e Composition Root (`src/DI/container.ts`)
+### 6.5. Inversão de Dependências e Composition Root (`src/di/container.ts`)
 Conforme documentado em [`ARCHITECTURE.md`](../../ARCHITECTURE.md), a aplicação provê três níveis de substituição de dependências:
 
 1. **Nível 1 (Unitário Direto no Use Case):** Passar o dublê diretamente ao construtor do Use Case ou a `composeUseCase((clock) => new TimestampUseCase(clock), fakeClockService)`.
@@ -277,28 +278,31 @@ Os exemplos a seguir utilizam as abstrações didáticas de carimbo de data/hora
 ### 8.1. Exemplo: Teste Unitário de Use Case com Stub de Serviço
 
 ```typescript
-// src/usecase/timestamp-use-case.test.ts
-import { ValidationError } from "@/model/errors/domain-error";
-import type { IClockService } from "@/model/services/clock-service";
-import { TimestampUseCase } from "@/usecase/timestamp-use-case";
+// src/usecase/timestampUseCase.test.ts
+import { ValidationError } from "@/model/errors";
+import { LocalDate } from "@/model/entities/localDate";
+import type { IClockService } from "@/model/services/iClockService";
+import { TimestampUseCase } from "@/usecase/timestampUseCase";
 
 describe("TimestampUseCase", () => {
   it("deve criar registro de carimbo de data/hora delegando ao servico de relogio", async () => {
     // Stub do contrato IClockService fornecendo resposta predeterminada
     const stubClockService: IClockService = {
-      nowIso: async () => "2026-11-06T10:00:00.000Z",
+      now: () => "2026-11-06T07:00:00-03:00",
+      todayLocal: () => LocalDate.parse("2026-11-06"),
     };
 
     const useCase = new TimestampUseCase(stubClockService);
     const record = await useCase.createRecord("estudo-diario");
 
-    expect(record.label).toBe("estudo-diario:2026-11-06T10:00:00.000Z");
-    expect(record.isoDate).toBe("2026-11-06T10:00:00.000Z");
+    expect(record.label).toBe("estudo-diario:2026-11-06T07:00:00-03:00");
+    expect(record.isoDate).toBe("2026-11-06T07:00:00-03:00");
   });
 
   it("deve lancar ValidationError quando o prefixo estiver vazio ou em branco", async () => {
     const dummyClockService: IClockService = {
-      nowIso: async () => "2026-11-06T10:00:00.000Z",
+      now: () => "2026-11-06T07:00:00-03:00",
+      todayLocal: () => LocalDate.parse("2026-11-06"),
     };
 
     const useCase = new TimestampUseCase(dummyClockService);
@@ -310,12 +314,14 @@ describe("TimestampUseCase", () => {
 
 ### 8.2. Exemplo: Teste de Hook de ViewModel com Dublê de Use Case
 
+A ViewModel retorna a tupla `[state, actions]`: no teste, `result.current[0]` é o estado e `result.current[1]` são as ações.
+
 ```typescript
-// src/viewmodel/TimestampViewModel.test.ts
+// src/viewmodel/useTimestampViewModel.test.ts
 import { renderHook, act } from "@testing-library/react-native";
-import { ValidationError } from "@/model/errors/domain-error";
-import type { ITimestampUseCase } from "@/usecase/timestamp-use-case";
-import { useTimestampViewModel } from "@/viewmodel/TimestampViewModel";
+import { ValidationError } from "@/model/errors";
+import type { ITimestampUseCase } from "@/usecase/timestampUseCase";
+import { useTimestampViewModel } from "@/viewmodel/useTimestampViewModel";
 
 describe("useTimestampViewModel", () => {
   it("deve gerenciar estado de loading e atualizar label com sucesso", async () => {
@@ -328,17 +334,17 @@ describe("useTimestampViewModel", () => {
 
     const { result } = renderHook(() => useTimestampViewModel(stubUseCase));
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.label).toBeNull();
-    expect(result.current.error).toBeNull();
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].label).toBeNull();
+    expect(result.current[0].error).toBeNull();
 
     await act(async () => {
-      await result.current.handleGenerate("sync");
+      await result.current[1].handleGenerate("sync");
     });
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.label).toBe("sync:2026-11-06T10:00:00.000Z");
-    expect(result.current.error).toBeNull();
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].label).toBe("sync:2026-11-06T10:00:00.000Z");
+    expect(result.current[0].error).toBeNull();
     expect(stubUseCase.createRecord).toHaveBeenCalledWith("sync");
   });
 
@@ -354,12 +360,12 @@ describe("useTimestampViewModel", () => {
     const { result } = renderHook(() => useTimestampViewModel(failingUseCase));
 
     await act(async () => {
-      await result.current.handleGenerate("   ");
+      await result.current[1].handleGenerate("   ");
     });
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.label).toBeNull();
-    expect(result.current.error).toBe(
+    expect(result.current[0].loading).toBe(false);
+    expect(result.current[0].label).toBeNull();
+    expect(result.current[0].error).toBe(
       "O prefixo de identificação é obrigatório.",
     );
   });
@@ -369,10 +375,10 @@ describe("useTimestampViewModel", () => {
 ### 8.3. Exemplo: Teste de Componente Visual com Testing Library
 
 ```typescript
-// src/view/components/primary-button.test.tsx
+// src/view/components/PrimaryButton.test.tsx
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
-import { PrimaryButton } from "@/view/components/primary-button";
+import { PrimaryButton } from "@/view/components/PrimaryButton";
 
 describe("PrimaryButton", () => {
   it("renderiza o rotulo do botao corretamente de forma assincrona", async () => {

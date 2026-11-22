@@ -2,11 +2,11 @@
 
 Origem no sistema base: Material 3, Linear progress indicator. Situação: Novo (1.2). Motivo da adaptação: mostrar o avanço do dia com contador textual e porcentagem legível, sem depender da cor nem do contraste do preenchimento.
 
-Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-f1-f2) (card Progresso de hoje), [painel-deslizante.md](painel-deslizante.md), [02-tokens.md](../02-tokens.md) e [06-acessibilidade.md](../06-acessibilidade.md).
+Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-f1-f2) (card Seu progresso), [painel-deslizante.md](painel-deslizante.md), [02-tokens.md](../02-tokens.md) e [06-acessibilidade.md](../06-acessibilidade.md).
 
 ## Quando usar
 
-- Use no card "Progresso de hoje" para mostrar tarefas e rotinas concluídas sobre o total do dia ("1 / 25").
+- Use no card "Seu progresso" para mostrar as atividades concluídas sobre o total ("1 / 25"): tarefas avulsas pelo total geral e cada rotina de hoje como uma unidade ([RN-0007](../../docs/02-requirements/business-rules/RN-0007.md)).
 - Use quando o total for conhecido e o progresso puder ser expresso como proporção.
 
 ## Quando não usar
@@ -17,7 +17,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-
 
 ## Anatomia
 
-1. Linha de texto: rótulo ("Progresso de hoje") à esquerda; contador "concluídas / total" e porcentagem à direita, em `font.label` com `color.on-surface`. **A porcentagem fica fora da barra**, nunca sobre o preenchimento.
+1. Linha de texto: rótulo ("Seu progresso") à esquerda; contador "concluídas / total" e porcentagem à direita, em `font.label` com `color.on-surface`. **Na 1.3, a porcentagem vai para o meio da barra** (ver item 2); o contador continua à direita do rótulo. Até a 1.2, a porcentagem ficava fora da barra.
 2. Trilha: altura `progress.height` (20 dp), fundo `progress.track` (`color.action-subtle`; cósmico `#232052`), cantos totalmente arredondados (metade da altura).
 3. Preenchimento: largura proporcional exata ao valor, `progress.fill` (cósmico `cosmicGradients.progress`, `#8A42FA` → `#8648FA`; legados `color.action`), mesmos cantos.
 
@@ -25,7 +25,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-
 
 | Variante | Uso | Tokens |
 | --- | --- | --- |
-| Padrão | Progresso de hoje no painel | `progress.height`, `progress.track`, `progress.fill`, `font.label`, `color.on-surface`, `space.sm` |
+| Padrão | Seu progresso no painel | `progress.height`, `progress.track`, `progress.fill`, `font.label`, `color.on-surface`, `space.sm` |
 | Compacta | Futuro uso em listas; não validada | Mesmos tokens com altura menor ainda não definida (lacuna) |
 
 ## Estados
@@ -42,7 +42,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-
 
 ## Acessibilidade
 
-- Contraste: porcentagem e contador `#FAF9FF` sobre card `#141332` = 17,16:1; preenchimento sobre trilha = 3,03:1 a 3,09:1 (ver [06-acessibilidade.md](../06-acessibilidade.md)).
+- Contraste: contador `#FAF9FF` sobre card `#141332` = 17,16:1. Porcentagem no meio da barra (1.3), em `font.label` e `color.on-surface`: `#FAF9FF` sobre a trilha `#232052` = 14,33:1 e sobre o preenchimento `#8A42FA`/`#8648FA` = 4,95:1/4,86:1, ou seja, AA nas duas partes, inclusive quando o texto fica metade sobre cada uma. Sem sombra nem contorno no texto (regra sem brilho); preenchimento sobre trilha = 3,03:1 a 3,09:1 (ver [06-acessibilidade.md](../06-acessibilidade.md)).
 - Leitor de tela: `accessibilityRole="progressbar"` com `accessibilityValue={{ min: 0, max: total, now: concluídas, text: "1 de 25 concluídas, 4%" }}`.
 - Movimento: a mudança de largura pode usar `motion.duration.medium`; com movimento reduzido, atualize sem transição.
 - Texto ampliado: a linha de texto quebra acima da barra; a barra não encolhe abaixo de `progress.height`.
@@ -50,8 +50,8 @@ Referências locais: [05-padroes.md](../05-padroes.md#2-navegação-e-modo-foco-
 ## Faça e evite
 
 - **Faça:** conte tarefas e rotinas concluídas sobre o total do dia.
-- **Faça:** mantenha contador e porcentagem em texto, fora da barra.
-- **Evite:** escrever a porcentagem sobre o preenchimento: o contraste varia com o avanço.
+- **Faça:** mantenha contador e porcentagem em texto; a porcentagem centralizada na barra e o contador fora dela.
+- **Evite:** trocar o preenchimento por uma cor mais clara que `#8648FA` sem refazer o contraste da porcentagem centralizada (precisa de 4,5:1 com `#FAF9FF`).
 - **Evite:** adicionar brilho no preenchimento.
 
 ## Código

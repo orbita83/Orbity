@@ -18,7 +18,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 1. Rótulo visível acima do campo, `font.label`, `color.on-surface-variant`.
 2. Campo: fundo `color.surface-variant`, contorno de 1 dp `color.border-subtle`, cantos `radius.md`, altura mínima `target.min-size`, padding `space.md`, texto `font.body` em `color.on-surface`.
 3. Texto de ajuda ou erro abaixo, `font.label`; erro com ícone em `color.error` e texto em `color.on-surface`.
-4. Grupos em linha (data e horários): `fieldset` com `min-width: 0` e grade `repeat(n, minmax(0, 1fr))` na Web; `flex: 1` com `minWidth: 0` no app. Isso impede que campos de data e hora empurrem o formulário para fora da tela (problema visto no protótipo de Nova tarefa).
+4. Grupos em linha (data e horários): `flex: 1` com `minWidth: 0` no app. Isso impede que campos de data e hora empurrem o formulário para fora da tela (problema visto no protótipo de Nova tarefa).
 
 ## Variantes
 
@@ -26,14 +26,13 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 | --- | --- | --- |
 | Texto | Título, descrição | Anatomia acima |
 | Data e hora | Prazo e intervalo | Mesmos tokens, grade de colunas iguais |
-| Seleção | Categoria, repetição | Mesmos tokens com ícone `expand_more` (glifo pendente em `material-symbol.tsx`) |
+| Seleção | Categoria, repetição | Mesmos tokens com ícone `expand_more` (glifo pendente em `MaterialSymbol.tsx`) |
 
 ## Estados
 
 | Estado | Aparência (tokens) | Comportamento | Acessibilidade |
 | --- | --- | --- | --- |
 | Padrão | Contorno `color.border-subtle` | Recebe digitação | Rótulo associado ao campo |
-| Hover | Contorno `color.border` (Web) | — | — |
 | Pressionado | Sem mudança visual | Abre teclado ou seletor | — |
 | Foco | Contorno 2 dp `color.focus` | Indica edição | Contraste ≥ 3:1 |
 | Erro | Ícone `color.error` e mensagem | Mantém o valor digitado | Mensagem associada e anunciada |
@@ -47,12 +46,12 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 
 ## Faça e evite
 
-- **Faça:** use `minmax(0, 1fr)` em grupos em linha.
+- **Faça:** use `flex: 1` com `minWidth: 0` em grupos em linha.
 - **Evite:** largura fixa em campos de data e hora.
 
 ## Código
 
-Ainda não implementado. A variante Texto (uma ou várias linhas) está prevista como `TextField`, e o placeholder usa `cosmicColors.inactive`. O campo aceita um botão acessório à direita (`trailingIcon`, `trailingLabel` e `onTrailingPress`), usado em Data e hora para abrir o [seletor de opções](seletor-opcoes.md) sem impedir a digitação, e o contorno de foco envolve o campo e o botão. A Seleção de categoria usa o mesmo seletor.
+A variante Texto (uma ou várias linhas) está em [TextField.tsx](../../src/view/components/TextField.tsx), com testes em `FormControls.test.tsx` e histórias em `FormControls.stories.tsx`. O placeholder usa `cosmicColors.inactive`. Desde a tela de Tarefas, o campo aceita um botão acessório à direita (`trailingIcon`, `trailingLabel` e `onTrailingPress`), usado em Data e hora para abrir o [seletor de opções](seletor-opcoes.md) sem impedir a digitação; o contorno de foco passa a envolver o campo e o botão. A Seleção de categoria usa o mesmo seletor.
 
 ```tsx
 <TextField

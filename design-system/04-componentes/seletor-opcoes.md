@@ -55,4 +55,4 @@ Referências locais: [modal.md](modal.md), [campos-formulario.md](campos-formula
 
 ## Código
 
-Ainda não implementado. As opções devem chegar da ViewModel de Nova tarefa (data, horário e categoria); a view não monta a lista a partir de regras do model.
+Implementado em [TaskPickerModal.tsx](../../src/view/components/TaskPickerModal.tsx), com testes em `TaskPickerModal.test.tsx`. As opções chegam da ViewModel de Nova tarefa (`dateOptions`, `timeOptions` e `categoryOptions`).

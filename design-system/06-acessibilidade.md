@@ -16,7 +16,7 @@ Onde $L_1$ representa a luminância relativa da cor mais clara e $L_2$ a da mais
 - **Texto grande (≥ 24 px em peso normal ou ≥ 18,67 px em negrito, como `font.title`):** Mínimo de **3,0:1** (WCAG 1.4.3).
 - **Elementos de interface gráficos e foco (`color.focus`):** Mínimo de **3,0:1** em relação ao fundo adjacente (WCAG 1.4.11 Contraste de Não-Texto — Nível AA).
 
-> **Equivalência tipográfica (WCAG vs. Orbity):** A especificação original da WCAG adota pontos tipográficos (18 pt para texto normal e 14 pt para negrito). Em telas digitais e ecossistemas web/mobile com escala em pixels CSS ($1\text{ pt} = \frac{4}{3}\text{ px} \approx 1{,}333\text{ px}$), os limiares correspondem a **24 px** para peso normal e **18,67 px** para negrito (peso $\ge 700$). Portanto, o token `font.title` (24 px, peso 700) qualifica-se como texto grande por ambos os parâmetros. Já os tokens `font.label` (14 px, peso 500) e `font.body` (16 px, peso 400) enquadram-se estritamente como texto normal, exigindo razão de contraste mínima de 4,5:1.
+> **Equivalência tipográfica (WCAG vs. Orbity):** A especificação original da WCAG adota pontos tipográficos (18 pt para texto normal e 14 pt para negrito). Em telas digitais e ecossistemas mobile com escala em pixels independentes de densidade ($1\text{ pt} = \frac{4}{3}\text{ px} \approx 1{,}333\text{ px}$), os limiares correspondem a **24 px** para peso normal e **18,67 px** para negrito (peso $\ge 700$). Portanto, o token `font.title` (24 px, peso 700) qualifica-se como texto grande por ambos os parâmetros. Já os tokens `font.label` (14 px, peso 500) e `font.body` (16 px, peso 400) enquadram-se estritamente como texto normal, exigindo razão de contraste mínima de 4,5:1.
 
 ### Tabela de validação de pares semânticos
 
@@ -74,13 +74,36 @@ Os valores vêm da [variante cósmica](02-tokens.md#variante-cósmica). A tabela
 | Ícone de conquista bloqueada `achievementPendingIcon` / card `card` | `#8C7BCB` | `#141332` | 4,97:1 | 3:1 | Aprovado |
 | Rótulo da aba ativa `text` / indicador `track` (aba inteira) | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
 
-A porcentagem do progresso fica **fora da barra**, ao lado do contador, desde a 1.2. Assim o texto nunca depende do preenchimento, cujo contraste varia com o avanço. O fio `color.border-subtle` é decorativo: a separação entre camadas também vem da diferença de superfície e da sombra, e nenhum controle depende dele para ser percebido (WCAG 1.4.11). O estado pressionado por escala e opacidade não altera texto nem fundo de forma persistente; a opacidade 0,8 é momentânea, durante o toque.
+#### Pares novos da 1.3
+
+| Uso e tokens | Primeiro plano | Fundo | Razão | Mínimo | Resultado |
+| --- | --- | --- | --- | --- | --- |
+| Porcentagem no meio da barra `text` / trilha `action-subtle` | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
+| Porcentagem no meio da barra `text` / preenchimento (início e fim) | `#FAF9FF` | `#8A42FA`, `#8648FA` | 4,95:1; 4,86:1 | 4,5:1 | Aprovado |
+| Ícones da barra de seleção `on-surface-variant` / `navbar.bg` | `#BBB6E3` | `#0D0D29` | 9,4:1 | 3:1 | Aprovado |
+| Borda do card selecionado `action` / card `card` | `#7137F5` | `#141332` | 3,05:1 | 3:1 | Aprovado |
+| Texto sobre o preenchimento do toque longo `text` / `action-subtle` | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
+| Prazo sobre o preenchimento do toque longo `on-surface-variant` / `action-subtle` | `#BBB6E3` | `#232052` | 7,80:1 | 4,5:1 | Aprovado |
+
+Na 1.2, a porcentagem do progresso ficava **fora da barra**, ao lado do contador. Na 1.3, ela vai para o meio da barra: o branco passa nas duas partes (trilha e preenchimento), então o texto continua legível em qualquer avanço, inclusive metade sobre cada parte. Se o preenchimento ficar mais claro que `#8648FA`, refaça essa conta. O fio `color.border-subtle` é decorativo: a separação entre camadas também vem da diferença de superfície e da sombra, e nenhum controle depende dele para ser percebido (WCAG 1.4.11). O estado pressionado por escala e opacidade não altera texto nem fundo de forma persistente; a opacidade 0,8 é momentânea, durante o toque.
 
 **Correções em preparação para 1.1.0:** o hover anterior `#8252FC` resultava em 4,40:1 com `text`, abaixo de 4,5:1 para texto comum. A parada final anterior `#713BF5` resultava em 2,60:1 sobre `track`, abaixo de 3:1 quando o indicador gráfico precisa ser distinguido. A nova cor `#8648FA` foi escolhida para ambos os papéis; os resultados acima não comprovam os gradientes inteiros.
 
 **Pendências:** o modelo amostrado não substitui a avaliação da interpolação, composição e região efetiva em cada implementação. Texto sobre o planeta, brilho, imagem ou transparência exige avaliar a composição real. A alça e a ação pressionada foram definidas na 1.2 (tabela acima e escala/opacidade); o estado desabilitado da ação ainda não possui par calculável; não infira cores. A navbar sólida do tema global possui fundo e item inativo verificados acima; outras composições exigem nova verificação. O estado desabilitado tem exceção aos critérios WCAG de contraste aplicáveis a componentes inativos, mas sua legibilidade deve ser considerada; não marque estados sem valores como aprovados. Mantenha texto ou outro indicador perceptível para progresso e seleção, além da cor.
 
 Os limiares e exceções são descritos em [WCAG 1.4.3 — Contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) e [WCAG 1.4.11 — Contraste de conteúdo não textual](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html). A verificação de cores sólidas não substitui os testes visuais e de acessibilidade em uma implementação real.
+
+#### Tag de categoria (issue #25)
+
+A [tag de categoria](04-componentes/tag-categoria.md) usa texto e ícone em `color.on-surface` sobre `color.action-subtle` nos três temas. O rótulo usa `font.label`, por isso o mínimo é 4,5:1. `tests/ods-theme.test.cjs` verifica os três pares.
+
+| Uso e tokens | Tema | Primeiro plano | Fundo | Razão | Mínimo | Resultado |
+| --- | --- | --- | --- | --- | --- | --- |
+| Rótulo e ícone `color.on-surface` / `color.action-subtle` | Cósmico | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
+| Rótulo e ícone `color.on-surface` / `color.action-subtle` | Escuro | `#FFFFFF` | `#9333EA` | 5,38:1 | 4,5:1 | Aprovado |
+| Rótulo e ícone `color.on-surface` / `color.action-subtle` | Claro | `#1B1B1F` | `#E9D5FF` | 12,61:1 | 4,5:1 | Aprovado |
+
+O fundo da tag é decorativo: sobre o card, dá 1,20:1 no cósmico, 3,19:1 no escuro e 1,24:1 no claro. A informação está no rótulo e no ícone, e a tag não é interativa, então o limite dela não precisa de 3:1 (WCAG 1.4.11). Não use `color.focus` no ícone da tag: no escuro, `#C084FC` sobre `#9333EA` dá 2,04:1.
 
 ---
 
@@ -101,6 +124,7 @@ Para garantir usabilidade por pessoas com deficiências motoras, tremores ou em 
 | Campo de texto (Input) | Altura 56 dp (Herdado - Material 3) | 56 dp de altura | Altura padrão de 56 dp do container de Input herdada do Material 3, superando a meta mínima de 48 dp. |
 | Checkbox / Conclusão de Tarefa | Caixa de 24 × 24 dp (`space-24`) | 48 × 48 dp (Herdado - Material 3) | Caixa delimitada ou expansão via `hitSlop: { top: 12, bottom: 12, left: 12, right: 12 }` (compensação calculada: $(48 - 24) / 2 = 12\text{ dp}$). |
 | Itens de Lista / Cards de Rotina | Variável (conteúdo dinâmico com padding `space.md`) | Altura mínima de 48 dp | Container de card clicável com `minHeight: 48` e área de toque contínua em toda a superfície. |
+| Estrela do Grafo de constelação (1.3) | Ponto de 8–12 dp ou estrela de 24 dp | **Exceção:** 28 × 28 dp (sequência) e 40 × 40 dp (conquista) | Alvos de 48 dp se sobreporiam num grafo denso. A exceção vale só para as estrelas e é compensada pela visualização em Lista, com cards de 48 dp ou mais, e pelo zoom. Ver [grafo-constelacao.md](04-componentes/grafo-constelacao.md). |
 
 ### Registro de tokens e lacunas de componente (Seção 9 do README)
 
@@ -128,7 +152,7 @@ A indicação e a ordem de foco asseguram a navegabilidade completa por teclado 
   - Espessura de **2 dp** em linha sólida.
   - Afastamento (*outline offset*) de **2 dp** em relação à borda do componente, prevenindo sobreposição com o fundo ou a borda nativa do componente.
   - A curvatura do anel acompanha o raio do elemento correspondente (`radius.md` para botões e campos, `radius.lg` para cards).
-- **Sem ocultação de foco:** É proibido suprimir o indicador visual de foco (`outline: none` na web ou remoção de realce nativo) sem fornecer uma alternativa com contraste superior a 3:1. (Herdado)
+- **Sem ocultação de foco:** É proibido suprimir o indicador visual de foco ou o realce nativo sem fornecer uma alternativa com contraste superior a 3:1. (Herdado)
 
 ### Ordem e gestão do foco (WCAG 2.4.3 e 2.1.2)
 
@@ -141,7 +165,7 @@ A indicação e a ordem de foco asseguram a navegabilidade completa por teclado 
 
 ## Leitor de tela
 
-O Orbity oferece suporte completo aos leitores de tela padrão das plataformas suportadas (TalkBack no Android, VoiceOver no iOS e leitores no ambiente Web), alinhando-se ao critério WCAG 4.1.2 (Nome, Papel, Valor).
+O Orbity oferece suporte completo aos leitores de tela padrão das plataformas móveis suportadas (TalkBack no Android e VoiceOver no iOS), alinhando-se ao critério WCAG 4.1.2 (Nome, Papel, Valor).
 
 ### Papéis e atributos semânticos (`accessibilityRole`)
 
@@ -191,12 +215,12 @@ A interface do Orbity é flexível e se adapta às necessidades sensoriais e cog
 
 ### Redução de movimento (WCAG 2.3.3 e Material 3)
 
-- **Detecção de preferência:** A aplicação deve consultar o estado de preferência do sistema (por meio de `AccessibilityInfo.isReduceMotionEnabled()` no React Native ou media query `@media (prefers-reduced-motion: reduce)` na Web). (Herdado)
+- **Detecção de preferência:** A aplicação deve consultar o estado de preferência do sistema (por meio de `AccessibilityInfo.isReduceMotionEnabled()` no React Native). (Herdado)
 - **Comportamento com movimento reduzido ativo:**
   - Desativar animações complexas, como transições de constelações, efeitos de partículas, translações laterais longas e zooms.
   - Substituir transições de tela por transições instantâneas ou por um desvanecimento suave de opacidade (*crossfade*) com duração ultra curta (`motion.duration.short` de 100 ms ou 0 ms).
   - Manter feedback de interação instantâneo para preservar a percepção de resposta tátil da interface sem deslocamento espacial. (Adaptado)
-  - Desligar a escala `motion.scale-pressed` e manter apenas `motion.opacity-pressed` no toque; o hook `useReduceMotion` (`src/view/theme/use-reduce-motion.ts`) expõe a preferência aos componentes. (Novo, 1.2)
+  - Desligar a escala `motion.scale-pressed` e manter apenas `motion.opacity-pressed` no toque; o hook `useReduceMotion` (`src/view/theme/useReduceMotion.ts`) expõe a preferência aos componentes. (Novo, 1.2)
   - Parar a rotação (24 s) e o pulso (4 s) do planeta, exibindo-o estático. (Novo, 1.2)
 - **Conteúdo em movimento automático (WCAG 2.2.2):** se o carrossel de conquistas girar sozinho, ofereça pausa visível; até a decisão aberta da 1.2, use rolagem pelo dedo. (Novo, 1.2)
 - **Modais (1.2):** confine o foco no modal, feche por "✕", `Escape` e gesto de voltar, anuncie o título e devolva o foco ao elemento de origem. (Novo)

@@ -36,6 +36,7 @@ Os requisitos funcionais seguem o modelo definido em [`RF.template.md`](../07-te
 | [RF-0016](./functional/RF-0016.md) | Visualizar sequência diária | Permitir consultar a quantidade atual de dias consecutivos com atividade registrada. |
 | [RF-0017](./functional/RF-0017.md) | Desbloquear estrelas | Conceder e acumular estrelas pelo aumento da sequência diária ou desbloqueio de conquistas. |
 | [RF-0018](./functional/RF-0018.md) | Visualizar constelação | Permitir visualizar as estrelas acumuladas em uma constelação progressiva. |
+| [RF-0019](./functional/RF-0019.md) | Selecionar duração da sessão do modo foco | Permitir escolher a duração da sessão do modo foco entre valores pré-definidos de 5 a 30 minutos. |
 
 ## 3. Rastreabilidade
 

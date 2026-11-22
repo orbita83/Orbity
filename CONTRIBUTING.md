@@ -24,6 +24,7 @@ As regras descritas neste documento aplicam-se a todos os integrantes da equipe.
     - [2.3. Implementação e commits](#23-implementação-e-commits)
     - [2.4. Validação local](#24-validação-local)
     - [2.5. Integração na development](#25-integração-na-development)
+    - [2.6. Desvios encontrados durante uma atividade](#26-desvios-encontrados-durante-uma-atividade)
   - [3. Qualidade e Validação](#3-qualidade-e-validação)
     - [3.1. Padrões de qualidade](#31-padrões-de-qualidade)
     - [3.2. Testes](#32-testes)
@@ -33,7 +34,7 @@ As regras descritas neste documento aplicam-se a todos os integrantes da equipe.
     - [4.1. Papel dos elementos no fluxo de publicação](#41-papel-dos-elementos-no-fluxo-de-publicação)
     - [4.2. Planejamento de versões e escopo](#42-planejamento-de-versões-e-escopo)
     - [4.3. Critérios para a primeira versão estável (v0.1.0)](#43-critérios-para-a-primeira-versão-estável-v010)
-    - [4.4. Fluxo development → main e congelamento](#44-fluxo-development-main-e-congelamento)
+    - [4.4. Fluxo development → main e congelamento](#44-fluxo-development--main-e-congelamento)
     - [4.5. Critérios de aprovação de releases](#45-critérios-de-aprovação-de-releases)
     - [4.6. Política de versionamento e alinhamento com Android](#46-política-de-versionamento-e-alinhamento-com-android)
     - [4.7. Convenções de Git tags e GitHub Releases](#47-convenções-de-git-tags-e-github-releases)
@@ -79,7 +80,7 @@ Todas as mensagens de commit devem seguir o formato:
 - O prefixo e o escopo são obrigatórios.
 - O escopo deve identificar objetivamente a área afetada.
 - A descrição deve ser escrita em português brasileiro (pt-BR).
-- A descrição deve ser objetiva e iniciar com letra minúscula.
+- A descrição deve ser objetiva, iniciar com letra minúscula e não terminar com ponto final.
 - Não utilizar símbolos decorativos ou caracteres especiais desnecessários.
 - Cada commit deve representar uma alteração coerente e identificável.
 - Não incluir credenciais, tokens, senhas ou outras informações sensíveis nos commits.
@@ -139,7 +140,18 @@ Todas as Issues devem seguir o padrão de título:
 - `[FIX] Corrigir falha na autenticação`
 - `[FEATURE] Implementar recuperação de senha`
 - `[DOCS] Atualizar documentação da API`
-- `[TASK] Configurar ferramenta de análise estática`
+- `[CHORE] Configurar ferramenta de análise estática`
+
+**Tipos de Issue e templates:**
+
+| Prefixo | Template | Label | Quando usar |
+| :--- | :--- | :--- | :--- |
+| `[FEATURE]` | `feature.yml` | `feature` | Funcionalidade nova ou evolução de uma existente |
+| `[FIX]` | `fix.yml` | `fix` | Defeito ou regressão |
+| `[DOCS]` | `docs.yml` | `docs` | Alteração só de documentação |
+| `[CHORE]` | `chore.yml` | `chore` | Manutenção, configuração, automação, **refatoração** e **criação ou manutenção de testes** |
+
+Refatorações e testes não têm template próprio: use o `[CHORE]`. O prefixo `refactor` ou `test` continua valendo na branch, nos commits e no título do PR, que recebe a label correspondente.
 
 **Requisitos:**
 
@@ -151,6 +163,7 @@ Todas as Issues devem seguir o padrão de título:
 - As labels devem corresponder à classificação da Issue.
 - Antes de criar uma Issue, deve-se verificar a existência de registros duplicados.
 - A Issue deve apresentar informações suficientes para compreender a necessidade e orientar sua implementação.
+- Quando a Issue registra um desvio encontrado durante outra atividade, o campo **Origem** do template informa a Issue ou o Pull Request em que ele foi encontrado, e a Issue recebe a label `deviation` (e também `blocker`, se o desvio bloquear a atividade). Ver [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade).
 
 **Obrigatoriedade:**
 
@@ -191,7 +204,8 @@ Todos os Pull Requests de desenvolvimento devem seguir o padrão de título:
 
 **Requisitos:**
 
-- A criação do Pull Request deve ser realizada manualmente ou de forma automática pelo agente, seguindo o template descrito no workflow da pasta .github.
+- A criação do Pull Request pode ser feita manualmente pelo integrante ou pelo agente em nome dele, seguindo o template `.github/PULL_REQUEST_TEMPLATE/development.md`.
+- O autor do Pull Request deve constar como responsável (*assignee*). O workflow descrito em **Responsável (assignee)**, abaixo, faz essa atribuição ao abrir o PR. Quando o agente abre o PR em nome de um integrante, confira se ele foi atribuído e, se não, atribua-o.
 - A branch de destino deve ser `development`.
 - O prefixo deve corresponder ao tipo principal da alteração.
 - O escopo deve indicar objetivamente a área afetada.
@@ -199,6 +213,7 @@ Todos os Pull Requests de desenvolvimento devem seguir o padrão de título:
 - A descrição deve seguir os campos definidos pelo template oficial.
 - As principais alterações implementadas devem ser informadas.
 - As formas de validação e os testes realizados devem ser descritos.
+- Os desvios encontrados durante a atividade devem ser listados na seção **Desvios encontrados** do template, com a classe e a Issue de cada um (ver [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade)).
 - A documentação afetada deve ser atualizada, quando aplicável.
 - A Issue relacionada deve ser referenciada com `Closes #numero`, quando houver e quando o merge deva encerrar essa Issue.
 - A existência de uma Issue relacionada não é obrigatória.
@@ -216,6 +231,30 @@ A criação de Pull Requests de desenvolvimento deve utilizar o template oficial
 O template deve permitir descrever as alterações, registrar as validações realizadas e fornecer informações relevantes para a revisão.
 
 O modelo está em `.github/PULL_REQUEST_TEMPLATE/development.md`. Ao abrir o Pull Request para `development` pela interface do GitHub, acrescente `template=development.md` à URL de comparação (`?template=development.md` ou `&template=development.md`, se já houver outros parâmetros).
+
+**Labels:**
+
+O workflow [`.github/workflows/labels-pull-requests.yml`](.github/workflows/labels-pull-requests.yml) aplica labels automaticamente quando um Pull Request é aberto, reaberto, editado ou recebe novos commits. As regras ficam em [`.github/pr-labels.json`](.github/pr-labels.json), a lógica fica em [`scripts/pr-labels.cjs`](scripts/pr-labels.cjs) e o log do job informa qual regra gerou cada label.
+
+| Tipo | Labels | Regra |
+| :--- | :--- | :--- |
+| Tipo | `feature`, `fix`, `docs`, `refactor`, `test`, `chore` | Uma por PR, pelo prefixo do título ou, se o título não seguir o padrão, pelo prefixo da branch. |
+| Área | `ci`, `cd`, `design`, `ui`, `test`, `docs` | Pelos caminhos alterados, ignorando `package-lock.json` e `storybook-static/`. `test` só vale com código de `src/` no mesmo PR, e `docs` não se repete em PR do tipo `docs`. |
+| Destino | `production` | PR para a `main`. Nesse caso não há labels de área, porque a publicação agrega todas as áreas. |
+
+- A automação remove só as labels que ela mesma aplicou e que deixaram de valer (ex.: o título mudou de `fix` para `refactor`).
+- Labels adicionadas manualmente nunca são removidas, e uma label que alguém removeu à mão não é reaplicada naquele PR.
+- Continuam manuais as labels que dependem de julgamento: `accessibility`, `ux`, `bug`, `enhancement`, `development`, `good first issue`, `help wanted`, `question`, `duplicate`, `invalid` e `wontfix`.
+- As labels `deviation` e `blocker` são de Issues que registram desvios ([Seção 2.6](#26-desvios-encontrados-durante-uma-atividade)) e não são aplicadas pela automação de PRs.
+- O workflow usa o evento `pull_request` e roda com as regras da própria branch do PR. Por isso, um PR só recebe labels automáticas se a sua branch já contiver o workflow; branches criadas antes dele precisam ser atualizadas com a `development`.
+- PRs abertos a partir de forks não recebem labels automáticas, porque o GitHub entrega a eles um token só de leitura.
+
+**Responsável (assignee):**
+
+O workflow [`.github/workflows/auto-assign-pull-requests.yml`](.github/workflows/auto-assign-pull-requests.yml) atribui o autor como responsável quando um Pull Request é aberto ou reaberto, qualquer que seja a branch de destino.
+
+- Só o autor é atribuído. A automação não remove nem substitui quem foi atribuído manualmente e não age se o autor já for responsável.
+- Assim como as labels, usa o evento `pull_request`: só vale para PRs cuja branch já contém o workflow, e PRs de forks ou abertos por bots ficam de fora.
 
 ### 1.5. Pull Requests de Publicação
 
@@ -309,7 +348,7 @@ Durante a implementação, o contribuidor deve manter as alterações relacionad
 - Atualizar testes e documentação quando necessário.
 - Utilizar mensagens de commit conforme a Seção 1.1.
 
-Caso sejam identificadas necessidades independentes durante a implementação, recomenda-se registrá-las separadamente, evitando ampliar excessivamente o escopo original.
+Bugs, inconsistências ou outras necessidades encontradas durante a implementação seguem a [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade), que define quando corrigir na própria branch, quando registrar uma Issue separada e quando interromper a atividade.
 
 ### 2.4. Validação local
 
@@ -321,6 +360,9 @@ A validação local deve incluir, quando aplicável:
 - Execução dos linters configurados (`npm run lint`).
 - Execução dos testes automatizados (`npm test`).
 - Verificação de compilação ou análise estática (`npx --no-install tsc --noEmit`).
+- Geração do Storybook (`npm run build-storybook`) ao alterar telas, componentes ou histórias, porque o CI falha com uma história quebrada.
+- Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`) ao alterar `src/view/theme/tokens.ts`. Esse teste não é coletado pelo Jest.
+- Verificação da arquitetura (`npm run lint:architecture`), sem introduzir violações além das já registradas em Issues abertas.
 - Testes manuais dos comportamentos afetados.
 - Revisão das alterações realizadas.
 - Verificação de arquivos sensíveis ou informações que não devem ser versionadas.
@@ -340,7 +382,7 @@ Após concluir a implementação e as validações locais, o contribuidor deve a
 O processo de integração deve seguir esta sequência:
 
 1. Enviar a branch de trabalho ao repositório remoto.
-2. Abrir manualmente o Pull Request de desenvolvimento.
+2. Abrir o Pull Request de desenvolvimento, manualmente ou pelo agente, conforme a [Seção 1.4](#14-pull-requests-de-desenvolvimento).
 3. Preencher o template correspondente.
 4. Aguardar as verificações automáticas.
 5. Solicitar ou aguardar a revisão da equipe.
@@ -366,6 +408,52 @@ git branch -d nome-da-branch
 ```
 
 Utilize `git branch -d`, que recusa a remoção de branches com commits não integrados; não utilize `-D`. Caso uma branch remota seja removida por engano, ela pode ser restaurada pelo botão **Restore branch** na página do Pull Request.
+
+### 2.6. Desvios encontrados durante uma atividade
+
+Um **desvio** é qualquer problema encontrado durante uma atividade que não faz parte do objetivo dela: um defeito, uma regra do harness violada no código, uma inconsistência entre documentos, uma dívida técnica ou um comportamento diferente do especificado. Esta seção vale para integrantes e para o agente.
+
+**Antes de classificar:**
+
+1. **Confirmar a origem.** Verifique se o problema já existia: reproduza-o na `development` atualizada, sem as alterações da atividade. Se ele só aparece com as suas alterações, não é desvio: é parte da atividade e deve ser corrigido nela.
+2. **Descartar instabilidade.** Se um teste falha só na suíte completa, rode-o isolado ou com `npx jest --maxWorkers=2` antes de concluir que há defeito.
+3. **Procurar duplicatas.** Busque Issues abertas e encerradas sobre o mesmo problema. Se existir, use-a em vez de abrir outra: comente nela a nova ocorrência e aplique as labels abaixo, se faltarem.
+
+**Labels dos registros de desvio:**
+
+| Label | Quando aplicar |
+| :--- | :--- |
+| `deviation` | Em toda Issue que registra um desvio encontrado durante outra atividade (classes B, C e D). |
+| `blocker` | Também na Issue de um desvio bloqueante (classe C, ou classe D bloqueante). Retire a label quando o bloqueio for resolvido ou deixar de bloquear. |
+
+As labels de desvio somam-se à label do tipo, que o template aplica (`fix`, `chore`, `docs` ou `feature`).
+
+**Classes de desvio:**
+
+| Classe | Quando | O que fazer |
+| :--- | :--- | :--- |
+| **A. No escopo** | O defeito está no código que a atividade já altera, ou corrigi-lo é necessário para cumprir o objetivo dela. | Corrigir na mesma branch, em commit próprio, e registrar no PR, na seção **Desvios encontrados**. |
+| **B. Fora do escopo, não bloqueante** | O problema está fora do objetivo e não impede concluir a atividade. | Não corrigir na branch atual. Registrar uma Issue com o template do tipo (Seção 1.3) e a label `deviation`, preenchendo **Origem** com a Issue ou o PR da atividade. Listar a Issue no PR, em **Desvios encontrados**. A atividade continua. |
+| **C. Bloqueante** | O problema já existia e impede concluir ou validar a atividade (ex.: teste falhando na `development`, contrato errado, CI quebrado). | Interromper a atividade e seguir o procedimento abaixo. |
+| **D. Inconsistência no harness** | Documentos do harness (`AGENTS.md`, `RULES.md`, `ARCHITECTURE.md`, este guia, design system, templates) se contradizem, ou contradizem o código. | Registrar uma Issue `[DOCS]` ou `[CHORE]` com a label `deviation` para alinhar os documentos. Se a contradição estiver no ponto necessário para a decisão atual, ela é **bloqueante**: não escolha uma das versões por conta própria. Siga o procedimento da classe C com uma diferença: a Issue mantém o tipo `[DOCS]` ou `[CHORE]` (não vira `[FIX]`) e recebe também a label `blocker`. Caso contrário, a atividade continua. |
+
+**Procedimento para desvio bloqueante (classe C):**
+
+1. Pare a atividade e reúna a evidência: comando executado, saída do erro e confirmação de que o problema ocorre na `development` sem as suas alterações.
+2. Não contorne o problema: é proibido desabilitar ou remover testes, usar `--no-verify` ou `HUSKY=0`, relaxar regras de lint ou do CI, ou embutir a correção na atividade sem registrá-la.
+3. Registre uma Issue `[FIX]` (ou `[DOCS]`/`[CHORE]`, se for uma inconsistência de harness da classe D) com as labels `deviation` e `blocker`, preenchendo **Origem** e indicando no campo de bloqueio a atividade afetada (ex.: `Bloqueia #158`). Comente na Issue da atividade bloqueada com a referência ao bloqueio (ex.: `Bloqueada por #200`). Use a palavra "Bloqueia", e não `fixes` ou `closes`, para a automação de fechamento não encerrar a Issue errada.
+4. Comunique o bloqueio a quem decide (o operador, no caso do agente), com a evidência e o link da Issue, e aguarde a decisão antes de retomar.
+5. Corrija o bloqueio numa branch `fix/<descricao-curta>` própria, criada a partir da `development`, com Pull Request próprio. Depois do merge, atualize a branch da atividade com a `development` e retome o trabalho.
+6. Só quando quem decide autorizar expressamente, e a correção for pequena e inseparável da atividade, ela pode entrar na mesma branch: em commit próprio, citada na seção **Desvios encontrados** do PR, com a Issue do bloqueio referenciada por `Closes #numero`.
+
+**Desvio de um design técnico (opcional, só com EGM):** quando a atividade implementa uma funcionalidade que tem design em `docs/designs/` (Elephant-Goldfish Model) e a implementação precisar divergir do design, atualize o design no mesmo Pull Request e registre a divergência em **Desvios encontrados**. O `/egm:egm-drift-report` pode ajudar a levantar as divergências. Atividades sem design EGM não têm essa exigência.
+
+**Regras para o agente:**
+
+- **Desvio não bloqueante (classes B e D não bloqueante):** o agente **cria a Issue automaticamente**, sem pedir confirmação, com o template do tipo, a label `deviation` e o campo **Origem**, e **continua a atividade**. A Issue entra no relatório final da atividade e na seção **Desvios encontrados** do PR.
+- **Desvio bloqueante (classe C e D bloqueante):** o agente **para a atividade, cria a Issue** com as labels `deviation` e `blocker`, comenta na Issue da atividade bloqueada e **avisa o operador** com a evidência e o link da Issue. Depois, aguarda a decisão do operador, sem aplicar contornos.
+- Antes de criar qualquer Issue, o agente procura duplicatas (ver "Antes de classificar").
+- O agente não amplia o escopo da atividade para corrigir desvios das classes B e D sem pedido do operador.
 
 ---
 
@@ -467,11 +555,15 @@ Nos Pull Requests direcionados à branch `development`, o workflow [`.github/wor
 1. Instalação reproduzível de dependências (`npm ci`).
 2. Verificação de lint (`npm run lint`).
 3. Verificação estrita de tipos (`npx --no-install tsc --noEmit`).
-4. Execução não interativa dos testes automatizados (`npm test`).
+4. Geração do Storybook (`npm run build-storybook`). Uma história quebrada falha o CI mesmo com os testes passando.
+5. Execução não interativa dos testes automatizados (`npm test`).
+6. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
-Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npx --no-install tsc --noEmit` e `npm test`. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
+Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npx --no-install tsc --noEmit`, `npm run build-storybook`, `npm test` e `node tests/ods-theme.test.cjs`. O `npm run lint:architecture` ainda não faz parte do CI. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
 
 Na configuração de proteção da branch `development` (Ruleset **Branch Protection (Development)**), o status check `validate` deve permanecer configurado como obrigatório (*Require status checks to pass*) junto às regras existentes de revisão e aprovação de Pull Requests.
+
+Builds Android pelo EAS são solicitados manualmente pelo workflow [`.github/workflows/eas-build.yml`](.github/workflows/eas-build.yml) (**EAS Build Android**). Ele não roda em Pull Requests, só gera artefatos e não cria tags, releases ou submissões à Google Play. O uso, os environments e o `EXPO_TOKEN` estão descritos em [`docs/08-distribution/build-sob-demanda.md`](docs/08-distribution/build-sob-demanda.md).
 
 ---
 
@@ -651,7 +743,7 @@ Todos os integrantes da equipe devem:
 - Participar das revisões quando necessário.
 - Evitar mudanças diretas nas branches protegidas.
 - Preservar a integridade e a rastreabilidade do histórico do projeto.
-- Comunicar problemas identificados durante o desenvolvimento ou a publicação.
+- Comunicar problemas identificados durante o desenvolvimento ou a publicação, tratando os desvios encontrados numa atividade conforme a [Seção 2.6](#26-desvios-encontrados-durante-uma-atividade).
 
 As responsabilidades individuais não substituem as decisões coletivas necessárias para alterações relevantes no processo ou na arquitetura do projeto.
 
