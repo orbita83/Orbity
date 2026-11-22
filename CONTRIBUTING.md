@@ -359,7 +359,7 @@ A validação local deve incluir, quando aplicável:
 - Verificação de formatação e padrões de código.
 - Execução dos linters configurados (`npm run lint`).
 - Execução dos testes automatizados (`npm test`).
-- Verificação de compilação ou análise estática (`npx --no-install tsc --noEmit`).
+- Verificação de compilação ou análise estática (`npm run typecheck`, que regenera `.expo/types/router.d.ts` via `expo customize tsconfig.json` antes de rodar `tsc --noEmit`).
 - Geração do Storybook (`npm run build-storybook`) ao alterar telas, componentes ou histórias, porque o CI falha com uma história quebrada.
 - Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`) ao alterar `src/view/theme/tokens.ts`. Esse teste não é coletado pelo Jest.
 - Verificação da arquitetura (`npm run lint:architecture`), sem introduzir violações além das já registradas em Issues abertas.
@@ -554,12 +554,12 @@ Nos Pull Requests direcionados à branch `development`, o workflow [`.github/wor
 
 1. Instalação reproduzível de dependências (`npm ci`).
 2. Verificação de lint (`npm run lint`).
-3. Verificação estrita de tipos (`npx --no-install tsc --noEmit`).
+3. Verificação estrita de tipos com regeneração das rotas tipadas do Expo Router (`npm run typecheck`).
 4. Geração do Storybook (`npm run build-storybook`). Uma história quebrada falha o CI mesmo com os testes passando.
 5. Execução não interativa dos testes automatizados (`npm test`).
 6. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
-Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npx --no-install tsc --noEmit`, `npm run build-storybook`, `npm test` e `node tests/ods-theme.test.cjs`. O `npm run lint:architecture` ainda não faz parte do CI. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
+Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npm run typecheck`, `npm run build-storybook`, `npm test` e `node tests/ods-theme.test.cjs`. O `npm run lint:architecture` ainda não faz parte do CI. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
 
 Na configuração de proteção da branch `development` (Ruleset **Branch Protection (Development)**), o status check `validate` deve permanecer configurado como obrigatório (*Require status checks to pass*) junto às regras existentes de revisão e aprovação de Pull Requests.
 
@@ -615,7 +615,7 @@ O valor `1.0.0` presente no início do projeto em `app.json` e `package.json` er
 Para que o primeiro Pull Request de publicação (`release: publicar versão 0.1.0`) seja autorizado e integrado à `main`, todos os seguintes critérios devem ser atendidos:
 1. **Conclusão do ÉPICO 0:** Todas as entregas fundamentais de governança, arquitetura e qualidade do [EP-0000](docs/03-backlog/epics/EP-0000.md) devem estar integradas à `development` com seus critérios de aceitação cumpridos.
 2. **Shell navegável validado:** O shell inicial de navegação com as cinco abas funcionais (Hoje, Tarefas, Foco, Rotinas, Perfil) implementado na [T0017](https://github.com/orbita83/Orbity/issues/83) deve renderizar perfeitamente e navegar sem falhas em ambiente Android.
-3. **Qualidade e testes automatizados:** Suíte de testes unitários, testes de componentes e verificações estáticas (ESLint, TypeScript estrito) executando com 100% de sucesso no CI (`npm run lint`, `npx --no-install tsc --noEmit`, `npm test`).
+3. **Qualidade e testes automatizados:** Suíte de testes unitários, testes de componentes e verificações estáticas (ESLint, TypeScript estrito) executando com 100% de sucesso no CI (`npm run lint`, `npm run typecheck`, `npm test`).
 4. **Build Android gerado:** Build Android gerado e assinado via EAS Build (APK de preview e AAB de produção) conforme os perfis e credenciais estabelecidos nas tarefas [T0011](https://github.com/orbita83/Orbity/issues/77) e [T0012](https://github.com/orbita83/Orbity/issues/78).
 5. **Ausência de defeitos bloqueadores:** Inexistência de defeitos críticos (prioridade P0) que causem encerramento inesperado do aplicativo, falhas de renderização de telas ou quebra de acessibilidade fundamental.
 6. **Evidências de validação manual:** Relatório de testes exploratórios em aparelho físico ou emulador Android registrado na descrição do Pull Request de publicação.
@@ -650,7 +650,7 @@ O merge de uma release na branch `main` exige uma avaliação colegiada e rigoro
   - *Autor do Release (Preparador):* Integrante responsável por abrir o PR de publicação, consolidar o changelog, preencher o template oficial e anexar as evidências de validação.
   - *Revisores Formais:* Integrantes designados (conforme `.github/CODEOWNERS` e regras de proteção de branch) responsáveis por auditar o escopo, conferir o changelog e validar a ausência de regressões.
 - **Aprovações humanas obrigatórias:** Ao menos 2 aprovações formais de revisores qualificados são necessárias antes que o merge seja autorizado, em conformidade com as regras de proteção da branch `main`.
-- **Verificações de qualidade:** O conjunto de alterações a ser publicado deve ter sido previamente validado com sucesso pelo status check `validate` do CI na branch `development`. Adicionalmente, as validações locais obrigatórias (`npm run lint`, `npx --no-install tsc --noEmit` e `npm test`) devem ser executadas e registradas com 100% de sucesso no Pull Request de publicação. (Nota: o workflow automatizado de CI atualmente roda apenas em PRs direcionados à `development`; a extensão para PRs direcionados à `main` constitui uma melhoria futura a ser tratada em issue separada).
+- **Verificações de qualidade:** O conjunto de alterações a ser publicado deve ter sido previamente validado com sucesso pelo status check `validate` do CI na branch `development`. Adicionalmente, as validações locais obrigatórias (`npm run lint`, `npm run typecheck` e `npm test`) devem ser executadas e registradas com 100% de sucesso no Pull Request de publicação. (Nota: o workflow automatizado de CI atualmente roda apenas em PRs direcionados à `development`; a extensão para PRs direcionados à `main` constitui uma melhoria futura a ser tratada em issue separada).
 - **Validação de build e integridade:** Confirmação de que os identificadores de versão estão perfeitamente sincronizados com as configurações técnicas do aplicativo.
 - **Tolerância zero a bloqueadores:** Nenhum defeito de severidade P0 ou que cause quebra de contrato arquitetural pode ser aceito na release. Riscos ou limitações conhecidas não bloqueadoras devem ser expressamente catalogados na seção de informações adicionais do template.
 - **Inviolabilidade das checagens:** É expressamente vedado contornar verificações obrigatórias de qualidade por meio de flags como `--no-verify`, variáveis `HUSKY=0` ou permissões administrativas de bypass de regras de proteção.

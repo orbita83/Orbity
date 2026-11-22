@@ -167,6 +167,7 @@ npm run storybook  # Catálogo de componentes em http://localhost:6006
 | `npm run ios` | `expo start --ios` | Simulador iOS (macOS + Xcode). Fora do foco atual. |
 | `npm run lint` | `expo lint` | Verificação estática com ESLint. |
 | `npm run lint:architecture` | `node scripts/lint-architecture.mjs` | Verifica os limites entre as camadas da arquitetura. |
+| `npm run typecheck` | `expo customize tsconfig.json && tsc --noEmit` | Regenera rotas tipadas do Expo Router e verifica tipos TypeScript. |
 | `npm test` | `jest --watchAll=false` | Suíte completa, não interativa. |
 | `npm run test:watch` | `jest --watch` | Jest em modo interativo. |
 | `npm run storybook` | `storybook dev -p 6006` | Storybook na porta 6006. |
@@ -257,7 +258,7 @@ O CI ([`ci.yml`](./.github/workflows/ci.yml)) roda em todo Pull Request para `de
 
 ```bash
 npm run lint                     # 1. ESLint
-npx --no-install tsc --noEmit    # 2. Tipos TypeScript (modo estrito)
+npm run typecheck                # 2. Rotas tipadas do Expo Router + tipos TypeScript (modo estrito)
 npm run build-storybook          # 3. Build do Storybook (uma story quebrada falha o CI)
 npm test                         # 4. Jest + Testing Library
 node tests/ods-theme.test.cjs    # 5. Contratos de tema e contraste do ODS

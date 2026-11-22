@@ -70,7 +70,7 @@ O Elephant-Goldfish Model (EGM) é **opcional**: nem toda atividade tem design t
 Sempre que modificar código, tipos ou configurações, execute:
 
 1. `npm run lint` — verificação do ESLint.
-2. `npx --no-install tsc --noEmit` — verificação estrita de tipos TypeScript.
+2. `npm run typecheck` — verificação estrita de tipos TypeScript (regenera `.expo/types/router.d.ts` via `expo customize tsconfig.json` antes de rodar `tsc --noEmit`, mantendo as rotas tipadas sincronizadas com `src/app/` localmente e no CI).
 3. `npm test` — execução não interativa dos testes automatizados (Jest).
 4. `npm run build-storybook` — obrigatório caso altere telas, componentes ou histórias (o CI falha com uma história quebrada).
 5. `node tests/ods-theme.test.cjs` — obrigatório caso altere `src/view/theme/tokens.ts` (não é coletado pelo Jest).

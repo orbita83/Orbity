@@ -14,7 +14,7 @@ O harness operacional do projeto (roteamento obrigatório de leitura por gatilho
 | :--- | :--- |
 | Servidor de desenvolvimento (Expo) | `npm start` (`npm run android`) |
 | Lint | `npm run lint` |
-| Tipos | `npx --no-install tsc --noEmit` |
+| Tipos (com rotas tipadas) | `npm run typecheck` |
 | Testes (Jest, não interativo) | `npm test` |
 | Um arquivo de teste | `npx jest caminho/do/arquivo.test.tsx` |
 | Testes por caminho | `npx jest --testPathPattern=usecase` |
@@ -24,7 +24,7 @@ O harness operacional do projeto (roteamento obrigatório de leitura por gatilho
 | Linter de arquitetura | `npm run lint:architecture` |
 
 - `tests/ods-theme.test.cjs` **não** é coletado pelo Jest (o `testMatch` só aceita `.js/.ts/.jsx/.tsx`). Rode-o com `node` sempre que alterar `src/view/theme/tokens.ts`: ele valida os valores dos temas e as razões de contraste.
-- O CI (`.github/workflows/ci.yml`, em PRs para `development`) roda, nesta ordem: lint → `tsc --noEmit` → `build-storybook` → `npm test` → `node tests/ods-theme.test.cjs`. Uma story quebrada falha o CI mesmo com os testes passando. O `npm run lint:architecture` ainda não faz parte do CI.
+- O CI (`.github/workflows/ci.yml`, em PRs para `development`) roda, nesta ordem: lint → `npm run typecheck` (`expo customize tsconfig.json && tsc --noEmit`, regenerando `.expo/types/router.d.ts` a partir de `src/app/` antes de validar os tipos) → `build-storybook` → `npm test` → `node tests/ods-theme.test.cjs`. Uma story quebrada falha o CI mesmo com os testes passando. O `npm run lint:architecture` ainda não faz parte do CI.
 - Hooks do Husky: `pre-commit` roda o ESLint via lint-staged, `commit-msg` roda o commitlint e `pre-push` roda `scripts/validate-branch.mjs` (nome da branch).
 - Em máquinas lentas, a suíte inteira do Jest pode estourar o tempo limite em testes de tela. Se um teste de tela falhar só na suíte completa, rode-o isolado ou com `npx jest --maxWorkers=2` antes de concluir que há defeito.
 

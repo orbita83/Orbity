@@ -21,6 +21,7 @@ A configuração central encontra-se no arquivo [`jest.config.js`](../../jest.co
 
 | Comando | Finalidade | Modo |
 |---|---|---|
+| `npm run typecheck` | Regenera as declarações de rotas tipadas do Expo Router (`.expo/types/router.d.ts`) a partir de `src/app/` e executa a verificação estrita de tipos do TypeScript. | Headless (`expo customize tsconfig.json && tsc --noEmit`) |
 | `npm test` | Executa todas as suítes de teste de forma não interativa e encerra com código de saída (adequado para terminal local e CI). | Headless (`jest --watchAll=false`) |
 | `npm run test:watch` | Executa o Jest em modo de monitoramento contínuo durante o desenvolvimento ativo. | Interativo (`jest --watch`) |
 | `npx jest caminho/do/arquivo.test.ts` | Executa exclusivamente o arquivo ou suíte de teste indicado. | Headless pontual |
@@ -410,18 +411,23 @@ describe("PrimaryButton", () => {
 O workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) executa automaticamente em todos os Pull Requests direcionados à `development`:
 1. Instalação determinística de dependências (`npm ci`).
 2. Verificação estática de formatação e lint (`npm run lint`).
-3. Verificação rigorosa do compilador TypeScript (`npx --no-install tsc --noEmit`).
-4. Execução completa da suíte de testes automatizados (`npm test`).
+3. Verificação rigorosa do compilador TypeScript com regeneração prévia das rotas tipadas do Expo Router (`npm run typecheck`).
+4. Geração estática do Storybook (`npm run build-storybook`).
+5. Execução completa da suíte de testes automatizados (`npm test`).
+6. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
 ### 9.2. Checklist Local Pré-Commit e Pré-PR
 Sempre execute localmente a sequência completa de validações antes de abrir ou atualizar seu Pull Request:
 
 ```bash
 npm run lint
-npx --no-install tsc --noEmit
+npm run typecheck
 npm test
 node scripts/verify-local-hooks.mjs
 ```
+
+> **Comportamento das rotas tipadas do Expo Router (`.expo/types/router.d.ts`):**
+> O `app.json` habilita `experiments.typedRoutes: true` e o `tsconfig.json` inclui `.expo/types/**/*.ts`. Como a pasta `.expo/` é ignorada pelo Git, o arquivo `.expo/types/router.d.ts` pode ficar desatualizado localmente após um `git pull` que adicione novas rotas em `src/app/`, ou não existir em um clone limpo (como no runner do CI). O script `npm run typecheck` executa `expo customize tsconfig.json` antes do `tsc --noEmit`, regenerando `.expo/types/router.d.ts` em modo *headless* a partir das rotas atuais de `src/app/` e garantindo que a verificação de tipos produza exatamente o mesmo resultado no ambiente local e no CI.
 
 ### 9.3. Como Investigar Falhas nos Logs do CI
 Caso o status check `validate` falhe no GitHub Actions:

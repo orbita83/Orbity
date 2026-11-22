@@ -30,7 +30,7 @@ jobs:
         run: npm run lint
 
       - name: Verificar tipos
-        run: npx --no-install tsc --noEmit
+        run: npm run typecheck
 
       - name: Gerar Storybook
         run: npm run build-storybook
