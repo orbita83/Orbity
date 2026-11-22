@@ -1,10 +1,17 @@
-import { DataSourceError, DomainError, SchemaVersionError, ValidationError } from "@/model/errors";
+import {
+  DataSourceError,
+  DomainError,
+  NotificationServiceError,
+  SchemaVersionError,
+  ValidationError,
+} from "@/model/errors";
 
 describe("erros de domínio", () => {
   it.each([
     ["ValidationError", new ValidationError("Informe o título.")],
     ["DataSourceError", new DataSourceError()],
     ["SchemaVersionError", new SchemaVersionError()],
+    ["NotificationServiceError", new NotificationServiceError()],
   ])("%s é um DomainError com o próprio nome", (name, error) => {
     expect(error).toBeInstanceOf(DomainError);
     expect(error).toBeInstanceOf(Error);
@@ -21,6 +28,8 @@ describe("erros de domínio", () => {
     expect(new ValidationError("Informe o título.").message).toBe("Informe o título.");
     expect(new DataSourceError().message).toBe("Falha ao acessar o armazenamento local.");
     expect(new DataSourceError("Falha ao salvar.").message).toBe("Falha ao salvar.");
+    expect(new NotificationServiceError().message).toBe("Falha ao acessar o serviço de notificações locais.");
+    expect(new NotificationServiceError("Falha ao agendar.").message).toBe("Falha ao agendar.");
   });
 
   it("informa o campo que falhou só quando a regra é de um campo", () => {

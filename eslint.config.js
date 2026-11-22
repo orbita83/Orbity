@@ -2,9 +2,18 @@
 const { defineConfig } = require('eslint/config');
 const expoConfig = require("eslint-config-expo/flat");
 const sqliteExecutor = "src/infra/database/expoSqlExecutor.ts";
+const notificationService = "src/infra/services/expoNotificationService.ts";
 const testDriver = {
   group: ["better-sqlite3", "better-sqlite3/**"],
   message: "O better-sqlite3 é só para testes (tests/fixtures).",
+};
+const sqlitePattern = {
+  group: ["expo-sqlite", "expo-sqlite/**"],
+  message: `Use ISqlExecutor. Só ${sqliteExecutor} importa o expo-sqlite.`,
+};
+const notificationPattern = {
+  group: ["expo-notifications", "expo-notifications/**"],
+  message: `Use INotificationService. Só ${notificationService} importa o expo-notifications.`,
 };
 
 module.exports = defineConfig([
@@ -13,13 +22,14 @@ module.exports = defineConfig([
     ignores: ["dist/*", "storybook-static/**"],
   },
   {
-    // ADR-0001: só o executor do Expo importa o driver SQLite; testes usam tests/fixtures.
+    // ADR-0001 e ADR-0002: drivers nativos ficam restritos aos seus adaptadores na infraestrutura.
     files: ["src/**"],
-    ignores: [sqliteExecutor],
+    ignores: [sqliteExecutor, notificationService],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [
-          { group: ["expo-sqlite", "expo-sqlite/**"], message: `Use ISqlExecutor. Só ${sqliteExecutor} importa o expo-sqlite.` },
+          sqlitePattern,
+          notificationPattern,
           testDriver,
         ],
       }],
@@ -28,7 +38,13 @@ module.exports = defineConfig([
   {
     files: [sqliteExecutor],
     rules: {
-      "no-restricted-imports": ["error", { patterns: [testDriver] }],
+      "no-restricted-imports": ["error", { patterns: [notificationPattern, testDriver] }],
+    },
+  },
+  {
+    files: [notificationService],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [sqlitePattern, testDriver] }],
     },
   },
 ]);
