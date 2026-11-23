@@ -17,7 +17,7 @@ Arquivos-mestre da identidade visual. Nenhum deles entra no build: o ícone do a
 
 - Esfera e anel centrados em (512, 512). O ponto mais distante do símbolo fica a 294 px do centro, dentro do círculo de 300 px de raio (600 px de diâmetro) exigido pela área segura do ícone adaptativo e do splash do Android 12+.
 - Anel inclinado 25°, de baixo à esquerda para cima à direita. A parte de trás fica escondida pela esfera e a da frente passa sobre ela com uma folga transparente, que mantém o anel separado da esfera na silhueta monocromática.
-- Sem texto, sem imagens raster embutidas, sem brilho externo, sombra ou moldura: o Android e a Google Play aplicam máscara e sombra.
+- Sem texto visível, sem imagens raster embutidas, sem brilho externo, sombra ou moldura: o Android e a Google Play aplicam máscara e sombra. Os SVGs têm um `<title>Orbity</title>`, que não é desenhado: é o nome acessível lido por leitores de tela e navegadores.
 
 ## Cores
 

@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Orbity</title>
   <defs>
     <radialGradient id="sphere" gradientUnits="userSpaceOnUse" cx="430" cy="400" r="430" fx="390" fy="350">
       <stop offset="0" stop-color="#EBACFF"/>
