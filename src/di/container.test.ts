@@ -1,5 +1,6 @@
 import { container, createAppContainer } from "@/di/container";
 import { DatabaseProvider } from "@/infra/database/databaseProvider";
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
 import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
@@ -21,6 +22,7 @@ const memoryDataSources = () => {
     stars: new MemoryStarDataSource(),
     tasks,
     routines,
+    categories: new MemoryCategoryDataSource(tasks, routines),
     activities: new TaskActivityDataSource(tasks, routines),
   };
 };
@@ -94,6 +96,27 @@ describe("container da aplicação", () => {
       streak: { currentDays: 1 },
       stars: { total: 1, earnedToday: true },
     });
+  });
+
+  it("issue #212: tarefas e rotinas só aceitam categorias existentes, e excluir uma categoria limpa as duas sem apagá-las", async () => {
+    const isolated = createAppContainer({ dataSources: memoryDataSources(), services: { clock: fixedClock } });
+    const { categories, tasks, routines } = isolated.useCases;
+
+    const physics = await categories.createCategory({ name: "Física", icon: "science" });
+    const task = await tasks.createTask({ title: "Lista de mecânica", category: physics.id });
+    const routine = await routines.createRoutine({ title: "Física", icon: physics.id, days: [1], tasks: [] });
+    await expect(tasks.createTask({ title: "Outra", category: "inexistente" })).rejects.toThrow(
+      "Categoria de tarefa inválida.",
+    );
+    await expect(routines.createRoutine({ title: "Outra", icon: "inexistente", days: [1], tasks: [] })).rejects.toThrow(
+      "Ícone de rotina inválido.",
+    );
+
+    await categories.deleteCategory(physics.id);
+
+    expect((await tasks.getTask(task.id)).category).toBeUndefined();
+    expect((await routines.getRoutine(routine.id))?.routine.icon).toBe("general");
+    expect((await categories.listCategories()).map((category) => category.id)).not.toContain(physics.id);
   });
 
   it("o container e seus registros ficam congelados", () => {

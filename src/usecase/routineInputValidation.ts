@@ -5,7 +5,6 @@ import {
   type UpdateRoutineInput,
   type Weekday,
   DEFAULT_ROUTINE_ICON,
-  isRoutineIcon,
   isWeekday,
 } from "@/model/entities/routine";
 import { ValidationError } from "@/model/errors";
@@ -21,7 +20,7 @@ function validateRoutineFields(input: RoutineFields): NormalizedRoutineFields {
   }
 
   const icon = input.icon ?? DEFAULT_ROUTINE_ICON;
-  if (!isRoutineIcon(icon)) {
+  if (icon.trim().length === 0) {
     throw new ValidationError("Ícone de rotina inválido.");
   }
 

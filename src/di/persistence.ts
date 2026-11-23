@@ -1,11 +1,13 @@
 import { DatabaseProvider } from "@/infra/database/databaseProvider";
 import { ExpoSqlExecutor } from "@/infra/database/expoSqlExecutor";
+import { SqliteCategoryDataSource } from "@/infra/datasources/sqliteCategoryDataSource";
 import { SqliteDailyActivityDataSource } from "@/infra/datasources/sqliteDailyActivityDataSource";
 import { SqliteRoutineDataSource } from "@/infra/datasources/sqliteRoutineDataSource";
 import { SqliteStarDataSource } from "@/infra/datasources/sqliteStarDataSource";
 import { SqliteTaskDataSource } from "@/infra/datasources/sqliteTaskDataSource";
 import { TaskActivityDataSource } from "@/infra/datasources/taskActivityDataSource";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
+import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
@@ -16,6 +18,7 @@ export type Persistence = {
   stars: IStarDataSource;
   tasks: ITaskDataSource;
   routines: IRoutineDataSource;
+  categories: ICategoryDataSource;
   activities: IActivityDataSource;
 };
 
@@ -32,6 +35,7 @@ export function createPersistence(): Persistence {
     stars: new SqliteStarDataSource(provider),
     tasks,
     routines,
+    categories: new SqliteCategoryDataSource(provider),
     activities: new TaskActivityDataSource(tasks, routines),
   };
 }

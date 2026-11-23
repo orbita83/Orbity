@@ -1,7 +1,9 @@
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
 import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import type { RoutineDetails } from "@/model/entities/routine";
 import { ValidationError } from "@/model/errors";
@@ -316,5 +318,70 @@ describe("RoutineUseCases", () => {
 
     unsubscribe();
     expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("RoutineUseCases com categorias persistidas (issue #212)", () => {
+  const setupWithCategories = () => {
+    const tasks = new MemoryTaskDataSource();
+    const routines = new MemoryRoutineDataSource(tasks);
+    const categories = new MemoryCategoryDataSource(tasks, routines);
+    const { clock } = createClock();
+    let seq = 0;
+    const useCases = new RoutineUseCases(
+      routines,
+      tasks,
+      new MemoryDailyActivityDataSource(),
+      clock,
+      () => `id-${++seq}`,
+      undefined,
+      undefined,
+      categories,
+    );
+    return { useCases, categories };
+  };
+
+  it("aceita como ícone o geral e as categorias criadas pelo estudante", async () => {
+    const { useCases, categories } = setupWithCategories();
+    await categories.create(createCategoryFixture({ id: "c-1", name: "Física" }), "fisica");
+
+    const general = await useCases.createRoutine({ title: "Geral", days: [1], tasks: [] });
+    const custom = await useCases.createRoutine({ title: "Física", icon: "c-1", days: [1], tasks: [] });
+
+    expect(general.icon).toBe("general");
+    expect(custom.icon).toBe("c-1");
+  });
+
+  it("recusa ícone que não é categoria existente ao criar e ao editar", async () => {
+    const { useCases } = setupWithCategories();
+    const routine = await useCases.createRoutine({ title: "Música", icon: "music", days: [1], tasks: [] });
+
+    await expect(useCases.createRoutine({ title: "X", icon: "inexistente", days: [1], tasks: [] })).rejects.toThrow(
+      "Ícone de rotina inválido.",
+    );
+    await expect(
+      useCases.updateRoutine({ id: routine.id, title: "Música", icon: "inexistente", days: [1], tasks: [] }),
+    ).rejects.toBeInstanceOf(ValidationError);
+    expect((await useCases.getRoutine(routine.id))?.routine.icon).toBe("music");
+  });
+
+  it("recusa o ícone de uma categoria que o estudante excluiu", async () => {
+    const { useCases, categories } = setupWithCategories();
+    await categories.delete("music", "2026-11-16T08:00:00-03:00");
+
+    await expect(useCases.createRoutine({ title: "Violão", icon: "music", days: [1], tasks: [] })).rejects.toThrow(
+      "Ícone de rotina inválido.",
+    );
+  });
+
+  it("sem o DataSource de categorias, só aceita as padrão e o geral, como antes", async () => {
+    const { useCases } = setup();
+
+    await expect(useCases.createRoutine({ title: "X", icon: "music", days: [1], tasks: [] })).resolves.toMatchObject({
+      icon: "music",
+    });
+    await expect(useCases.createRoutine({ title: "X", icon: "c-1", days: [1], tasks: [] })).rejects.toThrow(
+      "Ícone de rotina inválido.",
+    );
   });
 });

@@ -1,7 +1,6 @@
 import {
   type CreateTaskInput,
   type NormalizedCreateTaskInput,
-  isTaskCategoryId,
 } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 
@@ -99,10 +98,6 @@ export function validateCreateTaskInput(input: CreateTaskInput): NormalizedCreat
   const endTime = normalizeDisplayTime(input.endTime);
 
   validateDateTimeFields({ startDate, startTime, endDate, endTime });
-
-  if (input.category !== undefined && !isTaskCategoryId(input.category)) {
-    throw new ValidationError("Categoria de tarefa inválida.");
-  }
 
   return {
     title,

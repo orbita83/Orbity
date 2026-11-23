@@ -1,14 +1,16 @@
 import type { LocalDate } from "@/model/entities/localDate";
-import type { Task, TaskCategoryId } from "@/model/entities/task";
+import type { CategoryId } from "@/model/entities/category";
+import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 
 /**
- * Ícones que o estudante pode escolher para uma rotina (protótipo 3.1), na ordem do formulário.
+ * Ícones que o formulário de rotina oferece hoje (protótipo 3.1), na ordem dele; a lista de categorias do DataSource substitui esta na #213.
  * São ids: os mesmos das categorias de tarefa, mais "general", o padrão (rotinas.md, R8). O símbolo
  * e o rótulo de cada id ficam na apresentação (issue #159).
  */
-export const ROUTINE_ICONS = ["general", "reading", "mathematics", "languages", "science", "programming", "music"] as const satisfies readonly ("general" | TaskCategoryId)[];
-export type RoutineIcon = (typeof ROUTINE_ICONS)[number];
+export const ROUTINE_ICONS: readonly RoutineIcon[] = ["general", "reading", "mathematics", "languages", "science", "programming", "music"];
+/** "general" ou o id de uma categoria (categorias.md, issue #212): quais categorias existem é decidido pelo DataSource. */
+export type RoutineIcon = "general" | CategoryId;
 export const DEFAULT_ROUTINE_ICON: RoutineIcon = "general";
 
 /** Dia da semana, 0 = domingo (RF-0012). */
@@ -91,10 +93,6 @@ export type RoutineTaskState = {
 export type RoutineDetails = RoutineOverview & {
   readonly tasks: readonly RoutineTaskState[];
 };
-
-export function isRoutineIcon(value: string): value is RoutineIcon {
-  return (ROUTINE_ICONS as readonly string[]).includes(value);
-}
 
 export function isWeekday(value: number): value is Weekday {
   return Number.isInteger(value) && value >= 0 && value <= 6;

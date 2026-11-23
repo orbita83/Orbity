@@ -3,7 +3,7 @@ import type { SqlStatement } from "@/infra/database/iSqlExecutor";
 import { toDataSourceError } from "@/infra/database/persistenceError";
 import { insertTaskStatement, updateTaskStatement } from "@/infra/datasources/sqliteTaskDataSource";
 import type { LocalDate } from "@/model/entities/localDate";
-import { DEFAULT_ROUTINE_ICON, isRoutineIcon, isWeekday, type Routine, type Weekday } from "@/model/entities/routine";
+import { isWeekday, type Routine, type Weekday } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
 import type { IRoutineDataSource, RoutineTaskChanges } from "@/model/datasources/iRoutineDataSource";
 
@@ -33,7 +33,7 @@ const mapRowToRoutine = (row: RoutineRow): Routine =>
     id: row.id,
     title: row.title,
     description: row.description ?? undefined,
-    icon: isRoutineIcon(row.icon) ? row.icon : DEFAULT_ROUTINE_ICON,
+    icon: row.icon,
     days: Object.freeze(parseDays(row.days)),
     createdAt: row.created_at,
     updatedAt: row.updated_at,

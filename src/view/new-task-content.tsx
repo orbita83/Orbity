@@ -12,7 +12,7 @@ import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TaskPickerModal, type TaskPickerModalOption } from "./components/TaskPickerModal";
-import { NO_CATEGORY_SYMBOL, TASK_CATEGORY_LABELS, TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
+import { NO_CATEGORY_SYMBOL, getCategoryLabel, getCategorySymbol } from "./categoryCopy";
 import { TextField } from "./components/TextField";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicColors, themes } from "./theme/tokens";
@@ -105,16 +105,16 @@ export const NewTaskScreenContent = ({
 }: NewTaskScreenContentProps) => {
   const insets = useSafeAreaInsets();
   const categoryLabel = fields.category
-    ? TASK_CATEGORY_LABELS[fields.category]
+    ? getCategoryLabel(fields.category)
     : TASKS_COPY["form.category.empty"];
-  const categorySymbol = fields.category ? TASK_CATEGORY_SYMBOLS[fields.category] : NO_CATEGORY_SYMBOL;
+  const categorySymbol = fields.category ? getCategorySymbol(fields.category) : NO_CATEGORY_SYMBOL;
   const categoryPickerOptions: readonly TaskPickerModalOption[] = [
     { id: "none", label: TASKS_COPY["form.category.empty"], value: "", icon: NO_CATEGORY_SYMBOL },
     ...categoryOptions.map((id) => ({
       id,
-      label: TASK_CATEGORY_LABELS[id],
+      label: getCategoryLabel(id),
       value: id,
-      icon: TASK_CATEGORY_SYMBOLS[id],
+      icon: getCategorySymbol(id),
     })),
   ];
 

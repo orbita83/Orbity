@@ -12,6 +12,7 @@ Este catálogo reúne os casos de borda (`EC`) do Orbity, especificando condiç�
 | EC-0006 | Reabertura de tarefa associada após a conclusão da rotina | — | [RN-0004](../../02-requirements/business-rules/RN-0004.md) | [EC-0006-desmarcar-tarefa-associada-apos-conclusao-da-rotina.md](EC-0006-desmarcar-tarefa-associada-apos-conclusao-da-rotina.md) |
 | EC-0007 | Encerramento ou interrupção de sessão ativa do modo foco | — | [RN-0001](../../02-requirements/business-rules/RN-0001.md), [RN-0006](../../02-requirements/business-rules/RN-0006.md) | [EC-0007-interrupcao-sessao-modo-foco-em-andamento.md](EC-0007-interrupcao-sessao-modo-foco-em-andamento.md) |
 | EC-0008 | Exclusão de tarefa ou rotina vinculada a uma sessão ativa do modo foco | — | [RN-0001](../../02-requirements/business-rules/RN-0001.md), [RN-0006](../../02-requirements/business-rules/RN-0006.md) | [EC-0008-alteracao-tarefa-ou-rotina-vinculada-ao-modo-foco.md](EC-0008-alteracao-tarefa-ou-rotina-vinculada-ao-modo-foco.md) |
+| EC-0009 | Exclusão de categoria usada por tarefas e rotinas | [RF-0020](../../02-requirements/functional/RF-0020.md) | [RN-0009](../../02-requirements/business-rules/RN-0009.md) | [EC-0009-exclusao-categoria-em-uso.md](EC-0009-exclusao-categoria-em-uso.md) |
 
 ## Como adicionar um caso de borda
 

@@ -9,7 +9,7 @@ import { PrimaryButton } from "./components/PrimaryButton";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { Snackbar } from "./components/Snackbar";
 import {
-  ROUTINE_ICON_SYMBOLS,
+  getRoutineIconSymbol,
   ROUTINES_COPY,
   formatDays,
   formatRoutineReturn,
@@ -60,7 +60,7 @@ const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
         onPress={onOpen}
         style={({ pressed }) => [styles.cardMain, pressed && styles.pressed]}
       >
-        <IconTile icon={ROUTINE_ICON_SYMBOLS[routine.icon]} />
+        <IconTile icon={getRoutineIconSymbol(routine.icon)} />
         <View style={styles.cardText}>
           <Text allowFontScaling style={[styles.cardTitle, routine.doneToday && styles.done]}>
             {routine.title}

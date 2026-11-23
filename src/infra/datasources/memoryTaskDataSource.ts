@@ -64,4 +64,14 @@ export class MemoryTaskDataSource implements ITaskDataSource {
       this.items.delete(id);
     }
   }
+
+  /** Deixa sem categoria as tarefas que usavam a categoria excluída (RN-0009). Só existe na memória. */
+  clearCategory(categoryId: string, changedAt: string): void {
+    for (const [id, entry] of this.items) {
+      if (entry.task.category === categoryId) {
+        const task: Task = Object.freeze({ ...entry.task, category: undefined, updatedAt: changedAt });
+        this.items.set(id, { order: entry.order, task });
+      }
+    }
+  }
 }

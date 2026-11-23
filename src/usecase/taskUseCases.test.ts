@@ -1,6 +1,8 @@
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { ValidationError } from "@/model/errors";
@@ -180,6 +182,66 @@ describe("TaskUseCases", () => {
       startTime: "08:45",
       endDate: "05/12/2026",
       endTime: "09:05",
+    });
+  });
+});
+
+describe("TaskUseCases com categorias persistidas (issue #212)", () => {
+  const setup = () => {
+    const taskRepo = new MemoryTaskDataSource();
+    const categories = new MemoryCategoryDataSource(taskRepo);
+    let seq = 0;
+    const useCases = new TaskUseCases(
+      taskRepo,
+      new MemoryDailyActivityDataSource(),
+      createClock(),
+      () => `t-${++seq}`,
+      undefined,
+      categories,
+    );
+    return { useCases, categories, taskRepo };
+  };
+
+  it("aceita categoria criada pelo estudante ao criar e ao editar a tarefa", async () => {
+    const { useCases, categories } = setup();
+    await categories.create(createCategoryFixture({ id: "c-1", name: "Física" }), "fisica");
+
+    const created = await useCases.createTask({ title: "Lista de mecânica", category: "c-1" });
+    const updated = await useCases.updateTask({ id: created.id, category: "music" });
+
+    expect(created.category).toBe("c-1");
+    expect(updated.category).toBe("music");
+  });
+
+  it("recusa categoria que não existe ao criar e ao editar, sem alterar a tarefa", async () => {
+    const { useCases, taskRepo } = setup();
+    const created = await useCases.createTask({ title: "Estudar", category: "music" });
+
+    await expect(useCases.createTask({ title: "Outra", category: "inexistente" })).rejects.toThrow(
+      "Categoria de tarefa inválida.",
+    );
+    await expect(useCases.updateTask({ id: created.id, category: "inexistente" })).rejects.toBeInstanceOf(
+      ValidationError,
+    );
+    expect(await taskRepo.listAll()).toHaveLength(1);
+    expect((await taskRepo.findById(created.id))?.category).toBe("music");
+  });
+
+  it("recusa uma categoria padrão que o estudante já excluiu", async () => {
+    const { useCases, categories } = setup();
+    await categories.delete("music", "2026-11-15T09:30:00-03:00");
+
+    await expect(useCases.createTask({ title: "Violão", category: "music" })).rejects.toThrow(
+      "Categoria de tarefa inválida.",
+    );
+  });
+
+  it("permite remover a categoria da tarefa com null mesmo sem categorias disponíveis", async () => {
+    const { useCases } = setup();
+    const created = await useCases.createTask({ title: "Estudar", category: "music" });
+
+    await expect(useCases.updateTask({ id: created.id, category: null })).resolves.toMatchObject({
+      category: undefined,
     });
   });
 });

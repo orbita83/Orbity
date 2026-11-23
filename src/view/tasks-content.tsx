@@ -7,7 +7,7 @@ import { ContextualActionBar, ContextualHeader } from "./components/ContextualAc
 import { FilterChips, type FilterChipOption } from "./components/FilterChips";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
-import { TASK_CATEGORY_LABELS, TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
+import { getCategoryLabel, getCategorySymbol } from "./categoryCopy";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicBorders, themes } from "./theme/tokens";
 
@@ -123,7 +123,7 @@ export const TasksScreenContent = ({
               dueDate={task.dueLabel}
               category={
                 task.category
-                  ? { label: TASK_CATEGORY_LABELS[task.category], symbol: TASK_CATEGORY_SYMBOLS[task.category] }
+                  ? { label: getCategoryLabel(task.category), symbol: getCategorySymbol(task.category) }
                   : undefined
               }
               completed={task.completed}

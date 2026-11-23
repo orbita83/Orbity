@@ -13,7 +13,7 @@
 
 A tela **Meu perfil** apresenta o nome do estudante e as métricas de dias de sequência, conquistas adquiridas e horas de estudos completos, além das opções **Conquistas**, **Categorias** e **Configurações**.
 
-*Ponto pendente de refinamento:* as telas de Categorias e Configurações não estão representadas no protótipo.
+*Ponto pendente de refinamento:* a tela de Configurações não está representada no protótipo. A opção **Categorias** leva ao gerenciamento de categorias ([UC-0015](UC-0015-gerenciar-categorias.md)).
 
 ## 3. Pré-condições
 

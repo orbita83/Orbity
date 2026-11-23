@@ -14,9 +14,9 @@ describe("validateCreateRoutineInput", () => {
     );
   });
 
-  it("recusa dia ou ícone fora da lista", () => {
+  it("recusa dia fora da semana e ícone em branco (se o ícone existe é checado no caso de uso)", () => {
     expect(() => validateCreateRoutineInput({ title: "Inglês", days: [7], tasks: [] })).toThrow(ValidationError);
-    expect(() => validateCreateRoutineInput({ title: "Inglês", days: [1], icon: "rocket", tasks: [] })).toThrow(ValidationError);
+    expect(() => validateCreateRoutineInput({ title: "Inglês", days: [1], icon: "  ", tasks: [] })).toThrow(ValidationError);
   });
 
   it("normaliza nome, descrição, dias e tarefas, com o ícone Geral por padrão", () => {

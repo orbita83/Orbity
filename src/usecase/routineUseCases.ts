@@ -5,12 +5,15 @@ import {
   type RoutineDetails,
   type RoutineOverview,
   type UpdateRoutineInput,
+  DEFAULT_ROUTINE_ICON,
   isRoutineActiveOn,
   nextActiveDay,
 } from "@/model/entities/routine";
+import { isDefaultCategoryId } from "@/model/entities/category";
 import { createStreakStar } from "@/model/entities/star";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
+import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
@@ -41,7 +44,24 @@ export class RoutineUseCases implements IRoutineUseCases {
     private readonly generateId: () => string = defaultGenerateId,
     private readonly dayChangeService?: IDayChangeService,
     private readonly starDataSource?: IStarDataSource,
+    private readonly categoryDataSource?: ICategoryDataSource,
   ) {}
+
+  /**
+   * O ícone é "general" ou uma categoria que existe (categorias.md, RF-0020). Sem o DataSource de
+   * categorias, só as padrão são aceitas, como antes da issue #212.
+   */
+  private async assertIconExists(icon: string): Promise<void> {
+    if (icon === DEFAULT_ROUTINE_ICON) {
+      return;
+    }
+    const exists = this.categoryDataSource
+      ? (await this.categoryDataSource.findById(icon)) !== null
+      : isDefaultCategoryId(icon);
+    if (!exists) {
+      throw new ValidationError("Ícone de rotina inválido.");
+    }
+  }
 
   subscribeDayChange(listener: DayChangeListener): () => void {
     return this.dayChangeService ? this.dayChangeService.subscribe(listener) : () => undefined;
@@ -72,6 +92,7 @@ export class RoutineUseCases implements IRoutineUseCases {
 
   async createRoutine(input: CreateRoutineInput): Promise<Routine> {
     const normalized = validateCreateRoutineInput(input);
+    await this.assertIconExists(normalized.icon);
     const now = this.clock.now();
     const routine: Routine = Object.freeze({
       id: this.generateId(),
@@ -90,6 +111,7 @@ export class RoutineUseCases implements IRoutineUseCases {
 
   async updateRoutine(input: UpdateRoutineInput): Promise<RoutineDetails> {
     const normalized = validateUpdateRoutineInput(input);
+    await this.assertIconExists(normalized.icon);
     const current = await this.requireRoutine(normalized.id);
     const existing = new Map((await this.taskDataSource.listByRoutine(current.id)).map((task) => [task.id, task]));
     const now = this.clock.now();
