@@ -1,6 +1,6 @@
 # Orbity Design System (ODS)
 
-![Identidade visual do Orbity: planeta roxo com anéis ao lado do nome Orbity](images/assets/orbity-design-system.png)
+![Identidade visual do Orbity: planeta roxo com anel ao lado do nome Orbity](images/assets/orbity-design-system.png)
 
 > **Versão:** 1.2.0 · **Integrantes:** Mailson Sousa, Cássio Sampaio, Mateus de Araujo, Vitor Lopes, Alisson Ramires · **Disciplinas:** IHC e PDM
 

@@ -11,7 +11,9 @@ Arquivos-mestre da identidade visual. Nenhum deles entra no build: o ícone do a
 | `orbity-symbol-on-background.png` | Símbolo sobre `#030417`, como fica o ícone | PNG 2048×2048 opaco, sem cantos arredondados |
 | `orbity-symbol-monochrome.svg` | Silhueta branca com a mesma geometria | SVG, prancheta 1024×1024 |
 | `orbity-symbol-monochrome.png` | Exportação da silhueta | PNG 2048×2048 com transparência |
-| `orbity-logo.png` | Símbolo com o nome "Orbity", usado no `README.md` da raiz | PNG |
+| `orbity-logo.png` | Símbolo com o nome "Orbity", usado no `README.md` da raiz | PNG com transparência |
+
+O banner `design-system/images/assets/orbity-design-system.png` (usado no `design-system/README.md`) e o `orbity-logo.png` usam este mesmo símbolo. Em 23/11/2026, o planeta antigo desses dois arquivos (com estrelas e pontos) foi trocado pelo `orbity-symbol.svg`. O letreiro "Orbity" e o fundo do banner foram mantidos; a área do planeta antigo no banner foi preenchida com o degradê interpolado a partir das bordas.
 
 ## Geometria e restrições
 
