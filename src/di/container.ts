@@ -20,6 +20,7 @@ import { SystemDayChangeService } from "@/infra/services/systemDayChangeService"
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
+import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { IDayChangeService } from "@/model/services/iDayChangeService";
@@ -178,6 +179,7 @@ export function createContainer<
 /** DataSources da aplicação. */
 export type AppDataSources = {
   dailyActivity: IDailyActivityDataSource;
+  stars: IStarDataSource;
   tasks: ITaskDataSource;
   routines: IRoutineDataSource;
   activities: IActivityDataSource;
@@ -221,9 +223,16 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
     },
     useCases: ({ dataSources, services }: InfrastructureDependencies<AppDataSources, AppServices>) => ({
       streak: composeUseCase(
-        ({ dailyActivity, clock }: { dailyActivity: IDailyActivityDataSource; clock: IClockService }) =>
-          new StreakUseCases(dailyActivity, clock),
-        { dailyActivity: dataSources.dailyActivity, clock: services.clock },
+        ({
+          dailyActivity,
+          clock,
+          stars,
+        }: {
+          dailyActivity: IDailyActivityDataSource;
+          clock: IClockService;
+          stars: IStarDataSource;
+        }) => new StreakUseCases(dailyActivity, clock, stars),
+        { dailyActivity: dataSources.dailyActivity, clock: services.clock, stars: dataSources.stars },
       ),
       home: composeUseCase(
         (deps: {
@@ -231,21 +240,28 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           activities: IActivityDataSource;
           clock: IClockService;
           dayChange: IDayChangeService;
-        }) => new HomeUseCases(deps.dailyActivity, deps.activities, deps.clock, deps.dayChange),
+          stars: IStarDataSource;
+        }) => new HomeUseCases(deps.dailyActivity, deps.activities, deps.clock, deps.dayChange, deps.stars),
         {
           dailyActivity: dataSources.dailyActivity,
           activities: dataSources.activities,
           clock: services.clock,
           dayChange: services.dayChange,
+          stars: dataSources.stars,
         },
       ),
       tasks: composeUseCase(
-        (deps: { tasks: ITaskDataSource; dailyActivity: IDailyActivityDataSource; clock: IClockService }) =>
-          new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock),
+        (deps: {
+          tasks: ITaskDataSource;
+          dailyActivity: IDailyActivityDataSource;
+          clock: IClockService;
+          stars: IStarDataSource;
+        }) => new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock, undefined, deps.stars),
         {
           tasks: dataSources.tasks,
           dailyActivity: dataSources.dailyActivity,
           clock: services.clock,
+          stars: dataSources.stars,
         },
       ),
       profile: composeUseCase(
@@ -259,13 +275,24 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           dailyActivity: IDailyActivityDataSource;
           clock: IClockService;
           dayChange: IDayChangeService;
-        }) => new RoutineUseCases(deps.routines, deps.tasks, deps.dailyActivity, deps.clock, undefined, deps.dayChange),
+          stars: IStarDataSource;
+        }) =>
+          new RoutineUseCases(
+            deps.routines,
+            deps.tasks,
+            deps.dailyActivity,
+            deps.clock,
+            undefined,
+            deps.dayChange,
+            deps.stars,
+          ),
         {
           routines: dataSources.routines,
           tasks: dataSources.tasks,
           dailyActivity: dataSources.dailyActivity,
           clock: services.clock,
           dayChange: services.dayChange,
+          stars: dataSources.stars,
         },
       ),
     }),

@@ -1,5 +1,6 @@
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
+import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
 import { LocalDate } from "@/model/entities/localDate";
 import type { RoutineDetails } from "@/model/entities/routine";
@@ -25,10 +26,11 @@ const setup = (initialDay = MONDAY) => {
   const tasks = new MemoryTaskDataSource();
   const routines = new MemoryRoutineDataSource(tasks);
   const dailyActivity = new MemoryDailyActivityDataSource();
+  const stars = new MemoryStarDataSource();
   const { clock, setDay } = createClock(initialDay);
   let seq = 0;
-  const useCases = new RoutineUseCases(routines, tasks, dailyActivity, clock, () => `id-${++seq}`);
-  return { useCases, tasks, dailyActivity, setDay };
+  const useCases = new RoutineUseCases(routines, tasks, dailyActivity, clock, () => `id-${++seq}`, undefined, stars);
+  return { useCases, tasks, dailyActivity, stars, setDay };
 };
 
 const createMath = (useCases: RoutineUseCases) =>
@@ -75,8 +77,8 @@ describe("RoutineUseCases", () => {
     expect(await useCases.listRoutines()).toEqual([]);
   });
 
-  it("RN-0004 e RN-0002: concluir marca todas as tarefas e registra o dia na sequência", async () => {
-    const { useCases, dailyActivity } = setup();
+  it("RN-0004, RN-0002 e RN-0003: concluir marca todas as tarefas, registra o dia na sequência e concede a estrela", async () => {
+    const { useCases, dailyActivity, stars } = setup();
     const routine = await createMath(useCases);
 
     const details = await useCases.completeOccurrence(routine.id);
@@ -84,6 +86,7 @@ describe("RoutineUseCases", () => {
     expect(details.doneToday).toBe(true);
     expect(checked(details)).toEqual(["Revisar", "Resolver", "Anotar"]);
     expect(await days(dailyActivity)).toEqual([MONDAY]);
+    expect((await stars.listAll()).map((star) => star.eventKey)).toEqual([`streak:${MONDAY}`]);
   });
 
   it("EC-0005: tarefas já marcadas continuam marcadas ao concluir", async () => {

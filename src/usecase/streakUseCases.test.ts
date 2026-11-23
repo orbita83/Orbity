@@ -1,3 +1,4 @@
+import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { LocalDate } from "@/model/entities/localDate";
 import { ValidationError } from "@/model/errors";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
@@ -30,22 +31,26 @@ class FakeClock implements IClockService {
 
 describe("StreakUseCases", () => {
   let dataSource: FakeDailyActivityDataSource;
+  let stars: MemoryStarDataSource;
   let clock: FakeClock;
   let useCases: StreakUseCases;
 
   beforeEach(() => {
     dataSource = new FakeDailyActivityDataSource();
+    stars = new MemoryStarDataSource();
     clock = new FakeClock("2026-11-14");
-    useCases = new StreakUseCases(dataSource, clock);
+    useCases = new StreakUseCases(dataSource, clock, stars);
   });
 
-  it("RF-0015 CA-03: três conclusões no mesmo dia registram um dia e a sequência é 1", async () => {
+  it("RF-0015 CA-03 e RF-0017 CA-01: três conclusões no mesmo dia registram um dia, sequência 1 e uma única estrela", async () => {
     await useCases.recordActivity({ kind: "standalone-task", id: "t1" });
     await useCases.recordActivity({ kind: "routine", id: "r1" });
     await useCases.recordActivity({ kind: "standalone-task", id: "t2" });
 
     expect((await dataSource.listDays()).map(String)).toEqual(["2026-11-14"]);
     expect((await useCases.getStreak()).currentDays).toBe(1);
+    expect(await useCases.getStarCount()).toBe(1);
+    expect((await useCases.listStars()).map((star) => star.eventKey)).toEqual(["streak:2026-11-14"]);
   });
 
   it("rejeita atividade sem identificador", async () => {
@@ -53,6 +58,7 @@ describe("StreakUseCases", () => {
       ValidationError,
     );
     expect(dataSource.days.size).toBe(0);
+    expect(await useCases.getStarCount()).toBe(0);
   });
 
   it("RF-0015 CA-04: atividade às 23h59 ainda conta às 00h01 do dia seguinte", async () => {
@@ -64,11 +70,13 @@ describe("StreakUseCases", () => {
     expect((await useCases.getStreak()).currentDays).toBe(1);
   });
 
-  it("RF-0015 CA-05: sem atividade no dia seguinte, a sequência zera", async () => {
+  it("RF-0015 CA-05 e RN-0003 CA-02: sem atividade no dia seguinte, a sequência zera mas a estrela conquistada permanece", async () => {
     await useCases.recordActivity({ kind: "standalone-task", id: "t1" });
 
     clock.today = "2026-11-16";
     expect((await useCases.getStreak()).currentDays).toBe(0);
+    expect(await useCases.getStarCount()).toBe(1);
+    expect((await useCases.listStars()).map((star) => star.eventKey)).toEqual(["streak:2026-11-14"]);
   });
 
   it("grava o instante com o deslocamento do fuso", async () => {

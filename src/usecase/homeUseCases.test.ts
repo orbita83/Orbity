@@ -1,4 +1,6 @@
+import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { LocalDate } from "@/model/entities/localDate";
+import { createStreakStar } from "@/model/entities/star";
 import { DataSourceError } from "@/model/errors";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
@@ -56,14 +58,21 @@ describe("HomeUseCases", () => {
     expect(spy).toHaveBeenCalledWith(today);
   });
 
-  it("calcula a sequência a partir dos dias registrados", async () => {
+  it("calcula a sequência a partir dos dias registrados e preserva estrelas quando a sequência zera (RN-0003)", async () => {
+    const stars = new MemoryStarDataSource();
+    await stars.awardIfNew(createStreakStar(LocalDate.parse("2026-11-10"), "2026-11-10T10:00:00-03:00"));
+    await stars.awardIfNew(createStreakStar(LocalDate.parse("2026-11-14"), "2026-11-14T10:00:00-03:00"));
     const useCases = new HomeUseCases(
       dataSourceWith(["2026-11-14", "2026-11-13", "2026-11-12"]),
       activitiesWith({ completed: 0, total: 0 }),
       clock,
+      undefined,
+      stars,
     );
 
-    expect((await useCases.loadHome()).streak.currentDays).toBe(3);
+    const summary = await useCases.loadHome();
+    expect(summary.streak.currentDays).toBe(3);
+    expect(summary.stars).toEqual({ total: 2, earnedToday: true });
   });
 
   it("com alvos de foco, libera o início", async () => {

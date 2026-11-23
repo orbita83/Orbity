@@ -1,4 +1,5 @@
 import type { LocalDate } from "@/model/entities/localDate";
+import { createStreakStar } from "@/model/entities/star";
 import {
   type CreateTaskInput,
   type Task,
@@ -8,6 +9,7 @@ import {
 } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
@@ -44,6 +46,7 @@ export class TaskUseCases implements ITaskUseCases {
     private readonly dailyActivityDataSource: IDailyActivityDataSource,
     private readonly clock: IClockService,
     private readonly generateId: () => string = defaultGenerateId,
+    private readonly starDataSource?: IStarDataSource,
   ) {}
 
   /** Só as tarefas avulsas: as de rotina ficam na aba Rotinas (rotinas.md, R1). */
@@ -132,7 +135,9 @@ export class TaskUseCases implements ITaskUseCases {
     await this.taskDataSource.update(updated);
 
     if (!existing.completed && updated.completed) {
-      await this.dailyActivityDataSource.recordDay(this.clock.todayLocal(), now);
+      const today = this.clock.todayLocal();
+      await this.dailyActivityDataSource.recordDay(today, now);
+      await this.starDataSource?.awardIfNew(createStreakStar(today, now));
     }
 
     return updated;
@@ -153,9 +158,11 @@ export class TaskUseCases implements ITaskUseCases {
 
     await this.taskDataSource.update(updated);
 
-    // Concluir registra atividade do dia na sequência (RN-0002); reabrir mantém o dia (RF-0014 CA-04).
+    // Concluir registra atividade do dia na sequência e estrela (RN-0002, RN-0003); reabrir mantém ambos (RF-0014 CA-04).
     if (!existing.completed && updated.completed) {
-      await this.dailyActivityDataSource.recordDay(this.clock.todayLocal(), now);
+      const today = this.clock.todayLocal();
+      await this.dailyActivityDataSource.recordDay(today, now);
+      await this.starDataSource?.awardIfNew(createStreakStar(today, now));
     }
 
     return updated;

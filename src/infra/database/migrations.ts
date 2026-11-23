@@ -111,4 +111,24 @@ END`,
       },
     ],
   },
+  {
+    // Issue #214: registro persistente de estrelas (RF-0017, RN-0003) com concessão retroativa dos dias de daily_activity.
+    version: 5,
+    statements: [
+      {
+        sql: `CREATE TABLE stars (
+  id          TEXT PRIMARY KEY,
+  source_type TEXT NOT NULL CHECK (source_type IN ('streak', 'achievement')),
+  event_key   TEXT NOT NULL UNIQUE,
+  earned_date TEXT NOT NULL CHECK (earned_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+  created_at  TEXT NOT NULL
+)`,
+      },
+      {
+        sql: `INSERT OR IGNORE INTO stars (id, source_type, event_key, earned_date, created_at)
+SELECT 'star-streak-' || local_date, 'streak', 'streak:' || local_date, local_date, recorded_at
+FROM daily_activity`,
+      },
+    ],
+  },
 ];
