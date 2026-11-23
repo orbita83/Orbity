@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/brand/orbity-logo.png" alt="Orbity: planeta roxo com anéis ao lado do nome Orbity" width="640">
+<img src="design-system/images/brand/orbity-logo.png" alt="Orbity: planeta roxo com anéis ao lado do nome Orbity" width="640">
 
 ### Organize seus estudos. Construa sua constância. Acompanhe sua órbita.
 
