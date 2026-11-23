@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Orbity</title>
+  <defs>
+    <mask id="back-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#FFFFFF"/>
+      <circle cx="512" cy="512" r="295" fill="#000000"/>
+    </mask>
+    <mask id="sphere-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#FFFFFF"/>
+      <path transform="translate(512 512) rotate(-25)" d="M452 0A452 134 0 0 1 -452 0L-386 0A386 84 0 0 0 386 0Z" fill="#000000" stroke="#000000" stroke-width="36" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+  <g transform="translate(512 512) scale(0.65) translate(-512 -512)">
+    <g mask="url(#back-cut)"><path transform="translate(512 512) rotate(-25)" d="M452 0A452 134 0 1 0 -452 0A452 134 0 1 0 452 0ZM386 0A386 84 0 1 1 -386 0A386 84 0 1 1 386 0Z" fill="#FFFFFF" fill-rule="evenodd"/></g>
+    <circle cx="512" cy="512" r="268" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="18" mask="url(#sphere-cut)"/>
+    <path transform="translate(512 512) rotate(-25)" d="M452 0A452 134 0 0 1 -452 0L-386 0A386 84 0 0 0 386 0Z" fill="#FFFFFF"/>
+  </g>
+</svg>
