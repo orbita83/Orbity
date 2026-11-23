@@ -1,5 +1,5 @@
 import type { LocalDate } from "@/model/entities/localDate";
-import type { Routine } from "@/model/entities/routine";
+import { DEFAULT_ROUTINE_ICON, type Routine } from "@/model/entities/routine";
 import type { Task } from "@/model/entities/task";
 import type { IRoutineDataSource, RoutineTaskChanges } from "@/model/datasources/iRoutineDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
@@ -121,6 +121,16 @@ export class MemoryRoutineDataSource implements IRoutineDataSource {
       this.checks.set(entry, routineId);
     } else {
       this.checks.delete(entry);
+    }
+  }
+
+  /** Devolve ao ícone geral as rotinas, inclusive as excluídas, que usavam a categoria excluída (RN-0009). Só existe na memória. */
+  resetIcon(categoryId: string, changedAt: string): void {
+    for (const [id, entry] of this.routines) {
+      if (entry.routine.icon === categoryId) {
+        const routine: Routine = Object.freeze({ ...entry.routine, icon: DEFAULT_ROUTINE_ICON, updatedAt: changedAt });
+        this.routines.set(id, { ...entry, routine });
+      }
     }
   }
 }

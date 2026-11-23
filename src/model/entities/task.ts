@@ -1,12 +1,14 @@
+import { DEFAULT_CATEGORY_IDS, isDefaultCategoryId, type CategoryId } from "@/model/entities/category";
+
 export type TaskFilter = "all" | "pending" | "completed";
 
 /**
- * Categorias iniciais de estudo (tarefas.md, T3). O domínio conhece só os ids; rótulo e ícone
+ * Categorias padrão de estudo (tarefas.md, T3), agora definidas em `category.ts`. Rótulo e ícone
  * de cada um ficam na apresentação (issue #159).
  */
-export const TASK_CATEGORY_IDS = ["mathematics", "reading", "languages", "science", "programming", "music"] as const;
+export const TASK_CATEGORY_IDS = DEFAULT_CATEGORY_IDS;
 
-export type TaskCategoryId = (typeof TASK_CATEGORY_IDS)[number];
+export type TaskCategoryId = CategoryId;
 
 export type Task = {
   readonly id: string;
@@ -68,8 +70,9 @@ export type UpdateTaskInput = {
   readonly pinned?: boolean;
 };
 
-export function isTaskCategoryId(value: string): value is TaskCategoryId {
-  return (TASK_CATEGORY_IDS as readonly string[]).includes(value);
+/** Diz se o id é de uma categoria padrão. Existir de fato é verificado pelo DataSource nos casos de uso. */
+export function isTaskCategoryId(value: string): boolean {
+  return isDefaultCategoryId(value);
 }
 
 /** Filtra tarefas por status e ordena colocando as fixadas no topo preservando a ordem relativa. */

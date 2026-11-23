@@ -8,6 +8,7 @@ import {
   isTaskCategoryId,
 } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
+import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
@@ -47,7 +48,24 @@ export class TaskUseCases implements ITaskUseCases {
     private readonly clock: IClockService,
     private readonly generateId: () => string = defaultGenerateId,
     private readonly starDataSource?: IStarDataSource,
+    private readonly categoryDataSource?: ICategoryDataSource,
   ) {}
+
+  /**
+   * A categoria precisa existir (categorias.md, RF-0020). Sem o DataSource de categorias, só as
+   * padrão são aceitas, como antes da issue #212.
+   */
+  private async assertCategoryExists(category: string | undefined): Promise<void> {
+    if (category === undefined) {
+      return;
+    }
+    const exists = this.categoryDataSource
+      ? (await this.categoryDataSource.findById(category)) !== null
+      : isTaskCategoryId(category);
+    if (!exists) {
+      throw new ValidationError("Categoria de tarefa inválida.");
+    }
+  }
 
   /** Só as tarefas avulsas: as de rotina ficam na aba Rotinas (rotinas.md, R1). */
   async listTasks(): Promise<Task[]> {
@@ -69,6 +87,7 @@ export class TaskUseCases implements ITaskUseCases {
 
   async createTask(input: CreateTaskInput): Promise<Task> {
     const normalized = validateCreateTaskInput(input);
+    await this.assertCategoryExists(normalized.category);
     const now = this.clock.now();
     const task: Task = Object.freeze({
       id: this.generateId(),
@@ -109,9 +128,7 @@ export class TaskUseCases implements ITaskUseCases {
     if (input.category === null) {
       category = undefined;
     } else if (input.category !== undefined) {
-      if (!isTaskCategoryId(input.category)) {
-        throw new ValidationError("Categoria de tarefa inválida.");
-      }
+      await this.assertCategoryExists(input.category);
       category = input.category;
     }
 

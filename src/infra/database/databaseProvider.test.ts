@@ -22,10 +22,10 @@ describe("DatabaseProvider", () => {
     executor.close();
   });
 
-  it("aplica todas as migrações num banco novo e grava user_version = 5", async () => {
+  it("aplica todas as migrações num banco novo e grava user_version = 6", async () => {
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(5);
+    expect(userVersion(executor)).toBe(6);
     expect(tableExists(executor, "daily_activity")).toBe(true);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(tableExists(executor, "routines")).toBe(true);
@@ -45,7 +45,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(5);
+    expect(userVersion(executor)).toBe(6);
     expect(executor.database.prepare("SELECT id, completed, routine_id, position FROM tasks").all()).toEqual([
       { id: "t1", completed: 1, routine_id: null, position: null },
     ]);
@@ -66,7 +66,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(5);
+    expect(userVersion(executor)).toBe(6);
     expect(executor.database.prepare("SELECT category FROM tasks ORDER BY id").all().map((row) => (row as { category: string | null }).category)).toEqual(
       ["mathematics", "reading", "languages", "science", "programming", "music", null, "outra"],
     );
@@ -88,7 +88,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(5);
+    expect(userVersion(executor)).toBe(6);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(executor.database.prepare("SELECT local_date FROM daily_activity").all()).toEqual([
       { local_date: "2026-11-14" },
@@ -101,6 +101,52 @@ describe("DatabaseProvider", () => {
         earned_date: "2026-11-14",
       },
     ]);
+  });
+
+  it("issue #212: a v6 de um banco novo cria as seis categorias padrão, sem nome próprio e com o ícone do id", async () => {
+    await new DatabaseProvider(async () => executor).get();
+
+    expect(
+      executor.database
+        .prepare("SELECT id, name, name_key, icon, is_default FROM categories ORDER BY is_default DESC, rowid ASC")
+        .all(),
+    ).toEqual(
+      ["mathematics", "reading", "languages", "science", "programming", "music"].map((id) => ({
+        id,
+        name: null,
+        name_key: null,
+        icon: id,
+        is_default: 1,
+      })),
+    );
+  });
+
+  it("issue #212: a v6 de um banco da 0.1.0 (v4 e v5) mantém a categoria das tarefas e o ícone das rotinas", async () => {
+    await new DatabaseProvider(async () => executor, MIGRATIONS.filter((migration) => migration.version <= 5)).get();
+    executor.database.exec(`
+      INSERT INTO tasks (id, title, category, completed, pinned, created_at, updated_at) VALUES
+        ('t-1', 'Revisar', 'programming', 0, 0, '2026-11-15T08:00:00-03:00', '2026-11-15T08:00:00-03:00'),
+        ('t-2', 'Ler', NULL, 1, 0, '2026-11-15T09:00:00-03:00', '2026-11-15T09:00:00-03:00');
+      INSERT INTO routines (id, title, icon, days, created_at, updated_at) VALUES
+        ('r-1', 'Música', 'music', '1,3', '2026-11-15T08:00:00-03:00', '2026-11-15T08:00:00-03:00'),
+        ('r-2', 'Geral', 'general', '2', '2026-11-15T08:00:00-03:00', '2026-11-15T08:00:00-03:00');
+    `);
+
+    await new DatabaseProvider(async () => executor).get();
+
+    expect(userVersion(executor)).toBe(6);
+    expect(executor.database.prepare("SELECT id, category FROM tasks ORDER BY id").all()).toEqual([
+      { id: "t-1", category: "programming" },
+      { id: "t-2", category: null },
+    ]);
+    expect(executor.database.prepare("SELECT id, icon FROM routines ORDER BY id").all()).toEqual([
+      { id: "r-1", icon: "music" },
+      { id: "r-2", icon: "general" },
+    ]);
+    expect(executor.database.prepare("SELECT COUNT(*) AS total FROM categories").get()).toEqual({ total: 6 });
+    expect(
+      executor.database.prepare("SELECT COUNT(*) AS total FROM categories WHERE id IN ('programming', 'music')").get(),
+    ).toEqual({ total: 2 });
   });
 
   it("chamar get() duas vezes roda as migrações pendentes uma vez só", async () => {

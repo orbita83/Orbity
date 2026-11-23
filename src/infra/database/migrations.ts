@@ -131,4 +131,30 @@ FROM daily_activity`,
       },
     ],
   },
+  {
+    // Issue #212: categorias de estudo como dados (RF-0020, RN-0010). As seis padrão mantêm os ids da 0.1.0, então tarefas e rotinas já salvas continuam válidas.
+    version: 6,
+    statements: [
+      {
+        sql: `CREATE TABLE categories (
+  id         TEXT PRIMARY KEY,
+  name       TEXT CHECK (name IS NULL OR length(trim(name)) BETWEEN 1 AND 24),
+  name_key   TEXT UNIQUE,
+  icon       TEXT NOT NULL,
+  is_default INTEGER NOT NULL CHECK (is_default IN (0, 1)),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)`,
+      },
+      {
+        sql: `INSERT INTO categories (id, name, name_key, icon, is_default, created_at, updated_at) VALUES
+  ('mathematics', NULL, NULL, 'mathematics', 1, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  ('reading', NULL, NULL, 'reading', 1, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  ('languages', NULL, NULL, 'languages', 1, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  ('science', NULL, NULL, 'science', 1, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  ('programming', NULL, NULL, 'programming', 1, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  ('music', NULL, NULL, 'music', 1, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))`,
+      },
+    ],
+  },
 ];

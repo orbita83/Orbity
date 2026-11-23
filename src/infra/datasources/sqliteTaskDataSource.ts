@@ -1,7 +1,7 @@
 import type { DatabaseProvider } from "@/infra/database/databaseProvider";
 import type { SqlStatement } from "@/infra/database/iSqlExecutor";
 import { toDataSourceError } from "@/infra/database/persistenceError";
-import { isTaskCategoryId, type Task } from "@/model/entities/task";
+import type { Task } from "@/model/entities/task";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 
 type TaskRow = {
@@ -32,7 +32,7 @@ const mapRowToTask = (row: TaskRow): Task =>
     startTime: row.start_time ?? undefined,
     endDate: row.end_date ?? undefined,
     endTime: row.end_time ?? undefined,
-    category: row.category && isTaskCategoryId(row.category) ? row.category : undefined,
+    category: row.category ?? undefined,
     completed: row.completed === 1,
     pinned: row.pinned === 1,
     createdAt: row.created_at,
