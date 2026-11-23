@@ -1,6 +1,6 @@
 import type { NextActiveDay } from "@/model/entities/routine";
 import type { RoutineIcon } from "../viewmodel/useRoutinesViewModel";
-import { TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
+import { CATEGORY_ICON_SYMBOLS, TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
 import type { MaterialSymbolName } from "./components/MaterialSymbol";
 
 /**
@@ -162,3 +162,10 @@ export const ROUTINE_ICON_SYMBOLS: Readonly<Record<RoutineIcon, MaterialSymbolNa
   general: "track_changes",
   ...TASK_CATEGORY_SYMBOLS,
 };
+
+/** Símbolo do ícone de uma rotina; "general" ou um ícone desconhecido mostram o "Geral" (RN-0009). */
+export function getRoutineIconSymbol(icon: string): MaterialSymbolName {
+  return Object.hasOwn(CATEGORY_ICON_SYMBOLS, icon)
+    ? CATEGORY_ICON_SYMBOLS[icon as keyof typeof CATEGORY_ICON_SYMBOLS]
+    : ROUTINE_ICON_SYMBOLS.general;
+}

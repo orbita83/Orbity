@@ -10,7 +10,7 @@ import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
 import {
-  ROUTINE_ICON_SYMBOLS,
+  getRoutineIconSymbol,
   ROUTINES_COPY,
   formatDays,
   formatRoutineReturn,
@@ -112,7 +112,7 @@ export const RoutineDetailsScreenContent = ({
         <View style={styles.summary}>
           <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
           <View style={styles.summaryRow}>
-            <IconTile icon={ROUTINE_ICON_SYMBOLS[routine.icon]} />
+            <IconTile icon={getRoutineIconSymbol(routine.icon)} />
             <View style={styles.summaryText}>
               <Text allowFontScaling style={styles.cardTitle}>
                 {routine.title}
