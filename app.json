@@ -11,9 +11,8 @@
       "package": "io.github.orbita83.orbity",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#030417",
         "foregroundImage": "./assets/app/icon/adaptive-foreground.png",
-        "backgroundImage": "./assets/app/icon/adaptive-background.png",
         "monochromeImage": "./assets/app/icon/adaptive-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
