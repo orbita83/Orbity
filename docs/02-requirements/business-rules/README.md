@@ -11,6 +11,9 @@ Este catálogo reúne as regras de negócio (`RN`) do Orbity e relaciona cada re
 | RN-0005 | Alcance de conquistas pelo progresso da constelação do usuário | — | [RN-0005](RN-0005.md) |
 | RN-0006 | Evolução do visualizador de sequência durante o modo foco | — | [RN-0006](RN-0006.md) |
 | RN-0007 | Contabilização da barra de progresso da tela inicial | — | [RN-0007](RN-0007.md) |
+| RN-0008 | Nome válido de categoria de estudo | [RF-0020](../functional/RF-0020.md) | [RN-0008](RN-0008.md) |
+| RN-0009 | Exclusão de categoria de estudo em uso | [RF-0020](../functional/RF-0020.md) | [RN-0009](RN-0009.md) |
+| RN-0010 | Categorias de estudo padrão | [RF-0020](../functional/RF-0020.md) | [RN-0010](RN-0010.md) |
 
 ## Como adicionar uma regra de negócio
 

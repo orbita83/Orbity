@@ -18,6 +18,7 @@ Este catálogo reúne os fluxos do Orbity e relaciona cada fluxo aos requisitos 
 | FL-0012 | Exploração da constelação | — | [FL-0012](FL-0012.md) |
 | FL-0013 | Consulta e compartilhamento de conquistas | — | [FL-0013](FL-0013.md) |
 | FL-0014 | Consulta do perfil | — | [FL-0014](FL-0014.md) |
+| FL-0015 | Gerenciamento de categorias | [RF-0020](../../02-requirements/functional/RF-0020.md) | [FL-0015](FL-0015.md) |
 
 ## Como adicionar um fluxo
 

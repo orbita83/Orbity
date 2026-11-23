@@ -27,7 +27,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 ## Non-Goals
 
 - Tarefas dentro de rotinas e a relação entre as duas abas (lacuna "Tarefas de Rotina vs. Gerais" do `05-padroes.md`).
-- Categorias criadas pelo estudante; a lista é fixa nesta iteração.
+- Categorias criadas pelo estudante nesta iteração. A lista fixa foi substituída por categorias persistidas na issue #212 ([categorias.md](categorias.md)).
 - Sessão de foco ligada a uma tarefa (fica para o motor do Modo Foco).
 - Sincronização entre aparelhos.
 
@@ -35,7 +35,7 @@ A camada visual veio antes, no próprio PR #129, a partir das telas 2, 2.1, 2.2 
 
 - **T1:** A tarefa guarda datas e horas como texto no formato de exibição (`dd/mm/aaaa` e `hh:mm`), validado nos casos de uso. A ordenação usa `pinned` e `created_at`, não o prazo.
 - **T2:** A tabela `tasks` entra pela migração v2 no mesmo banco do registro diário (ADR-0001), com índice `(pinned DESC, created_at DESC)`.
-- **T3:** Seis categorias iniciais de estudo (Matemática, Leitura, Idiomas, Ciências, Programação e Música), mais "Sem categoria". O domínio conhece só os ids, em inglês (`TASK_CATEGORY_IDS`: `mathematics`, `reading`, `languages`, `science`, `programming` e `music`). Rótulo e ícone de cada id ficam na apresentação (`src/view/categoryCopy.ts`), e as ViewModels expõem só o id (issue #159).
+- **T3 (atualizada pela issue #212, ver [categorias.md](categorias.md)):** Seis categorias iniciais de estudo (Matemática, Leitura, Idiomas, Ciências, Programação e Música), mais "Sem categoria". O domínio conhece só os ids, em inglês (`TASK_CATEGORY_IDS`: `mathematics`, `reading`, `languages`, `science`, `programming` e `music`). Rótulo e ícone de cada id ficam na apresentação (`src/view/categoryCopy.ts`), e as ViewModels expõem só o id (issue #159).
 - **T4:** Fixar em lote alterna: se todas as selecionadas já estão fixadas, a ação desafixa (o rótulo vira "Desafixar").
 - **T5:** O `TaskActivityDataSource` substitui o `EmptyActivityDataSource` na composição. Há Modo Foco disponível quando existe ao menos uma tarefa.
 - **T6:** A Início e a lista de Tarefas recarregam ao ganhar foco (`useFocusEffect`), para refletir mudanças feitas em outra aba.
