@@ -18,6 +18,7 @@ import { ExpoNotificationService } from "@/infra/services/expoNotificationServic
 import { SystemClockService } from "@/infra/services/systemClockService";
 import { SystemDayChangeService } from "@/infra/services/systemDayChangeService";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
+import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
@@ -25,7 +26,9 @@ import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { IDayChangeService } from "@/model/services/iDayChangeService";
 import type { INotificationService } from "@/model/services/iNotificationService";
+import { CategoryUseCases } from "@/usecase/categoryUseCases";
 import { HomeUseCases } from "@/usecase/homeUseCases";
+import type { ICategoryUseCases } from "@/usecase/iCategoryUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 import type { IStreakUseCases } from "@/usecase/iStreakUseCases";
@@ -182,6 +185,7 @@ export type AppDataSources = {
   stars: IStarDataSource;
   tasks: ITaskDataSource;
   routines: IRoutineDataSource;
+  categories: ICategoryDataSource;
   activities: IActivityDataSource;
   profile: IProfileDataSource;
 };
@@ -200,6 +204,7 @@ export type AppUseCases = {
   tasks: ITaskUseCases;
   profile: IProfileUseCases;
   routines: IRoutineUseCases;
+  categories: ICategoryUseCases;
 };
 
 /**
@@ -256,12 +261,14 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           dailyActivity: IDailyActivityDataSource;
           clock: IClockService;
           stars: IStarDataSource;
-        }) => new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock, undefined, deps.stars),
+          categories: ICategoryDataSource;
+        }) => new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock, undefined, deps.stars, deps.categories),
         {
           tasks: dataSources.tasks,
           dailyActivity: dataSources.dailyActivity,
           clock: services.clock,
           stars: dataSources.stars,
+          categories: dataSources.categories,
         },
       ),
       profile: composeUseCase(
@@ -276,6 +283,7 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           clock: IClockService;
           dayChange: IDayChangeService;
           stars: IStarDataSource;
+          categories: ICategoryDataSource;
         }) =>
           new RoutineUseCases(
             deps.routines,
@@ -285,6 +293,7 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
             undefined,
             deps.dayChange,
             deps.stars,
+            deps.categories,
           ),
         {
           routines: dataSources.routines,
@@ -293,7 +302,13 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           clock: services.clock,
           dayChange: services.dayChange,
           stars: dataSources.stars,
+          categories: dataSources.categories,
         },
+      ),
+      categories: composeUseCase(
+        (deps: { categories: ICategoryDataSource; clock: IClockService }) =>
+          new CategoryUseCases(deps.categories, deps.clock),
+        { categories: dataSources.categories, clock: services.clock },
       ),
     }),
   });
