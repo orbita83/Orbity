@@ -1,15 +1,15 @@
 # Estrelas por aumento da sequência: domínio, persistência e integração com a Início
 
-> **Status:** Approved · **Autor:** AlissonSena7 · **Data:** 2026-11-22 · **Issue:** #214
+> **Status:** Approved · **Autor:** AlissonSena7 · **Data:** 2026-11-22
 
 ## Overview
 
-Cria o registro persistente de estrelas (`Star`) do estudante no domínio e no SQLite (migração de banco para a tabela `stars`), integrando a concessão idempotente de uma estrela a cada aumento da sequência diária ([RF-0017](../02-requirements/functional/RF-0017.md), [RN-0003](../02-requirements/business-rules/RN-0003.md)). Também expõe a consulta da lista e do total de estrelas para desbloquear a tela Cosmos (#215) e as conquistas (#216), além de apresentar um retorno acolhedor na Tela Inicial quando uma estrela de sequência é conquistada no dia.
+Cria o registro persistente de estrelas (`Star`) do estudante no domínio e no SQLite (migração de banco para a tabela `stars`), integrando a concessão idempotente de uma estrela a cada aumento da sequência diária ([RF-0017](../02-requirements/functional/RF-0017.md), [RN-0003](../02-requirements/business-rules/RN-0003.md)). Também expõe a consulta da lista e do total de estrelas para desbloquear a tela Cosmos e as conquistas, além de apresentar um retorno acolhedor na Tela Inicial quando uma estrela de sequência é conquistada no dia.
 
 ## The Problem
 
 - A sequência diária já é calculada a partir da tabela `daily_activity`, mas nenhum registro de estrela é criado quando o estudante avança na sequência.
-- As futuras entregas da tela Cosmos (#215) e das conquistas (#216) dependem de uma entidade `Star` e de um `IStarDataSource` capaz de distinguir estrelas geradas por sequência (`sourceType: "streak"`) e por conquista (`sourceType: "achievement"`).
+- As futuras entregas da tela Cosmos e das conquistas dependem de uma entidade `Star` e de um `IStarDataSource` capaz de distinguir estrelas geradas por sequência (`sourceType: "streak"`) e por conquista (`sourceType: "achievement"`).
 
 ## Goals
 
@@ -20,8 +20,8 @@ Cria o registro persistente de estrelas (`Star`) do estudante no domínio e no S
 
 ## Non-Goals
 
-- Grafo visual da constelação na tela Cosmos (escopo da issue #215).
-- Regras de desbloqueio das conquistas e concessão de estrelas do tipo `"achievement"` (escopo da issue #216, que reutilizará a mesma entidade `Star` e `IStarDataSource`).
+- Grafo visual da constelação na tela Cosmos.
+- Regras de desbloqueio das conquistas e concessão de estrelas do tipo `"achievement"` (que reutilizarão a mesma entidade `Star` e `IStarDataSource`).
 
 ## Decisions
 
