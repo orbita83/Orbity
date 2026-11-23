@@ -39,8 +39,15 @@ Todas vêm dos tokens do planeta (`planetColors` em `src/view/theme/tokens.ts`, 
 
 ## Origem
 
-- **Arte de referência:** gerada com o **Gemini** e escolhida pela equipe em 22/11/2026 na #194. Plano usado e confirmação dos termos de uso comercial: **pendente, a completar pela equipe.**
-- **Prompt:** partiu do prompt principal sugerido na #194 (seção 6). O texto final exato usado no Gemini: **pendente, a completar pela equipe.**
+- **Arte de referência:** gerada com o **Gemini**, plano **Pro**, modelo informado pelo operador como "Neon" no modo "high". A equipe escolheu a arte em 22/11/2026 na #194.
+- **Referências de estilo enviadas ao Gemini:** o repositório do Orbity (com o ODS) e imagens de direcionamento criadas anteriormente pelo Codex, no plano Plus. Todas eram artes do próprio Orbity, sem ícones de outros apps.
+- **Prompt final** (texto original enviado ao Gemini):
+
+  > Faça uma analise meu repositorio para ter o contexto do projeto e a acesso ao ODS(orbity design system): github.com/Orbita83/Orbity
+  > Criar a imagem main, descrita nas issues #194, #195, #196, #197, #198.
+  > USE COMO EXEMPLO ESTAS: PRECISO DE DETALHES E CONSISTENCIA(passei imagens criadas pelo codex no plano plus como um direcionamento).
+
+- **Termos de uso comercial:** **pendente.** A equipe precisa confirmar que os termos do Gemini (plano Pro) e do Codex (plano Plus) permitem o uso comercial das imagens geradas.
 - **Ajustes manuais:** a imagem gerada (JPEG 1024×1024) não foi usada diretamente. O símbolo foi redesenhado em SVG geométrico (um círculo e duas elipses com gradientes e máscaras), mantendo a inclinação, as proporções e a folga entre anel e esfera da arte escolhida. Depois: redução para caber no círculo de 600 px, troca das cores pelos tokens acima e criação da silhueta monocromática com a mesma geometria.
 - **Exportação:** PNGs gerados do SVG com o resvg (`@resvg/resvg-js`), em 23/11/2026.
 
