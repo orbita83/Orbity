@@ -49,7 +49,11 @@ Todas vêm dos tokens do planeta (`planetColors` em `src/view/theme/tokens.ts`, 
   > Criar a imagem main, descrita nas issues #194, #195, #196, #197, #198.
   > USE COMO EXEMPLO ESTAS: PRECISO DE DETALHES E CONSISTENCIA(passei imagens criadas pelo codex no plano plus como um direcionamento).
 
-- **Termos de uso comercial:** **pendente.** A equipe precisa confirmar que os termos do Gemini (plano Pro) e do Codex (plano Plus) permitem o uso comercial das imagens geradas.
+- **Termos de uso comercial:** conferidos em 23/11/2026.
+  - **Gemini** (conta pessoal, plano Pro), conferido por MateusARJ: pelos [Termos de Serviço do Google](https://policies.google.com/terms), o Google não reivindica a propriedade do conteúdo gerado e não restringe o uso comercial, desde que se respeite a Política de Uso Proibido de IA Generativa. Os Termos Adicionais de IA Generativa deixam com o usuário a responsabilidade de não violar direitos de terceiros e avisam que a IA pode gerar resultados iguais ou parecidos para outras pessoas.
+  - **Codex/ChatGPT** (conta pessoal; as imagens de direcionamento foram geradas no plano Plus, e a conta hoje está no plano gratuito), conferido por MailsonSousa88: pelos [Termos de Uso da OpenAI](https://openai.com/policies/row-terms-of-use/), o usuário tem os direitos sobre o resultado gerado, na medida permitida pela lei aplicável.
+  - **Limitação:** uma imagem gerada só por IA pode não ter proteção de direito autoral e não garante exclusividade. Por isso, a arte gerada serviu apenas de referência: o símbolo final foi redesenhado em vetor, com geometria e cores próprias. A origem por IA está registrada aqui, como pede a política de transparência.
+  - **Marcas de terceiros:** antes de publicar, comparar o símbolo com ícones da Google Play (buscas "planet", "study" e "habit", seção 8 da #194). Se a marca for registrada no Brasil, consultar também a base do INPI.
 - **Ajustes manuais:** a imagem gerada (JPEG 1024×1024) não foi usada diretamente. O símbolo foi redesenhado em SVG geométrico (um círculo e duas elipses com gradientes e máscaras), mantendo a inclinação, as proporções e a folga entre anel e esfera da arte escolhida. Depois: redução para caber no círculo de 600 px, troca das cores pelos tokens acima e criação da silhueta monocromática com a mesma geometria.
 - **Exportação:** PNGs gerados do SVG com o resvg (`@resvg/resvg-js`), em 23/11/2026.
 
