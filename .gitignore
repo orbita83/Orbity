@@ -55,6 +55,7 @@ example
 
 # Agents
 .agents
+.claude/worktrees/
 
 # Documentos de revisao local
 /.revisao-local/
