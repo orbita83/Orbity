@@ -19,7 +19,8 @@ const notificationPattern = {
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ["dist/*", "storybook-static/**"],
+    // .claude/** são as cópias de trabalho do Claude Code (#227), cada uma com o próprio storybook-static.
+    ignores: ["dist/*", "storybook-static/**", ".claude/**"],
   },
   {
     // ADR-0001 e ADR-0002: drivers nativos ficam restritos aos seus adaptadores na infraestrutura.
