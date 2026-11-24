@@ -10,14 +10,14 @@ import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { createRoutineFixture } from "@/model/__fixtures__/routine.fixture";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { DataSourceError } from "@/model/errors";
-import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
+import { NodeSqliteExecutor } from "../../../tests/fixtures/node-sqlite-executor";
 
 describeCategoryDataSourceContract("SqliteCategoryDataSource", async () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "orbity-categories-db-"));
   const file = path.join(directory, "orbity.db");
-  const opened: BetterSqliteExecutor[] = [];
+  const opened: NodeSqliteExecutor[] = [];
   const open = () => {
-    const executor = new BetterSqliteExecutor(file);
+    const executor = new NodeSqliteExecutor(file);
     opened.push(executor);
     const provider = new DatabaseProvider(async () => executor);
     return {
@@ -36,7 +36,7 @@ describeCategoryDataSourceContract("SqliteCategoryDataSource", async () => {
     },
     cleanup: () => {
       opened.forEach((executor) => {
-        if (executor.database.open) executor.close();
+        if (executor.database.isOpen) executor.close();
       });
       fs.rmSync(directory, { recursive: true, force: true });
     },
@@ -45,7 +45,7 @@ describeCategoryDataSourceContract("SqliteCategoryDataSource", async () => {
 
 describe("SqliteCategoryDataSource (SQLite)", () => {
   const createStore = () => {
-    const executor = new BetterSqliteExecutor();
+    const executor = new NodeSqliteExecutor();
     const provider = new DatabaseProvider(async () => executor);
     return {
       executor,
