@@ -7,7 +7,8 @@ import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { ValidationError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
-import { TaskUseCases } from "@/usecase/taskUseCases";
+import { TASK_REMINDER_NOTIFICATION_TITLE, TaskUseCases } from "@/usecase/taskUseCases";
+import { FakeNotificationService } from "../../tests/fixtures/fakeNotificationService";
 
 const createClock = (nowIso = "2026-11-15T09:30:00-03:00", localDate = "2026-11-15"): IClockService => ({
   now: () => nowIso,
@@ -243,5 +244,188 @@ describe("TaskUseCases com categorias persistidas (issue #212)", () => {
     await expect(useCases.updateTask({ id: created.id, category: null })).resolves.toMatchObject({
       category: undefined,
     });
+  });
+});
+
+describe("TaskUseCases — lembretes de tarefas agendadas (RF-0021, RN-0011, issue #211)", () => {
+  const setupWithNotifications = (
+    nowIso = "2026-11-15T09:00:00-03:00",
+    initialPermission: "granted" | "denied" | "undetermined" = "undetermined",
+    requestedPermission: "granted" | "denied" | "undetermined" = "granted",
+  ) => {
+    let currentNowIso = nowIso;
+    const clock: IClockService = {
+      now: () => currentNowIso,
+      todayLocal: () => LocalDate.parse(currentNowIso.slice(0, 10)),
+    };
+    const taskRepo = new MemoryTaskDataSource();
+    const activityRepo = new MemoryDailyActivityDataSource();
+    const notifications = new FakeNotificationService(initialPermission, requestedPermission);
+    let seq = 0;
+    const useCases = new TaskUseCases(
+      taskRepo,
+      activityRepo,
+      clock,
+      () => `t-${++seq}`,
+      undefined,
+      undefined,
+      notifications,
+    );
+    return {
+      useCases,
+      taskRepo,
+      notifications,
+      setNow: (nextIso: string) => {
+        currentNowIso = nextIso;
+      },
+    };
+  };
+
+  it("agenda ao criar com início futuro, reagenda ao editar data/hora/título e cancela ao remover horário", async () => {
+    const { useCases, notifications } = setupWithNotifications();
+
+    const created = await useCases.createTask({
+      title: "Estudar Álgebra",
+      startDate: "15/11/2026",
+      startTime: "14:00",
+    });
+
+    expect(await notifications.listScheduled()).toEqual([
+      {
+        id: `task-reminder:${created.id}`,
+        title: TASK_REMINDER_NOTIFICATION_TITLE,
+        body: 'Sua tarefa "Estudar Álgebra" começa agora. Bons estudos!',
+        triggerAt: "2026-11-15T14:00:00-03:00",
+        data: { route: "/tasks", taskId: created.id },
+      },
+    ]);
+
+    await useCases.updateTask({
+      id: created.id,
+      title: "Revisar Álgebra Linear",
+      startTime: "16:30",
+    });
+
+    expect(await notifications.listScheduled()).toEqual([
+      {
+        id: `task-reminder:${created.id}`,
+        title: TASK_REMINDER_NOTIFICATION_TITLE,
+        body: 'Sua tarefa "Revisar Álgebra Linear" começa agora. Bons estudos!',
+        triggerAt: "2026-11-15T16:30:00-03:00",
+        data: { route: "/tasks", taskId: created.id },
+      },
+    ]);
+
+    await useCases.updateTask({ id: created.id, startDate: null, startTime: null });
+    expect(await notifications.listScheduled()).toEqual([]);
+  });
+
+  it("cancela ao concluir, reagenda ao reabrir se ainda for futuro e não reagenda se o horário já passou", async () => {
+    const { useCases, notifications, setNow } = setupWithNotifications("2026-11-15T09:00:00-03:00");
+
+    const created = await useCases.createTask({
+      title: "Praticar algoritmos",
+      startDate: "15/11/2026",
+      startTime: "14:00",
+    });
+    expect(await notifications.listScheduled()).toHaveLength(1);
+
+    await useCases.toggleTaskCompletion(created.id);
+    expect(await notifications.listScheduled()).toEqual([]);
+
+    // Reabre ainda antes das 14:00 -> reagenda
+    await useCases.toggleTaskCompletion(created.id);
+    expect(await notifications.listScheduled()).toHaveLength(1);
+
+    // Conclui novamente e tenta reabrir depois das 14:00 -> não agenda
+    await useCases.toggleTaskCompletion(created.id);
+    expect(await notifications.listScheduled()).toEqual([]);
+    setNow("2026-11-15T15:00:00-03:00");
+    await useCases.toggleTaskCompletion(created.id);
+    expect(await notifications.listScheduled()).toEqual([]);
+  });
+
+  it("não agenda para tarefa sem horário, no passado ou vinculada a uma rotina, e cancela ao excluir", async () => {
+    const { useCases, taskRepo, notifications } = setupWithNotifications("2026-11-15T09:00:00-03:00");
+
+    await useCases.createTask({ title: "Sem horário" });
+    await useCases.createTask({ title: "Já passou", startDate: "15/11/2026", startTime: "08:30" });
+    await taskRepo.create(
+      createTaskFixture({
+        id: "routine-task",
+        title: "Tarefa da rotina",
+        startDate: "15/11/2026",
+        startTime: "18:00",
+        routineId: "routine-1",
+        position: 0,
+      }),
+    );
+    expect(await notifications.listScheduled()).toEqual([]);
+
+    const future = await useCases.createTask({
+      title: "Futura",
+      startDate: "15/11/2026",
+      startTime: "19:00",
+    });
+    expect(await notifications.listScheduled()).toHaveLength(1);
+
+    await useCases.deleteTasks([future.id]);
+    expect(await notifications.listScheduled()).toEqual([]);
+  });
+
+  it("reconcilia lembretes ao abrir: remove órfãos de tarefa, preserva outros escopos e agenda tarefas abertas futuras", async () => {
+    const { useCases, taskRepo, notifications } = setupWithNotifications("2026-11-15T09:00:00-03:00", "granted");
+
+    await taskRepo.create(
+      createTaskFixture({
+        id: "open-future",
+        title: "Leitura",
+        startDate: "15/11/2026",
+        startTime: "17:00",
+        completed: false,
+      }),
+    );
+    await notifications.schedule({
+      id: "task-reminder:orfa",
+      title: "Antiga",
+      body: "Antiga",
+      triggerAt: "2026-11-15T12:00:00-03:00",
+    });
+    await notifications.schedule({
+      id: "focus-cycle-end",
+      title: "Ciclo concluído",
+      body: "Pausa",
+      triggerAt: "2026-11-15T09:25:00-03:00",
+    });
+
+    await useCases.reconcileScheduledReminders();
+
+    expect((await notifications.listScheduled()).map((item) => item.id).sort()).toEqual([
+      "focus-cycle-end",
+      "task-reminder:open-future",
+    ]);
+  });
+
+  it("salva a tarefa normalmente quando a permissão é negada e propaga o toque na notificação da aba Tarefas", async () => {
+    const { useCases, taskRepo, notifications } = setupWithNotifications("2026-11-15T09:00:00-03:00", "denied", "denied");
+
+    const created = await useCases.createTask({
+      title: "Revisar História",
+      startDate: "15/11/2026",
+      startTime: "18:00",
+    });
+
+    expect(await taskRepo.findById(created.id)).toBeTruthy();
+    expect(await notifications.listScheduled()).toEqual([]);
+    expect(await useCases.ensureReminderPermission()).toBe("denied");
+
+    const pressedIds: (string | undefined)[] = [];
+    const unsubscribe = useCases.onTaskReminderPress((taskId) => pressedIds.push(taskId));
+    notifications.emitNotificationResponse({ route: "/tasks", taskId: created.id });
+    notifications.emitNotificationResponse({ route: "/other" });
+    unsubscribe();
+    notifications.emitNotificationResponse({ route: "/tasks", taskId: "ignored" });
+
+    expect(pressedIds).toEqual([created.id]);
   });
 });

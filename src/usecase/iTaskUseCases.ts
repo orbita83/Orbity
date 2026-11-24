@@ -1,5 +1,6 @@
 import type { LocalDate } from "@/model/entities/localDate";
 import type { CreateTaskInput, Task, UpdateTaskInput } from "@/model/entities/task";
+import type { NotificationPermissionStatus } from "@/model/services/iNotificationService";
 
 /** Casos de uso da funcionalidade de Tarefas (ARCHITECTURE.md). */
 export interface ITaskUseCases {
@@ -19,4 +20,10 @@ export interface ITaskUseCases {
   toggleTaskCompletion(id: string): Promise<Task>;
   togglePinTasks(ids: readonly string[]): Promise<Task[]>;
   deleteTasks(ids: readonly string[]): Promise<void>;
+  /** Sincroniza os lembretes agendados no sistema com as tarefas avulsas abertas que possuem horário futuro (RF-0021, RN-0011). */
+  reconcileScheduledReminders?(): Promise<void>;
+  /** Consulta ou solicita permissão de notificações sem bloquear o salvamento da tarefa (RF-0021 CA-05). */
+  ensureReminderPermission?(): Promise<NotificationPermissionStatus>;
+  /** Escuta o toque do estudante em uma notificação de tarefa para a ViewModel navegar até a aba Tarefas (RF-0021 CA-06). */
+  onTaskReminderPress?(onPress: (taskId?: string) => void): () => void;
 }

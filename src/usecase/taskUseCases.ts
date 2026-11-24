@@ -4,8 +4,11 @@ import {
   type CreateTaskInput,
   type Task,
   type UpdateTaskInput,
+  buildTaskReminderId,
+  getTaskReminderTriggerAt,
   isStandaloneTask,
   isTaskCategoryId,
+  isTaskReminderId,
 } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
@@ -13,6 +16,11 @@ import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivit
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
+import type {
+  INotificationService,
+  NotificationPermissionStatus,
+  ScheduleNotificationInput,
+} from "@/model/services/iNotificationService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 import {
   normalizeDisplayDate,
@@ -40,6 +48,32 @@ const resolveOptionalPatch = (patch: string | null | undefined, current: string 
   return trimmed.length > 0 ? trimmed : undefined;
 };
 
+export const TASK_REMINDER_NOTIFICATION_TITLE = "Hora de estudar";
+
+/**
+ * Monta o payload de agendamento de lembrete local com textos acolhedores e metadados de rota
+ * para uma tarefa avulsa pendente com início no futuro (RF-0021, RN-0011).
+ */
+export function buildTaskReminderInput(
+  task: Pick<Task, "id" | "title" | "startDate" | "startTime" | "completed" | "routineId">,
+  referenceIso: string,
+): ScheduleNotificationInput | null {
+  const triggerAt = getTaskReminderTriggerAt(task, referenceIso);
+  if (!triggerAt) {
+    return null;
+  }
+  return Object.freeze({
+    id: buildTaskReminderId(task.id),
+    title: TASK_REMINDER_NOTIFICATION_TITLE,
+    body: `Sua tarefa "${task.title}" começa agora. Bons estudos!`,
+    triggerAt,
+    data: Object.freeze({
+      route: "/tasks",
+      taskId: task.id,
+    }),
+  });
+}
+
 /** Regras de aplicação para criação, conclusão, fixação e exclusão de tarefas. */
 export class TaskUseCases implements ITaskUseCases {
   constructor(
@@ -49,6 +83,7 @@ export class TaskUseCases implements ITaskUseCases {
     private readonly generateId: () => string = defaultGenerateId,
     private readonly starDataSource?: IStarDataSource,
     private readonly categoryDataSource?: ICategoryDataSource,
+    private readonly notificationService?: INotificationService,
   ) {}
 
   /**
@@ -105,6 +140,7 @@ export class TaskUseCases implements ITaskUseCases {
     });
 
     await this.taskDataSource.create(task);
+    await this.syncTaskReminder(task, true);
     return task;
   }
 
@@ -157,6 +193,7 @@ export class TaskUseCases implements ITaskUseCases {
       await this.starDataSource?.awardIfNew(createStreakStar(today, now));
     }
 
+    await this.syncTaskReminder(updated);
     return updated;
   }
 
@@ -182,6 +219,7 @@ export class TaskUseCases implements ITaskUseCases {
       await this.starDataSource?.awardIfNew(createStreakStar(today, now));
     }
 
+    await this.syncTaskReminder(updated);
     return updated;
   }
 
@@ -220,5 +258,107 @@ export class TaskUseCases implements ITaskUseCases {
       return;
     }
     await this.taskDataSource.deleteMany(uniqueIds);
+    if (this.notificationService) {
+      await Promise.all(
+        uniqueIds.map((id) =>
+          this.notificationService!.cancel(buildTaskReminderId(id)).catch(() => undefined),
+        ),
+      );
+    }
+  }
+
+  async reconcileScheduledReminders(): Promise<void> {
+    if (!this.notificationService) {
+      return;
+    }
+    try {
+      const status = await this.notificationService.getPermissionStatus();
+      if (status !== "granted") {
+        return;
+      }
+      const [tasks, scheduled] = await Promise.all([
+        this.listTasks(),
+        this.notificationService.listScheduled(),
+      ]);
+      const nowIso = this.clock.now();
+      const desiredById = new Map<string, ScheduleNotificationInput>();
+      for (const task of tasks) {
+        const reminder = buildTaskReminderInput(task, nowIso);
+        if (reminder) {
+          desiredById.set(reminder.id, reminder);
+        }
+      }
+
+      const scheduledById = new Map(scheduled.map((item) => [item.id, item]));
+      const orphanIds = scheduled
+        .filter((item) => isTaskReminderId(item.id) && !desiredById.has(item.id))
+        .map((item) => item.id);
+      await Promise.all(orphanIds.map((id) => this.notificationService!.cancel(id).catch(() => undefined)));
+
+      for (const desired of desiredById.values()) {
+        const current = scheduledById.get(desired.id);
+        const alreadyAligned =
+          current !== undefined &&
+          current.title === desired.title &&
+          current.body === desired.body &&
+          current.triggerAt === desired.triggerAt;
+        if (!alreadyAligned) {
+          await this.notificationService.schedule(desired);
+        }
+      }
+    } catch {
+      // Falha no serviço nativo nunca impede listar ou manipular tarefas (RF-0021 CA-05).
+    }
+  }
+
+  async ensureReminderPermission(): Promise<NotificationPermissionStatus> {
+    if (!this.notificationService) {
+      return "granted";
+    }
+    try {
+      const current = await this.notificationService.getPermissionStatus();
+      if (current === "granted") {
+        return "granted";
+      }
+      if (current === "undetermined") {
+        return await this.notificationService.requestPermission();
+      }
+      return current;
+    } catch {
+      return "denied";
+    }
+  }
+
+  onTaskReminderPress(onPress: (taskId?: string) => void): () => void {
+    if (!this.notificationService?.onNotificationResponse) {
+      return () => undefined;
+    }
+    return this.notificationService.onNotificationResponse((data) => {
+      if (data.route === "/tasks") {
+        onPress(data.taskId);
+      }
+    });
+  }
+
+  private async syncTaskReminder(task: Task, isNew = false): Promise<void> {
+    if (!this.notificationService || !isStandaloneTask(task)) {
+      return;
+    }
+    try {
+      const reminder = buildTaskReminderInput(task, this.clock.now());
+      if (!reminder) {
+        if (!isNew) {
+          await this.notificationService.cancel(buildTaskReminderId(task.id));
+        }
+        return;
+      }
+      const permission = await this.ensureReminderPermission();
+      if (permission !== "granted") {
+        return;
+      }
+      await this.notificationService.schedule(reminder);
+    } catch {
+      // Falha técnica ou negativa de permissão nunca impede persistir a tarefa (RF-0021 CA-05).
+    }
   }
 }
