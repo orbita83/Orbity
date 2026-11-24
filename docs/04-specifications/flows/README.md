@@ -19,6 +19,7 @@ Este catálogo reúne os fluxos do Orbity e relaciona cada fluxo aos requisitos 
 | FL-0013 | Consulta e compartilhamento de conquistas | — | [FL-0013](FL-0013.md) |
 | FL-0014 | Consulta do perfil | — | [FL-0014](FL-0014.md) |
 | FL-0015 | Gerenciamento de categorias | [RF-0020](../../02-requirements/functional/RF-0020.md) | [FL-0015](FL-0015.md) |
+| FL-0016 | Notificação e reconciliação de tarefas agendadas | [RF-0013](../../02-requirements/functional/RF-0013.md), [RF-0021](../../02-requirements/functional/RF-0021.md) | [FL-0016](FL-0016.md) |
 
 ## Como adicionar um fluxo
 

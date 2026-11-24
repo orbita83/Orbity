@@ -38,6 +38,7 @@ Os requisitos funcionais seguem o modelo definido em [`RF.template.md`](../07-te
 | [RF-0018](./functional/RF-0018.md) | Visualizar constelação | Permitir visualizar as estrelas acumuladas em uma constelação progressiva. |
 | [RF-0019](./functional/RF-0019.md) | Selecionar duração da sessão do modo foco | Permitir escolher a duração da sessão do modo foco entre valores pré-definidos de 5 a 30 minutos. |
 | [RF-0020](./functional/RF-0020.md) | Gerenciar categorias de estudo | Permitir listar, criar, renomear, trocar o ícone e excluir categorias de estudo. |
+| [RF-0021](./functional/RF-0021.md) | Notificar tarefa agendada | Notificar localmente o estudante no horário de início das tarefas avulsas agendadas. |
 
 ## 3. Rastreabilidade
 

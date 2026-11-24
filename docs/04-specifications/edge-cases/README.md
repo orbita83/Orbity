@@ -13,6 +13,7 @@ Este catálogo reúne os casos de borda (`EC`) do Orbity, especificando condiç�
 | EC-0007 | Encerramento ou interrupção de sessão ativa do modo foco | — | [RN-0001](../../02-requirements/business-rules/RN-0001.md), [RN-0006](../../02-requirements/business-rules/RN-0006.md) | [EC-0007-interrupcao-sessao-modo-foco-em-andamento.md](EC-0007-interrupcao-sessao-modo-foco-em-andamento.md) |
 | EC-0008 | Exclusão de tarefa ou rotina vinculada a uma sessão ativa do modo foco | — | [RN-0001](../../02-requirements/business-rules/RN-0001.md), [RN-0006](../../02-requirements/business-rules/RN-0006.md) | [EC-0008-alteracao-tarefa-ou-rotina-vinculada-ao-modo-foco.md](EC-0008-alteracao-tarefa-ou-rotina-vinculada-ao-modo-foco.md) |
 | EC-0009 | Exclusão de categoria usada por tarefas e rotinas | [RF-0020](../../02-requirements/functional/RF-0020.md) | [RN-0009](../../02-requirements/business-rules/RN-0009.md) | [EC-0009-exclusao-categoria-em-uso.md](EC-0009-exclusao-categoria-em-uso.md) |
+| EC-0010 | Lembrete de tarefa com permissão negada ou horário de início no passado | [RF-0013](../../02-requirements/functional/RF-0013.md), [RF-0021](../../02-requirements/functional/RF-0021.md) | [RN-0011](../../02-requirements/business-rules/RN-0011.md) | [EC-0010-lembrete-tarefa-sem-permissao-ou-horario-passado.md](EC-0010-lembrete-tarefa-sem-permissao-ou-horario-passado.md) |
 
 ## Como adicionar um caso de borda
 
