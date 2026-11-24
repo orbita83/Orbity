@@ -11,15 +11,29 @@ Arquivos-mestre da identidade visual. Nenhum deles entra no build: o ícone do a
 | `orbity-symbol-on-background.png` | Símbolo sobre `#030417`, como fica o ícone | PNG 2048×2048 opaco, sem cantos arredondados |
 | `orbity-symbol-monochrome.svg` | Silhueta branca com a mesma geometria | SVG, prancheta 1024×1024 |
 | `orbity-symbol-monochrome.png` | Exportação da silhueta | PNG 2048×2048 com transparência |
-| `orbity-logo.png` | Símbolo com o nome "Orbity", usado no `README.md` da raiz | PNG com transparência |
+| `orbity-logo.svg` | Logotipo horizontal: símbolo e nome "Orbity", com as letras em contornos | SVG 984×242 |
+| `orbity-logo-monochrome.svg` | Logotipo com a mesma geometria, todo em `#FFFFFF` | SVG 984×242 |
+| `orbity-logo.png` | Exportação do `orbity-logo.svg`, usada no `README.md` da raiz | PNG 1968×484 com transparência |
 
-O banner `design-system/images/assets/orbity-design-system.png` (usado no `design-system/README.md`) e o `orbity-logo.png` usam este mesmo símbolo. Em 23/11/2026, o planeta antigo desses dois arquivos (com estrelas e pontos) foi trocado pelo `orbity-symbol.svg`. O letreiro "Orbity" e o fundo do banner foram mantidos; a área do planeta antigo no banner foi preenchida com o degradê interpolado a partir das bordas.
+O banner `design-system/images/assets/orbity-design-system.png` (usado no `design-system/README.md`) é gerado a partir do `orbity-logo.svg`. Ao alterar o símbolo ou o logotipo, exporte de novo o `orbity-logo.png` e o banner.
 
 ## Geometria e restrições
 
 - Esfera e anel centrados em (512, 512). O ponto mais distante do símbolo fica a 294 px do centro, dentro do círculo de 300 px de raio (600 px de diâmetro) exigido pela área segura do ícone adaptativo e do splash do Android 12+.
 - Anel inclinado 25°, de baixo à esquerda para cima à direita. A parte de trás fica escondida pela esfera e a da frente passa sobre ela com uma folga transparente, que mantém o anel separado da esfera na silhueta monocromática.
 - Sem texto visível, sem imagens raster embutidas, sem brilho externo, sombra ou moldura: o Android e a Google Play aplicam máscara e sombra. Os SVGs têm um `<title>Orbity</title>`, que não é desenhado: é o nome acessível lido por leitores de tela e navegadores.
+
+## Logotipo
+
+O logotipo junta o símbolo, sem alterações, ao nome "Orbity" à direita. As medidas abaixo estão nas unidades do SVG, em que o logotipo tem 242 de altura:
+
+- **Construção das letras:** sem serifa, geométricas e arredondadas, desenhadas com formas simples (círculos, retângulos e curvas) e unidas num contorno (`<path>`) por letra. Não há `<text>` nem dependência de fonte instalada: o SVG abre igual em qualquer máquina.
+- **Métricas:** linha de base em 177, altura-x de 106, ascendentes ("b" e "t") de 145 e descendente do "y" até 218. Todas as hastes têm 33 de espessura. O "O" e o bojo do "b" passam 3 unidades da linha de base e da altura, para parecerem do mesmo tamanho das letras retas.
+- **Detalhes da identidade:** o pingo do "i" é um círculo de cor própria, o "t" tem o topo cortado na diagonal e o pé curvo, e o "y" termina numa cauda curva para a esquerda.
+- **Alinhamento:** o símbolo ocupa 360 de largura e fica centralizado na vertical com o nome (do topo do pingo do "i" ao fim da cauda do "y").
+- **Área de proteção:** deixe livre em volta do logotipo, no mínimo, a altura-x do nome (106 unidades, cerca de 44% da altura do logotipo). Nenhum texto, borda ou imagem entra nessa área.
+- **Tamanho mínimo:** 120 px de largura na tela. Abaixo disso, use só o símbolo.
+- **Fundo:** a versão colorida foi feita para fundos escuros (`#030417` ou o banner). Em fundo claro, use o `orbity-logo-monochrome.svg` recolorido para `#030417`, ou só o símbolo.
 
 ## Cores
 
@@ -36,8 +50,12 @@ Todas vêm dos tokens do planeta (`planetColors` em `src/view/theme/tokens.ts`, 
 | Realce do anel | `planet.ringHighlight` | `#E8B5FF` |
 | Borda inferior direita da esfera | `blue-600` | `#4F46E5` |
 | Fundo do ícone | `cosmicTokens.color.background` | `#030417` |
+| Nome do logotipo, topo do degradê | `color.on-surface` | `#FAF9FF` |
+| Nome do logotipo, base do degradê, e pingo do "i" | `purple-500` | `#8B5CF6` |
 
 **Exceção registrada:** a borda inferior direita usa o primitivo `blue-600`, fora da tabela da #194, para manter o contorno azulado da arte escolhida pela equipe. O contraste com `#030417` é de 3,23:1, acima do mínimo de 3:1 para gráficos não textuais (WCAG 1.4.11). As cores mais escuras (`#39149A`, `#17075B`) ficam só no interior da esfera, nunca na borda externa.
+
+**Contraste do nome:** o degradê vertical vai de `#FAF9FF` (19,41:1 com `#030417`) a `#8B5CF6` (4,80:1). Cada canal de cor dos pontos intermediários fica entre os das duas pontas, então todo o nome fica acima de 4,5:1. O letreiro raster anterior terminava num azul-violeta de cerca de 3,2:1.
 
 ## Origem
 
@@ -57,4 +75,15 @@ Todas vêm dos tokens do planeta (`planetColors` em `src/view/theme/tokens.ts`, 
 - **Ajustes manuais:** a imagem gerada (JPEG 1024×1024) não foi usada diretamente. O símbolo foi redesenhado em SVG geométrico (um círculo e duas elipses com gradientes e máscaras), mantendo a inclinação, as proporções e a folga entre anel e esfera da arte escolhida. Depois: redução para caber no círculo de 600 px, troca das cores pelos tokens acima e criação da silhueta monocromática com a mesma geometria.
 - **Exportação:** PNGs gerados do SVG com o resvg (`@resvg/resvg-js`), em 23/11/2026.
 
-Issue: #194. Acompanhamento: #198.
+### Logotipo vetorial (#230)
+
+- **Decisão da equipe (opção A, registrada na #230):** redesenhar em vetor as letras do letreiro raster anterior, gerado por IA junto com o banner. A identidade foi mantida, e as espessuras, o espaçamento e o alinhamento foram corrigidos. A referência foi o letreiro do `orbity-logo.png` anterior, com o "t" separado do "y", e não o do banner, que ligava os dois.
+- **Como foi feito:** em 24/11/2026, as métricas foram medidas no PNG anterior (linha de base, altura-x, hastes e espaços), e as letras foram reconstruídas com formas geométricas por script, com o Claude Code, sob a orientação de MateusARJ. A união das formas em contornos usou o paper.js, e a exportação dos PNGs, o resvg.
+- **Correções em relação ao raster:**
+  - o contrabojo do "O" foi centralizado (antes, o traço tinha 24 px de um lado e 37 px do outro);
+  - todas as hastes ficaram com a mesma espessura;
+  - o espaço entre o "t" e o "y" passou de 2 para 9 unidades;
+  - o degradê passou a usar só tokens, com contraste de pelo menos 4,5:1.
+- **Autoria:** o desenho vetorial não copia pixels da imagem gerada por IA, mas foi feito com assistência de IA. Se a proteção de direito autoral do letreiro for importante, um membro da equipe deve revisar e ajustar as curvas num editor vetorial (Inkscape ou Figma) e registrar a revisão aqui.
+
+Issues: #194 (símbolo) e #230 (logotipo). Acompanhamento: #198.

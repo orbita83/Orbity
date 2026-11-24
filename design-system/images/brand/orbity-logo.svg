@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="984" height="242" viewBox="0 -1 984 242">
+  <title>Orbity</title>
+  <svg x="0" y="-0.61" width="360" height="241.23" viewBox="243 331.75 538 360.5" overflow="visible">
+    <defs>
+      <radialGradient id="sphere" gradientUnits="userSpaceOnUse" cx="430" cy="400" r="430" fx="390" fy="350">
+        <stop offset="0" stop-color="#EBACFF"/>
+        <stop offset="0.22" stop-color="#BD6AFF"/>
+        <stop offset="0.48" stop-color="#8840E9"/>
+        <stop offset="0.74" stop-color="#39149A"/>
+        <stop offset="1" stop-color="#17075B"/>
+      </radialGradient>
+      <linearGradient id="rim" gradientUnits="userSpaceOnUse" x1="330" y1="300" x2="700" y2="740">
+        <stop offset="0" stop-color="#EBACFF"/>
+        <stop offset="0.45" stop-color="#BD6AFF"/>
+        <stop offset="0.8" stop-color="#4F46E5"/>
+      </linearGradient>
+      <linearGradient id="ring" gradientUnits="userSpaceOnUse" x1="-452" y1="0" x2="452" y2="0">
+        <stop offset="0" stop-color="#A95BFA"/>
+        <stop offset="0.55" stop-color="#A95BFA"/>
+        <stop offset="1" stop-color="#E8B5FF"/>
+      </linearGradient>
+      <mask id="back-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+        <rect width="1024" height="1024" fill="#FFFFFF"/>
+        <circle cx="512" cy="512" r="295" fill="#000000"/>
+      </mask>
+      <mask id="sphere-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+        <rect width="1024" height="1024" fill="#FFFFFF"/>
+        <path transform="translate(512 512) rotate(-25)" d="M452 0A452 134 0 0 1 -452 0L-386 0A386 84 0 0 0 386 0Z" fill="#000000" stroke="#000000" stroke-width="36" stroke-linejoin="round"/>
+      </mask>
+    </defs>
+    <g transform="translate(512 512) scale(0.65) translate(-512 -512)">
+      <g mask="url(#back-cut)"><path transform="translate(512 512) rotate(-25)" d="M452 0A452 134 0 1 0 -452 0A452 134 0 1 0 452 0ZM386 0A386 84 0 1 1 -386 0A386 84 0 1 1 386 0Z" fill="url(#ring)" fill-rule="evenodd"/></g>
+      <circle cx="512" cy="512" r="268" fill="url(#sphere)" stroke="url(#rim)" stroke-width="18" mask="url(#sphere-cut)"/>
+      <path transform="translate(512 512) rotate(-25)" d="M452 0A452 134 0 0 1 -452 0L-386 0A386 84 0 0 0 386 0Z" fill="url(#ring)"/>
+    </g>
+  </svg>
+  <defs>
+    <linearGradient id="word" gradientUnits="userSpaceOnUse" x1="0" y1="29" x2="0" y2="218">
+      <stop offset="0" stop-color="#FAF9FF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#word)">
+    <path d="M394,104.5c0,-41.7 32.24,-75.5 72,-75.5c39.76,0 72,33.8 72,75.5c0,41.7 -32.24,75.5 -72,75.5c-39.76,0 -72,-33.8 -72,-75.5zM466,148c22.09,0 40,-19.48 40,-43.5c0,-24.02 -17.91,-43.5 -40,-43.5c-22.09,0 -40,19.48 -40,43.5c0,24.02 17.91,43.5 40,43.5z"/>
+    <path d="M548,177v-106h33v19c2,-11 9,-19 22,-19h14v31h-16c-9,0 -17,7 -20,18v57z"/>
+    <path d="M625,177v-145h33v40.93c7.02,-3.16 14.8,-4.93 23,-4.93c30.93,0 56,25.07 56,56c0,30.93 -25.07,56 -56,56c-8.2,0 -15.98,-1.76 -23,-4.93v1.93zM681,149c12.7,0 23,-11.19 23,-25c0,-13.81 -10.3,-25 -23,-25c-12.7,0 -23,11.19 -23,25c0,0 0,0 0,0c0,13.81 10.3,25 23,25z"/>
+    <path d="M746,177v-106h33v106z"/>
+    <path d="M796,32l33,18v21h25v30h-25v31c0,10 5,15 15,15h11v30h-13c-30,0 -46,-16 -46,-42v-34h-7v-30h7z"/>
+    <path d="M864,71h35l24.89,62.22l23.11,-62.22h35l-40,107c-7,19 -18,40 -44,40h-22v-28h16c7.44,0 11.42,-3.46 15.16,-12h-0.26z"/>
+  </g>
+  <circle cx="762.5" cy="41" r="19" fill="#8B5CF6"/>
+</svg>
