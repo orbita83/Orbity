@@ -11,6 +11,11 @@ module.exports = {
   testMatch: [
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
+  // O Claude Code cria cópias do repositório em .claude/worktrees (#227). Sem estas regras, o Jest
+  // roda os testes dessas cópias e indexa um segundo package.json "orbity" no haste map.
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.claude/'],
+  modulePathIgnorePatterns: ['<rootDir>/.claude/'],
+  watchPathIgnorePatterns: ['<rootDir>/.claude/'],
   clearMocks: true,
   // O primeiro teste de cada arquivo de tela monta a tela inteira pela primeira vez e, no runner do
   // CI, pode passar dos 5 s padrão do Jest sem nenhuma falha real (ex.: tasks-content.test.tsx).
