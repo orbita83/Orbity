@@ -5,10 +5,10 @@ import { SqliteTaskDataSource } from "@/infra/datasources/sqliteTaskDataSource";
 import { createRoutineFixture } from "@/model/__fixtures__/routine.fixture";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { DataSourceError } from "@/model/errors";
-import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
+import { NodeSqliteExecutor } from "../../../tests/fixtures/node-sqlite-executor";
 
 describe("SqliteRoutineDataSource", () => {
-  const openExecutors: BetterSqliteExecutor[] = [];
+  const openExecutors: NodeSqliteExecutor[] = [];
 
   afterEach(() => {
     while (openExecutors.length > 0) {
@@ -17,7 +17,7 @@ describe("SqliteRoutineDataSource", () => {
   });
 
   const open = () => {
-    const executor = new BetterSqliteExecutor();
+    const executor = new NodeSqliteExecutor();
     openExecutors.push(executor);
     const provider = new DatabaseProvider(async () => executor);
     return { executor, routines: new SqliteRoutineDataSource(provider), tasks: new SqliteTaskDataSource(provider) };

@@ -6,14 +6,14 @@ import { describeDailyActivityDataSourceContract } from "@/infra/datasources/dai
 import { SqliteDailyActivityDataSource } from "@/infra/datasources/sqliteDailyActivityDataSource";
 import { LocalDate } from "@/model/entities/localDate";
 import { DataSourceError } from "@/model/errors";
-import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
+import { NodeSqliteExecutor } from "../../../tests/fixtures/node-sqlite-executor";
 
 describeDailyActivityDataSourceContract("SqliteDailyActivityDataSource", async () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "orbity-db-"));
   const file = path.join(directory, "orbity.db");
-  const opened: BetterSqliteExecutor[] = [];
+  const opened: NodeSqliteExecutor[] = [];
   const open = () => {
-    const executor = new BetterSqliteExecutor(file);
+    const executor = new NodeSqliteExecutor(file);
     opened.push(executor);
     return new SqliteDailyActivityDataSource(new DatabaseProvider(async () => executor));
   };
@@ -26,7 +26,7 @@ describeDailyActivityDataSourceContract("SqliteDailyActivityDataSource", async (
     },
     cleanup: () => {
       opened.forEach((executor) => {
-        if (executor.database.open) executor.close();
+        if (executor.database.isOpen) executor.close();
       });
       fs.rmSync(directory, { recursive: true, force: true });
     },
@@ -35,7 +35,7 @@ describeDailyActivityDataSourceContract("SqliteDailyActivityDataSource", async (
 
 describe("SqliteDailyActivityDataSource (falhas)", () => {
   it("converte o erro do driver em DataSourceError", async () => {
-    const executor = new BetterSqliteExecutor();
+    const executor = new NodeSqliteExecutor();
     const dataSource = new SqliteDailyActivityDataSource(new DatabaseProvider(async () => executor));
     await dataSource.listDays();
     executor.database.exec("DROP TABLE daily_activity");

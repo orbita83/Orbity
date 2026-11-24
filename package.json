@@ -36,10 +36,8 @@
     "@storybook/addon-docs": "10.6.2",
     "@storybook/react-native-web-vite": "10.6.2",
     "@testing-library/react-native": "^14.1.0",
-    "@types/better-sqlite3": "9.6.0",
     "@types/jest": "29.5.14",
     "@types/react": "~19.2.2",
-    "better-sqlite3": "13.2.0",
     "eas-cli": "27.5.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~57.0.2",
@@ -69,5 +67,8 @@
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,tsx}": "eslint"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": ">=22.15"
+  }
 }

@@ -150,8 +150,8 @@ function resolveTarget(specifier, importer, rootDir, options, cache) {
 }
 
 function checkPackage(layer, file, pkg, node) {
-  if (pkg === "better-sqlite3" || (pkg === "expo-sqlite" && file !== SQLITE_EXECUTOR)) {
-    return "Restrição do ADR-0001. Só o executor do Expo importa expo-sqlite e better-sqlite3 é exclusivo de testes.";
+  if (pkg === "node:sqlite" || (pkg === "expo-sqlite" && file !== SQLITE_EXECUTOR)) {
+    return "Restrição do ADR-0001. Só o executor do Expo importa expo-sqlite e o node:sqlite é exclusivo de testes.";
   }
   if (pkg === "expo-notifications" && file !== NOTIFICATION_SERVICE) {
     return "Restrição do ADR-0002. Só o serviço de notificações da infraestrutura importa expo-notifications.";

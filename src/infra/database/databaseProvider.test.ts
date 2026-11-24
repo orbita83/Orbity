@@ -2,20 +2,20 @@ import { DatabaseProvider } from "@/infra/database/databaseProvider";
 import type { ISqlExecutor } from "@/infra/database/iSqlExecutor";
 import { MIGRATIONS, type Migration } from "@/infra/database/migrations";
 import { DataSourceError, DomainError, SchemaVersionError } from "@/model/errors";
-import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
+import { NodeSqliteExecutor } from "../../../tests/fixtures/node-sqlite-executor";
 
-const userVersion = (executor: BetterSqliteExecutor) =>
-  executor.database.pragma("user_version", { simple: true });
+const userVersion = (executor: NodeSqliteExecutor) =>
+  (executor.database.prepare("PRAGMA user_version").get() as { user_version: number }).user_version;
 
-const tableExists = (executor: BetterSqliteExecutor, name: string) =>
+const tableExists = (executor: NodeSqliteExecutor, name: string) =>
   executor.database.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?").get(name) !==
   undefined;
 
 describe("DatabaseProvider", () => {
-  let executor: BetterSqliteExecutor;
+  let executor: NodeSqliteExecutor;
 
   beforeEach(() => {
-    executor = new BetterSqliteExecutor();
+    executor = new NodeSqliteExecutor();
   });
 
   afterEach(() => {
@@ -160,7 +160,7 @@ describe("DatabaseProvider", () => {
   });
 
   it("D14: banco mais novo que o app dá SchemaVersionError sem mexer nas tabelas", async () => {
-    executor.database.pragma("user_version = 99");
+    executor.database.exec("PRAGMA user_version = 99");
     const provider = new DatabaseProvider(async () => executor);
 
     await expect(provider.get()).rejects.toBeInstanceOf(SchemaVersionError);

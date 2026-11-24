@@ -7,10 +7,10 @@ import { SqliteTaskDataSource } from "@/infra/datasources/sqliteTaskDataSource";
 import { runTaskDataSourceContractTests } from "@/infra/datasources/taskDataSource.contract";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { DataSourceError } from "@/model/errors";
-import { BetterSqliteExecutor } from "../../../tests/fixtures/better-sqlite-executor";
+import { NodeSqliteExecutor } from "../../../tests/fixtures/node-sqlite-executor";
 
 describe("SqliteTaskDataSource", () => {
-  const openExecutors: BetterSqliteExecutor[] = [];
+  const openExecutors: NodeSqliteExecutor[] = [];
 
   afterEach(() => {
     while (openExecutors.length > 0) {
@@ -19,7 +19,7 @@ describe("SqliteTaskDataSource", () => {
   });
 
   runTaskDataSourceContractTests(async () => {
-    const executor = new BetterSqliteExecutor();
+    const executor = new NodeSqliteExecutor();
     openExecutors.push(executor);
     return new SqliteTaskDataSource(new DatabaseProvider(async () => executor));
   });
@@ -29,16 +29,16 @@ describe("SqliteTaskDataSource", () => {
     const dbPath = join(dir, "orbity.db");
     const task = createTaskFixture({ id: "t-persist", title: "Revisar algoritmos", pinned: true });
 
-    const fileExecutors: BetterSqliteExecutor[] = [];
+    const fileExecutors: NodeSqliteExecutor[] = [];
 
     try {
-      const firstExecutor = new BetterSqliteExecutor(dbPath);
+      const firstExecutor = new NodeSqliteExecutor(dbPath);
       fileExecutors.push(firstExecutor);
       const firstRepo = new SqliteTaskDataSource(new DatabaseProvider(async () => firstExecutor));
       await firstRepo.create(task);
       firstExecutor.close();
 
-      const secondExecutor = new BetterSqliteExecutor(dbPath);
+      const secondExecutor = new NodeSqliteExecutor(dbPath);
       fileExecutors.push(secondExecutor);
       const secondRepo = new SqliteTaskDataSource(new DatabaseProvider(async () => secondExecutor));
 
@@ -46,7 +46,7 @@ describe("SqliteTaskDataSource", () => {
     } finally {
       // No Windows, um arquivo de banco ainda aberto não pode ser apagado (EBUSY): fecha antes de remover.
       fileExecutors.forEach((executor) => {
-        if (executor.database.open) executor.close();
+        if (executor.database.isOpen) executor.close();
       });
       rmSync(dir, { recursive: true, force: true });
     }
