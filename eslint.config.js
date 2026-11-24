@@ -4,8 +4,8 @@ const expoConfig = require("eslint-config-expo/flat");
 const sqliteExecutor = "src/infra/database/expoSqlExecutor.ts";
 const notificationService = "src/infra/services/expoNotificationService.ts";
 const testDriver = {
-  group: ["better-sqlite3", "better-sqlite3/**"],
-  message: "O better-sqlite3 é só para testes (tests/fixtures).",
+  group: ["node:sqlite"],
+  message: "O node:sqlite só roda no Node e é só para testes (tests/fixtures).",
 };
 const sqlitePattern = {
   group: ["expo-sqlite", "expo-sqlite/**"],
