@@ -110,7 +110,7 @@ Cabeçalho do estudante com nome editável, cards de métricas e atalhos para Co
 | **Plataforma e rotas** | Expo SDK · Expo Router | `~57.0.30` · `~57.0.28` |
 | **Linguagem** | TypeScript (`"strict": true`) | `~6.0.3` |
 | **Animações e gestos** | Reanimated · Gesture Handler · SVG | `4.5.1` · `~2.32.0` · `15.15.4` |
-| **Persistência local** | `expo-sqlite` (Android) · `better-sqlite3` (testes) | `57.0.5` · `13.2.0` |
+| **Persistência local** | `expo-sqlite` (Android) · `node:sqlite` (testes, embutido no Node.js) | `57.0.5` · Node.js 22.15+ |
 | **Catálogo de componentes** | Storybook (`react-native-web-vite`) · Vite | `10.6.2` · `6.4.4` |
 | **Testes** | Jest · `jest-expo` · Testing Library | `~29.7.0` · `~57.0.6` · `^14.1.0` |
 | **Qualidade** | ESLint · Husky · lint-staged · Commitlint | `^9` · `^9.1.7` · `^16.4.0` · `^21.2.3` |
@@ -124,7 +124,7 @@ Cabeçalho do estudante com nome editável, cards de métricas e atalhos para Co
 
 | Ferramenta | Versão | Observação |
 | :--- | :--- | :--- |
-| **Node.js** | 22 LTS | Mesma versão do runner do [CI](./.github/workflows/ci.yml). |
+| **Node.js** | 22 LTS (22.15+) | Mesma versão do runner do [CI](./.github/workflows/ci.yml). Os testes usam o `node:sqlite`, embutido no Node.js. |
 | **npm** | 10+ | Distribuído com o Node.js 22. |
 | **Git** | 2.38+ | Com suporte a `git switch`. |
 | **Android** *(opcional)* | — | Aparelho com **Expo Go** (SDK 57) ou *development build*, **ou** emulador do Android Studio com `adb`. |
@@ -215,7 +215,7 @@ src/
 
 - **Navegação na ViewModel:** a View não chama hooks de navegação; quem usa o `router` do `expo-router` é a ViewModel.
 - **Erros tipados:** a Infra converte falhas técnicas em subclasses de `DomainError`; só a ViewModel usa `try/catch` e decide com `instanceof`. A View apenas lê `error` e `loading`.
-- **Persistência isolada:** só `src/infra/database/expoSqlExecutor.ts` importa o `expo-sqlite` ([ADR-0001](./docs/05-architecture/decisions/ADR-0001.md)). Os testes usam um executor sobre `better-sqlite3`.
+- **Persistência isolada:** só `src/infra/database/expoSqlExecutor.ts` importa o `expo-sqlite` ([ADR-0001](./docs/05-architecture/decisions/ADR-0001.md)). Os testes usam um executor sobre o `node:sqlite`, embutido no Node.js.
 - **Testabilidade em três níveis:** as ViewModels recebem um `I*UseCases` opcional, o que permite substituir dependências no Use Case, no container ou na ViewModel.
 - **Alias:** `@/*` aponta para `src/*` e `@/assets/*` para `assets/*`.
 
