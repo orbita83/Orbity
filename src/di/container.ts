@@ -262,13 +262,24 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           clock: IClockService;
           stars: IStarDataSource;
           categories: ICategoryDataSource;
-        }) => new TaskUseCases(deps.tasks, deps.dailyActivity, deps.clock, undefined, deps.stars, deps.categories),
+          notifications: INotificationService;
+        }) =>
+          new TaskUseCases(
+            deps.tasks,
+            deps.dailyActivity,
+            deps.clock,
+            undefined,
+            deps.stars,
+            deps.categories,
+            deps.notifications,
+          ),
         {
           tasks: dataSources.tasks,
           dailyActivity: dataSources.dailyActivity,
           clock: services.clock,
           stars: dataSources.stars,
           categories: dataSources.categories,
+          notifications: services.notifications,
         },
       ),
       profile: composeUseCase(
