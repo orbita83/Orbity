@@ -33,6 +33,8 @@ export type NewTaskState = {
   titleError: boolean;
   /** Erro de validação de datas/horários ou falha ao salvar, preservando o formulário. */
   formError: string | null;
+  /** Aviso acolhedor e não bloqueante quando a permissão de notificações não está concedida (RF-0021 CA-05). */
+  reminderPermissionNotice?: string | null;
   activePicker: NewTaskPickerField | null;
   dateOptions: readonly TaskPickerOption[];
   timeOptions: readonly TaskPickerOption[];
@@ -182,6 +184,7 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
   const [fields, setFields] = useState<NewTaskFields>(EMPTY_FIELDS);
   const [titleError, setTitleError] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [reminderPermissionNotice, setReminderPermissionNotice] = useState<string | null>(null);
   const [activePicker, setActivePicker] = useState<NewTaskPickerField | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [created, setCreated] = useState(false);
@@ -192,6 +195,7 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
     setFields(EMPTY_FIELDS);
     setTitleError(false);
     setFormError(null);
+    setReminderPermissionNotice(null);
     setActivePicker(null);
     setSubmitting(false);
     setCreated(false);
@@ -275,6 +279,7 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
 
     setTitleError(false);
     setFormError(null);
+    setReminderPermissionNotice(null);
     setSubmitting(true);
 
     void (async () => {
@@ -292,6 +297,14 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
           });
         } else {
           await useCases.createTask(fields);
+        }
+        if (fields.startDate.trim() && fields.startTime.trim() && useCases.ensureReminderPermission) {
+          const status = await useCases.ensureReminderPermission();
+          if (mountedRef.current && status !== "granted") {
+            setReminderPermissionNotice(
+              "Tarefa salva! Para receber lembretes no horário agendado, ative as notificações nas configurações do aparelho.",
+            );
+          }
         }
         if (mountedRef.current) {
           setCreated(true);
@@ -320,6 +333,7 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
     setFields(EMPTY_FIELDS);
     setTitleError(false);
     setFormError(null);
+    setReminderPermissionNotice(null);
     setActivePicker(null);
     setSubmitting(false);
     setCreated(false);
@@ -336,6 +350,7 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
       fields,
       titleError,
       formError,
+      reminderPermissionNotice,
       activePicker,
       dateOptions,
       timeOptions: TIME_PICKER_OPTIONS,

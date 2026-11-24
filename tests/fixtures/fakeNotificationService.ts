@@ -14,6 +14,7 @@ export class FakeNotificationService implements INotificationService {
   private permissionStatus: NotificationPermissionStatus;
   private nextRequestedStatus: NotificationPermissionStatus;
   private readonly scheduled = new Map<string, ScheduledNotification>();
+  private readonly responseListeners = new Set<(data: Readonly<Record<string, string>>) => void>();
 
   constructor(
     initialStatus: NotificationPermissionStatus = "granted",
@@ -65,5 +66,19 @@ export class FakeNotificationService implements INotificationService {
 
   async listScheduled(): Promise<ScheduledNotification[]> {
     return [...this.scheduled.values()];
+  }
+
+  onNotificationResponse(listener: (data: Readonly<Record<string, string>>) => void): () => void {
+    this.responseListeners.add(listener);
+    return () => {
+      this.responseListeners.delete(listener);
+    };
+  }
+
+  emitNotificationResponse(data: Readonly<Record<string, string>>): void {
+    const frozen = Object.freeze({ ...data });
+    for (const listener of this.responseListeners) {
+      listener(frozen);
+    }
   }
 }

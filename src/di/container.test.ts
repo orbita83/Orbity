@@ -8,6 +8,7 @@ import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
 import { TaskActivityDataSource } from "@/infra/datasources/taskActivityDataSource";
 import { LocalDate } from "@/model/entities/localDate";
 import type { IClockService } from "@/model/services/iClockService";
+import { FakeNotificationService } from "../../tests/fixtures/fakeNotificationService";
 
 const fixedClock: IClockService = {
   now: () => "2026-11-14T10:00:00-03:00",
@@ -124,5 +125,26 @@ describe("container da aplicação", () => {
     expect(Object.isFrozen(container.dataSources)).toBe(true);
     expect(Object.isFrozen(container.services)).toBe(true);
     expect(Object.isFrozen(container.useCases)).toBe(true);
+  });
+
+  it("issue #211: o caso de uso de tarefas usa o serviço de notificações injetado no container", async () => {
+    const notifications = new FakeNotificationService("granted");
+    const isolated = createAppContainer({
+      dataSources: memoryDataSources(),
+      services: { clock: fixedClock, notifications },
+    });
+
+    const created = await isolated.useCases.tasks.createTask({
+      title: "Revisar Geometria",
+      startDate: "14/11/2026",
+      startTime: "15:00",
+    });
+
+    expect(await notifications.listScheduled()).toEqual([
+      expect.objectContaining({
+        id: `task-reminder:${created.id}`,
+        triggerAt: "2026-11-14T15:00:00-03:00",
+      }),
+    ]);
   });
 });

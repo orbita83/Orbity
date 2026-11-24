@@ -157,6 +157,31 @@ export class ExpoNotificationService implements INotificationService {
     }
   }
 
+  onNotificationResponse(listener: (data: Readonly<Record<string, string>>) => void): () => void {
+    try {
+      const notifications = loadNotificationsModule();
+      if (typeof notifications.addNotificationResponseReceivedListener !== "function") {
+        return () => undefined;
+      }
+      const subscription = notifications.addNotificationResponseReceivedListener((response) => {
+        const rawData =
+          response?.notification?.request?.content?.data &&
+          typeof response.notification.request.content.data === "object"
+            ? (response.notification.request.content.data as Record<string, unknown>)
+            : undefined;
+        const data = sanitizeData(rawData);
+        if (data) {
+          listener(data);
+        }
+      });
+      return () => {
+        subscription?.remove?.();
+      };
+    } catch {
+      return () => undefined;
+    }
+  }
+
   private async ensureAndroidChannel(notifications: ExpoNotificationsModule): Promise<void> {
     if (this.channelInitialized) return;
     await notifications.setNotificationChannelAsync(ORBITY_NOTIFICATION_CHANNEL_ID, {

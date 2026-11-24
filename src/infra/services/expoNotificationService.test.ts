@@ -13,6 +13,7 @@ const mockSetNotificationChannelAsync = jest.fn();
 const mockScheduleNotificationAsync = jest.fn();
 const mockCancelScheduledNotificationAsync = jest.fn();
 const mockGetAllScheduledNotificationsAsync = jest.fn();
+const mockAddNotificationResponseReceivedListener = jest.fn();
 
 jest.mock("expo-notifications", () => ({
   PermissionStatus: {
@@ -32,6 +33,7 @@ jest.mock("expo-notifications", () => ({
   scheduleNotificationAsync: (...args: unknown[]) => mockScheduleNotificationAsync(...args),
   cancelScheduledNotificationAsync: (...args: unknown[]) => mockCancelScheduledNotificationAsync(...args),
   getAllScheduledNotificationsAsync: (...args: unknown[]) => mockGetAllScheduledNotificationsAsync(...args),
+  addNotificationResponseReceivedListener: (...args: unknown[]) => mockAddNotificationResponseReceivedListener(...args),
 }));
 
 beforeEach(() => {
@@ -215,5 +217,36 @@ describe("ExpoNotificationService (adaptador real na infraestrutura)", () => {
 
     mockGetAllScheduledNotificationsAsync.mockRejectedValueOnce(new Error("Native list error"));
     await expect(service.listScheduled()).rejects.toBeInstanceOf(NotificationServiceError);
+  });
+
+  it("encaminha resposta ao toque na notificação higienizando metadados internos", () => {
+    const remove = jest.fn();
+    let registeredCallback: ((event: unknown) => void) | undefined;
+    mockAddNotificationResponseReceivedListener.mockImplementationOnce((cb: (event: unknown) => void) => {
+      registeredCallback = cb;
+      return { remove };
+    });
+
+    const service = new ExpoNotificationService();
+    const received: Readonly<Record<string, string>>[] = [];
+    const unsubscribe = service.onNotificationResponse((data) => received.push(data));
+
+    registeredCallback?.({
+      notification: {
+        request: {
+          content: {
+            data: {
+              route: "/tasks",
+              taskId: "42",
+              __orbityTriggerAt: "2026-11-22T18:30:00-03:00",
+            },
+          },
+        },
+      },
+    });
+
+    expect(received).toEqual([{ route: "/tasks", taskId: "42" }]);
+    unsubscribe();
+    expect(remove).toHaveBeenCalledTimes(1);
   });
 });

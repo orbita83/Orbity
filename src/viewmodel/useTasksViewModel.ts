@@ -145,6 +145,7 @@ export const useTasksViewModel = (
     setErrorKey(null);
     try {
       const loaded = await useCases.listTasks();
+      await useCases.reconcileScheduledReminders?.();
       if (mountedRef.current) {
         setItems(loaded.map(toTaskListItem));
       }
@@ -166,6 +167,7 @@ export const useTasksViewModel = (
     let active = true;
     useCases.listTasks().then(
       (loaded) => {
+        void useCases.reconcileScheduledReminders?.();
         if (active) {
           setItems(loaded.map(toTaskListItem));
           setErrorKey(null);
@@ -182,6 +184,15 @@ export const useTasksViewModel = (
     return () => {
       active = false;
     };
+  }, [isPrototypeMode, useCases]);
+
+  useEffect(() => {
+    if (isPrototypeMode || !useCases.onTaskReminderPress) {
+      return;
+    }
+    return useCases.onTaskReminderPress(() => {
+      router.navigate("/tasks");
+    });
   }, [isPrototypeMode, useCases]);
 
   const visibleTasks = useMemo(() => filterAndSortTasks(items, filter), [filter, items]);

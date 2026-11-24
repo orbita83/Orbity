@@ -7,6 +7,7 @@ import type { IClockService } from "@/model/services/iClockService";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 import { TaskUseCases } from "@/usecase/taskUseCases";
 import { formatDisplayDateInput, formatDisplayTimeInput, useNewTaskViewModel } from "@/viewmodel/useNewTaskViewModel";
+import { FakeNotificationService } from "../../tests/fixtures/fakeNotificationService";
 
 // Navegação do Expo Router isolada.
 const mockNavigate = jest.fn();
@@ -228,6 +229,31 @@ describe("useNewTaskViewModel", () => {
       endDate: "05/12/2026",
       endTime: "08:30",
     });
+  });
+
+  it("RF-0021 CA-05: exibe aviso acolhedor e não bloqueante quando a permissão de notificações está negada", async () => {
+    const taskRepo = new MemoryTaskDataSource();
+    const notifications = new FakeNotificationService("denied", "denied");
+    const useCases = new TaskUseCases(
+      taskRepo,
+      new MemoryDailyActivityDataSource(),
+      fixedClock,
+      () => "t-denied",
+      undefined,
+      undefined,
+      notifications,
+    );
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
+
+    await act(async () => result.current[1].setField("title", "Revisar Física"));
+    await act(async () => result.current[1].setField("startDate", "16/11/2026"));
+    await act(async () => result.current[1].setField("startTime", "14:00"));
+    await act(async () => result.current[1].submit());
+
+    await waitFor(() => expect(result.current[0].created).toBe(true));
+    expect(result.current[0].reminderPermissionNotice).toBe(
+      "Tarefa salva! Para receber lembretes no horário agendado, ative as notificações nas configurações do aparelho.",
+    );
   });
 });
 

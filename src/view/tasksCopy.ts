@@ -68,6 +68,8 @@ export const TASKS_COPY = {
   "updated.title": "Tarefa atualizada!",
   "updated.message": "As alterações da sua tarefa foram salvas.",
   "updated.action": "Ver minhas tarefas",
+  "reminder.permissionNotice":
+    "Tarefa salva! Para receber lembretes no horário agendado, ative as notificações nas configurações do aparelho.",
 } as const;
 
 export type TasksCopyKey = keyof typeof TASKS_COPY;
