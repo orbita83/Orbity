@@ -53,7 +53,7 @@ Nenhuma imagem desta pasta foi gerada por IA.
 **Limitações conhecidas:**
 
 - Os títulos das tarefas e rotinas foram escolhidos sem acento, porque o `adb input text` usado para preenchê-los não digita acentos.
-- A tela de Perfil ficou de fora porque mostra dados de demonstração fixos (#233). Ela volta às capturas quando a #233 for corrigida.
+- A tela de Perfil ficou de fora porque mostra dados de demonstração fixos (#188). Ela volta às capturas quando a #188 for corrigida.
 
 ## Fontes
 
