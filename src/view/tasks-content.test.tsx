@@ -266,4 +266,17 @@ describe("NewTaskScreenContent", () => {
     expect(screen.getByText(TASKS_COPY["updated.message"])).toBeTruthy();
     expect(screen.getByRole("button", { name: TASKS_COPY["updated.action"] })).toBeTruthy();
   });
+
+  it("exibe a indicação acolhedora e não bloqueante quando a permissão de notificações está desativada", async () => {
+    await renderInSafeArea(
+      <NewTaskScreenContent
+        {...formProps({
+          created: true,
+          reminderPermissionNotice: TASKS_COPY["reminder.permissionNotice"],
+        })}
+      />,
+    );
+
+    expect(screen.getAllByText(TASKS_COPY["reminder.permissionNotice"]).length).toBeGreaterThanOrEqual(1);
+  });
 });

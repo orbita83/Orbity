@@ -88,6 +88,7 @@ export const NewTaskScreenContent = ({
   fields,
   titleError,
   formError,
+  reminderPermissionNotice,
   activePicker,
   dateOptions,
   timeOptions,
@@ -220,6 +221,15 @@ export const NewTaskScreenContent = ({
             </Text>
           </View>
         ) : null}
+
+        {reminderPermissionNotice ? (
+          <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.formError}>
+            <MaterialSymbol name="schedule" filled color={cosmicColors.focus} size={theme.navbar.iconSize} />
+            <Text allowFontScaling style={styles.formErrorText}>
+              {reminderPermissionNotice}
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
         <PrimaryButton
@@ -241,7 +251,10 @@ export const NewTaskScreenContent = ({
       <SuccessDialog
         visible={created}
         title={editing ? TASKS_COPY["updated.title"] : TASKS_COPY["created.title"]}
-        message={editing ? TASKS_COPY["updated.message"] : TASKS_COPY["created.message"]}
+        message={
+          reminderPermissionNotice ??
+          (editing ? TASKS_COPY["updated.message"] : TASKS_COPY["created.message"])
+        }
         actionLabel={editing ? TASKS_COPY["updated.action"] : TASKS_COPY["created.action"]}
         onClose={onFinish}
       />
