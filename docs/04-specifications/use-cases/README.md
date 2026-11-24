@@ -19,6 +19,7 @@ Este catálogo reúne os casos de uso (`UC`) do Orbity, que descrevem as intera�
 | UC-0013 | Consultar conquistas | — | [UC-0013-consultar-conquistas.md](UC-0013-consultar-conquistas.md) |
 | UC-0014 | Consultar perfil | — | [UC-0014-consultar-perfil.md](UC-0014-consultar-perfil.md) |
 | UC-0015 | Gerenciar categorias | [RF-0020](../../02-requirements/functional/RF-0020.md) | [UC-0015-gerenciar-categorias.md](UC-0015-gerenciar-categorias.md) |
+| UC-0016 | Notificar tarefas agendadas | [RF-0013](../../02-requirements/functional/RF-0013.md), [RF-0021](../../02-requirements/functional/RF-0021.md) | [UC-0016-notificar-tarefas-agendadas.md](UC-0016-notificar-tarefas-agendadas.md) |
 
 ## Como adicionar um caso de uso
 

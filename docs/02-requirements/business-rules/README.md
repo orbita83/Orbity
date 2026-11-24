@@ -14,6 +14,7 @@ Este catálogo reúne as regras de negócio (`RN`) do Orbity e relaciona cada re
 | RN-0008 | Nome válido de categoria de estudo | [RF-0020](../functional/RF-0020.md) | [RN-0008](RN-0008.md) |
 | RN-0009 | Exclusão de categoria de estudo em uso | [RF-0020](../functional/RF-0020.md) | [RN-0009](RN-0009.md) |
 | RN-0010 | Categorias de estudo padrão | [RF-0020](../functional/RF-0020.md) | [RN-0010](RN-0010.md) |
+| RN-0011 | Lembrete de tarefa agendada | [RF-0013](../functional/RF-0013.md), [RF-0021](../functional/RF-0021.md) | [RN-0011](RN-0011.md) |
 
 ## Como adicionar uma regra de negócio
 
