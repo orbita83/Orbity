@@ -12,6 +12,7 @@ Esta pasta reúne a documentação de build, assinatura e distribuição Android
 | [`build-sob-demanda.md`](./build-sob-demanda.md) | Workflow manual **EAS Build Android** no GitHub Actions: perfis, referências permitidas, environments, `EXPO_TOKEN`, rastreabilidade, diagnóstico de falhas e manutenção. | T0015 — [#81](https://github.com/orbita83/Orbity/issues/81) |
 | [`submissao-google-play.md`](./submissao-google-play.md) | Preparação e submissão manual do AAB à Google Play: pré-requisitos, conferência de versão, faixas de teste e acompanhamento da revisão. | T0015 — [#81](https://github.com/orbita83/Orbity/issues/81) |
 | [`CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases`](../../CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases) | Política de governança de versões, releases, critérios de corte para `v0.1.0`, tags Git anotadas, aprovação e hotfixes. | T0014 — [#80](https://github.com/orbita83/Orbity/issues/80) |
+| [`preparacao-google-play-console.md`](./preparacao-google-play-console.md) | Registro da preparação administrativa, decisões pendentes, materiais e evidências, sem envio de versão. | [#177](https://github.com/orbita83/Orbity/issues/177) |
 
 ## Orientações
 
