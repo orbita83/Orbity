@@ -17,6 +17,7 @@ type Story = StoryObj<typeof meta>;
 export const Success: Story = { name: "Sucesso",};
 export const Loading: Story = { name: "Carregando", args: { viewModel: { ...viewModel, loading: true, profile: null } } };
 export const Empty: Story = { name: "Vazio", args: { viewModel: { ...viewModel, profile: { ...viewModel.profile!, streakDays: 0, achievementsCount: 0, studyHours: 0 } } } };
+export const FirstUse: Story = { name: "Primeiro uso", args: { viewModel: { ...viewModel, nameInput: "", profile: { id: "preview", name: "", streakDays: 0, achievementsCount: 0, studyHours: 0 } } } };
 export const Error: Story = { name: "Erro", args: { viewModel: { ...viewModel, profile: null, error: "Não foi possível carregar os dados do perfil." } } };
 export const ErrorWithData: Story = { name: "Erro com dados", args: { viewModel: { ...viewModel, error: "Não foi possível atualizar o nome do perfil." } } };
 export const Light: Story = { name: "Claro", args: { theme: themes.light } };
