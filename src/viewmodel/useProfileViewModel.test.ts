@@ -17,7 +17,7 @@ jest.mock("expo-router", () => ({
     navigate: (...args: unknown[]) => mockNavigate(...args),
     setParams: (...args: unknown[]) => mockSetParams(...args),
   },
-  // Registra o efeito de foco enquanto o hook está montado; `focusScreen()` simula a tela ganhando foco.
+  // Como no app, a tela ganha foco ao montar; `focusScreen()` simula a volta para a aba depois.
   useFocusEffect: (callback: () => void | (() => void)) => {
     const React = jest.requireActual<typeof import("react")>("react");
     const latest = React.useRef(callback);
@@ -26,6 +26,7 @@ jest.mock("expo-router", () => ({
       const run = () => {
         latest.current();
       };
+      run();
       mockFocusCallbacks.add(run);
       return () => {
         mockFocusCallbacks.delete(run);
@@ -69,6 +70,23 @@ describe("useProfileViewModel", () => {
     expect(result.current[0].profile).toEqual(mockStudentProfile);
     expect(result.current[0].error).toBeNull();
     expect(fakeUseCases.getProfile).toHaveBeenCalledTimes(1);
+  });
+
+  it("issue #249: recarrega o perfil ao voltar para a aba, sem mostrar o esqueleto de novo", async () => {
+    // Arrange
+    const { result } = await renderHook(() => useProfileViewModel(fakeUseCases));
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    currentProfile = { ...currentProfile, streakDays: currentProfile.streakDays + 1 };
+
+    // Act
+    await act(async () => {
+      mockFocusCallbacks.forEach((focus) => focus());
+    });
+
+    // Assert
+    await waitFor(() => expect(result.current[0].profile?.streakDays).toBe(mockStudentProfile.streakDays + 1));
+    expect(result.current[0].loading).toBe(false);
+    expect(fakeUseCases.getProfile).toHaveBeenCalledTimes(2);
   });
 
   it("deve definir mensagem de erro quando falhar ao carregar o perfil", async () => {
