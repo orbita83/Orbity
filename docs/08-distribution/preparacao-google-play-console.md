@@ -6,7 +6,7 @@
 
 **Entrega parcial; cadastro do aplicativo adiado pelo operador.** Base documental: commit `61daeb136d64c970236cc85354a7c092c1757582` da `development`. Este registro acompanha execução e evidências; as decisões administrativas permanecem exclusivamente em [identidade e propriedade](./identidade-e-propriedade.md).
 
-A #177 relata conta pessoal. A imagem apresentada pelo operador em 24/11/2026 mostra a notificação de identidade verificada em 19 de novembro. Em 25/11/2026, o titular confirmou diretamente a conclusão da verificação do dispositivo Android; não foi apresentada imagem do resultado dessa etapa. Data de criação da conta e acesso à produção continuam sem confirmação. As imagens apresentadas mostram que não há aplicativo cadastrado; em 25/11/2026, o operador decidiu adiar a criação enquanto resolve outras atividades do projeto. Não houve inspeção autenticada do Console nesta atividade. Nenhum cadastro, convite, declaração, envio ou publicação é apresentado como concluído.
+A #177 relata conta pessoal. Segundo relato do titular registrado nesta preparação, a conta exibia notificação de identidade verificada em 19 de novembro e a verificação do dispositivo Android foi concluída em 25/11/2026. Esses resultados não possuem captura sanitizada acessível aos revisores e são tratados somente como relato do titular. Data de criação da conta e acesso à produção continuam sem confirmação. Segundo o mesmo relato, não há aplicativo cadastrado; em 25/11/2026, o operador decidiu adiar a criação enquanto resolve outras atividades do projeto. Não houve inspeção autenticada do Console nesta atividade. Nenhum cadastro, convite, declaração, envio ou publicação é apresentado como concluído.
 
 Este trabalho termina na preparação administrativa. Não criar versões, enviar APK/AAB, iniciar testes distribuídos, solicitar acesso à produção ou publicar. O procedimento futuro de submissão continua em [submissao-google-play.md](./submissao-google-play.md), sem duplicação aqui.
 
@@ -14,12 +14,12 @@ Este trabalho termina na preparação administrativa. Não criar versões, envia
 
 | Etapa | Ação e evidência esperada | Situação atualizada em 25/11/2026 | Responsável pela próxima ação |
 | --- | --- | --- | --- |
-| Titularidade | Revisar a proposta da Seção 5.4 do documento de identidade; registrar aprovação do PR antes de substituir decisões vigentes | Titularidade confirmada diretamente pelo operador; atualização documental aguardando revisão | Equipe Orbity |
+| Titularidade | Revisar a proposta da Seção 5.4 do documento de identidade; registrar aprovação do PR antes de substituir decisões vigentes | Titularidade relatada na #177; aceite do titular anterior registrado no PR #244; atualização aguardando conclusão da revisão | Equipe Orbity |
 | Aprovação de releases/submissões | Confirmar separadamente quem exerce o papel; registrar eventual mudança por revisão | @Cassiosampaio2016 confirmou que assumiu a aprovação; atualização documental aguardando revisão | Equipe Orbity |
-| Identidade | Conferir status e data no Console; registrar referência sanitizada da notificação | Notificação de identidade verificada em 19 de novembro visível na imagem apresentada em 24/11/2026 | Titular informado na #177 |
+| Identidade | Conferir status e data no Console; registrar referência sanitizada da notificação | Relato do titular sobre notificação de identidade verificada em 19 de novembro; sem captura sanitizada acessível | Titular informado na #177 |
 | Conta | Conferir tipo, data de criação e restrições na conta; registrar resumo sem dados pessoais | Tipo pessoal relatado; data e restrições desconhecidas | Titular informado na #177 |
 | Dispositivo | Registrar a confirmação do titular e complementar com referência sanitizada do resultado para revisão | Conclusão confirmada pelo titular em 25/11/2026; sem imagem do resultado | Titular informado na #177 |
-| Cadastro inicial | Conferir identidade aprovada, decisões da Seção 3 e declarações exibidas antes de criar; registrar nome, status e data | Não cadastrado nas imagens; criação adiada pelo operador em 25/11/2026 | Titular e equipe |
+| Cadastro inicial | Conferir identidade aprovada, decisões da Seção 3 e declarações exibidas antes de criar; registrar nome, status e data | Não cadastrado segundo relato do titular; criação adiada pelo operador em 25/11/2026 | Titular e equipe |
 | Acessos | Definir integrantes, tarefas, permissões por app e validade; seguir solicitação da Seção 8.1 do documento de identidade e convite oficial | Sem lista aprovada; nenhum convite enviado | Titular e equipe |
 | Ficha | Revisar materiais da Seção 3 e preencher somente informações confirmadas | Preparação pendente | Equipe Orbity |
 | Privacidade | Conferir URL pública e conteúdo revisado da #176 antes de vincular | Depende da #176 | Equipe Orbity |
@@ -56,10 +56,12 @@ Para cada etapa executada, registrar: identificador da evidência, data, executo
 
 | Evidência | Data | Escopo e resultado | Limite |
 | --- | --- | --- | --- |
-| P177-01 | 24/11/2026 | Consulta da #177: titularidade e identidade verificada relatadas; titularidade e aprovação de releases/submissões confirmadas diretamente pelo operador nesta data e registradas na Seção 5.4 do documento central | Relato da issue e confirmação direta do operador; sem inspeção autenticada e aguardando revisão do PR |
+| P177-01 | 24/11/2026 | Consulta da #177: titularidade e identidade verificada relatadas; titularidade e aprovação de releases/submissões registradas no [comentário da #177](https://github.com/orbita83/Orbity/issues/177#issuecomment-7150606156) e na Seção 5.4 do documento central | Relato administrativo recuperável na issue; sem inspeção autenticada e aguardando revisão do PR |
 | P177-02 | 24/11/2026 | Fontes oficiais abaixo consultadas para preparar cadastro, dispositivo e enquadramento de testes | Requisitos documentais; não comprovam cumprimento pela conta |
-| P177-03 | 24/11/2026 | Imagem do Console apresentada nesta conversa mostra conta pessoal, ausência de apps cadastrados e notificação de identidade verificada em 19 de novembro | Evidência visual limitada às telas apresentadas; não comprova dispositivo ou acesso à produção |
-| P177-04 | 25/11/2026 | Titular confirmou diretamente nesta conversa que a verificação Android do dispositivo foi concluída | Confirmação do titular; sem imagem do resultado ou inspeção autenticada independente |
+| P177-03 | 24/11/2026 | Relato do titular: conta pessoal, ausência de apps cadastrados e notificação de identidade verificada em 19 de novembro | Sem captura sanitizada recuperável pelos revisores; somente relato, sem comprovação independente de dispositivo ou acesso à produção |
+| P177-04 | 25/11/2026 | Relato do titular: verificação Android do dispositivo concluída | Confirmação do titular; sem imagem do resultado ou inspeção autenticada independente |
+
+Aceite da mudança administrativa pelo titular anterior: [comentário de @MateusARJ no PR #244 em 25/11/2026](https://github.com/orbita83/Orbity/pull/244#issuecomment-7163734809). Esse aceite não comprova as etapas do Console descritas em P177-03 e P177-04.
 
 Fornecer à [auditoria da #79](./auditoria-google-play.md) os resultados de GP11, GP18–GP19 e GP22–GP31 à medida que houver evidências. Até lá, os estados pendentes permanecem; a existência deste registro não conclui cadastro nem conformidade. A revisão documental ocorre por PR para `development` conforme `CONTRIBUTING.md`.
 

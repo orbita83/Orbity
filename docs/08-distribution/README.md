@@ -4,7 +4,6 @@ Esta pasta reúne a documentação de build, assinatura e distribuição Android
 
 | Documento | Conteúdo | Origem |
 | --------- | -------- | ------ |
-| [`preparacao-google-play-console.md`](./preparacao-google-play-console.md) | Registro da preparação administrativa, decisões pendentes, materiais e evidências, sem envio de versão. | [#177](https://github.com/orbita83/Orbity/issues/177) |
 | [`auditoria-google-play.md`](./auditoria-google-play.md) | Auditoria datada de prontidão técnica e administrativa, fontes oficiais, checklist, evidências e pendências do AAB e do Play Console. | T0013 — [#79](https://github.com/orbita83/Orbity/issues/79) |
 | [`identidade-e-propriedade.md`](./identidade-e-propriedade.md) | Identidade de distribuição do aplicativo, propriedade das contas Expo/EAS e Google Play Console, responsáveis, controle de acesso e continuidade administrativa. | T0009 — [#75](https://github.com/orbita83/Orbity/issues/75) |
 | [`versionamento-do-app.md`](./versionamento-do-app.md) | Identidade técnica configurada no `app.json`, finalidade dos campos de versão, estratégia do `versionCode` e como atualizar as versões. | T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) |
@@ -13,6 +12,7 @@ Esta pasta reúne a documentação de build, assinatura e distribuição Android
 | [`build-sob-demanda.md`](./build-sob-demanda.md) | Workflow manual **EAS Build Android** no GitHub Actions: perfis, referências permitidas, environments, `EXPO_TOKEN`, rastreabilidade, diagnóstico de falhas e manutenção. | T0015 — [#81](https://github.com/orbita83/Orbity/issues/81) |
 | [`submissao-google-play.md`](./submissao-google-play.md) | Preparação e submissão manual do AAB à Google Play: pré-requisitos, conferência de versão, faixas de teste e acompanhamento da revisão. | T0015 — [#81](https://github.com/orbita83/Orbity/issues/81) |
 | [`CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases`](../../CONTRIBUTING.md#4-processo-de-publicação-e-governança-de-releases) | Política de governança de versões, releases, critérios de corte para `v0.1.0`, tags Git anotadas, aprovação e hotfixes. | T0014 — [#80](https://github.com/orbita83/Orbity/issues/80) |
+| [`preparacao-google-play-console.md`](./preparacao-google-play-console.md) | Registro da preparação administrativa, decisões pendentes, materiais e evidências, sem envio de versão. | [#177](https://github.com/orbita83/Orbity/issues/177) |
 
 ## Orientações
 

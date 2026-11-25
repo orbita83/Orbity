@@ -146,19 +146,21 @@ O titular deve convidar os demais responsáveis pelo mecanismo oficial de usuár
 ### 5.3. Pendências
 
 - [x] Definir o tipo de conta: pessoal (07/11/2026).
-- [x] Titular atual informado pelo operador: @Cassiosampaio2016 (24/11/2026); atualização documental sujeita à revisão do PR, conforme Seção 5.4.
+- [ ] Aprovar a atualização do titular informado pelo operador: @Cassiosampaio2016 (24/11/2026); atualização documental sujeita à revisão do PR, conforme Seção 5.4.
 - [ ] Confirmar requisitos vigentes de cadastro, verificação e acesso à produção para contas pessoais (T0013).
 - [ ] Confirmar a viabilidade administrativa e financeira da conta escolhida.
 - [ ] Definir os integrantes convidados e suas permissões.
 
 ### 5.4. Reconciliação de titularidade — issue #177
 
-Em 24/11/2026, o operador @Cassiosampaio2016 confirmou diretamente que é o titular atual da conta pessoal Google Play utilizada para o Orbity e que assumiu também a responsabilidade pela aprovação de releases e envios à loja, antes atribuídas a @MateusARJ. A [#177](https://github.com/orbita83/Orbity/issues/177) já registra a titularidade informada e a identidade verificada conforme relato do titular.
+No [registro de responsabilidades da #177, de 24/11/2026](https://github.com/orbita83/Orbity/issues/177#issuecomment-7150606156), o operador @Cassiosampaio2016 informou que é o titular atual da conta pessoal Google Play utilizada para o Orbity e que assumiu também a responsabilidade pela aprovação de releases e envios à loja, antes atribuídas a @MateusARJ. A [#177](https://github.com/orbita83/Orbity/issues/177) já registra a titularidade informada e a identidade verificada conforme relato do titular.
+
+Em 25/11/2026, @MateusARJ [aceitou expressamente a transferência das duas atribuições](https://github.com/orbita83/Orbity/pull/244#issuecomment-7163734809). As propostas permanecem pendentes da conclusão do fluxo de revisão do PR.
 
 **Atualização para revisão:** as Seções 6 e 7 refletem as duas atribuições confirmadas pelo operador. As decisões de 07/11/2026 são preservadas na Seção 10 como histórico, com novas linhas de status `Proposto` até a aprovação do PR conforme CONTRIBUTING.md. A atribuição de aprovação de releases/submissões foi confirmada expressamente; não foi inferida da titularidade da conta. Isso não dispensa as aprovações formais dos revisores exigidas pelo fluxo de release.
 
 O registro confirma a informação administrativa prestada pelo operador; não comprova transferência de conta ou aplicativo, verificação de dispositivo nem acesso à produção.
-Atualização de 25/11/2026: a imagem apresentada em 24/11/2026 mostra notificação de identidade verificada em 19 de novembro; o titular confirmou diretamente a conclusão da verificação de dispositivo em 25/11/2026, sem apresentar imagem desse resultado. Data de criação da conta, permissões e acesso à produção continuam pendentes de confirmação. O acompanhamento está no [registro de preparação](./preparacao-google-play-console.md); nenhuma credencial ou documento pessoal deve ser anexado.
+Atualização de 25/11/2026: segundo relato do titular, a conta exibia notificação de identidade verificada em 19 de novembro e a verificação de dispositivo foi concluída em 25/11/2026. Não há captura sanitizada recuperável pelos revisores para essas etapas; ambas são registradas somente como relato do titular, sem comprovação independente. Data de criação da conta, permissões e acesso à produção continuam pendentes de confirmação. O acompanhamento está no [registro de preparação](./preparacao-google-play-console.md); nenhuma credencial ou documento pessoal deve ser anexado.
 
 ## 6. Limites entre GitHub, Expo/EAS e Google Play Console
 
