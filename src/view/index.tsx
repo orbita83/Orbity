@@ -21,6 +21,7 @@ const HomeScreen = () => {
       onExpandSheet={actions.handleExpandSheet}
       onReduceSheet={actions.handleReduceSheet}
       onSetSheetStage={actions.handleSetSheetStage}
+      onStartFocus={actions.handleOpenFocus}
     />
   );
 };

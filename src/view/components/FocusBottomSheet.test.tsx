@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import type { FocusAvailability } from "@/model/entities/homeSummary";
 import { FocusBottomSheet, type FocusBottomSheetProps } from "@/view/components/FocusBottomSheet";
 import { HOME_COPY } from "@/view/homeCopy";
@@ -95,5 +95,38 @@ describe("FocusBottomSheet", () => {
     await render(<FocusBottomSheet {...propsWith({ starEarnedToday: true })} />);
 
     expect(screen.getByText(HOME_COPY["progress.starEarnedToday"])).toBeTruthy();
+  });
+
+  it("issue #217: aciona onStartFocus, mostra Retomar foco em sessão ativa e exibe minutos reais na Última sessão", async () => {
+    const onStartFocus = jest.fn();
+    await render(
+      <FocusBottomSheet
+        {...propsWith({
+          onStartFocus,
+          focus: {
+            ...blockedFocus,
+            canStart: true,
+            reason: null,
+            activeSession: {
+              id: "f-1",
+              targetTitle: "Revisar Física",
+              phase: "focus",
+              status: "running",
+            },
+            lastSession: {
+              targetTitle: "Cálculo I",
+              focusedMinutes: 15,
+              completedCycles: 1,
+              endedAt: "2026-11-25T14:15:00-03:00",
+            },
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText('15 min focados em "Cálculo I"')).toBeTruthy();
+    const resumeBtn = screen.getByRole("button", { name: HOME_COPY["focus.resume"] });
+    await fireEvent.press(resumeBtn);
+    expect(onStartFocus).toHaveBeenCalledTimes(1);
   });
 });

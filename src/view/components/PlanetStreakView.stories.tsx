@@ -26,6 +26,10 @@ export const DozeDias: Story = { name: "12 dias de sequência" };
 export const UmDia: Story = { name: "1 dia de sequência", args: { days: 1 } };
 export const InicioDaJornada: Story = { name: "Início da jornada", args: { days: 0 } };
 export const SequenciaLonga: Story = { name: "Sequência longa", args: { days: 365 } };
+export const EmModoFoco: Story = {
+  name: "Modo Foco ativo · evolução RN-0006",
+  args: { days: 12, focusActive: true, focusStage: 4, reduceMotion: true },
+};
 
 const styles = StyleSheet.create({
   preview: {

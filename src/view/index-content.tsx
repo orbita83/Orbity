@@ -48,6 +48,7 @@ export type HomeScreenContentProps = {
   onExpandSheet: () => void;
   onReduceSheet: () => void;
   onSetSheetStage: (stage: FocusSheetStage) => void;
+  onStartFocus?: () => void;
 };
 
 /** Tela Início só de apresentação: estado e ações chegam por props (testes e histórias). */
@@ -64,6 +65,7 @@ export const HomeScreenContent = ({
   onExpandSheet,
   onReduceSheet,
   onSetSheetStage,
+  onStartFocus,
 }: HomeScreenContentProps) => {
   const insets = useSafeAreaInsets();
   const window = useWindowDimensions();
@@ -125,7 +127,15 @@ export const HomeScreenContent = ({
               },
             ]}
           >
-            {width > 0 ? <PlanetStreakView days={summary.streak.currentDays} size={planetSize} /> : null}
+            {width > 0 ? (
+              <PlanetStreakView
+                days={summary.streak.currentDays}
+                size={planetSize}
+                focusActive={Boolean(summary.focus.activeSession)}
+                focusStage={summary.focus.activeSession ? 1 : 0}
+                reduceMotion={reduceMotion}
+              />
+            ) : null}
           </Animated.View>
         </View>
       ) : null}
@@ -191,6 +201,7 @@ export const HomeScreenContent = ({
             progressTotal={summary.progress.total}
             starEarnedToday={summary.stars?.earnedToday ?? false}
             focus={summary.focus}
+            onStartFocus={onStartFocus}
             onToggleStage={onCycleSheetStage}
             onCollapseSheet={onCollapseSheet}
             dragging={sheetMotion.dragging}

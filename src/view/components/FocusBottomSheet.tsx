@@ -25,6 +25,7 @@ export type FocusBottomSheetProps = {
   /** Indica se o estudante conquistou a estrela de sequência hoje (RF-0017 CA-05). */
   starEarnedToday?: boolean;
   focus: FocusAvailability;
+  onStartFocus?: () => void;
   onToggleStage: () => void;
   onCollapseSheet: () => void;
   dragging: boolean;
@@ -80,6 +81,7 @@ export const FocusBottomSheet = ({
   progressTotal,
   starEarnedToday = false,
   focus,
+  onStartFocus = () => undefined,
   onToggleStage,
   onCollapseSheet,
   dragging,
@@ -95,7 +97,19 @@ export const FocusBottomSheet = ({
     }
   }, [onScrollOffsetChange, stage]);
 
-  const blocked = !focus.canStart;
+  const hasActiveSession = Boolean(focus.activeSession);
+  const blocked = !hasActiveSession && !focus.canStart;
+  const focusDescription = focus.activeSession
+    ? formatCopy("focus.activeDescription", { title: focus.activeSession.targetTitle })
+    : HOME_COPY["focus.description"];
+  const lastSessionDescription = focus.lastSession
+    ? focus.lastSession.focusedMinutes >= 1
+      ? formatCopy("lastSession.summary", {
+          minutes: focus.lastSession.focusedMinutes,
+          title: focus.lastSession.targetTitle,
+        })
+      : formatCopy("lastSession.underOneMinute", { title: focus.lastSession.targetTitle })
+    : HOME_COPY["lastSession.empty"];
   const percent = progressRatio === null ? null : Math.round(progressRatio * 100);
 
   return (
@@ -142,15 +156,14 @@ export const FocusBottomSheet = ({
               <CardHeading
                 icon="timer"
                 title={HOME_COPY["focus.title"]}
-                description={HOME_COPY["focus.description"]}
+                description={focusDescription}
                 action={HOME_COPY["focus.details"]}
               />
               <PrimaryButton
                 theme={theme}
-                label={HOME_COPY["focus.start"]}
+                label={hasActiveSession ? HOME_COPY["focus.resume"] : HOME_COPY["focus.start"]}
                 icon={<MaterialSymbol name="play_arrow" filled color={blocked ? theme.button.labelDisabled : theme.button.label} size={theme.navbar.iconSize} />}
-                // O motor da sessão de foco chega com a mudança de Tarefas (E1).
-                onPress={() => undefined}
+                onPress={onStartFocus}
                 disabled={blocked}
                 accessibilityHint={blocked ? HOME_COPY["focus.blocked"] : undefined}
               />
@@ -237,7 +250,7 @@ export const FocusBottomSheet = ({
               <CardHeading
                 icon="history"
                 title={HOME_COPY["lastSession.title"]}
-                description={HOME_COPY["lastSession.empty"]}
+                description={lastSessionDescription}
                 action={HOME_COPY["lastSession.details"]}
               />
             </Card>
