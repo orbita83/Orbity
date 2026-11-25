@@ -163,10 +163,10 @@ Alterações neste workflow passam por Pull Request revisado, como qualquer muda
 | Verificação | Data | Resultado |
 | ----------- | ---- | --------- |
 | Sintaxe YAML e estrutura do workflow | 11/11/2026 | Válidas (análise do arquivo) |
-| Environments e `EXPO_TOKEN` configurados | — | Pendente |
-| Execução sem `EXPO_TOKEN` falha de forma identificável | — | Pendente |
-| Execução manual `preview` concluída | — | Pendente |
-| Execução `production` aguarda aprovação | — | Pendente |
+| Environments e `EXPO_TOKEN` configurados | 25/11/2026 | Concluído — environments `eas-build` (*deployment branches* `development` e `main`) e `eas-production` (revisor obrigatório @Cassiosampaio2016 com *Prevent self-review* e *deployment branches* `development` e `main`) configurados, ambos com `EXPO_TOKEN` como secret de environment (nenhum secret de repositório) |
+| Execução sem `EXPO_TOKEN` falha de forma identificável | 25/11/2026 | Concluído — execução [#45658731276](https://github.com/orbita83/Orbity/actions/runs/45658731276) (perfil `preview` em `development`) falhou no passo **Verificar EXPO_TOKEN** com erro explícito de secret ausente |
+| Execução manual `preview` concluída | 25/11/2026 | Concluído — execução [#45705812483](https://github.com/orbita83/Orbity/actions/runs/45705812483) em `development` (commit `8888baf`), build EAS [`5a3cf2a6-e7de-45f4-b0f9-dd5b1202ad3a`](https://expo.dev/accounts/mailsons/projects/orbity/builds/5a3cf2a6-e7de-45f4-b0f9-dd5b1202ad3a) com status `FINISHED`, versão `0.1.0` e `versionCode` `1` |
+| Execução `production` aguarda aprovação | 25/11/2026 | Concluído — execução [#45687504890](https://github.com/orbita83/Orbity/actions/runs/45687504890) (perfil `production` em `development`) entrou em status `waiting` aguardando aprovação de @Cassiosampaio2016 no environment `eas-production` (`current_user_can_approve: false`) e foi cancelada após a verificação |
 
 ## 9. Referências
 
