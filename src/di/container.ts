@@ -20,6 +20,7 @@ import { SystemDayChangeService } from "@/infra/services/systemDayChangeService"
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IFocusSessionDataSource } from "@/model/datasources/iFocusSessionDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
@@ -27,8 +28,10 @@ import type { IClockService } from "@/model/services/iClockService";
 import type { IDayChangeService } from "@/model/services/iDayChangeService";
 import type { INotificationService } from "@/model/services/iNotificationService";
 import { CategoryUseCases } from "@/usecase/categoryUseCases";
+import { FocusUseCases } from "@/usecase/focusUseCases";
 import { HomeUseCases } from "@/usecase/homeUseCases";
 import type { ICategoryUseCases } from "@/usecase/iCategoryUseCases";
+import type { IFocusUseCases } from "@/usecase/iFocusUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 import type { IStreakUseCases } from "@/usecase/iStreakUseCases";
@@ -186,6 +189,7 @@ export type AppDataSources = {
   tasks: ITaskDataSource;
   routines: IRoutineDataSource;
   categories: ICategoryDataSource;
+  focusSessions: IFocusSessionDataSource;
   activities: IActivityDataSource;
   profile: IProfileDataSource;
 };
@@ -201,6 +205,7 @@ export type AppServices = {
 export type AppUseCases = {
   streak: IStreakUseCases;
   home: IHomeUseCases;
+  focus: IFocusUseCases;
   tasks: ITaskUseCases;
   profile: IProfileUseCases;
   routines: IRoutineUseCases;
@@ -246,13 +251,47 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           clock: IClockService;
           dayChange: IDayChangeService;
           stars: IStarDataSource;
-        }) => new HomeUseCases(deps.dailyActivity, deps.activities, deps.clock, deps.dayChange, deps.stars),
+          focusSessions: IFocusSessionDataSource;
+        }) =>
+          new HomeUseCases(
+            deps.dailyActivity,
+            deps.activities,
+            deps.clock,
+            deps.dayChange,
+            deps.stars,
+            deps.focusSessions,
+          ),
         {
           dailyActivity: dataSources.dailyActivity,
           activities: dataSources.activities,
           clock: services.clock,
           dayChange: services.dayChange,
           stars: dataSources.stars,
+          focusSessions: dataSources.focusSessions,
+        },
+      ),
+      focus: composeUseCase(
+        (deps: {
+          focusSessions: IFocusSessionDataSource;
+          activities: IActivityDataSource;
+          clock: IClockService;
+          notifications: INotificationService;
+          dailyActivity: IDailyActivityDataSource;
+        }) =>
+          new FocusUseCases(
+            deps.focusSessions,
+            deps.activities,
+            deps.clock,
+            deps.notifications,
+            undefined,
+            deps.dailyActivity,
+          ),
+        {
+          focusSessions: dataSources.focusSessions,
+          activities: dataSources.activities,
+          clock: services.clock,
+          notifications: services.notifications,
+          dailyActivity: dataSources.dailyActivity,
         },
       ),
       tasks: composeUseCase(
@@ -263,6 +302,7 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           stars: IStarDataSource;
           categories: ICategoryDataSource;
           notifications: INotificationService;
+          focusSessions: IFocusSessionDataSource;
         }) =>
           new TaskUseCases(
             deps.tasks,
@@ -272,6 +312,7 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
             deps.stars,
             deps.categories,
             deps.notifications,
+            deps.focusSessions,
           ),
         {
           tasks: dataSources.tasks,
@@ -280,6 +321,7 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           stars: dataSources.stars,
           categories: dataSources.categories,
           notifications: services.notifications,
+          focusSessions: dataSources.focusSessions,
         },
       ),
       profile: composeUseCase(
@@ -295,6 +337,8 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           dayChange: IDayChangeService;
           stars: IStarDataSource;
           categories: ICategoryDataSource;
+          focusSessions: IFocusSessionDataSource;
+          notifications: INotificationService;
         }) =>
           new RoutineUseCases(
             deps.routines,
@@ -305,6 +349,8 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
             deps.dayChange,
             deps.stars,
             deps.categories,
+            deps.focusSessions,
+            deps.notifications,
           ),
         {
           routines: dataSources.routines,
@@ -314,6 +360,8 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
           dayChange: services.dayChange,
           stars: dataSources.stars,
           categories: dataSources.categories,
+          focusSessions: dataSources.focusSessions,
+          notifications: services.notifications,
         },
       ),
       categories: composeUseCase(

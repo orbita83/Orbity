@@ -2,6 +2,7 @@ import { container, createAppContainer } from "@/di/container";
 import { DatabaseProvider } from "@/infra/database/databaseProvider";
 import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
+import { MemoryFocusSessionDataSource } from "@/infra/datasources/memoryFocusSessionDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
 import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
@@ -24,6 +25,7 @@ const memoryDataSources = () => {
     tasks,
     routines,
     categories: new MemoryCategoryDataSource(tasks, routines),
+    focusSessions: new MemoryFocusSessionDataSource(),
     activities: new TaskActivityDataSource(tasks, routines),
   };
 };
@@ -146,5 +148,26 @@ describe("container da aplicação", () => {
         triggerAt: "2026-11-14T15:00:00-03:00",
       }),
     ]);
+  });
+
+  it("issue #217: compõe o Modo Foco no container e encerra a sessão ativa ao excluir a tarefa vinculada (EC-0008)", async () => {
+    const notifications = new FakeNotificationService("granted");
+    const isolated = createAppContainer({
+      dataSources: memoryDataSources(),
+      services: { clock: fixedClock, notifications },
+    });
+
+    const task = await isolated.useCases.tasks.createTask({ title: "Estudar Algoritmos" });
+    const session = await isolated.useCases.focus.startSession({
+      targetKind: "standalone-task",
+      targetId: task.id,
+      durationMinutes: 15,
+    });
+    expect(session.status).toBe("running");
+    expect((await isolated.useCases.home.loadHome()).focus.activeSession?.id).toBe(session.id);
+
+    await isolated.useCases.tasks.deleteTasks([task.id]);
+    expect((await isolated.useCases.focus.loadSnapshot()).activeSession).toBeNull();
+    expect((await isolated.useCases.home.loadHome()).focus.activeSession).toBeNull();
   });
 });
