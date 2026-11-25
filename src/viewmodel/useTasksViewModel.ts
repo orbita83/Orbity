@@ -2,7 +2,7 @@ import { router, useFocusEffect, useNavigation } from "expo-router";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BackHandler } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
-import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import {
   type Task,
   type TaskCategoryId,
@@ -113,17 +113,7 @@ const resolveErrorKey = (caught: unknown, fallback: "error.load" | "error.save")
   return fallback;
 };
 
-const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
-  DEFAULT_CATEGORY_IDS.map((id) =>
-    Object.freeze({
-      id,
-      icon: id,
-      isDefault: true,
-      createdAt: "2026-01-01T00:00:00.000Z",
-      updatedAt: "2026-01-01T00:00:00.000Z",
-    }),
-  ),
-);
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
 
 /**
  * Estado da tela Tarefas. Usa `ITaskUseCases` em produção/testes e aceita uma lista inicial
@@ -162,14 +152,12 @@ export const useTasksViewModel = (
     try {
       const [loaded, loadedCategories] = await Promise.all([
         useCases.listTasks(),
-        useCases.listCategories ? useCases.listCategories().catch(() => undefined) : Promise.resolve(undefined),
+        useCases.listCategories(),
       ]);
       await useCases.reconcileScheduledReminders?.();
       if (mountedRef.current) {
         setItems(loaded.map(toTaskListItem));
-        if (loadedCategories) {
-          setCategories(loadedCategories);
-        }
+        setCategories(loadedCategories);
       }
     } catch (caught) {
       if (mountedRef.current) {
@@ -189,15 +177,13 @@ export const useTasksViewModel = (
     let active = true;
     Promise.all([
       useCases.listTasks(),
-      useCases.listCategories ? useCases.listCategories().catch(() => undefined) : Promise.resolve(undefined),
+      useCases.listCategories(),
     ]).then(
       ([loaded, loadedCategories]) => {
         void useCases.reconcileScheduledReminders?.();
         if (active) {
           setItems(loaded.map(toTaskListItem));
-          if (loadedCategories) {
-            setCategories(loadedCategories);
-          }
+          setCategories(loadedCategories);
           setErrorKey(null);
           setLoading(false);
         }

@@ -9,7 +9,7 @@ import {
   isRoutineActiveOn,
   nextActiveDay,
 } from "@/model/entities/routine";
-import { DEFAULT_CATEGORY_IDS, isDefaultCategoryId, type Category } from "@/model/entities/category";
+import { createDefaultCategories, isDefaultCategoryId, type Category } from "@/model/entities/category";
 import { createStreakStar } from "@/model/entities/star";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
@@ -72,16 +72,7 @@ export class RoutineUseCases implements IRoutineUseCases {
     if (this.categoryDataSource) {
       return this.categoryDataSource.listAll();
     }
-    const now = this.clock.now();
-    return DEFAULT_CATEGORY_IDS.map((id) =>
-      Object.freeze({
-        id,
-        icon: id,
-        isDefault: true,
-        createdAt: now,
-        updatedAt: now,
-      }),
-    );
+    return [...createDefaultCategories(this.clock.now())];
   }
 
   async listRoutines(): Promise<RoutineOverview[]> {

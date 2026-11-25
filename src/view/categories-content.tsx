@@ -210,7 +210,7 @@ export const CategoriesScreenContent = ({
                 maxLength={CATEGORY_NAME_MAX_LENGTH}
                 onSubmitEditing={submitting ? undefined : () => void submitForm()}
               />
-              <Text allowFontScaling accessibilityLiveRegion="polite" style={styles.counter}>
+              <Text allowFontScaling style={styles.counter}>
                 {nameInput.length}/{CATEGORY_NAME_MAX_LENGTH}
               </Text>
             </View>

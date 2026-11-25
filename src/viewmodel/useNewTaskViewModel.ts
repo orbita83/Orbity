@@ -1,9 +1,9 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import type { LocalDate } from "@/model/entities/localDate";
-import { isTaskCategoryId, type TaskCategoryId } from "@/model/entities/task";
+import { type TaskCategoryId } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 
@@ -70,17 +70,7 @@ const EMPTY_FIELDS: NewTaskFields = {
   category: undefined,
 };
 
-const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
-  DEFAULT_CATEGORY_IDS.map((id) =>
-    Object.freeze({
-      id,
-      icon: id,
-      isDefault: true,
-      createdAt: "2026-01-01T00:00:00.000Z",
-      updatedAt: "2026-01-01T00:00:00.000Z",
-    }),
-  ),
-);
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
 
 const WEEKDAYS_PT = ["dom.", "seg.", "ter.", "qua.", "qui.", "sex.", "sáb."] as const;
 const PICKER_DAYS = 14;
@@ -225,16 +215,17 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
   }, []);
 
   const loadCategories = useCallback(() => {
-    if (!useCases.listCategories) {
-      return;
-    }
     useCases.listCategories().then(
       (loaded) => {
         if (mountedRef.current) {
           setCategories(loaded);
         }
       },
-      () => undefined,
+      () => {
+        if (mountedRef.current) {
+          setFormError("Não foi possível carregar as categorias agora.");
+        }
+      },
     );
   }, [useCases]);
 
@@ -300,16 +291,13 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
   const selectCategory = useCallback(
     (value?: string) => {
       const trimmed = value?.trim();
-      const allowed =
-        Boolean(trimmed) &&
-        (categories.some((item) => item.id === trimmed) ||
-          (!useCases.listCategories && isTaskCategoryId(trimmed!)));
+      const allowed = Boolean(trimmed) && categories.some((item) => item.id === trimmed);
       const category = allowed ? trimmed : undefined;
       setFields((current) => ({ ...current, category }));
       setActivePicker(null);
       setFormError(null);
     },
-    [categories, useCases.listCategories],
+    [categories],
   );
 
   const openPicker = useCallback((picker: NewTaskPickerField) => {

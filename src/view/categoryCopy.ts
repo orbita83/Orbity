@@ -123,6 +123,7 @@ export const CATEGORIES_COPY = {
   "form.name": "Nome da categoria",
   "form.name.placeholder": "Ex.: Física",
   "form.name.helper": "Até 24 caracteres.",
+  "form.name.required": "Informe o nome da categoria.",
   "form.icon": "Ícone da categoria",
   "form.save": "Salvar categoria",
   "form.saving": "Salvando...",

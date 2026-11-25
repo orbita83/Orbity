@@ -191,10 +191,20 @@ describe("useRoutinesViewModel (caso de uso)", () => {
   });
 
   it("falha ao carregar vira aviso, sem quebrar a tela", async () => {
-    const failing = { listRoutines: () => Promise.reject(new DataSourceError()) } as unknown as IRoutineUseCases;
+    const failing = {
+      listRoutines: () => Promise.reject(new DataSourceError()),
+      listCategories: () => Promise.resolve([]),
+    } as unknown as IRoutineUseCases;
     const { result } = await renderHook(() => useRoutinesViewModel(failing));
     await waitFor(() => expect(result.current[0].errorKey).toBe("error.load"));
     expect(result.current[0].loading).toBe(false);
+
+    const failingCategories = {
+      listRoutines: () => Promise.resolve([]),
+      listCategories: () => Promise.reject(new DataSourceError()),
+    } as unknown as IRoutineUseCases;
+    const { result: catResult } = await renderHook(() => useRoutinesViewModel(failingCategories));
+    await waitFor(() => expect(catResult.current[0].errorKey).toBe("error.load"));
   });
 
   it("issue #213: carrega as categorias do DataSource e atualiza ao ganhar foco", async () => {

@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import type { NextActiveDay, RoutineIcon, RoutineDetails as RoutineDetailsEntity } from "@/model/entities/routine";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
@@ -74,17 +74,7 @@ const swapUp = <T,>(items: T[], index: number): T[] => {
   return next;
 };
 
-const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
-  DEFAULT_CATEGORY_IDS.map((id) =>
-    Object.freeze({
-      id,
-      icon: id,
-      isDefault: true,
-      createdAt: "2026-01-01T00:00:00.000Z",
-      updatedAt: "2026-01-01T00:00:00.000Z",
-    }),
-  ),
-);
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
 
 /**
  * Estado do detalhe da rotina (protótipo 3.2 e 3.3, padrão F8 e RF-0011).
@@ -142,17 +132,19 @@ export const useRoutineDetailsViewModel = (
   }, []);
 
   const reload = useCallback(async (): Promise<void> => {
-    if (useCases.listCategories) {
-      useCases.listCategories().then(
-        (loaded) => {
-          if (mounted.current) {
-            setCategories(loaded);
-          }
-        },
-        () => undefined,
-      );
-    }
     if (routineId === null) return;
+    useCases.listCategories().then(
+      (loaded) => {
+        if (mounted.current) {
+          setCategories(loaded);
+        }
+      },
+      () => {
+        if (mounted.current) {
+          setErrorKey("error.load");
+        }
+      },
+    );
     await track(useCases.getRoutine(routineId), "error.load");
   }, [routineId, track, useCases]);
 

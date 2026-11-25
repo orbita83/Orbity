@@ -125,6 +125,7 @@ describe("useNewTaskViewModel", () => {
 
     const failingUseCases: ITaskUseCases = {
       listTasks: jest.fn(),
+      listCategories: jest.fn().mockResolvedValue([]),
       getTask: jest.fn(),
       todayLocal: fixedClock.todayLocal,
       createTask: jest.fn().mockRejectedValueOnce(new DataSourceError()),

@@ -190,6 +190,7 @@ describe("useTasksViewModel", () => {
       .mockResolvedValueOnce([createTaskFixture({ id: "t1" })]);
     const failingUseCases: ITaskUseCases = {
       listTasks,
+      listCategories: jest.fn().mockResolvedValue([]),
       getTask: jest.fn(),
       todayLocal: jest.fn(),
       createTask: jest.fn(),
@@ -207,6 +208,14 @@ describe("useTasksViewModel", () => {
     });
     expect(result.current[0].errorKey).toBeNull();
     expect(result.current[0].totalCount).toBe(1);
+
+    const categoryFailingUseCases: ITaskUseCases = {
+      ...failingUseCases,
+      listTasks: jest.fn().mockResolvedValue([]),
+      listCategories: jest.fn().mockRejectedValueOnce(new DataSourceError()),
+    };
+    const { result: catFailResult } = await renderHook(() => useTasksViewModel(categoryFailingUseCases));
+    await waitFor(() => expect(catFailResult.current[0].errorKey).toBe("error.load"));
   });
 
   it("issue #213: carrega as categorias do DataSource e atualiza ao ganhar foco quando uma categoria muda", async () => {
@@ -268,6 +277,7 @@ describe("useTasksViewModel (navegação)", () => {
     let reminderPressHandler: ((taskId?: string) => void) | undefined;
     const useCases: ITaskUseCases = {
       listTasks: jest.fn(async () => []),
+      listCategories: jest.fn(async () => []),
       getTask: jest.fn(),
       todayLocal: jest.fn(),
       createTask: jest.fn(),

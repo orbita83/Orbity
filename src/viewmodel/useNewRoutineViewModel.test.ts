@@ -96,7 +96,10 @@ describe("useNewRoutineViewModel", () => {
   });
 
   it("falha ao salvar mostra o aviso e preserva o formulário", async () => {
-    const failing = { createRoutine: () => Promise.reject(new DataSourceError()) } as unknown as IRoutineUseCases;
+    const failing = {
+      listCategories: () => Promise.resolve([]),
+      createRoutine: () => Promise.reject(new DataSourceError()),
+    } as unknown as IRoutineUseCases;
     const { result } = await renderHook(() => useNewRoutineViewModel(failing));
     await act(async () => result.current[1].setName("Matemática"));
     await act(async () => result.current[1].toggleDay(1));

@@ -5,7 +5,6 @@ import { container, resolveUseCase } from "@/di/container";
 import {
   CATEGORY_ICON_IDS,
   CATEGORY_NAME_MAX_LENGTH,
-  DEFAULT_CATEGORY_IDS,
   isCategoryIconId,
   type Category,
   type CategoryIconId,
@@ -47,18 +46,6 @@ export type CategoriesActions = {
 
 const DEFAULT_ICON: CategoryIconId = CATEGORY_ICON_IDS[6]; // "tag"
 
-const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
-  DEFAULT_CATEGORY_IDS.map((id) =>
-    Object.freeze({
-      id,
-      icon: id,
-      isDefault: true,
-      createdAt: "2026-01-01T00:00:00.000Z",
-      updatedAt: "2026-01-01T00:00:00.000Z",
-    }),
-  ),
-);
-
 /**
  * Estado e ações da tela Categorias (Perfil → Categorias, RF-0020, UC-0015, FL-0015, issue #213).
  * Lista, cria, renomeia, troca o ícone e exclui categorias pelo `ICategoryUseCases`, ou opera em
@@ -72,7 +59,7 @@ export const useCategoriesViewModel = (
   const useCases = resolveUseCase(injectedUseCases, container.useCases.categories);
 
   const [categories, setCategories] = useState<readonly Category[]>(() =>
-    isPrototypeMode ? [...source] : DEFAULT_FALLBACK_CATEGORIES,
+    isPrototypeMode ? [...source] : [],
   );
   const [loading, setLoading] = useState<boolean>(!isPrototypeMode);
   const [errorKey, setErrorKey] = useState<CategoriesErrorKey | null>(null);
@@ -174,23 +161,18 @@ export const useCategoriesViewModel = (
     if (submitting) {
       return;
     }
-    const trimmed = nameInput.trim().replace(/\s+/g, " ");
 
     if (isPrototypeMode) {
-      if (!trimmed) {
-        setNameError("Informe o nome da categoria.");
-        return;
-      }
       if (editingId) {
         setCategories((current) =>
           current.map((item) =>
-            item.id === editingId ? { ...item, name: trimmed, icon: selectedIcon } : item,
+            item.id === editingId ? { ...item, name: nameInput, icon: selectedIcon } : item,
           ),
         );
       } else {
         const created: Category = Object.freeze({
           id: `custom-${Date.now()}`,
-          name: trimmed,
+          name: nameInput,
           icon: selectedIcon,
           isDefault: false,
           createdAt: "2026-11-24T10:00:00.000Z",
@@ -211,10 +193,10 @@ export const useCategoriesViewModel = (
       } else {
         const current = categories.find((item) => item.id === editingId);
         const nameChanged =
-          trimmed.length === 0 ||
+          nameInput.length === 0 ||
           (current?.name !== undefined
-            ? trimmed !== current.name
-            : trimmed !== initialEditLabelRef.current);
+            ? nameInput !== current.name
+            : nameInput !== initialEditLabelRef.current);
         const iconChanged = !current || current.icon !== selectedIcon;
 
         if (nameChanged) {

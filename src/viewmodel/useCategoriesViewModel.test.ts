@@ -8,6 +8,7 @@ import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
 import { CategoryUseCases } from "@/usecase/categoryUseCases";
 import type { ICategoryUseCases } from "@/usecase/iCategoryUseCases";
+import { CATEGORIES_COPY } from "@/view/categoryCopy";
 import { useCategoriesViewModel } from "@/viewmodel/useCategoriesViewModel";
 
 const mockReplace = jest.fn();
@@ -147,7 +148,7 @@ describe("useCategoriesViewModel", () => {
     });
 
     expect(result.current[0].formVisible).toBe(true);
-    expect(result.current[0].nameError).toBe("Informe o nome da categoria.");
+    expect(result.current[0].nameError).toBe(CATEGORIES_COPY["form.name.required"]);
 
     await act(async () => result.current[1].setNameInput("Física"));
     expect(result.current[0].nameError).toBeNull();
@@ -174,5 +175,45 @@ describe("useCategoriesViewModel", () => {
       await failingResult.current[1].submitForm();
     });
     expect(failingResult.current[0].errorKey).toBe("error.save");
+  });
+
+  it("começa com lista vazia enquanto carrega e nunca exibe uma categoria padrão já excluída ao abrir a tela", async () => {
+    const { useCases } = createUseCases();
+    // O estudante exclui uma categoria padrão antes de abrir a tela de novo.
+    await useCases.deleteCategory("music");
+
+    let resolvePendingLoad!: () => void;
+    const delayedUseCases: ICategoryUseCases = {
+      listCategories: () =>
+        new Promise((resolve) => {
+          resolvePendingLoad = () => {
+            void useCases.listCategories().then(resolve);
+          };
+        }),
+      createCategory: (input) => useCases.createCategory(input),
+      renameCategory: (input) => useCases.renameCategory(input),
+      changeCategoryIcon: (input) => useCases.changeCategoryIcon(input),
+      deleteCategory: (id) => useCases.deleteCategory(id),
+    };
+
+    const { result } = await renderHook(() => useCategoriesViewModel(delayedUseCases));
+
+    // Enquanto listCategories() não resolveu, a lista está vazia (exibindo SkeletonCards) e "music" não aparece.
+    expect(result.current[0].loading).toBe(true);
+    expect(result.current[0].categories).toEqual([]);
+
+    await act(async () => {
+      resolvePendingLoad();
+    });
+
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    expect(result.current[0].categories.map((cat) => cat.id)).toEqual([
+      "mathematics",
+      "reading",
+      "languages",
+      "science",
+      "programming",
+    ]);
+    expect(result.current[0].categories.some((cat) => cat.id === "music")).toBe(false);
   });
 });

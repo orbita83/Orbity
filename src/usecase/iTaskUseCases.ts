@@ -7,7 +7,7 @@ import type { NotificationPermissionStatus } from "@/model/services/iNotificatio
 export interface ITaskUseCases {
   listTasks(): Promise<Task[]>;
   /** Lista as categorias disponíveis no DataSource para o seletor e os cards de tarefas (issue #213). */
-  listCategories?(): Promise<Category[]>;
+  listCategories(): Promise<Category[]>;
   /**
    * Busca uma tarefa avulsa pelo id, para editá-la.
    *

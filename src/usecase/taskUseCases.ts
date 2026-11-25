@@ -1,4 +1,4 @@
-import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import type { LocalDate } from "@/model/entities/localDate";
 import { createStreakStar } from "@/model/entities/star";
 import {
@@ -113,16 +113,7 @@ export class TaskUseCases implements ITaskUseCases {
     if (this.categoryDataSource) {
       return this.categoryDataSource.listAll();
     }
-    const now = this.clock.now();
-    return DEFAULT_CATEGORY_IDS.map((id) =>
-      Object.freeze({
-        id,
-        icon: id,
-        isDefault: true,
-        createdAt: now,
-        updatedAt: now,
-      }),
-    );
+    return [...createDefaultCategories(this.clock.now())];
   }
 
   /** Só tarefas avulsas, como em `listTasks`: as de rotina são editadas na aba Rotinas. */

@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import { ROUTINE_ICONS, type NextActiveDay, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
@@ -66,17 +66,7 @@ const toListItem = ({ routine, taskCount, activeToday, doneToday, nextActiveDay 
   ...(nextActiveDay ? { nextActiveDay } : {}),
 });
 
-const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
-  DEFAULT_CATEGORY_IDS.map((id) =>
-    Object.freeze({
-      id,
-      icon: id,
-      isDefault: true,
-      createdAt: "2026-01-01T00:00:00.000Z",
-      updatedAt: "2026-01-01T00:00:00.000Z",
-    }),
-  ),
-);
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
 
 /**
  * Estado da lista de Rotinas: busca, conclusão do dia e exclusão com desfazer, pelo `IRoutineUseCases`.
@@ -114,14 +104,12 @@ export const useRoutinesViewModel = (
     const isCurrent = () => mounted.current && request === latestRequest.current;
     return Promise.all([
       useCases.listRoutines(),
-      useCases.listCategories ? useCases.listCategories().catch(() => undefined) : Promise.resolve(undefined),
+      useCases.listCategories(),
     ]).then(
       ([loaded, loadedCategories]) => {
         if (!isCurrent()) return;
         setRoutines(loaded.map(toListItem));
-        if (loadedCategories) {
-          setCategories(loadedCategories);
-        }
+        setCategories(loadedCategories);
         setErrorKey(null);
         setLoading(false);
       },

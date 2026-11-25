@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
-import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import { DEFAULT_ROUTINE_ICON, type RoutineIcon, type RoutineTaskDraft } from "@/model/entities/routine";
 import { ValidationError } from "@/model/errors";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
@@ -62,19 +62,10 @@ type FormFields = {
 const EMPTY_FIELDS: FormFields = { name: "", icon: DEFAULT_ROUTINE_ICON, description: "", days: [], items: [] };
 const SAVE_FAILED = "Não foi possível salvar a rotina agora. Tente de novo.";
 const LOAD_FAILED = "Não foi possível carregar a rotina agora. Tente de novo.";
+const CATEGORIES_LOAD_FAILED = "Não foi possível carregar as categorias agora.";
 const NOT_FOUND = "Esta rotina não está mais na sua lista.";
 
-const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
-  DEFAULT_CATEGORY_IDS.map((id) =>
-    Object.freeze({
-      id,
-      icon: id,
-      isDefault: true,
-      createdAt: "2026-01-01T00:00:00.000Z",
-      updatedAt: "2026-01-01T00:00:00.000Z",
-    }),
-  ),
-);
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
 
 const snapshotOf = (fields: FormFields): string => JSON.stringify(fields);
 
@@ -130,14 +121,17 @@ export const useNewRoutineViewModel = (
   }, []);
 
   const loadCategories = useCallback(() => {
-    if (!useCases.listCategories) return;
     useCases.listCategories().then(
       (loaded) => {
         if (mounted.current) {
           setCategories(loaded);
         }
       },
-      () => undefined,
+      () => {
+        if (mounted.current) {
+          setFormError(CATEGORIES_LOAD_FAILED);
+        }
+      },
     );
   }, [useCases]);
 

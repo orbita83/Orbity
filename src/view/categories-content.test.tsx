@@ -86,7 +86,9 @@ describe("CategoriesScreenContent", () => {
 
     expect(screen.getByRole("header", { name: CATEGORIES_COPY["form.createTitle"] })).toBeTruthy();
     expect(screen.getByRole("alert")).toHaveTextContent("Já existe uma categoria com esse nome.");
-    expect(screen.getByText("7/24")).toBeTruthy();
+    const counter = screen.getByText("7/24");
+    expect(counter).toBeTruthy();
+    expect(counter.props.accessibilityLiveRegion).toBeUndefined();
 
     const radios = screen.getAllByRole("radio");
     expect(radios).toHaveLength(14);

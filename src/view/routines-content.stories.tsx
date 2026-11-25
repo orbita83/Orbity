@@ -5,6 +5,7 @@ import { fn } from "storybook/test";
 import { useNewRoutineViewModel } from "../viewmodel/useNewRoutineViewModel";
 import { useRoutineDetailsViewModel } from "../viewmodel/useRoutineDetailsViewModel";
 import { useRoutinesViewModel } from "../viewmodel/useRoutinesViewModel";
+import { createDefaultCategories } from "../model/entities/category";
 import type { RoutineDetails as RoutineDetailsEntity } from "../model/entities/routine";
 import type { IRoutineUseCases } from "../usecase/iRoutineUseCases";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "./__fixtures__/routines.fixture";
@@ -109,6 +110,7 @@ const STORY_DETAILS: RoutineDetailsEntity = {
 const unsaved = (): Promise<never> => Promise.reject(new Error("Sem gravação no Storybook"));
 const storyRoutineUseCases: IRoutineUseCases = {
   listRoutines: async () => [],
+  listCategories: async () => [...createDefaultCategories()],
   getRoutine: async (id) => (id === STORY_DETAILS.routine.id ? STORY_DETAILS : null),
   createRoutine: async (input) => ({
     id: "story-routine",
