@@ -30,6 +30,8 @@ const ROUTE_NAME = /^(?:\[(?:\.\.\.)?[a-zA-Z][a-zA-Z0-9]*\]|\+not-found|_layout)
 const VIEWMODEL_NAME = /^use([A-Z][a-zA-Z0-9]*)ViewModel$/;
 const PORT_DIRECTORY = /^src\/model\/(?:datasources|services)\//;
 const USECASE_INTERFACE = /^I[A-Z][a-zA-Z0-9]*UseCases?$/;
+// Módulo auxiliar de validação de entrada (#189): funções puras que só a camada usecase/ importa.
+const USECASE_INPUT_VALIDATION = /^src\/usecase\/[a-z][a-zA-Z0-9]*InputValidation$/;
 
 function withoutExtension(file) {
   return file.replace(CODE_EXTENSION, "");
@@ -223,6 +225,7 @@ function checkDependency({ node, specifier, target, layer, file, support, checke
   }
 
   if (targetLayer === "usecase" && targetPath.startsWith("src/") && ["viewmodel", "usecase"].includes(layer)) {
+    if (layer === "usecase" && USECASE_INPUT_VALIDATION.test(targetPath)) return;
     if (!importsUseCaseContracts(node, checker)) {
       issue("ARCH-002", "Importe apenas interfaces públicas I*UseCase(s) por tipo.");
     }
@@ -255,6 +258,21 @@ function checkContractFile(source, file, layer, report) {
   if (!isPort && !isContract && (layer === "model" || !contract)) return;
   if (!contract || !/^I[A-Z]/.test(contract.name.text) || base !== "i" + contract.name.text.slice(1)) {
     report("ARCH-003", "Declare a interface I* correspondente e somente tipos auxiliares no arquivo de contrato i*.ts.");
+  }
+}
+
+/** Um módulo *InputValidation.ts só declara funções, constantes e tipos: sem classes nem estado mutável. */
+function checkInputValidationModule(source, file, report) {
+  if (!USECASE_INPUT_VALIDATION.test(withoutExtension(file))) return;
+  for (const statement of source.statements) {
+    const allowed =
+      ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement) ||
+      ts.isFunctionDeclaration(statement) || ts.isTypeAliasDeclaration(statement) ||
+      ts.isInterfaceDeclaration(statement) ||
+      (ts.isVariableStatement(statement) && (statement.declarationList.flags & ts.NodeFlags.Const) !== 0);
+    if (!allowed) {
+      report("ARCH-002", "Módulos *InputValidation.ts só podem declarar funções puras, constantes e tipos.", statement);
+    }
   }
 }
 
@@ -424,6 +442,7 @@ function lintArchitecture({ rootDir = path.resolve(path.dirname(module.filename)
 
     if (support) continue;
     checkContractFile(source, file, layer, report);
+    checkInputValidationModule(source, file, report);
     if (layer === "viewmodel") checkViewModel(source, file, checker, report);
     if (layer === "app") checkRoute(source, file, rootDir, program, checker, resolve, report);
     if (file.startsWith("src/view/components/") && moduleExports(source, checker).some((symbol) => symbol.name === "default")) {

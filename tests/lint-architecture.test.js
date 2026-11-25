@@ -106,6 +106,66 @@ test("rejeita dependências proibidas mesmo com alias, re-exportação e imports
   expect(rules("src/usecase/internal.ts")).toEqual(["ARCH-002"]);
 });
 
+test("issue #189: aceita módulo *InputValidation importado por um Use Case", () => {
+  const overrides = {
+    "src/usecase/taskInputValidation.ts": `
+      import { DomainError } from "@/model/errors";
+      export type TaskInput = { title: string };
+      const MAX_TITLE = 60;
+      export function validateTitle(input: TaskInput): string {
+        if (input.title.length > MAX_TITLE) throw new DomainError("Título longo.");
+        return input.title.trim();
+      }
+    `,
+    "src/usecase/routineUseCases.ts": `
+      import { validateTitle } from "@/usecase/taskInputValidation";
+      export interface IRoutineUseCases { title(value: string): string; }
+      export class RoutineUseCases implements IRoutineUseCases {
+        title(value: string) { return validateTitle({ title: value }); }
+      }
+    `,
+  };
+  expect(lintFixture(overrides)).toEqual({
+    ok: true,
+    violations: [],
+    checkedFiles: Object.keys({ ...modules, ...overrides }).length,
+  });
+});
+
+test("issue #189: continua recusando a classe concreta de outro Use Case e o módulo auxiliar fora de usecase/", () => {
+  const { violations } = lintFixture({
+    "src/usecase/taskInputValidation.ts": `
+      let calls = 0;
+      export class TaskValidator {}
+      export function validateTitle(title: string): string { calls += 1; return title.trim(); }
+    `,
+    "src/usecase/routineUseCases.ts": `
+      import { TaskUseCases } from "@/usecase/taskUseCases";
+      export interface IRoutineUseCases { title(): string; }
+      export class RoutineUseCases implements IRoutineUseCases {
+        constructor(private tasks: TaskUseCases) {}
+        title() { return this.tasks.getTitle(); }
+      }
+    `,
+    "src/usecase/routineHelpers.ts": 'export { TaskUseCases } from "@/usecase/taskUseCases";',
+    "src/viewmodel/useRoutineViewModel.ts": `
+      import { validateTitle } from "@/usecase/taskInputValidation";
+      export type RoutineState = { title: string };
+      export type RoutineActions = { rename: () => void };
+      export function useRoutineViewModel(): [RoutineState, RoutineActions] {
+        return [{ title: validateTitle("") }, { rename: () => {} }];
+      }
+    `,
+  });
+
+  const rulesByFile = Object.groupBy(violations, ({ file }) => file);
+  const rules = (file) => (rulesByFile[file] ?? []).map(({ ruleId }) => ruleId);
+  expect(rules("src/usecase/routineUseCases.ts")).toEqual(["ARCH-002"]);
+  expect(rules("src/usecase/routineHelpers.ts")).toEqual(["ARCH-002"]);
+  expect(rules("src/viewmodel/useRoutineViewModel.ts")).toEqual(["ARCH-002"]);
+  expect(rules("src/usecase/taskInputValidation.ts")).toEqual(["ARCH-002", "ARCH-002"]);
+});
+
 test("rejeita rota que exporta outro valor, contrato com implementação e ViewModel sem tupla", () => {
   const { violations } = lintFixture({
     "src/app/(student)/[id].tsx": 'import Screen from "@/view/(student)/[id]"; export default () => null;',
