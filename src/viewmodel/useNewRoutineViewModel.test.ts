@@ -1,7 +1,9 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
@@ -112,6 +114,34 @@ describe("useNewRoutineViewModel", () => {
     expect(result.current[0].icon).toBe("general");
     await act(async () => result.current[1].setIcon("science"));
     expect(result.current[0].icon).toBe("science");
+  });
+
+  it("issue #213: carrega as categorias do DataSource para o seletor de ícone e atualiza ao ganhar foco", async () => {
+    const tasks = new MemoryTaskDataSource();
+    const routines = new MemoryRoutineDataSource(tasks);
+    const categories = new MemoryCategoryDataSource(tasks, routines);
+    await categories.create(createCategoryFixture({ id: "cat-fis", name: "Física", icon: "rocket" }), "fisica");
+    const useCases = new RoutineUseCases(
+      routines,
+      tasks,
+      new MemoryDailyActivityDataSource(),
+      monday,
+      () => "r-1",
+      undefined,
+      undefined,
+      categories,
+    );
+
+    const { result } = await renderHook(() => useNewRoutineViewModel(useCases));
+    await waitFor(() => expect(result.current[0].categories?.some((cat) => cat.id === "cat-fis")).toBe(true));
+
+    await act(async () => result.current[1].setName("Estudos de Física"));
+    await act(async () => result.current[1].setIcon("cat-fis"));
+    await act(async () => result.current[1].toggleDay(1));
+    await act(async () => result.current[1].submit());
+
+    await waitFor(() => expect(result.current[0].created).toBe(true));
+    expect((await useCases.getRoutine("r-1"))?.routine.icon).toBe("cat-fis");
   });
 });
 

@@ -1,6 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
+import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
 import type { NextActiveDay, RoutineIcon, RoutineDetails as RoutineDetailsEntity } from "@/model/entities/routine";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
@@ -32,6 +33,8 @@ export type RoutineDetailsState = {
   completedCount: number;
   doneToday: boolean;
   confirmDeleteVisible: boolean;
+  /** Categorias salvas no DataSource para resolver o ícone da rotina (issue #213). */
+  categories?: readonly Category[];
   loading: boolean;
   errorKey: RoutineDetailsErrorKey | null;
 };
@@ -71,6 +74,18 @@ const swapUp = <T,>(items: T[], index: number): T[] => {
   return next;
 };
 
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
+  DEFAULT_CATEGORY_IDS.map((id) =>
+    Object.freeze({
+      id,
+      icon: id,
+      isDefault: true,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+    }),
+  ),
+);
+
 /**
  * Estado do detalhe da rotina (protótipo 3.2 e 3.3, padrão F8 e RF-0011).
  * - `source` texto: id da rotina, carregado pelo `IRoutineUseCases`.
@@ -89,6 +104,7 @@ export const useRoutineDetailsViewModel = (
   const useCases = resolveUseCase(routineUseCases, container.useCases.routines);
 
   const [routine, setRoutine] = useState<RoutineDetails | null>(isPrototypeMode ? resolvedSource : null);
+  const [categories, setCategories] = useState<readonly Category[]>(DEFAULT_FALLBACK_CATEGORIES);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [loading, setLoading] = useState(routineId !== null);
   const [errorKey, setErrorKey] = useState<RoutineDetailsErrorKey | null>(null);
@@ -126,6 +142,16 @@ export const useRoutineDetailsViewModel = (
   }, []);
 
   const reload = useCallback(async (): Promise<void> => {
+    if (useCases.listCategories) {
+      useCases.listCategories().then(
+        (loaded) => {
+          if (mounted.current) {
+            setCategories(loaded);
+          }
+        },
+        () => undefined,
+      );
+    }
     if (routineId === null) return;
     await track(useCases.getRoutine(routineId), "error.load");
   }, [routineId, track, useCases]);
@@ -223,6 +249,7 @@ export const useRoutineDetailsViewModel = (
       completedCount: routine?.tasks.filter((task) => task.done).length ?? 0,
       doneToday: routine?.doneToday ?? false,
       confirmDeleteVisible,
+      categories,
       loading,
       errorKey,
     },

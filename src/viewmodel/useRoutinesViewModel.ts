@@ -1,6 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
+import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
 import { ROUTINE_ICONS, type NextActiveDay, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 
@@ -35,6 +36,8 @@ export type RoutinesState = {
   query: string;
   /** Última rotina excluída, enquanto o aviso com "Desfazer" está na tela. */
   lastDeleted: RoutineListItem | null;
+  /** Categorias salvas no DataSource para resolver o ícone de cada rotina (issue #213). */
+  categories?: readonly Category[];
   loading: boolean;
   errorKey: RoutinesErrorKey | null;
 };
@@ -63,6 +66,18 @@ const toListItem = ({ routine, taskCount, activeToday, doneToday, nextActiveDay 
   ...(nextActiveDay ? { nextActiveDay } : {}),
 });
 
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = Object.freeze(
+  DEFAULT_CATEGORY_IDS.map((id) =>
+    Object.freeze({
+      id,
+      icon: id,
+      isDefault: true,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+    }),
+  ),
+);
+
 /**
  * Estado da lista de Rotinas: busca, conclusão do dia e exclusão com desfazer, pelo `IRoutineUseCases`.
  * Com um array, funciona só em memória (histórias do Storybook e testes de apresentação).
@@ -77,6 +92,7 @@ export const useRoutinesViewModel = (
   const useCases = resolveUseCase(injectedUseCases, container.useCases.routines);
 
   const [routines, setRoutines] = useState<RoutineListItem[]>(() => (isPrototypeMode ? [...source] : []));
+  const [categories, setCategories] = useState<readonly Category[]>(DEFAULT_FALLBACK_CATEGORIES);
   const [query, setQuery] = useState("");
   const [lastDeleted, setLastDeleted] = useState<{ item: RoutineListItem; index: number } | null>(null);
   const [loading, setLoading] = useState(!isPrototypeMode);
@@ -96,10 +112,16 @@ export const useRoutinesViewModel = (
     if (isPrototypeMode) return Promise.resolve();
     const request = ++latestRequest.current;
     const isCurrent = () => mounted.current && request === latestRequest.current;
-    return useCases.listRoutines().then(
-      (loaded) => {
+    return Promise.all([
+      useCases.listRoutines(),
+      useCases.listCategories ? useCases.listCategories().catch(() => undefined) : Promise.resolve(undefined),
+    ]).then(
+      ([loaded, loadedCategories]) => {
         if (!isCurrent()) return;
         setRoutines(loaded.map(toListItem));
+        if (loadedCategories) {
+          setCategories(loadedCategories);
+        }
         setErrorKey(null);
         setLoading(false);
       },
@@ -223,6 +245,7 @@ export const useRoutinesViewModel = (
       doneTodayCount: today.filter((routine) => routine.doneToday).length,
       query,
       lastDeleted: lastDeleted?.item ?? null,
+      categories,
       loading,
       errorKey,
     },

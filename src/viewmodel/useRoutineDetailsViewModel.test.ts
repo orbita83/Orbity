@@ -1,7 +1,9 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
@@ -163,6 +165,29 @@ describe("useRoutineDetailsViewModel (caso de uso)", () => {
     await waitFor(() => expect(result.current[0].doneToday).toBe(false));
     expect(result.current[0].completedCount).toBe(0);
     expect(result.current[0].routine?.tasks.every((task) => !task.done)).toBe(true);
+  });
+
+  it("issue #213: carrega as categorias do DataSource no detalhe da rotina", async () => {
+    const tasks = new MemoryTaskDataSource();
+    const routines = new MemoryRoutineDataSource(tasks);
+    const categories = new MemoryCategoryDataSource(tasks, routines);
+    await categories.create(createCategoryFixture({ id: "cat-fis", name: "Física", icon: "rocket" }), "fisica");
+    const { clock } = createClock();
+    const useCases = new RoutineUseCases(
+      routines,
+      tasks,
+      new MemoryDailyActivityDataSource(),
+      clock,
+      () => "r-1",
+      undefined,
+      undefined,
+      categories,
+    );
+    await useCases.createRoutine({ title: "Física", icon: "cat-fis", days: [1], tasks: [] });
+
+    const { result } = await renderHook(() => useRoutineDetailsViewModel("r-1", useCases));
+    await waitFor(() => expect(result.current[0].routine?.icon).toBe("cat-fis"));
+    await waitFor(() => expect(result.current[0].categories?.some((cat) => cat.id === "cat-fis")).toBe(true));
   });
 });
 
