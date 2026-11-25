@@ -4,6 +4,8 @@
 
 ## 1. Escopo, referência e conclusão
 
+**Complemento de 25/11/2026:** o [inventário de dados e SDKs](./inventario-dados-sdks.md) registra campos, ciclo de vida e dependências na referência `61daeb136d64c970236cc85354a7c092c1757582` da `development`, incluindo categorias, estrelas e lembretes locais posteriores ao recorte abaixo. Não substitui a referência histórica desta auditoria nem comprova equivalência com o AAB; GP16 e GP19 continuam pendentes quanto ao comportamento de produção.
+
 Auditoria documental realizada em **20/11/2026**, por Codex, para revisão da equipe Orbity. Revisão humana e aprovação: **pendentes**, conforme [CONTRIBUTING.md](../../CONTRIBUTING.md). Não autoriza envio, teste fechado, acesso à produção ou publicação.
 
 Referência de código: `d6e03f720145de81a14d475b7476f39767e0bf16`, na branch `docs/t0013-auditoria-google-play`. Na consulta inicial de 20/11/2026, a API GitHub confirmou esse mesmo SHA na `development` remota. Na revisão final, a referência `origin/development` avançou para `aa241a18047928795b1a309a45edb63536fc824d` (PR #156); esta branch não foi mesclada nem sua referência de código reavaliada como se já contivesse essas mudanças. `git ls-remote` falhou por resolução de rede; a confirmação foi feita pelo conector, sem mudar a base. A árvore estava limpa antes desta documentação.
