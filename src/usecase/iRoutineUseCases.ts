@@ -1,3 +1,4 @@
+import type { Category } from "@/model/entities/category";
 import type {
   CreateRoutineInput,
   Routine,
@@ -11,6 +12,8 @@ import type { DayChangeListener } from "@/model/services/iDayChangeService";
 export interface IRoutineUseCases {
   /** Rotinas não excluídas, com o estado de hoje (RF-0008). */
   listRoutines(): Promise<RoutineOverview[]>;
+  /** Lista as categorias disponíveis no DataSource para o seletor de ícone e os cards de rotina (issue #213). */
+  listCategories?(): Promise<Category[]>;
   /** `null` quando a rotina não existe ou foi excluída. */
   getRoutine(id: string): Promise<RoutineDetails | null>;
   /** Cria a rotina e as tarefas dela (RF-0007, RF-0012). */

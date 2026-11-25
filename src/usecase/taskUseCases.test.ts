@@ -245,6 +245,29 @@ describe("TaskUseCases com categorias persistidas (issue #212)", () => {
       category: undefined,
     });
   });
+
+  it("listCategories reflete criações, renomeações e exclusões no DataSource e faz fallback sem DataSource (issue #213)", async () => {
+    const { useCases, categories } = setup();
+    await categories.create(createCategoryFixture({ id: "c-1", name: "Física", icon: "rocket" }), "fisica");
+    await categories.delete("music", "2026-11-15T09:30:00-03:00");
+
+    const loaded = await useCases.listCategories();
+    expect(loaded.map((cat) => cat.id)).toEqual(["mathematics", "reading", "languages", "science", "programming", "c-1"]);
+
+    const withoutRepo = new TaskUseCases(
+      new MemoryTaskDataSource(),
+      new MemoryDailyActivityDataSource(),
+      createClock(),
+    );
+    expect((await withoutRepo.listCategories()).map((cat) => cat.id)).toEqual([
+      "mathematics",
+      "reading",
+      "languages",
+      "science",
+      "programming",
+      "music",
+    ]);
+  });
 });
 
 describe("TaskUseCases — lembretes de tarefas agendadas (RF-0021, RN-0011, issue #211)", () => {

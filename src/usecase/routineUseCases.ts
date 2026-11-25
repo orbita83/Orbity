@@ -9,7 +9,7 @@ import {
   isRoutineActiveOn,
   nextActiveDay,
 } from "@/model/entities/routine";
-import { isDefaultCategoryId } from "@/model/entities/category";
+import { DEFAULT_CATEGORY_IDS, isDefaultCategoryId, type Category } from "@/model/entities/category";
 import { createStreakStar } from "@/model/entities/star";
 import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
@@ -65,6 +65,23 @@ export class RoutineUseCases implements IRoutineUseCases {
 
   subscribeDayChange(listener: DayChangeListener): () => void {
     return this.dayChangeService ? this.dayChangeService.subscribe(listener) : () => undefined;
+  }
+
+  /** Lista as categorias persistidas no DataSource, com fallback para as 6 padrão (issue #213). */
+  async listCategories(): Promise<Category[]> {
+    if (this.categoryDataSource) {
+      return this.categoryDataSource.listAll();
+    }
+    const now = this.clock.now();
+    return DEFAULT_CATEGORY_IDS.map((id) =>
+      Object.freeze({
+        id,
+        icon: id,
+        isDefault: true,
+        createdAt: now,
+        updatedAt: now,
+      }),
+    );
   }
 
   async listRoutines(): Promise<RoutineOverview[]> {

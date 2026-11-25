@@ -1,3 +1,4 @@
+import { DEFAULT_CATEGORY_IDS, type Category } from "@/model/entities/category";
 import type { LocalDate } from "@/model/entities/localDate";
 import { createStreakStar } from "@/model/entities/star";
 import {
@@ -105,6 +106,23 @@ export class TaskUseCases implements ITaskUseCases {
   /** Só as tarefas avulsas: as de rotina ficam na aba Rotinas (rotinas.md, R1). */
   async listTasks(): Promise<Task[]> {
     return (await this.taskDataSource.listAll()).filter(isStandaloneTask);
+  }
+
+  /** Lista as categorias persistidas no DataSource, com fallback para as 6 padrão (issue #213). */
+  async listCategories(): Promise<Category[]> {
+    if (this.categoryDataSource) {
+      return this.categoryDataSource.listAll();
+    }
+    const now = this.clock.now();
+    return DEFAULT_CATEGORY_IDS.map((id) =>
+      Object.freeze({
+        id,
+        icon: id,
+        isDefault: true,
+        createdAt: now,
+        updatedAt: now,
+      }),
+    );
   }
 
   /** Só tarefas avulsas, como em `listTasks`: as de rotina são editadas na aba Rotinas. */
