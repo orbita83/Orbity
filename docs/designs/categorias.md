@@ -1,8 +1,8 @@
 # Categorias: domínio, persistência e casos de uso
 
-> **Status:** Proposed · **Autor:** MailsonSousa88 · **Data:** 2026-11-23 · **Issue:** #212
+> **Status:** Proposed · **Autor:** MailsonSousa88 · **Data:** 2026-11-23 · **Issues:** #212, #213
 >
-> Continua `tarefas.md` (T3) e `rotinas.md` (R8). As telas ficam para a #213. A revisão `/egm:egm-review` não foi feita, por decisão do operador (EGM é opcional, `AGENTS.md`, Seção 4).
+> Continua `tarefas.md` (T3) e `rotinas.md` (R8). O domínio, a persistência e os casos de uso vieram na #212; as telas de Tarefas, Rotinas e Perfil → Categorias vêm na #213. A revisão `/egm:egm-review` não foi feita, por decisão do operador (EGM é opcional, `AGENTS.md`, Seção 4).
 
 ## Overview
 
@@ -54,7 +54,7 @@ O estudante não consegue criar, renomear nem remover categorias, o que limita a
 
 ### 1. Domínio (`src/model/`)
 
-- `entities/category.ts`: `Category { id, name?, icon, isDefault, createdAt, updatedAt }`, `DEFAULT_CATEGORY_IDS`, `CATEGORY_ICON_IDS`, `CATEGORY_NAME_MAX_LENGTH = 24`, `CreateCategoryInput`, `RenameCategoryInput`, `ChangeCategoryIconInput`.
+- `entities/category.ts`: `Category { id, name?, icon, isDefault, createdAt, updatedAt }`, `DEFAULT_CATEGORY_IDS`, `createDefaultCategories`, `CATEGORY_ICON_IDS`, `CATEGORY_NAME_MAX_LENGTH = 24`, `CreateCategoryInput`, `RenameCategoryInput`, `ChangeCategoryIconInput`.
 - `entities/task.ts` e `entities/routine.ts`: `category` e `icon` passam a ser ids abertos (`CategoryId = string`); `TASK_CATEGORY_IDS` fica como alias de `DEFAULT_CATEGORY_IDS`.
 - `datasources/iCategoryDataSource.ts`: `listAll`, `findById`, `findByNameKey`, `create`, `update` e `delete(id, changedAt)` (atômico, limpa as referências).
 
@@ -74,9 +74,12 @@ O estudante não consegue criar, renomear nem remover categorias, o que limita a
 
 `categories` em `AppDataSources` e `AppUseCases` (`container.ts`) e em `persistence.ts`.
 
-### 5. Apresentação (`src/view/`)
+### 5. Apresentação (`src/viewmodel/` e `src/view/`)
 
-Sem mudança visual. `categoryCopy.ts` e `routinesCopy.ts` ganham funções de leitura com fallback ("Sem categoria" e `general`) e o mapa `CATEGORY_ICON_SYMBOLS`.
+- `categoryCopy.ts` e `routinesCopy.ts`: funções de leitura com fallback ("Sem categoria" e `general`), mapa `CATEGORY_ICON_SYMBOLS`, rótulos acessíveis dos 14 ícones (`CATEGORY_ICON_LABELS`), textos da tela **Categorias** (`CATEGORIES_COPY`) e resolução de exibição a partir das categorias salvas no DataSource (`resolveCategoryDisplay`, `getRoutineIconSymbol` e `getRoutineIconLabel`).
+- `ITaskUseCases` e `IRoutineUseCases`: expõem `listCategories(): Promise<Category[]>` delegando ao `ICategoryDataSource` já injetado em `TaskUseCases` e `RoutineUseCases` (com fallback centralizado em `createDefaultCategories`), preservando o isolamento das ViewModels de Tarefas e Rotinas (#158).
+- `useCategoriesViewModel.ts` e `categories-content.tsx` (#213): substituem o `ProfilePlaceholderScreen` em `src/view/categories.tsx` pela tela completa de gerenciamento de categorias (listagem, estados de carregando/vazio/erro, modal de criação/edição com `TextField` até 24 caracteres e grade `radiogroup` de 14 ícones, e exclusão protegida por `ConfirmDialog` no padrão da #151).
+- `useNewTaskViewModel.ts`, `useTasksViewModel.ts`, `useNewRoutineViewModel.ts`, `useRoutinesViewModel.ts` e `useRoutineDetailsViewModel.ts` (#213): carregam as categorias persistidas na montagem e ao ganhar foco (`useFocusEffect`), refletindo criações, renomeações, trocas de ícone e exclusões imediatamente entre as abas sem reiniciar o aplicativo.
 
 ## Alternatives Considered
 

@@ -1,6 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
@@ -123,6 +125,7 @@ describe("useNewTaskViewModel", () => {
 
     const failingUseCases: ITaskUseCases = {
       listTasks: jest.fn(),
+      listCategories: jest.fn().mockResolvedValue([]),
       getTask: jest.fn(),
       todayLocal: fixedClock.todayLocal,
       createTask: jest.fn().mockRejectedValueOnce(new DataSourceError()),
@@ -254,6 +257,41 @@ describe("useNewTaskViewModel", () => {
     expect(result.current[0].reminderPermissionNotice).toBe(
       "Tarefa salva! Para receber lembretes no horário agendado, ative as notificações nas configurações do aparelho.",
     );
+  });
+
+  it("issue #213: carrega as categorias do DataSource, permite selecionar uma criada pelo estudante e recarrega ao ganhar foco", async () => {
+    const taskRepo = new MemoryTaskDataSource();
+    const categoryRepo = new MemoryCategoryDataSource(taskRepo);
+    await categoryRepo.create(createCategoryFixture({ id: "cat-fisica", name: "Física", icon: "rocket" }), "fisica");
+    await categoryRepo.delete("music", "2026-11-15T10:00:00-03:00");
+
+    const useCases = new TaskUseCases(
+      taskRepo,
+      new MemoryDailyActivityDataSource(),
+      fixedClock,
+      () => "t-custom-cat",
+      undefined,
+      categoryRepo,
+    );
+    const { result } = await renderHook(() => useNewTaskViewModel(useCases));
+
+    await waitFor(() => expect(result.current[0].categoryOptions).toContain("cat-fisica"));
+    expect(result.current[0].categoryOptions).not.toContain("music");
+
+    await act(async () => result.current[1].setField("title", "Lista de Cinemática"));
+    await act(async () => result.current[1].selectCategory("cat-fisica"));
+    expect(result.current[0].fields.category).toBe("cat-fisica");
+
+    await act(async () => result.current[1].submit());
+    await waitFor(() => expect(result.current[0].created).toBe(true));
+    expect((await taskRepo.findById("t-custom-cat"))?.category).toBe("cat-fisica");
+
+    // Cria outra categoria e simula ganho de foco na tela
+    await categoryRepo.create(createCategoryFixture({ id: "cat-quimica", name: "Química", icon: "science" }), "quimica");
+    await act(async () => {
+      mockFocusCallbacks.forEach((run) => run());
+    });
+    await waitFor(() => expect(result.current[0].categoryOptions).toContain("cat-quimica"));
   });
 });
 

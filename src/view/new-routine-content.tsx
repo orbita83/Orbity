@@ -11,11 +11,11 @@ import { SkeletonCards } from "./components/SkeletonCards";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TextField } from "./components/TextField";
 import {
-  ROUTINE_ICON_LABELS,
-  ROUTINE_ICON_SYMBOLS,
   ROUTINES_COPY,
   formatDays,
   formatRoutinesCopy,
+  getRoutineIconLabel,
+  getRoutineIconSymbol,
   weekdayLong,
   weekdayShort,
 } from "./routinesCopy";
@@ -66,6 +66,7 @@ export const NewRoutineScreenContent = ({
   editing,
   loading,
   discardVisible,
+  categories,
   setName,
   setIcon,
   setDescription,
@@ -81,6 +82,10 @@ export const NewRoutineScreenContent = ({
   onFinish,
 }: NewRoutineScreenContentProps) => {
   const insets = useSafeAreaInsets();
+  const iconOptions =
+    categories && categories.length > 0
+      ? ["general", ...categories.map((category) => category.id)]
+      : ROUTINE_ICONS;
   const leave = () => {
     if (requestLeave()) onBack();
   };
@@ -108,20 +113,25 @@ export const NewRoutineScreenContent = ({
 
             <View style={styles.group}>
               <GroupLabel label={ROUTINES_COPY["form.icon"]} requirement="opcional" />
-              <View accessibilityRole="radiogroup" accessibilityLabel={ROUTINES_COPY["form.icon"]} style={styles.grid}>
-                {ROUTINE_ICONS.map((option) => {
+              <View accessibilityRole="radiogroup" accessibilityLabel={ROUTINES_COPY["form.icon"]} style={styles.iconGrid}>
+                {iconOptions.map((option) => {
                   const selected = option === icon;
                   return (
                     <Pressable
                       key={option}
                       accessibilityRole="radio"
-                      accessibilityLabel={ROUTINE_ICON_LABELS[option]}
+                      accessibilityLabel={getRoutineIconLabel(option, categories)}
                       accessibilityState={{ checked: selected }}
                       aria-checked={selected}
                       onPress={() => setIcon(option)}
-                      style={({ pressed }) => [styles.option, selected && styles.optionOn, pressed && styles.pressed]}
+                      style={({ pressed }) => [styles.iconOption, selected && styles.optionOn, pressed && styles.pressed]}
                     >
-                      <MaterialSymbol name={ROUTINE_ICON_SYMBOLS[option]} filled color={selected ? theme.color["on-action"] : cosmicColors.focus} size={theme.navbar.iconSize} />
+                      <MaterialSymbol
+                        name={getRoutineIconSymbol(option, categories)}
+                        filled
+                        color={selected ? theme.color["on-action"] : cosmicColors.focus}
+                        size={theme.navbar.iconSize}
+                      />
                     </Pressable>
                   );
                 })}
@@ -270,10 +280,22 @@ const styles = StyleSheet.create({
   requirement: { color: theme.color["on-surface-variant"] },
   helper: { ...theme.font["body-sm"], color: theme.color["on-surface-variant"] },
   grid: { flexDirection: "row", gap: theme.primitive["space-4"] },
+  iconGrid: { flexDirection: "row", flexWrap: "wrap", gap: theme.primitive["space-4"] },
   option: {
     flex: 1,
     minWidth: 0,
     minHeight: theme.target.minSize,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: theme.radius.md,
+    borderWidth: theme.border.widthThin,
+    borderColor: cosmicBorders.sheet,
+    backgroundColor: theme.navbar.bg,
+  },
+  iconOption: {
+    minWidth: theme.target.minSize,
+    minHeight: theme.target.minSize,
+    paddingHorizontal: theme.space.sm,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: theme.radius.md,

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { TASK_CATEGORY_IDS } from "@/model/entities/task";
 import { PROTOTYPE_TASKS } from "@/view/__fixtures__/taskList.fixture";
@@ -152,6 +153,24 @@ describe("TasksScreenContent", () => {
     await fireEvent.press(batchConfirm);
     expect(props.confirmDelete).toHaveBeenCalledTimes(1);
   });
+
+  it("issue #213: exibe nos cards o nome e o ícone atualizados das categorias do DataSource", async () => {
+    const categories = [
+      createCategoryFixture({ id: "mathematics", name: "Cálculo I", icon: "star", isDefault: true }),
+      createCategoryFixture({ id: "cat-fis", name: "Física", icon: "rocket", isDefault: false }),
+    ];
+    const props = listProps({
+      categories,
+      visibleTasks: [
+        { id: "t1", title: "Limites", category: "mathematics", completed: false, pinned: false },
+        { id: "t2", title: "Cinemática", category: "cat-fis", completed: false, pinned: false },
+      ],
+    });
+    await renderInSafeArea(<TasksScreenContent {...props} />);
+
+    expect(screen.getByLabelText("Categoria: Cálculo I")).toBeTruthy();
+    expect(screen.getByLabelText("Categoria: Física")).toBeTruthy();
+  });
 });
 
 const sampleDateOptions = buildDatePickerOptions(LocalDate.parse("2026-11-15"));
@@ -278,5 +297,24 @@ describe("NewTaskScreenContent", () => {
     );
 
     expect(screen.getAllByText(TASKS_COPY["reminder.permissionNotice"]).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("issue #213: lista no seletor as categorias salvas no DataSource, inclusive criadas e renomeadas", async () => {
+    const categories = [
+      createCategoryFixture({ id: "music", name: "Violão", icon: "star", isDefault: true }),
+      createCategoryFixture({ id: "cat-fis", name: "Física", icon: "rocket", isDefault: false }),
+    ];
+    const props = formProps({
+      activePicker: "category",
+      categories,
+      categoryOptions: ["music", "cat-fis"],
+      fields: { ...formProps().fields, category: "cat-fis" },
+    });
+    await renderInSafeArea(<NewTaskScreenContent {...props} />);
+
+    expect(screen.getByRole("button", { name: "Categoria: Física" })).toBeTruthy();
+    expect(screen.getByRole("radio", { name: "Violão" })).toBeTruthy();
+    expect(screen.getByRole("radio", { name: "Física" })).toBeTruthy();
+    expect(screen.queryByRole("radio", { name: "Idiomas" })).toBeNull();
   });
 });

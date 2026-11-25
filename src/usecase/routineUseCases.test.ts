@@ -383,5 +383,28 @@ describe("RoutineUseCases com categorias persistidas (issue #212)", () => {
     await expect(useCases.createRoutine({ title: "X", icon: "c-1", days: [1], tasks: [] })).rejects.toThrow(
       "Ícone de rotina inválido.",
     );
+    expect((await useCases.listCategories()).map((cat) => cat.id)).toEqual([
+      "mathematics",
+      "reading",
+      "languages",
+      "science",
+      "programming",
+      "music",
+    ]);
+  });
+
+  it("listCategories retorna as categorias salvas no DataSource (issue #213)", async () => {
+    const { useCases, categories } = setupWithCategories();
+    await categories.create(createCategoryFixture({ id: "c-1", name: "Física", icon: "rocket" }), "fisica");
+    await categories.delete("music", "2026-11-16T08:00:00-03:00");
+
+    expect((await useCases.listCategories()).map((cat) => cat.id)).toEqual([
+      "mathematics",
+      "reading",
+      "languages",
+      "science",
+      "programming",
+      "c-1",
+    ]);
   });
 });

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { Category } from "@/model/entities/category";
 import type { RoutineListItem, RoutinesActions, RoutinesState } from "../viewmodel/useRoutinesViewModel";
 import { CheckCircle } from "./components/CheckCircle";
 import { IconTile } from "./components/IconTile";
@@ -35,6 +36,7 @@ const summaryOf = (done: number, total: number, hasRoutines: boolean) => {
 
 type RoutineCardProps = {
   routine: RoutineListItem;
+  categories?: readonly Category[];
   onOpen: () => void;
   onToggle: () => void;
 };
@@ -43,7 +45,7 @@ type RoutineCardProps = {
  * Card da rotina (protótipo 3): abrir pelo card e concluir o dia pelo círculo, em toques separados.
  * Fora dos dias da rotina, o círculo fica desabilitado e o motivo aparece em texto (rotinas.md, R6).
  */
-const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
+const RoutineCard = ({ routine, categories, onOpen, onToggle }: RoutineCardProps) => {
   const detail = `${taskCountLabel(routine.taskCount)} · ${formatDays(routine.days)}`;
   const inactive = !routine.activeToday;
   const returnText =
@@ -60,7 +62,7 @@ const RoutineCard = ({ routine, onOpen, onToggle }: RoutineCardProps) => {
         onPress={onOpen}
         style={({ pressed }) => [styles.cardMain, pressed && styles.pressed]}
       >
-        <IconTile icon={getRoutineIconSymbol(routine.icon)} />
+        <IconTile icon={getRoutineIconSymbol(routine.icon, categories)} />
         <View style={styles.cardText}>
           <Text allowFontScaling style={[styles.cardTitle, routine.doneToday && styles.done]}>
             {routine.title}
@@ -92,6 +94,7 @@ export const RoutinesScreenContent = ({
   doneTodayCount,
   query,
   lastDeleted,
+  categories,
   loading,
   errorKey,
   setQuery,
@@ -161,6 +164,7 @@ export const RoutinesScreenContent = ({
             <RoutineCard
               key={routine.id}
               routine={routine}
+              categories={categories}
               onOpen={() => onOpenRoutine(routine.id)}
               onToggle={() => toggleDoneToday(routine.id)}
             />

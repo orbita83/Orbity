@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { fn } from "storybook/test";
+import { createDefaultCategories } from "../model/entities/category";
 import { LocalDate } from "../model/entities/localDate";
 import { ValidationError } from "../model/errors";
 import type { ITaskUseCases } from "../usecase/iTaskUseCases";
@@ -23,6 +24,7 @@ const storyClock = {
 
 const createStoryTaskUseCases = (): ITaskUseCases => ({
   listTasks: async () => [],
+  listCategories: async () => [...createDefaultCategories()],
   getTask: async () => {
     throw new ValidationError("Tarefa não encontrada.");
   },

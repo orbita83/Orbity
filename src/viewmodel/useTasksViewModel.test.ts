@@ -1,6 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { createTaskFixture } from "@/model/__fixtures__/task.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { DataSourceError } from "@/model/errors";
@@ -188,6 +190,7 @@ describe("useTasksViewModel", () => {
       .mockResolvedValueOnce([createTaskFixture({ id: "t1" })]);
     const failingUseCases: ITaskUseCases = {
       listTasks,
+      listCategories: jest.fn().mockResolvedValue([]),
       getTask: jest.fn(),
       todayLocal: jest.fn(),
       createTask: jest.fn(),
@@ -205,6 +208,50 @@ describe("useTasksViewModel", () => {
     });
     expect(result.current[0].errorKey).toBeNull();
     expect(result.current[0].totalCount).toBe(1);
+
+    const categoryFailingUseCases: ITaskUseCases = {
+      ...failingUseCases,
+      listTasks: jest.fn().mockResolvedValue([]),
+      listCategories: jest.fn().mockRejectedValueOnce(new DataSourceError()),
+    };
+    const { result: catFailResult } = await renderHook(() => useTasksViewModel(categoryFailingUseCases));
+    await waitFor(() => expect(catFailResult.current[0].errorKey).toBe("error.load"));
+  });
+
+  it("issue #213: carrega as categorias do DataSource e atualiza ao ganhar foco quando uma categoria muda", async () => {
+    const taskRepo = new MemoryTaskDataSource([
+      createTaskFixture({ id: "t1", title: "Estudar violão", category: "music" }),
+    ]);
+    const categoryRepo = new MemoryCategoryDataSource(taskRepo);
+    const useCases = new TaskUseCases(
+      taskRepo,
+      new MemoryDailyActivityDataSource(),
+      clock,
+      undefined,
+      undefined,
+      categoryRepo,
+    );
+
+    const { result } = await renderHook(() => useTasksViewModel(useCases));
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    expect(result.current[0].categories?.find((cat) => cat.id === "music")?.name).toBeUndefined();
+
+    // Renomeia "music" para "Violão" e cria "Física", depois foca a aba Tarefas
+    const music = (await categoryRepo.findById("music"))!;
+    await categoryRepo.update({ ...music, name: "Violão", icon: "star" }, "violao");
+    await categoryRepo.create(createCategoryFixture({ id: "cat-fis", name: "Física", icon: "rocket" }), "fisica");
+
+    await act(async () => {
+      focusScreen();
+    });
+
+    await waitFor(() =>
+      expect(result.current[0].categories?.find((cat) => cat.id === "music")).toMatchObject({
+        name: "Violão",
+        icon: "star",
+      }),
+    );
+    expect(result.current[0].categories?.some((cat) => cat.id === "cat-fis")).toBe(true);
   });
 });
 
@@ -230,6 +277,7 @@ describe("useTasksViewModel (navegação)", () => {
     let reminderPressHandler: ((taskId?: string) => void) | undefined;
     const useCases: ITaskUseCases = {
       listTasks: jest.fn(async () => []),
+      listCategories: jest.fn(async () => []),
       getTask: jest.fn(),
       todayLocal: jest.fn(),
       createTask: jest.fn(),

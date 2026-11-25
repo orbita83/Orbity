@@ -1,3 +1,4 @@
+import type { Category } from "@/model/entities/category";
 import type { LocalDate } from "@/model/entities/localDate";
 import type { CreateTaskInput, Task, UpdateTaskInput } from "@/model/entities/task";
 import type { NotificationPermissionStatus } from "@/model/services/iNotificationService";
@@ -5,6 +6,8 @@ import type { NotificationPermissionStatus } from "@/model/services/iNotificatio
 /** Casos de uso da funcionalidade de Tarefas (ARCHITECTURE.md). */
 export interface ITaskUseCases {
   listTasks(): Promise<Task[]>;
+  /** Lista as categorias disponíveis no DataSource para o seletor e os cards de tarefas (issue #213). */
+  listCategories(): Promise<Category[]>;
   /**
    * Busca uma tarefa avulsa pelo id, para editá-la.
    *

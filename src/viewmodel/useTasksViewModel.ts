@@ -2,6 +2,7 @@ import { router, useFocusEffect, useNavigation } from "expo-router";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BackHandler } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import {
   type Task,
   type TaskCategoryId,
@@ -36,6 +37,8 @@ export type TasksState = {
   /** Verdadeiro quando todas as selecionadas estão fixadas; a ação passa a desafixar. */
   allSelectedPinned: boolean;
   confirmDeleteVisible: boolean;
+  /** Categorias salvas no DataSource para exibir nome e ícone atualizados nos cards (issue #213). */
+  categories?: readonly Category[];
   loading: boolean;
   errorKey: "error.load" | "error.save" | null;
 };
@@ -110,6 +113,8 @@ const resolveErrorKey = (caught: unknown, fallback: "error.load" | "error.save")
   return fallback;
 };
 
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
+
 /**
  * Estado da tela Tarefas. Usa `ITaskUseCases` em produção/testes e aceita uma lista inicial
  * em memória quando chamada com um array (compatível com histórias isoladas do Storybook).
@@ -124,6 +129,7 @@ export const useTasksViewModel = (
   const useCases = resolveUseCase(injectedUseCases, container.useCases.tasks);
 
   const [items, setItems] = useState<TaskListItem[]>(() => (isPrototypeMode ? [...source] : []));
+  const [categories, setCategories] = useState<readonly Category[]>(DEFAULT_FALLBACK_CATEGORIES);
   const [filter, setFilter] = useState<TaskFilter>("all");
   const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
@@ -144,10 +150,14 @@ export const useTasksViewModel = (
     }
     setErrorKey(null);
     try {
-      const loaded = await useCases.listTasks();
+      const [loaded, loadedCategories] = await Promise.all([
+        useCases.listTasks(),
+        useCases.listCategories(),
+      ]);
       await useCases.reconcileScheduledReminders?.();
       if (mountedRef.current) {
         setItems(loaded.map(toTaskListItem));
+        setCategories(loadedCategories);
       }
     } catch (caught) {
       if (mountedRef.current) {
@@ -165,11 +175,15 @@ export const useTasksViewModel = (
       return;
     }
     let active = true;
-    useCases.listTasks().then(
-      (loaded) => {
+    Promise.all([
+      useCases.listTasks(),
+      useCases.listCategories(),
+    ]).then(
+      ([loaded, loadedCategories]) => {
         void useCases.reconcileScheduledReminders?.();
         if (active) {
           setItems(loaded.map(toTaskListItem));
+          setCategories(loadedCategories);
           setErrorKey(null);
           setLoading(false);
         }
@@ -349,6 +363,7 @@ export const useTasksViewModel = (
       selectedIds: selectedIds ?? [],
       allSelectedPinned,
       confirmDeleteVisible,
+      categories,
       loading,
       errorKey,
     },
