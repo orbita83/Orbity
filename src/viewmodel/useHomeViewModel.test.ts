@@ -1,7 +1,9 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { AppState, type AppStateStatus } from "react-native";
 import { LocalDate } from "@/model/entities/localDate";
 import type { HomeSummary } from "@/model/entities/homeSummary";
 import { DataSourceError, SchemaVersionError } from "@/model/errors";
+import type { IFocusUseCases } from "@/usecase/iFocusUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 import { useHomeViewModel } from "@/viewmodel/useHomeViewModel";
 import { FakeDayChangeService } from "../../tests/fixtures/fakeDayChangeService";
@@ -184,6 +186,10 @@ describe("useHomeViewModel", () => {
 });
 
 describe("useHomeViewModel (navegação)", () => {
+  beforeEach(() => {
+    mockNavigate.mockReset();
+  });
+
   it("recalcula a Home quando a aba ganha foco", async () => {
     const useCases = useCasesFrom(summaryWith(1), summaryWith(2));
     const { result } = await renderHook(() => useHomeViewModel(useCases));
@@ -193,5 +199,59 @@ describe("useHomeViewModel (navegação)", () => {
     });
     await waitFor(() => expect(result.current[0].summary?.streak.currentDays).toBe(2));
     expect(useCases.loadHome).toHaveBeenCalledTimes(2);
+  });
+
+  it("handleOpenFocus navega para /focus-session e toque na notificação de ciclo abre a sessão", async () => {
+    let notificationHandler: (() => void) | undefined;
+    const focusUseCases: IFocusUseCases = {
+      now: () => "2026-11-14T10:00:00-03:00",
+      loadSnapshot: jest.fn(),
+      startSession: jest.fn(),
+      pauseSession: jest.fn(),
+      resumeSession: jest.fn(),
+      advanceCycle: jest.fn(),
+      endSession: jest.fn(),
+      ensureNotificationPermission: jest.fn(),
+      onCycleNotificationPress: (listener) => {
+        notificationHandler = listener;
+        return () => {
+          notificationHandler = undefined;
+        };
+      },
+    };
+    const useCases = useCasesFrom(summaryWith(3, 1, 2));
+    const { result, unmount } = await renderHook(() => useHomeViewModel(useCases, focusUseCases));
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
+
+    await act(async () => {
+      result.current[1].handleOpenFocus();
+    });
+    expect(mockNavigate).toHaveBeenCalledWith("/focus-session");
+
+    mockNavigate.mockClear();
+    await act(async () => {
+      notificationHandler?.();
+    });
+    expect(mockNavigate).toHaveBeenCalledWith("/focus-session");
+
+    await unmount();
+    expect(notificationHandler).toBeUndefined();
+  });
+
+  it("recalcula a Home ao retornar do segundo plano via AppState", async () => {
+    let appStateListener: ((state: AppStateStatus) => void) | undefined;
+    jest.spyOn(AppState, "addEventListener").mockImplementation((_, listener) => {
+      appStateListener = listener;
+      return { remove: () => undefined };
+    });
+
+    const useCases = useCasesFrom(summaryWith(1), summaryWith(4));
+    const { result } = await renderHook(() => useHomeViewModel(useCases));
+    await waitFor(() => expect(result.current[0].status).toBe("ready"));
+
+    await act(async () => {
+      appStateListener?.("active");
+    });
+    await waitFor(() => expect(result.current[0].summary?.streak.currentDays).toBe(4));
   });
 });
