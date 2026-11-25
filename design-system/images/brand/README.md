@@ -14,8 +14,10 @@ Arquivos-mestre da identidade visual. Nenhum deles entra no build: o ícone do a
 | `orbity-logo.svg` | Logotipo horizontal: símbolo e nome "Orbity", com as letras em contornos | SVG 984×242 |
 | `orbity-logo-monochrome.svg` | Logotipo com a mesma geometria, todo em `#FFFFFF` | SVG 984×242 |
 | `orbity-logo.png` | Exportação do `orbity-logo.svg`, usada no `README.md` da raiz | PNG 1968×484 com transparência |
+| `orbity-logo-slogan.svg` | Lockup: logotipo com o slogan "Organize seus estudos no seu ritmo" embaixo, tudo em contornos | SVG 1081×355 |
+| `orbity-logo-slogan-monochrome.svg` | Lockup com a mesma geometria, todo em `#FFFFFF` | SVG 1081×355 |
 
-O banner `design-system/images/assets/orbity-design-system.png` (usado no `design-system/README.md`) é gerado a partir do `orbity-logo.svg`. Ao alterar o símbolo ou o logotipo, exporte de novo o `orbity-logo.png` e o banner.
+O banner `design-system/images/assets/orbity-design-system.png` (usado no `design-system/README.md`) é gerado a partir do `orbity-logo.svg`, e o gráfico de destaque da Google Play (`store/google-play/feature-graphic/`), a partir do `orbity-logo-slogan.svg`. Ao alterar o símbolo ou o logotipo, gere de novo os lockups e exporte de novo o `orbity-logo.png`, o banner e o gráfico de destaque.
 
 ## Geometria e restrições
 
@@ -34,6 +36,17 @@ O logotipo junta o símbolo, sem alterações, ao nome "Orbity" à direita. As m
 - **Área de proteção:** deixe livre em volta do logotipo, no mínimo, a altura-x do nome (106 unidades, cerca de 44% da altura do logotipo). Nenhum texto, borda ou imagem entra nessa área.
 - **Tamanho mínimo:** 120 px de largura na tela. Abaixo disso, use só o símbolo.
 - **Fundo:** a versão colorida foi feita para fundos escuros (`#030417` ou o banner). Em fundo claro, use o `orbity-logo-monochrome.svg` recolorido para `#030417`, ou só o símbolo.
+
+## Lockup com slogan
+
+O `orbity-logo-slogan.svg` junta o logotipo, sem alterações, ao slogan "Organize seus estudos no seu ritmo", centralizado embaixo. Ele é usado no gráfico de destaque da Google Play (#197) e serve de base para o splash com logo e slogan do onboarding (F0, #147). As medidas estão nas unidades do logotipo (242 de altura):
+
+- **Letras:** fonte **Outfit SemiBold** (peso 600), versão 1.100, convertida em contornos (`<path>`) por script com o opentype.js. Não há `<text>` nem dependência de fonte instalada. A equipe escolheu a fonte numa comparação com Poppins e Lexend, por ser geométrica e arredondada como o nome.
+- **Tamanho:** a altura-x do slogan é 30% da do nome (31,8 unidades, fonte de cerca de 65,8). O espaçamento entre letras é de 2% do tamanho da fonte, além do kerning da fonte.
+- **Posição:** linha de base do slogan 98 unidades abaixo da caixa do logotipo. O slogan define a largura do lockup (1081), e o logotipo fica centralizado sobre ele.
+- **Cor:** o mesmo degradê vertical do nome (`#FAF9FF` → `#8B5CF6`), aplicado do topo das letras ao fim do "g". Contraste de pelo menos 4,80:1 com `#030417` em todo o slogan, como no nome.
+- **Área de proteção:** dentro do lockup, o espaço entre logotipo e slogan é fixo e faz parte da assinatura. A área de proteção (altura-x do nome, 106 unidades) vale em volta do lockup inteiro.
+- **Uso:** não mude o texto, a fonte nem a distância. Para outro slogan, gere um lockup novo com as mesmas regras.
 
 ## Cores
 
@@ -86,4 +99,10 @@ Todas vêm dos tokens do planeta (`planetColors` em `src/view/theme/tokens.ts`, 
   - o degradê passou a usar só tokens, com contraste de pelo menos 4,5:1.
 - **Autoria:** o desenho vetorial não copia pixels da imagem gerada por IA, mas foi feito com assistência de IA. Se a proteção de direito autoral do letreiro for importante, um membro da equipe deve revisar e ajustar as curvas num editor vetorial (Inkscape ou Figma) e registrar a revisão aqui.
 
-Issues: #194 (símbolo) e #230 (logotipo). Acompanhamento: #198.
+### Lockup com slogan (#197)
+
+- **Decisão:** a equipe achou o slogan anterior do gráfico de destaque, em Roboto Regular e lilás chapado, destoante do nome. Pediu um slogan no estilo do letreiro e vetorizado junto com o gráfico. O texto continua o aprovado. Entre as opções comparadas (Outfit, Poppins e Lexend, nos pesos 500 e 600), MateusARJ escolheu a Outfit SemiBold em 25/11/2026.
+- **Fonte:** [Outfit](https://github.com/Outfitio/Outfit-Fonts), versão 1.100, Copyright 2021 The Outfit Project Authors, licença [SIL Open Font License 1.1](https://openfontlicense.org). A OFL permite usar a fonte e os contornos gerados dela em material comercial, como logotipos e a ficha da loja, sem atribuição visível. Os arquivos da fonte não entram no repositório: só os contornos do slogan.
+- **Como foi feito:** os contornos foram gerados por script com o opentype.js, a partir do pacote `@fontsource/outfit` 5.1.0, e o lockup foi montado com o logotipo sem alteração. Sem IA na geração.
+
+Issues: #194 (símbolo), #230 (logotipo) e #197 (lockup com slogan). Acompanhamento: #198.
