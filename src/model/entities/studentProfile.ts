@@ -9,3 +9,9 @@ export interface StudentProfile {
   readonly achievementsCount: number;
   readonly studyHours: number;
 }
+
+/**
+ * Parte do perfil guardada pelo DataSource: só a identificação do estudante.
+ * As métricas não são guardadas: o caso de uso as calcula a partir dos dados reais do app.
+ */
+export type StudentIdentity = Pick<StudentProfile, "id" | "name">;

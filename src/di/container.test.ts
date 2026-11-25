@@ -132,6 +132,18 @@ describe("container da aplicação", () => {
     });
   });
 
+  it("issue #249: o Perfil mostra a mesma sequência da Tela Inicial depois de concluir uma tarefa", async () => {
+    const isolated = createAppContainer({ dataSources: memoryDataSources(), services: { clock: fixedClock } });
+    const { tasks, home, profile } = isolated.useCases;
+
+    const task = await tasks.createTask({ title: "Revisar Geometria" });
+    await tasks.toggleTaskCompletion(task.id);
+
+    const homeStreak = (await home.loadHome()).streak.currentDays;
+    expect(homeStreak).toBe(1);
+    expect((await profile.getProfile()).streakDays).toBe(homeStreak);
+  });
+
   it("o container e seus registros ficam congelados", () => {
     expect(Object.isFrozen(container)).toBe(true);
     expect(Object.isFrozen(container.dataSources)).toBe(true);

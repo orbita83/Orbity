@@ -5,7 +5,8 @@ import type { StudentProfile } from "@/model/entities/studentProfile";
  */
 export interface IProfileUseCases {
   /**
-   * Consulta o perfil consolidado do estudante.
+   * Consulta o perfil consolidado do estudante: a identificação guardada e as métricas
+   * calculadas na hora (a sequência é a mesma da Tela Inicial).
    */
   getProfile(): Promise<StudentProfile>;
 
