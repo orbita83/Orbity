@@ -32,7 +32,7 @@ Decisões técnicas:
 - **Permissões do GitHub:** somente `contents: read`; o checkout não guarda credenciais (`persist-credentials: false`).
 - **EAS CLI:** a versão local fixada no `package.json` (`npx --no-install eas-cli`), instalada por `npm ci` a partir do lockfile, em Node.js 22 (mesmo do CI).
 - **Assinatura:** `--freeze-credentials` impede que o build crie ou altere credenciais. O build usa o keystore remoto da T0012 e falha se ele não estiver disponível.
-- **Versão:** lida do `app.json` (`appVersionSource: local`, sem `autoIncrement`). O workflow não incrementa nem altera versões.
+- **Versão:** `versionName` (`expo.version`) continua lido manualmente do `app.json` sem alteração pelo workflow. Já o `versionCode` é gerenciado remotamente pelo EAS (`appVersionSource: remote`): builds `production` incrementam automaticamente `+1` (`autoIncrement: true`), enquanto `development` e `preview` reutilizam o `versionCode` remoto atual. Os valores efetivos (`appVersion` e `appBuildVersion`) são registrados no resumo da execução.
 - **Concorrência:** execuções com a mesma referência e o mesmo perfil entram em fila, em vez de rodar em paralelo.
 - **Tempo máximo:** 180 minutos, já que a fila do plano gratuito do EAS pode demorar.
 

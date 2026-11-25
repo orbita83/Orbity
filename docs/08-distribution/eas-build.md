@@ -72,7 +72,19 @@ Esses comandos não foram executados na T0011; a execução e as evidências da 
 
 ## Versionamento
 
-`cli.appVersionSource` está definido como `local`. `app.json` continua sendo a fonte versionada para `expo.version` e `expo.android.versionCode`, conforme [`versionamento-do-app.md`](./versionamento-do-app.md). Não habilite `autoIncrement` nem gerenciamento remoto de versão sem uma decisão aprovada que atualize essa documentação.
+`cli.appVersionSource` está definido como `remote` e o perfil `production` possui `"autoIncrement": true` no [`eas.json`](../../eas.json) ([#247](https://github.com/orbita83/Orbity/issues/247)). Assim:
+
+- **`versionName` (`expo.version` no `app.json` e `version` no `package.json`):** continua manual, atualizado apenas pela equipe no fluxo de release.
+- **`versionCode` (Android):** gerenciado remotamente pelo EAS. Builds `production` incrementam o `versionCode` remoto em `+1` automaticamente; builds `development` e `preview` leem o valor remoto atual sem incrementá-lo.
+
+Para consultar ou ressincronizar o `versionCode` remoto (como proprietário Expo):
+
+```bash
+npx --no-install eas-cli build:version:get --platform android --profile production
+npx --no-install eas-cli build:version:set --platform android --profile production
+```
+
+Veja os detalhes em [`versionamento-do-app.md`](./versionamento-do-app.md).
 
 ## Validação do vínculo
 
