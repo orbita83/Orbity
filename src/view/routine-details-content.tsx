@@ -44,6 +44,7 @@ export const RoutineDetailsScreenContent = ({
   completedCount,
   doneToday,
   confirmDeleteVisible,
+  categories,
   loading,
   errorKey,
   toggleTask,
@@ -112,7 +113,7 @@ export const RoutineDetailsScreenContent = ({
         <View style={styles.summary}>
           <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
           <View style={styles.summaryRow}>
-            <IconTile icon={getRoutineIconSymbol(routine.icon)} />
+            <IconTile icon={getRoutineIconSymbol(routine.icon, categories)} />
             <View style={styles.summaryText}>
               <Text allowFontScaling style={styles.cardTitle}>
                 {routine.title}

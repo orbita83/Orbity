@@ -12,7 +12,7 @@ import { PrimaryButton } from "./components/PrimaryButton";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TaskPickerModal, type TaskPickerModalOption } from "./components/TaskPickerModal";
-import { NO_CATEGORY_SYMBOL, getCategoryLabel, getCategorySymbol } from "./categoryCopy";
+import { NO_CATEGORY_SYMBOL, resolveCategoryDisplay } from "./categoryCopy";
 import { TextField } from "./components/TextField";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicColors, themes } from "./theme/tokens";
@@ -93,6 +93,7 @@ export const NewTaskScreenContent = ({
   dateOptions,
   timeOptions,
   categoryOptions,
+  categories,
   submitting,
   created,
   editing = false,
@@ -105,18 +106,24 @@ export const NewTaskScreenContent = ({
   onFinish,
 }: NewTaskScreenContentProps) => {
   const insets = useSafeAreaInsets();
-  const categoryLabel = fields.category
-    ? getCategoryLabel(fields.category)
+  const selectedCategoryDisplay = fields.category
+    ? resolveCategoryDisplay(fields.category, categories)
+    : null;
+  const categoryLabel = selectedCategoryDisplay
+    ? selectedCategoryDisplay.label
     : TASKS_COPY["form.category.empty"];
-  const categorySymbol = fields.category ? getCategorySymbol(fields.category) : NO_CATEGORY_SYMBOL;
+  const categorySymbol = selectedCategoryDisplay ? selectedCategoryDisplay.symbol : NO_CATEGORY_SYMBOL;
   const categoryPickerOptions: readonly TaskPickerModalOption[] = [
     { id: "none", label: TASKS_COPY["form.category.empty"], value: "", icon: NO_CATEGORY_SYMBOL },
-    ...categoryOptions.map((id) => ({
-      id,
-      label: getCategoryLabel(id),
-      value: id,
-      icon: getCategorySymbol(id),
-    })),
+    ...categoryOptions.map((id) => {
+      const display = resolveCategoryDisplay(id, categories);
+      return {
+        id,
+        label: display.label,
+        value: id,
+        icon: display.symbol,
+      };
+    }),
   ];
 
   const activePickerOptions =
