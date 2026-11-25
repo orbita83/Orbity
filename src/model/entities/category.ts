@@ -71,3 +71,23 @@ export type NormalizedCreateCategoryInput = {
   readonly nameKey: string;
   readonly icon: CategoryIconId;
 };
+
+/**
+ * Cria a lista imutável das seis categorias padrão do domínio (RN-0010), centralizando o fallback
+ * para casos de uso sem DataSource injetado e modos de protótipo/histórias.
+ */
+export function createDefaultCategories(
+  timestamp = "2026-01-01T00:00:00.000Z",
+): readonly Category[] {
+  return Object.freeze(
+    DEFAULT_CATEGORY_IDS.map((id) =>
+      Object.freeze({
+        id,
+        icon: id,
+        isDefault: true,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      }),
+    ),
+  );
+}

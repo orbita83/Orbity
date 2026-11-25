@@ -1,6 +1,7 @@
+import type { Category } from "@/model/entities/category";
 import type { NextActiveDay } from "@/model/entities/routine";
 import type { RoutineIcon } from "../viewmodel/useRoutinesViewModel";
-import { CATEGORY_ICON_SYMBOLS, TASK_CATEGORY_SYMBOLS } from "./categoryCopy";
+import { CATEGORY_ICON_SYMBOLS, TASK_CATEGORY_SYMBOLS, getCategoryLabel, getCategorySymbol } from "./categoryCopy";
 import type { MaterialSymbolName } from "./components/MaterialSymbol";
 
 /**
@@ -163,9 +164,37 @@ export const ROUTINE_ICON_SYMBOLS: Readonly<Record<RoutineIcon, MaterialSymbolNa
   ...TASK_CATEGORY_SYMBOLS,
 };
 
-/** Símbolo do ícone de uma rotina; "general" ou um ícone desconhecido mostram o "Geral" (RN-0009). */
-export function getRoutineIconSymbol(icon: string): MaterialSymbolName {
+/** Símbolo do ícone de uma rotina; "general" ou um ícone desconhecido mostram o "Geral" (RN-0009, issue #213). */
+export function getRoutineIconSymbol(
+  icon: string,
+  categories?: readonly Pick<Category, "id" | "name" | "icon">[],
+): MaterialSymbolName {
+  if (icon === "general") {
+    return ROUTINE_ICON_SYMBOLS.general;
+  }
+  const found = categories?.find((item) => item.id === icon);
+  if (found) {
+    return getCategorySymbol(found.icon);
+  }
   return Object.hasOwn(CATEGORY_ICON_SYMBOLS, icon)
     ? CATEGORY_ICON_SYMBOLS[icon as keyof typeof CATEGORY_ICON_SYMBOLS]
     : ROUTINE_ICON_SYMBOLS.general;
+}
+
+/** Rótulo acessível do ícone de uma rotina no seletor, refletindo categorias criadas ou renomeadas (issue #213). */
+export function getRoutineIconLabel(
+  icon: string,
+  categories?: readonly Pick<Category, "id" | "name" | "icon">[],
+): string {
+  if (icon === "general") {
+    return ROUTINE_ICON_LABELS.general;
+  }
+  const found = categories?.find((item) => item.id === icon);
+  if (found) {
+    if (found.name) {
+      return found.name;
+    }
+    return ROUTINE_ICON_LABELS[found.id] ?? getCategoryLabel(found.id, found.name);
+  }
+  return ROUTINE_ICON_LABELS[icon] ?? getCategoryLabel(icon);
 }

@@ -7,7 +7,7 @@ import { ContextualActionBar, ContextualHeader } from "./components/ContextualAc
 import { FilterChips, type FilterChipOption } from "./components/FilterChips";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
-import { getCategoryLabel, getCategorySymbol } from "./categoryCopy";
+import { resolveCategoryDisplay } from "./categoryCopy";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicBorders, themes } from "./theme/tokens";
 
@@ -41,6 +41,7 @@ export const TasksScreenContent = ({
   selectedIds,
   allSelectedPinned,
   confirmDeleteVisible,
+  categories,
   loading,
   errorKey,
   selectFilter,
@@ -123,7 +124,7 @@ export const TasksScreenContent = ({
               dueDate={task.dueLabel}
               category={
                 task.category
-                  ? { label: getCategoryLabel(task.category), symbol: getCategorySymbol(task.category) }
+                  ? resolveCategoryDisplay(task.category, categories)
                   : undefined
               }
               completed={task.completed}

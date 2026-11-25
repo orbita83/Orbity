@@ -1,6 +1,7 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import { DEFAULT_ROUTINE_ICON, type RoutineIcon, type RoutineTaskDraft } from "@/model/entities/routine";
 import { ValidationError } from "@/model/errors";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
@@ -26,6 +27,8 @@ export type NewRoutineState = {
   loading: boolean;
   /** Confirmação "Descartar alterações?" aberta. */
   discardVisible: boolean;
+  /** Categorias salvas no DataSource para o seletor de ícone da rotina (issue #213). */
+  categories?: readonly Category[];
 };
 
 export type NewRoutineActions = {
@@ -59,7 +62,10 @@ type FormFields = {
 const EMPTY_FIELDS: FormFields = { name: "", icon: DEFAULT_ROUTINE_ICON, description: "", days: [], items: [] };
 const SAVE_FAILED = "Não foi possível salvar a rotina agora. Tente de novo.";
 const LOAD_FAILED = "Não foi possível carregar a rotina agora. Tente de novo.";
+const CATEGORIES_LOAD_FAILED = "Não foi possível carregar as categorias agora.";
 const NOT_FOUND = "Esta rotina não está mais na sua lista.";
+
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
 
 const snapshotOf = (fields: FormFields): string => JSON.stringify(fields);
 
@@ -90,6 +96,7 @@ export const useNewRoutineViewModel = (
   const [created, setCreated] = useState(false);
   const [loading, setLoading] = useState(editing);
   const [discardVisible, setDiscardVisible] = useState(false);
+  const [categories, setCategories] = useState<readonly Category[]>(DEFAULT_FALLBACK_CATEGORIES);
   const mounted = useRef(true);
 
   // A tela fica montada na pilha: outra rotina (ou a criação) recomeça o formulário do zero.
@@ -112,6 +119,31 @@ export const useNewRoutineViewModel = (
       mounted.current = false;
     };
   }, []);
+
+  const loadCategories = useCallback(() => {
+    useCases.listCategories().then(
+      (loaded) => {
+        if (mounted.current) {
+          setCategories(loaded);
+        }
+      },
+      () => {
+        if (mounted.current) {
+          setFormError(CATEGORIES_LOAD_FAILED);
+        }
+      },
+    );
+  }, [useCases]);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCategories();
+    }, [loadCategories]),
+  );
 
   // RF-0009 CA-02: a edição abre com as informações atuais da rotina.
   useEffect(() => {
@@ -266,6 +298,7 @@ export const useNewRoutineViewModel = (
       editing,
       loading,
       discardVisible,
+      categories,
     },
     {
       setName,

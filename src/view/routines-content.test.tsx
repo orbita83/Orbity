@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { PROTOTYPE_INACTIVE_ROUTINE, PROTOTYPE_ROUTINE_DETAILS, PROTOTYPE_ROUTINES } from "@/view/__fixtures__/routines.fixture";
 import { NewRoutineScreenContent, type NewRoutineScreenContentProps } from "@/view/new-routine-content";
@@ -250,6 +251,24 @@ describe("NewRoutineScreenContent", () => {
     const alerts = screen.getAllByRole("alert");
     expect(alerts).toHaveLength(2);
     expect(alerts[1]).toHaveTextContent(ROUTINES_COPY["form.days.error"]);
+  });
+
+  it("issue #213: seletor de ícone usa as categorias salvas no DataSource mantendo Geral como primeira opção", async () => {
+    const categories = [
+      createCategoryFixture({ id: "music", name: "Violão", icon: "star", isDefault: true }),
+      createCategoryFixture({ id: "cat-fis", name: "Física", icon: "rocket", isDefault: false }),
+    ];
+    const props = formProps({ categories });
+    await inSafeArea(<NewRoutineScreenContent {...props} />);
+
+    const radios = screen.getAllByRole("radio");
+    expect(radios).toHaveLength(3);
+    expect(screen.getByRole("radio", { name: "Geral" })).toBeTruthy();
+    expect(screen.getByRole("radio", { name: "Violão" })).toBeTruthy();
+    expect(screen.getByRole("radio", { name: "Física" })).toBeTruthy();
+
+    await fireEvent.press(screen.getByRole("radio", { name: "Física" }));
+    expect(props.setIcon).toHaveBeenCalledWith("cat-fis");
   });
 });
 

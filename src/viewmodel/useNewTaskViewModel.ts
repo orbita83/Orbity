@@ -1,8 +1,9 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
+import { createDefaultCategories, type Category } from "@/model/entities/category";
 import type { LocalDate } from "@/model/entities/localDate";
-import { TASK_CATEGORY_IDS, isTaskCategoryId, type TaskCategoryId } from "@/model/entities/task";
+import { type TaskCategoryId } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
 
@@ -38,8 +39,10 @@ export type NewTaskState = {
   activePicker: NewTaskPickerField | null;
   dateOptions: readonly TaskPickerOption[];
   timeOptions: readonly TaskPickerOption[];
-  /** Ids das categorias do seletor; a view decide rótulo e ícone de cada uma (issue #159). */
+  /** Ids das categorias do seletor; a view decide rótulo e ícone de cada uma (issues #159 e #213). */
   categoryOptions: readonly TaskCategoryId[];
+  /** Categorias completas salvas no DataSource para exibir nome e ícone personalizados (issue #213). */
+  categories?: readonly Category[];
   submitting: boolean;
   created: boolean;
   editing?: boolean;
@@ -66,6 +69,8 @@ const EMPTY_FIELDS: NewTaskFields = {
   endTime: "",
   category: undefined,
 };
+
+const DEFAULT_FALLBACK_CATEGORIES: readonly Category[] = createDefaultCategories();
 
 const WEEKDAYS_PT = ["dom.", "seg.", "ter.", "qua.", "qui.", "sex.", "sáb."] as const;
 const PICKER_DAYS = 14;
@@ -186,6 +191,7 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
   const [formError, setFormError] = useState<string | null>(null);
   const [reminderPermissionNotice, setReminderPermissionNotice] = useState<string | null>(null);
   const [activePicker, setActivePicker] = useState<NewTaskPickerField | null>(null);
+  const [categories, setCategories] = useState<readonly Category[]>(DEFAULT_FALLBACK_CATEGORIES);
   const [submitting, setSubmitting] = useState(false);
   const [created, setCreated] = useState(false);
   const mountedRef = useRef(true);
@@ -207,6 +213,31 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
       mountedRef.current = false;
     };
   }, []);
+
+  const loadCategories = useCallback(() => {
+    useCases.listCategories().then(
+      (loaded) => {
+        if (mountedRef.current) {
+          setCategories(loaded);
+        }
+      },
+      () => {
+        if (mountedRef.current) {
+          setFormError("Não foi possível carregar as categorias agora.");
+        }
+      },
+    );
+  }, [useCases]);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCategories();
+    }, [loadCategories]),
+  );
 
   useEffect(() => {
     if (!normalizedTaskId) {
@@ -257,12 +288,17 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
     setFormError(null);
   }, []);
 
-  const selectCategory = useCallback((value?: string) => {
-    const category = value && isTaskCategoryId(value) ? value : undefined;
-    setFields((current) => ({ ...current, category }));
-    setActivePicker(null);
-    setFormError(null);
-  }, []);
+  const selectCategory = useCallback(
+    (value?: string) => {
+      const trimmed = value?.trim();
+      const allowed = Boolean(trimmed) && categories.some((item) => item.id === trimmed);
+      const category = allowed ? trimmed : undefined;
+      setFields((current) => ({ ...current, category }));
+      setActivePicker(null);
+      setFormError(null);
+    },
+    [categories],
+  );
 
   const openPicker = useCallback((picker: NewTaskPickerField) => {
     setActivePicker(picker);
@@ -345,6 +381,8 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
     router.navigate("/tasks");
   }, [reset]);
 
+  const categoryOptions = useMemo(() => categories.map((item) => item.id), [categories]);
+
   return [
     {
       fields,
@@ -354,7 +392,8 @@ export const useNewTaskViewModel = (taskUseCases?: ITaskUseCases): [NewTaskState
       activePicker,
       dateOptions,
       timeOptions: TIME_PICKER_OPTIONS,
-      categoryOptions: TASK_CATEGORY_IDS,
+      categoryOptions,
+      categories,
       submitting,
       created,
       editing,

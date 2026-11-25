@@ -1,7 +1,9 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
+import { createCategoryFixture } from "@/model/__fixtures__/category.fixture";
 import { LocalDate } from "@/model/entities/localDate";
 import { DataSourceError } from "@/model/errors";
 import type { IClockService } from "@/model/services/iClockService";
@@ -189,10 +191,47 @@ describe("useRoutinesViewModel (caso de uso)", () => {
   });
 
   it("falha ao carregar vira aviso, sem quebrar a tela", async () => {
-    const failing = { listRoutines: () => Promise.reject(new DataSourceError()) } as unknown as IRoutineUseCases;
+    const failing = {
+      listRoutines: () => Promise.reject(new DataSourceError()),
+      listCategories: () => Promise.resolve([]),
+    } as unknown as IRoutineUseCases;
     const { result } = await renderHook(() => useRoutinesViewModel(failing));
     await waitFor(() => expect(result.current[0].errorKey).toBe("error.load"));
     expect(result.current[0].loading).toBe(false);
+
+    const failingCategories = {
+      listRoutines: () => Promise.resolve([]),
+      listCategories: () => Promise.reject(new DataSourceError()),
+    } as unknown as IRoutineUseCases;
+    const { result: catResult } = await renderHook(() => useRoutinesViewModel(failingCategories));
+    await waitFor(() => expect(catResult.current[0].errorKey).toBe("error.load"));
+  });
+
+  it("issue #213: carrega as categorias do DataSource e atualiza ao ganhar foco", async () => {
+    const tasks = new MemoryTaskDataSource();
+    const routines = new MemoryRoutineDataSource(tasks);
+    const categories = new MemoryCategoryDataSource(tasks, routines);
+    const { clock } = createClock();
+    const useCases = new RoutineUseCases(
+      routines,
+      tasks,
+      new MemoryDailyActivityDataSource(),
+      clock,
+      () => "r-1",
+      undefined,
+      undefined,
+      categories,
+    );
+
+    const { result } = await renderHook(() => useRoutinesViewModel(useCases));
+    await waitFor(() => expect(result.current[0].loading).toBe(false));
+    expect(result.current[0].categories).toHaveLength(6);
+
+    await categories.create(createCategoryFixture({ id: "cat-fis", name: "Física", icon: "rocket" }), "fisica");
+    await act(async () => {
+      focusScreen();
+    });
+    await waitFor(() => expect(result.current[0].categories?.some((cat) => cat.id === "cat-fis")).toBe(true));
   });
 });
 
