@@ -54,7 +54,7 @@ O estudante não consegue criar, renomear nem remover categorias, o que limita a
 
 ### 1. Domínio (`src/model/`)
 
-- `entities/category.ts`: `Category { id, name?, icon, isDefault, createdAt, updatedAt }`, `DEFAULT_CATEGORY_IDS`, `CATEGORY_ICON_IDS`, `CATEGORY_NAME_MAX_LENGTH = 24`, `CreateCategoryInput`, `RenameCategoryInput`, `ChangeCategoryIconInput`.
+- `entities/category.ts`: `Category { id, name?, icon, isDefault, createdAt, updatedAt }`, `DEFAULT_CATEGORY_IDS`, `createDefaultCategories`, `CATEGORY_ICON_IDS`, `CATEGORY_NAME_MAX_LENGTH = 24`, `CreateCategoryInput`, `RenameCategoryInput`, `ChangeCategoryIconInput`.
 - `entities/task.ts` e `entities/routine.ts`: `category` e `icon` passam a ser ids abertos (`CategoryId = string`); `TASK_CATEGORY_IDS` fica como alias de `DEFAULT_CATEGORY_IDS`.
 - `datasources/iCategoryDataSource.ts`: `listAll`, `findById`, `findByNameKey`, `create`, `update` e `delete(id, changedAt)` (atômico, limpa as referências).
 
@@ -77,7 +77,7 @@ O estudante não consegue criar, renomear nem remover categorias, o que limita a
 ### 5. Apresentação (`src/viewmodel/` e `src/view/`)
 
 - `categoryCopy.ts` e `routinesCopy.ts`: funções de leitura com fallback ("Sem categoria" e `general`), mapa `CATEGORY_ICON_SYMBOLS`, rótulos acessíveis dos 14 ícones (`CATEGORY_ICON_LABELS`), textos da tela **Categorias** (`CATEGORIES_COPY`) e resolução de exibição a partir das categorias salvas no DataSource (`resolveCategoryDisplay`, `getRoutineIconSymbol` e `getRoutineIconLabel`).
-- `ITaskUseCases` e `IRoutineUseCases`: expõem `listCategories?(): Promise<Category[]>` delegando ao `ICategoryDataSource` já injetado em `TaskUseCases` e `RoutineUseCases`, preservando o isolamento das ViewModels de Tarefas e Rotinas (#158).
+- `ITaskUseCases` e `IRoutineUseCases`: expõem `listCategories(): Promise<Category[]>` delegando ao `ICategoryDataSource` já injetado em `TaskUseCases` e `RoutineUseCases` (com fallback centralizado em `createDefaultCategories`), preservando o isolamento das ViewModels de Tarefas e Rotinas (#158).
 - `useCategoriesViewModel.ts` e `categories-content.tsx` (#213): substituem o `ProfilePlaceholderScreen` em `src/view/categories.tsx` pela tela completa de gerenciamento de categorias (listagem, estados de carregando/vazio/erro, modal de criação/edição com `TextField` até 24 caracteres e grade `radiogroup` de 14 ícones, e exclusão protegida por `ConfirmDialog` no padrão da #151).
 - `useNewTaskViewModel.ts`, `useTasksViewModel.ts`, `useNewRoutineViewModel.ts`, `useRoutinesViewModel.ts` e `useRoutineDetailsViewModel.ts` (#213): carregam as categorias persistidas na montagem e ao ganhar foco (`useFocusEffect`), refletindo criações, renomeações, trocas de ícone e exclusões imediatamente entre as abas sem reiniciar o aplicativo.
 
