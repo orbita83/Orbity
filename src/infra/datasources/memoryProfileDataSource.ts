@@ -1,7 +1,18 @@
-import { mockStudentProfile } from "@/model/__fixtures__/studentProfile.fixture";
 import type { StudentProfile } from "@/model/entities/studentProfile";
 import { DataSourceError } from "@/model/errors";
 import type { IProfileDataSource } from "@/model/datasources/iProfileDataSource";
+
+/**
+ * Perfil de quem ainda não informou o nome: nome vazio e métricas zeradas, sem valores fictícios.
+ * Cabe à View decidir como apresentar o nome vazio.
+ */
+export const initialStudentProfile: Readonly<StudentProfile> = Object.freeze({
+  id: "local-student",
+  name: "",
+  streakDays: 0,
+  achievementsCount: 0,
+  studyHours: 0,
+});
 
 /**
  * Adapter concreto em memória para o DataSource de perfil do estudante.
@@ -10,10 +21,8 @@ import type { IProfileDataSource } from "@/model/datasources/iProfileDataSource"
 export class MemoryProfileDataSource implements IProfileDataSource {
   private currentProfile: StudentProfile;
 
-  constructor(initialProfile?: StudentProfile) {
-    this.currentProfile = initialProfile
-      ? { ...initialProfile }
-      : { ...mockStudentProfile };
+  constructor(initialProfile: StudentProfile = initialStudentProfile) {
+    this.currentProfile = { ...initialProfile };
   }
 
   async getProfile(): Promise<StudentProfile> {

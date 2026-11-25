@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { ProfileHeaderCard } from "./ProfileHeaderCard";
+import { EMPTY_NAME_PROMPT, ProfileHeaderCard } from "./ProfileHeaderCard";
 
 describe("ProfileHeaderCard", () => {
   it("deve renderizar o nome do estudante e sua inicial no avatar", async () => {
@@ -11,6 +11,17 @@ describe("ProfileHeaderCard", () => {
     expect(screen.getByText("Alex Silva")).toBeTruthy();
     expect(screen.getByText("A", { includeHiddenElements: true })).toBeTruthy();
     expect(screen.getByText("Estudante")).toBeTruthy();
+  });
+
+  it("deve convidar o estudante a informar o nome quando ele ainda estiver vazio", async () => {
+    // Act
+    await render(<ProfileHeaderCard name="   " />);
+
+    // Assert
+    expect(screen.getByText(EMPTY_NAME_PROMPT)).toBeTruthy();
+    expect(screen.queryByText("?", { includeHiddenElements: true })).toBeNull();
+    expect(screen.getByText("Estudante")).toBeTruthy();
+    expect(screen.getByLabelText("Editar nome do perfil")).toBeTruthy();
   });
 
   it("deve renderizar o estado de esqueleto quando loading for true", async () => {

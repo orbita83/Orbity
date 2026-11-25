@@ -10,7 +10,13 @@ export type ProfileHeaderCardProps = {
   readonly theme?: OrbityTheme;
 };
 
-/** Cartão de identificação do Perfil (protótipo, tela 5): avatar com a inicial, nome, papel e editar. */
+/** Texto exibido no lugar do nome enquanto o estudante ainda não o informou. */
+export const EMPTY_NAME_PROMPT = "Como podemos te chamar?";
+
+/**
+ * Cartão de identificação do Perfil (protótipo, tela 5): avatar com a inicial, nome, papel e editar.
+ * Sem nome, o avatar mostra o glifo de pessoa e a linha do nome convida o estudante a informá-lo.
+ */
 export const ProfileHeaderCard = ({
   name = "",
   loading = false,
@@ -18,7 +24,8 @@ export const ProfileHeaderCard = ({
   theme = themes.cosmic,
 }: ProfileHeaderCardProps) => {
   const styles = createStyles(theme);
-  const initialLetter = name.trim().charAt(0).toUpperCase() || "?";
+  const initialLetter = name.trim().charAt(0).toUpperCase();
+  const hasName = initialLetter !== "";
 
   if (loading) {
     return (
@@ -43,14 +50,24 @@ export const ProfileHeaderCard = ({
       <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
       <View style={styles.avatar} accessible={false} importantForAccessibility="no-hide-descendants">
         <GradientSurface from={cosmicColors.actionHover} to={cosmicColors.action} />
-        <Text allowFontScaling={false} style={styles.initial}>
-          {initialLetter}
-        </Text>
+        {hasName ? (
+          <Text allowFontScaling={false} style={styles.initial}>
+            {initialLetter}
+          </Text>
+        ) : (
+          <MaterialSymbol name="person" filled color={theme.color["on-surface"]} size={theme.navbar.iconSize} />
+        )}
       </View>
       <View style={styles.texts}>
-        <Text allowFontScaling numberOfLines={1} style={styles.name}>
-          {name}
-        </Text>
+        {hasName ? (
+          <Text allowFontScaling numberOfLines={1} style={styles.name}>
+            {name}
+          </Text>
+        ) : (
+          <Text allowFontScaling numberOfLines={2} style={styles.namePrompt}>
+            {EMPTY_NAME_PROMPT}
+          </Text>
+        )}
         <Text allowFontScaling style={styles.role}>
           Estudante
         </Text>
@@ -92,6 +109,7 @@ const createStyles = (theme: OrbityTheme) =>
     initial: { ...theme.font.title, color: theme.color["on-surface"] },
     texts: { flex: 1, minWidth: 0 },
     name: { ...theme.font.title, color: theme.color["on-surface"] },
+    namePrompt: { ...theme.font.title, color: theme.color["on-surface-variant"] },
     role: { ...theme.font.body, color: theme.color["on-surface-variant"] },
     editButton: {
       width: theme.target.minSize,

@@ -61,6 +61,13 @@ export const Carregando: Story = {
   },
 };
 
+export const SemNome: Story = {
+  name: "Sem nome (primeiro uso)",
+  args: {
+    name: "",
+  },
+};
+
 export const NomeLongo: Story = {
   args: {
     name: "Alexandre Henrique de Alencar Mendonça dos Santos",

@@ -120,6 +120,18 @@ describe("container da aplicação", () => {
     expect((await categories.listCategories()).map((category) => category.id)).not.toContain(physics.id);
   });
 
+  it("issue #188: sem dados, o perfil do app começa sem nome e com as métricas zeradas", async () => {
+    const isolated = createAppContainer({ dataSources: memoryDataSources(), services: { clock: fixedClock } });
+
+    expect(await isolated.useCases.profile.getProfile()).toEqual({
+      id: "local-student",
+      name: "",
+      streakDays: 0,
+      achievementsCount: 0,
+      studyHours: 0,
+    });
+  });
+
   it("o container e seus registros ficam congelados", () => {
     expect(Object.isFrozen(container)).toBe(true);
     expect(Object.isFrozen(container.dataSources)).toBe(true);
