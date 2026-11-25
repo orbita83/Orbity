@@ -4,7 +4,7 @@
 
 ## 1. Status e escopo
 
-**Status:** Aprovado em 07/11/2026 — decisões registradas na [Seção 10](#10-registro-de-decisões).
+**Status:** decisões históricas aprovadas em 07/11/2026; atualização de titularidade e aprovação de releases/submissões confirmada pelo operador em 24/11/2026, aguardando revisão do PR. Histórico na [Seção 10](#10-registro-de-decisões).
 
 Este documento é a referência central das decisões de identidade de distribuição e de propriedade administrativa do Orbity. Ele **registra decisões**; não altera configurações do aplicativo nem cria, paga, verifica ou transfere contas de serviços externos.
 
@@ -132,7 +132,7 @@ A documentação oficial da Expo prevê a conversão de uma conta pessoal em org
 
 Os requisitos de cadastro, taxa de registro, verificação, elegibilidade e acesso à produção **devem ser confirmados na [Ajuda oficial do Google Play Console](https://support.google.com/googleplay/android-developer/) na data da decisão**. Nenhum desses requisitos está considerado cumprido por este documento. A auditoria completa é responsabilidade da T0013.
 
-**Aprovado em 07/11/2026:** a publicação será feita por uma **conta pessoal** do Google Play Console, com titularidade de [@MateusARJ](https://github.com/MateusARJ), que também é responsável pela aprovação de releases e submissões ([Seção 7](#7-responsabilidades-e-governança)).
+**Decisão histórica aprovada em 07/11/2026 (substituição proposta na Seção 5.4):** a publicação seria feita por uma **conta pessoal** do Google Play Console, com titularidade de [@MateusARJ](https://github.com/MateusARJ), que também era responsável pela aprovação de releases e submissões ([Seção 7](#7-responsabilidades-e-governança)).
 
 A aprovação define o tipo de conta e o titular. Ela **não** confirma que a conta foi criada nem que os requisitos de cadastro e verificação foram cumpridos ([Seção 5.3](#53-pendências)).
 
@@ -146,10 +146,19 @@ O titular deve convidar os demais responsáveis pelo mecanismo oficial de usuár
 ### 5.3. Pendências
 
 - [x] Definir o tipo de conta: pessoal (07/11/2026).
-- [x] Definir o titular da conta: @MateusARJ (07/11/2026).
+- [x] Titular atual informado pelo operador: @Cassiosampaio2016 (24/11/2026); atualização documental sujeita à revisão do PR, conforme Seção 5.4.
 - [ ] Confirmar requisitos vigentes de cadastro, verificação e acesso à produção para contas pessoais (T0013).
 - [ ] Confirmar a viabilidade administrativa e financeira da conta escolhida.
 - [ ] Definir os integrantes convidados e suas permissões.
+
+### 5.4. Reconciliação de titularidade — issue #177
+
+Em 24/11/2026, o operador @Cassiosampaio2016 confirmou diretamente que é o titular atual da conta pessoal Google Play utilizada para o Orbity e que assumiu também a responsabilidade pela aprovação de releases e envios à loja, antes atribuídas a @MateusARJ. A [#177](https://github.com/orbita83/Orbity/issues/177) já registra a titularidade informada e a identidade verificada conforme relato do titular.
+
+**Atualização para revisão:** as Seções 6 e 7 refletem as duas atribuições confirmadas pelo operador. As decisões de 07/11/2026 são preservadas na Seção 10 como histórico, com novas linhas de status `Proposto` até a aprovação do PR conforme CONTRIBUTING.md. A atribuição de aprovação de releases/submissões foi confirmada expressamente; não foi inferida da titularidade da conta. Isso não dispensa as aprovações formais dos revisores exigidas pelo fluxo de release.
+
+O registro confirma a informação administrativa prestada pelo operador; não comprova transferência de conta ou aplicativo, verificação de dispositivo nem acesso à produção.
+Atualização de 25/11/2026: a imagem apresentada em 24/11/2026 mostra notificação de identidade verificada em 19 de novembro; o titular confirmou diretamente a conclusão da verificação de dispositivo em 25/11/2026, sem apresentar imagem desse resultado. Data de criação da conta, permissões e acesso à produção continuam pendentes de confirmação. O acompanhamento está no [registro de preparação](./preparacao-google-play-console.md); nenhuma credencial ou documento pessoal deve ser anexado.
 
 ## 6. Limites entre GitHub, Expo/EAS e Google Play Console
 
@@ -157,7 +166,7 @@ O titular deve convidar os demais responsáveis pelo mecanismo oficial de usuár
 | ------- | -------------- | --------------- |
 | GitHub (`orbita83/Orbity`) | Código-fonte, documentação, Issues, Pull Requests e CI. | Administradores da organização `orbita83` |
 | Expo/EAS | Projeto Expo, builds na nuvem e credenciais de assinatura gerenciadas pelo EAS. | Conta individual de @MailsonSousa88 ([Seção 4](#4-propriedade-do-projeto-expoeas)) |
-| Google Play Console | Cadastro do aplicativo, versões publicadas, faixas de teste, ficha da loja e políticas. | Conta pessoal de @MateusARJ ([Seção 5](#5-propriedade-da-publicação-na-google-play)) |
+| Google Play Console | Cadastro do aplicativo, versões publicadas, faixas de teste, ficha da loja e políticas. | Conta pessoal de @Cassiosampaio2016, conforme confirmação do operador; atualização em revisão ([Seção 5](#5-propriedade-da-publicação-na-google-play)) |
 
 Administrar o repositório GitHub **não** confere, automaticamente, propriedade ou acesso às contas Expo/EAS ou Google Play Console. Cada serviço possui titularidade e controle de acesso independentes, que devem ser definidos e registrados separadamente.
 
@@ -165,11 +174,11 @@ Administrar o repositório GitHub **não** confere, automaticamente, propriedade
 
 | Papel | Atribuições | Responsável |
 | ----- | ----------- | ----------- |
-| Titular da conta Google Play | Responsabilidade legal pela conta; convites e permissões no Google Play Console. | @MateusARJ |
+| Titular da conta Google Play | Responsabilidade legal pela conta; convites e permissões no Google Play Console. | @Cassiosampaio2016 (confirmado pelo operador; em revisão) |
 | Proprietário Expo/EAS | Administração da conta e do projeto Expo; avaliação dos gatilhos de migração da [Seção 4.4](#44-gatilhos-de-migração-para-organização). | @MailsonSousa88 |
 | Responsável técnico pelos builds | Configuração e manutenção dos perfis de build Android. | @MailsonSousa88 |
 | Responsável pelas credenciais de assinatura | Guarda, backup e recuperação das credenciais de assinatura, sem documentar seus valores. | @MailsonSousa88 |
-| Aprovação de releases e submissões | Aprovação das versões enviadas à Google Play. | @MateusARJ |
+| Aprovação de releases e submissões | Aprovação das versões enviadas à Google Play. | @Cassiosampaio2016 (confirmado pelo operador; em revisão) |
 
 **Alteração destas definições:** qualquer mudança de proprietário, responsável ou identificador deve ser proposta por Pull Request que atualize este documento, aprovada conforme o fluxo de revisão do [`CONTRIBUTING.md`](../../CONTRIBUTING.md) e registrada na [Seção 10](#10-registro-de-decisões).
 
@@ -203,7 +212,7 @@ Para reduzir o risco de perda de acesso, cada serviço deve manter ao menos dois
 
 ### 9.1. Concentração de responsabilidades
 
-Com as decisões de 07/11/2026, cada serviço externo depende de um único integrante: a conta Expo/EAS depende de @MailsonSousa88, e a conta Google Play Console depende de @MateusARJ. Para mitigar esse risco:
+Com as decisões de 07/11/2026, cada serviço externo depende de um único integrante: a conta Expo/EAS depende de @MailsonSousa88, e a conta Google Play Console depende de @MateusARJ. A atualização confirmada em 24/11/2026 atribui a dependência da conta Google Play a @Cassiosampaio2016 (Seção 5.4). Para mitigar esse risco:
 
 - Os dois responsáveis devem manter a verificação em duas etapas e meios de recuperação atualizados nas próprias contas, sem registrá-los no repositório.
 - A saída ou indisponibilidade prolongada de um deles dispara o procedimento acima e, no caso da Expo, os gatilhos de migração da [Seção 4.4](#44-gatilhos-de-migração-para-organização).
@@ -227,6 +236,13 @@ As decisões abaixo foram informadas pela equipe em 07/11/2026 e formalizadas pe
 | Controle de acesso | Procedimento da [Seção 8.1](#81-solicitação-e-revogação-de-acesso) | Aprovado | Equipe Orbity | 07/11/2026 |
 | Continuidade | Procedimento da [Seção 9](#9-continuidade-e-recuperação-administrativa) | Aprovado | Equipe Orbity | 07/11/2026 |
 | Aprovação | Revisão do Pull Request que registrou estas decisões | Aprovado | Equipe Orbity | 07/11/2026 |
+
+Atualização confirmada pelo operador em 24/11/2026, a formalizar pela revisão deste PR; as linhas históricas acima não são apagadas:
+
+| Decisão | Valor | Status | Responsável | Data |
+| ------- | ----- | ------ | ----------- | ---- |
+| Proprietário Google Play atual | Conta pessoal, titular @Cassiosampaio2016; substitui a atribuição histórica a @MateusARJ | Proposto | @Cassiosampaio2016 | 24/11/2026 |
+| Administração de publicação atual | Aprovação de releases e submissões por @Cassiosampaio2016, confirmada separadamente pelo operador | Proposto | @Cassiosampaio2016 | 24/11/2026 |
 
 ## 11. Pendências para desbloquear as próximas tarefas
 
