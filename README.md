@@ -110,7 +110,7 @@ Cabeçalho do estudante com nome editável, cards de métricas e atalhos para Co
 | **Plataforma e rotas** | Expo SDK · Expo Router | `~57.0.30` · `~57.0.28` |
 | **Linguagem** | TypeScript (`"strict": true`) | `~6.0.3` |
 | **Animações e gestos** | Reanimated · Gesture Handler · SVG | `4.5.1` · `~2.32.0` · `15.15.4` |
-| **Persistência local** | `expo-sqlite` (Android) · `node:sqlite` (testes, embutido no Node.js) | `57.0.5` · Node.js 22.15+ |
+| **Persistência local** | `expo-sqlite` (Android) · `node:sqlite` (testes, embutido no Node.js) | `57.0.7` · Node.js 22.15+ |
 | **Catálogo de componentes** | Storybook (`react-native-web-vite`) · Vite | `10.6.2` · `6.4.4` |
 | **Testes** | Jest · `jest-expo` · Testing Library | `~29.7.0` · `~57.0.6` · `^14.1.0` |
 | **Qualidade** | ESLint · Husky · lint-staged · Commitlint | `^9` · `^9.1.7` · `^16.4.0` · `^21.2.3` |

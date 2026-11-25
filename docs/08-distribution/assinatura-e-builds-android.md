@@ -146,6 +146,17 @@ O Android exibe essa mensagem genérica por vários motivos. Para obter o códig
 
 Downloads interrompidos e bloqueios do Play Protect ou de camadas do fabricante (ex.: MIUI/HyperOS) também geram a mensagem.
 
+### 6.5. App abre, mas não carrega os dados
+
+Se o app abre, mas a tela inicial mostra "Não conseguimos carregar seus dados agora." e o `adb logcat` registra `dlopen failed: library "libexpo-sqlite.so" not found`, o APK foi gerado sem a biblioteca nativa do `expo-sqlite` para a arquitetura do aparelho.
+
+O `expo-sqlite` entra no build como uma biblioteca nativa pré-compilada (`node_modules/expo-sqlite/local-maven-repo/`). A versão 57.0.5 publicou essa biblioteca só para `arm64-v8a`, o que deixava sem banco os emuladores x86_64 e os aparelhos 32 bits (`armeabi-v7a`) ([#231](https://github.com/orbita83/Orbity/issues/231)). A partir da 57.0.7, ela traz as quatro arquiteturas. Para conferir:
+
+- a biblioteca instalada: `unzip -l node_modules/expo-sqlite/local-maven-repo/host/exp/exponent/expo.modules.sqlite/<versão>/*.aar | grep libexpo-sqlite` deve listar `arm64-v8a`, `armeabi-v7a`, `x86` e `x86_64`;
+- o APK gerado: `unzip -l caminho/do/arquivo.apk | grep libexpo-sqlite` deve listar `lib/<arquitetura>/libexpo-sqlite.so` para cada arquitetura do build.
+
+Ao atualizar o `expo-sqlite`, repita a primeira verificação antes de gerar um build para a loja.
+
 ## 7. APK × AAB
 
 | | APK | AAB |
