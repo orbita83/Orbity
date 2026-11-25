@@ -1,3 +1,4 @@
+import type { FocusTarget } from "@/model/entities/focusSession";
 import type { LocalDate } from "@/model/entities/localDate";
 import { isRoutineActiveOn } from "@/model/entities/routine";
 import { isStandaloneTask } from "@/model/entities/task";
@@ -37,5 +38,35 @@ export class TaskActivityDataSource implements IActivityDataSource {
       return true;
     }
     return (await this.routineDataSource.listActive()).length > 0;
+  }
+
+  /** Lista tarefas avulsas (pendentes primeiro) e rotinas ativas disponíveis para vinculação (RN-0001). */
+  async listFocusTargets(): Promise<FocusTarget[]> {
+    const [tasks, routines] = await Promise.all([
+      this.taskDataSource.listAll(),
+      this.routineDataSource.listActive(),
+    ]);
+    const standalone = tasks
+      .filter(isStandaloneTask)
+      .sort((a, b) => Number(a.completed) - Number(b.completed));
+
+    return [
+      ...standalone.map(
+        (task): FocusTarget =>
+          Object.freeze({
+            kind: "standalone-task",
+            id: task.id,
+            title: task.title,
+          }),
+      ),
+      ...routines.map(
+        (routine): FocusTarget =>
+          Object.freeze({
+            kind: "routine",
+            id: routine.id,
+            title: routine.title,
+          }),
+      ),
+    ];
   }
 }

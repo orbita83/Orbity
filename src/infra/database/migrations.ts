@@ -157,4 +157,36 @@ FROM daily_activity`,
       },
     ],
   },
+  {
+    // Issue #217: sessões do Modo Foco com cronômetro pomodoro persistido (RF-0019, RN-0001).
+    version: 7,
+    statements: [
+      {
+        sql: `CREATE TABLE focus_sessions (
+  id                     TEXT PRIMARY KEY,
+  target_kind            TEXT NOT NULL CHECK (target_kind IN ('standalone-task', 'routine')),
+  target_id              TEXT NOT NULL,
+  target_title           TEXT NOT NULL,
+  focus_duration_minutes INTEGER NOT NULL CHECK (focus_duration_minutes IN (5, 10, 15, 20, 25, 30)),
+  phase                  TEXT NOT NULL CHECK (phase IN ('focus', 'short-break', 'long-break')),
+  status                 TEXT NOT NULL CHECK (status IN ('running', 'paused', 'ended')),
+  completed_focus_cycles INTEGER NOT NULL DEFAULT 0,
+  cycle_duration_ms      INTEGER NOT NULL,
+  cycle_started_at       TEXT NOT NULL,
+  cycle_ends_at          TEXT,
+  paused_remaining_ms    INTEGER,
+  accumulated_focus_ms   INTEGER NOT NULL DEFAULT 0,
+  started_at             TEXT NOT NULL,
+  ended_at               TEXT,
+  updated_at             TEXT NOT NULL
+)`,
+      },
+      {
+        sql: `CREATE INDEX idx_focus_sessions_status ON focus_sessions (status, updated_at DESC)`,
+      },
+      {
+        sql: `CREATE INDEX idx_focus_sessions_ended ON focus_sessions (ended_at DESC)`,
+      },
+    ],
+  },
 ];

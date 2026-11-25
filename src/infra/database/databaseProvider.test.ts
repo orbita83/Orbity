@@ -22,16 +22,18 @@ describe("DatabaseProvider", () => {
     executor.close();
   });
 
-  it("aplica todas as migrações num banco novo e grava user_version = 6", async () => {
+  it("aplica todas as migrações num banco novo e grava user_version = 7", async () => {
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(6);
+    expect(userVersion(executor)).toBe(7);
     expect(tableExists(executor, "daily_activity")).toBe(true);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(tableExists(executor, "routines")).toBe(true);
     expect(tableExists(executor, "routine_occurrences")).toBe(true);
     expect(tableExists(executor, "routine_task_checks")).toBe(true);
     expect(tableExists(executor, "stars")).toBe(true);
+    expect(tableExists(executor, "categories")).toBe(true);
+    expect(tableExists(executor, "focus_sessions")).toBe(true);
   });
 
   it("rotinas.md: atualiza um banco na v2 para a v3 e as tarefas existentes continuam avulsas", async () => {
@@ -45,7 +47,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(6);
+    expect(userVersion(executor)).toBe(7);
     expect(executor.database.prepare("SELECT id, completed, routine_id, position FROM tasks").all()).toEqual([
       { id: "t1", completed: 1, routine_id: null, position: null },
     ]);
@@ -66,7 +68,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(6);
+    expect(userVersion(executor)).toBe(7);
     expect(executor.database.prepare("SELECT category FROM tasks ORDER BY id").all().map((row) => (row as { category: string | null }).category)).toEqual(
       ["mathematics", "reading", "languages", "science", "programming", "music", null, "outra"],
     );
@@ -88,7 +90,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(6);
+    expect(userVersion(executor)).toBe(7);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(executor.database.prepare("SELECT local_date FROM daily_activity").all()).toEqual([
       { local_date: "2026-11-14" },
@@ -121,7 +123,7 @@ describe("DatabaseProvider", () => {
     );
   });
 
-  it("issue #212: a v6 de um banco da 0.1.0 (v4 e v5) mantém a categoria das tarefas e o ícone das rotinas", async () => {
+  it("issue #212 e #217: atualiza da v5 para a v7 mantendo tarefas, rotinas e categorias e criando focus_sessions", async () => {
     await new DatabaseProvider(async () => executor, MIGRATIONS.filter((migration) => migration.version <= 5)).get();
     executor.database.exec(`
       INSERT INTO tasks (id, title, category, completed, pinned, created_at, updated_at) VALUES
@@ -134,7 +136,8 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(6);
+    expect(userVersion(executor)).toBe(7);
+    expect(tableExists(executor, "focus_sessions")).toBe(true);
     expect(executor.database.prepare("SELECT id, category FROM tasks ORDER BY id").all()).toEqual([
       { id: "t-1", category: "programming" },
       { id: "t-2", category: null },

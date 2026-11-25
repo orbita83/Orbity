@@ -76,4 +76,19 @@ describe("TaskActivityDataSource", () => {
     await routineDataSource.markDeleted("routine-1", "2026-11-16T08:00:00-03:00");
     expect(await activities.hasFocusTargets()).toBe(false);
   });
+
+  it("issue #217: listFocusTargets lista tarefas avulsas (pendentes primeiro) e rotinas ativas, ignorando tarefas de rotina", async () => {
+    const { activities, routineDataSource } = activitiesWith([
+      createTaskFixture({ id: "t-done", title: "Concluída", completed: true }),
+      createTaskFixture({ id: "t-open", title: "Pendente", completed: false }),
+      createTaskFixture({ id: "r-sub", title: "Subtarefa", routineId: "routine-1", position: 0 }),
+    ]);
+    await routineDataSource.create(createRoutineFixture({ id: "routine-1", title: "Matemática" }), []);
+
+    expect(await activities.listFocusTargets()).toEqual([
+      { kind: "standalone-task", id: "t-open", title: "Pendente" },
+      { kind: "standalone-task", id: "t-done", title: "Concluída" },
+      { kind: "routine", id: "routine-1", title: "Matemática" },
+    ]);
+  });
 });
