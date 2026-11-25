@@ -1,8 +1,7 @@
-import { createStudentProfileFixture } from "@/model/__fixtures__/studentProfile.fixture";
-import { initialStudentProfile, MemoryProfileDataSource } from "./memoryProfileDataSource";
+import { initialStudentIdentity, MemoryProfileDataSource } from "./memoryProfileDataSource";
 
 describe("MemoryProfileDataSource", () => {
-  it("deve começar sem nome e com as métricas zeradas quando nenhum perfil inicial for passado", async () => {
+  it("deve começar sem nome quando nenhuma identificação inicial for passada", async () => {
     // Arrange
     const dataSource = new MemoryProfileDataSource();
 
@@ -10,47 +9,44 @@ describe("MemoryProfileDataSource", () => {
     const profile = await dataSource.getProfile();
 
     // Assert
-    expect(profile).toEqual(initialStudentProfile);
-    expect(profile).toEqual({
-      id: "local-student",
-      name: "",
-      streakDays: 0,
-      achievementsCount: 0,
-      studyHours: 0,
-    });
+    expect(profile).toEqual(initialStudentIdentity);
+    expect(profile).toEqual({ id: "local-student", name: "" });
   });
 
-  it("deve carregar o perfil inicial customizado fornecido no construtor", async () => {
+  it("deve carregar a identificação inicial fornecida no construtor", async () => {
     // Arrange
-    const customInitial = createStudentProfileFixture({
-      id: "student-custom",
-      name: "Camila Santos",
-      streakDays: 3,
-      achievementsCount: 1,
-      studyHours: 8,
-    });
-    const dataSource = new MemoryProfileDataSource(customInitial);
+    const dataSource = new MemoryProfileDataSource({ id: "student-custom", name: "Camila Santos" });
 
     // Act
     const profile = await dataSource.getProfile();
 
     // Assert
-    expect(profile).toEqual(customInitial);
+    expect(profile).toEqual({ id: "student-custom", name: "Camila Santos" });
+  });
+
+  it("deve guardar só id e nome, sem métricas, mesmo recebendo um perfil completo", async () => {
+    // Arrange
+    const fullProfile = { id: "student-1", name: "Ana", streakDays: 12, achievementsCount: 5, studyHours: 42 };
+    const dataSource = new MemoryProfileDataSource(fullProfile);
+
+    // Act
+    const profile = await dataSource.getProfile();
+
+    // Assert
+    expect(profile).toEqual({ id: "student-1", name: "Ana" });
   });
 
   it("deve atualizar o nome e persistir a alteração para chamadas subsequentes", async () => {
     // Arrange
-    const initial = createStudentProfileFixture();
-    const dataSource = new MemoryProfileDataSource(initial);
+    const dataSource = new MemoryProfileDataSource({ id: "student-1", name: "Ana" });
 
     // Act
     const updated = await dataSource.updateName("Lucas Mendes");
     const retrieved = await dataSource.getProfile();
 
     // Assert
-    expect(updated.name).toBe("Lucas Mendes");
-    expect(retrieved.name).toBe("Lucas Mendes");
-    expect(retrieved.id).toBe(initial.id);
+    expect(updated).toEqual({ id: "student-1", name: "Lucas Mendes" });
+    expect(retrieved).toEqual({ id: "student-1", name: "Lucas Mendes" });
   });
 
   it("deve manter isolamento de dados entre instâncias distintas", async () => {
@@ -62,11 +58,8 @@ describe("MemoryProfileDataSource", () => {
     await dataSource1.updateName("Nome Modificado");
 
     // Assert
-    const profile1 = await dataSource1.getProfile();
-    const profile2 = await dataSource2.getProfile();
-
-    expect(profile1.name).toBe("Nome Modificado");
-    expect(profile2.name).toBe("");
-    expect(initialStudentProfile.name).toBe("");
+    expect((await dataSource1.getProfile()).name).toBe("Nome Modificado");
+    expect((await dataSource2.getProfile()).name).toBe("");
+    expect(initialStudentIdentity.name).toBe("");
   });
 });

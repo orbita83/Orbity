@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { container, resolveUseCase } from "@/di/container";
 import type { StudentProfile } from "@/model/entities/studentProfile";
 import { DomainError, ValidationError } from "@/model/errors";
@@ -70,37 +70,41 @@ export function useProfileViewModel(
     }
   }, [useCase]);
 
-  useEffect(() => {
-    let isMounted = true;
+  // Carrega ao ganhar foco: na primeira abertura e ao voltar para a aba, para a sequência
+  // refletir o que mudou em Tarefas e Rotinas. Depois da primeira carga, atualiza sem esqueleto.
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
 
-    const fetchInitialProfile = async (): Promise<void> => {
-      try {
-        const data = await useCase.getProfile();
-        if (isMounted) {
-          setProfile(data);
-          setError(null);
+      const fetchProfile = async (): Promise<void> => {
+        try {
+          const data = await useCase.getProfile();
+          if (isActive) {
+            setProfile(data);
+            setError(null);
+          }
+        } catch (err: unknown) {
+          if (isActive) {
+            setError(
+              err instanceof DomainError
+                ? err.message
+                : "Não foi possível carregar os dados do perfil.",
+            );
+          }
+        } finally {
+          if (isActive) {
+            setLoading(false);
+          }
         }
-      } catch (err: unknown) {
-        if (isMounted) {
-          setError(
-            err instanceof DomainError
-              ? err.message
-              : "Não foi possível carregar os dados do perfil.",
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+      };
 
-    fetchInitialProfile();
+      void fetchProfile();
 
-    return () => {
-      isMounted = false;
-    };
-  }, [useCase]);
+      return () => {
+        isActive = false;
+      };
+    }, [useCase]),
+  );
 
   const openEditNameModal = useCallback((): void => {
     setNameInput(profile?.name ?? "");

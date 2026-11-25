@@ -283,8 +283,9 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
         },
       ),
       profile: composeUseCase(
-        ({ profile }: { profile: IProfileDataSource }) => new ProfileUseCases(profile),
-        { profile: dataSources.profile },
+        (deps: { profile: IProfileDataSource; dailyActivity: IDailyActivityDataSource; clock: IClockService }) =>
+          new ProfileUseCases(deps.profile, deps.dailyActivity, deps.clock),
+        { profile: dataSources.profile, dailyActivity: dataSources.dailyActivity, clock: services.clock },
       ),
       routines: composeUseCase(
         (deps: {

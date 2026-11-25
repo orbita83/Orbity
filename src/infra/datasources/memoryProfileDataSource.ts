@@ -1,45 +1,42 @@
-import type { StudentProfile } from "@/model/entities/studentProfile";
+import type { StudentIdentity } from "@/model/entities/studentProfile";
 import { DataSourceError } from "@/model/errors";
 import type { IProfileDataSource } from "@/model/datasources/iProfileDataSource";
 
 /**
- * Perfil de quem ainda não informou o nome: nome vazio e métricas zeradas, sem valores fictícios.
- * Cabe à View decidir como apresentar o nome vazio.
+ * Identificação de quem ainda não informou o nome. Cabe à View decidir como apresentar o nome vazio.
  */
-export const initialStudentProfile: Readonly<StudentProfile> = Object.freeze({
+export const initialStudentIdentity: Readonly<StudentIdentity> = Object.freeze({
   id: "local-student",
   name: "",
-  streakDays: 0,
-  achievementsCount: 0,
-  studyHours: 0,
 });
 
 /**
- * Adapter concreto em memória para o DataSource de perfil do estudante.
+ * Adapter concreto em memória para a identificação do estudante.
  * Utilizado para desenvolvimento e execução antes da introdução de banco definitivo.
  */
 export class MemoryProfileDataSource implements IProfileDataSource {
-  private currentProfile: StudentProfile;
+  private currentIdentity: StudentIdentity;
 
-  constructor(initialProfile: StudentProfile = initialStudentProfile) {
-    this.currentProfile = { ...initialProfile };
+  constructor({ id, name }: StudentIdentity = initialStudentIdentity) {
+    // Guarda só id e nome, mesmo que receba um objeto com mais campos.
+    this.currentIdentity = { id, name };
   }
 
-  async getProfile(): Promise<StudentProfile> {
+  async getProfile(): Promise<StudentIdentity> {
     try {
-      return { ...this.currentProfile };
+      return { ...this.currentIdentity };
     } catch {
       throw new DataSourceError("Não foi possível consultar os dados do perfil em memória.");
     }
   }
 
-  async updateName(name: string): Promise<StudentProfile> {
+  async updateName(name: string): Promise<StudentIdentity> {
     try {
-      this.currentProfile = {
-        ...this.currentProfile,
+      this.currentIdentity = {
+        ...this.currentIdentity,
         name,
       };
-      return { ...this.currentProfile };
+      return { ...this.currentIdentity };
     } catch {
       throw new DataSourceError("Não foi possível atualizar o nome do perfil em memória.");
     }

@@ -1,18 +1,19 @@
-import type { StudentProfile } from "../entities/studentProfile";
+import type { StudentIdentity } from "../entities/studentProfile";
 
 /**
- * Contrato puro de domínio para operações de persistência e consulta do perfil do estudante.
+ * Contrato puro de domínio para a identificação do estudante (id e nome).
+ * As métricas do perfil não passam por aqui: o caso de uso as calcula.
  */
 export interface IProfileDataSource {
   /**
-   * Obtém o perfil atual do estudante.
+   * Obtém a identificação atual do estudante.
    */
-  getProfile(): Promise<StudentProfile>;
+  getProfile(): Promise<StudentIdentity>;
 
   /**
-   * Atualiza o nome do estudante e retorna o perfil atualizado.
+   * Atualiza o nome do estudante e retorna a identificação atualizada.
    *
    * @param name Novo nome do estudante já validado pelas regras de negócio.
    */
-  updateName(name: string): Promise<StudentProfile>;
+  updateName(name: string): Promise<StudentIdentity>;
 }
