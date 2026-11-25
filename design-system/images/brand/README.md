@@ -16,8 +16,11 @@ Arquivos-mestre da identidade visual. Nenhum deles entra no build: o ícone do a
 | `orbity-logo.png` | Exportação do `orbity-logo.svg`, usada no `README.md` da raiz | PNG 1968×484 com transparência |
 | `orbity-logo-slogan.svg` | Lockup: logotipo com o slogan "Organize seus estudos no seu ritmo" embaixo, tudo em contornos | SVG 1081×355 |
 | `orbity-logo-slogan-monochrome.svg` | Lockup com a mesma geometria, todo em `#FFFFFF` | SVG 1081×355 |
+| `orbity-logo-slogan.png` | Exportação do `orbity-logo-slogan.svg`, para referência rápida | PNG 2162×710 (2x) com transparência |
 
-O banner `design-system/images/assets/orbity-design-system.png` (usado no `design-system/README.md`) é gerado a partir do `orbity-logo.svg`, e o gráfico de destaque da Google Play (`store/google-play/feature-graphic/`), a partir do `orbity-logo-slogan.svg`. Ao alterar o símbolo ou o logotipo, gere de novo os lockups e exporte de novo o `orbity-logo.png`, o banner e o gráfico de destaque.
+**Par SVG + PNG:** os mestres principais (`orbity-symbol`, `orbity-logo` e o lockup `orbity-logo-slogan`) têm o SVG editável e um PNG de referência, com 2048 px no lado maior ou o dobro do SVG. As variantes (monocromáticas e sobre fundo) não precisam do par: basta o formato em que são usadas.
+
+O banner `design-system/images/assets/orbity-design-system.png` (usado no `design-system/README.md`) é gerado a partir do `orbity-logo.svg`, e o gráfico de destaque da Google Play (`store/google-play/feature-graphic/`), a partir do `orbity-logo-slogan.svg`. Ao alterar o símbolo ou o logotipo, gere de novo os lockups e exporte de novo o `orbity-logo.png`, o `orbity-logo-slogan.png`, o banner e o gráfico de destaque.
 
 ## Geometria e restrições
 
