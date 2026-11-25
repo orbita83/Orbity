@@ -95,10 +95,12 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           expected_owner="$(node -p "require('./app.json').expo.owner")"
-          if ! account="$(npx --no-install eas-cli whoami 2>/dev/null | head -n 1)"; then
+          if ! whoami_output="$(npx --no-install eas-cli whoami 2>/dev/null)"; then
             echo "::error::Falha na autenticação com o EAS. Confira se o EXPO_TOKEN é válido e não foi revogado."
             exit 1
           fi
+          account="$(printf '%s\n' "$whoami_output" | head -n 1)"
+          account="${account% (authenticated using EXPO_TOKEN)}"
           if [ "$account" != "$expected_owner" ]; then
             echo "::error::O EXPO_TOKEN pertence à conta '$account', mas o projeto pertence a '$expected_owner'."
             exit 1
