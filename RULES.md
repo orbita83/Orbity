@@ -13,10 +13,11 @@ Este documento estabelece as convenções oficiais de código e arquitetura para
   | Camada | Exemplos |
   | :--- | :--- |
   | `src/model/` | `entities/localDate.ts`, `entities/studentProfile.ts`, `datasources/iTaskDataSource.ts`, `services/iClockService.ts`, `errors.ts`, `__fixtures__/task.fixture.ts` |
-  | `src/usecase/` | `iTaskUseCases.ts`, `taskUseCases.ts`, `taskUseCases.test.ts` |
+  | `src/usecase/` | `iTaskUseCases.ts`, `taskUseCases.ts`, `taskUseCases.test.ts`, `taskInputValidation.ts` |
   | `src/infra/` | `datasources/sqliteTaskDataSource.ts`, `datasources/taskDataSource.contract.ts`, `services/systemClockService.ts`, `database/iSqlExecutor.ts` |
   | `src/di/` | `container.ts`, `persistence.ts` |
 
+  - **Validações de entrada dos Use Cases** ficam em módulos auxiliares `nomeInputValidation.ts` dentro de `src/usecase/` (ex.: `taskInputValidation.ts`, com `validateCreateTaskInput`). Eles só têm funções puras, constantes e tipos, sem classes nem estado mutável, e só arquivos de `src/usecase/` podem importá-los (`ARCHITECTURE.md`, Seção 3.1; regra `ARCH-002` do `npm run lint:architecture`).
   - **Arquivos da `view` que não são telas nem componentes** (textos, hooks e fixtures) também usam `camelCase`: `src/view/homeCopy.ts`, `src/view/theme/useReduceMotion.ts`, `src/view/__fixtures__/taskList.fixture.ts`. Assim, `kebab-case` fica só para rotas e telas, e `PascalCase` só para componentes.
 - **Arquivos de View e ViewModel:**
 
