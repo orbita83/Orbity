@@ -261,7 +261,52 @@ function checkContractFile(source, file, layer, report) {
   }
 }
 
-/** Um módulo *InputValidation.ts só declara funções, constantes e tipos: sem classes nem estado mutável. */
+/**
+ * Valor que não guarda estado entre chamadas: literal primitivo, regex sem as flags g/y (que mudam
+ * `lastIndex`), literal `as const`, `Object.freeze(...)` ou função. Objetos, arrays, `new Set()` e
+ * afins ficam de fora, porque um `const` não impede mutar o conteúdo.
+ */
+function isImmutableInitializer(expression) {
+  if (!expression) return false;
+  if (ts.isParenthesizedExpression(expression) || ts.isSatisfiesExpression(expression)) {
+    return isImmutableInitializer(expression.expression);
+  }
+  if (ts.isStringLiteral(expression) || ts.isNumericLiteral(expression) || ts.isBigIntLiteral(expression) ||
+      ts.isNoSubstitutionTemplateLiteral(expression) ||
+      [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword, ts.SyntaxKind.NullKeyword].includes(expression.kind)) {
+    return true;
+  }
+  if (ts.isPrefixUnaryExpression(expression) && ts.isNumericLiteral(expression.operand)) return true;
+  if (ts.isRegularExpressionLiteral(expression)) {
+    return !/[gy]/.test(expression.text.slice(expression.text.lastIndexOf("/") + 1));
+  }
+  if (ts.isArrowFunction(expression) || ts.isFunctionExpression(expression)) return true;
+  if (ts.isAsExpression(expression) && ts.isTypeReferenceNode(expression.type) &&
+      ts.isIdentifier(expression.type.typeName) && expression.type.typeName.text === "const") {
+    return isFrozenLiteral(expression.expression);
+  }
+  if (ts.isCallExpression(expression) && ts.isPropertyAccessExpression(expression.expression) &&
+      ts.isIdentifier(expression.expression.expression) && expression.expression.expression.text === "Object" &&
+      expression.expression.name.text === "freeze" && expression.arguments.length === 1) {
+    return isFrozenLiteral(expression.arguments[0]);
+  }
+  return false;
+}
+
+/** Literal de array ou objeto cujos itens também são imutáveis (ou outro literal aninhado). */
+function isFrozenLiteral(expression) {
+  if (ts.isParenthesizedExpression(expression)) return isFrozenLiteral(expression.expression);
+  if (ts.isArrayLiteralExpression(expression)) {
+    return expression.elements.every((element) => isFrozenLiteral(element) || isImmutableInitializer(element));
+  }
+  if (ts.isObjectLiteralExpression(expression)) {
+    return expression.properties.every((property) => ts.isPropertyAssignment(property) &&
+      (isFrozenLiteral(property.initializer) || isImmutableInitializer(property.initializer)));
+  }
+  return isImmutableInitializer(expression);
+}
+
+/** Um módulo *InputValidation.ts só declara funções, constantes imutáveis e tipos: sem classes nem estado mutável. */
 function checkInputValidationModule(source, file, report) {
   if (!USECASE_INPUT_VALIDATION.test(withoutExtension(file))) return;
   for (const statement of source.statements) {
@@ -269,9 +314,10 @@ function checkInputValidationModule(source, file, report) {
       ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement) ||
       ts.isFunctionDeclaration(statement) || ts.isTypeAliasDeclaration(statement) ||
       ts.isInterfaceDeclaration(statement) ||
-      (ts.isVariableStatement(statement) && (statement.declarationList.flags & ts.NodeFlags.Const) !== 0);
+      (ts.isVariableStatement(statement) && (statement.declarationList.flags & ts.NodeFlags.Const) !== 0 &&
+        statement.declarationList.declarations.every((declaration) => isImmutableInitializer(declaration.initializer)));
     if (!allowed) {
-      report("ARCH-002", "Módulos *InputValidation.ts só podem declarar funções puras, constantes e tipos.", statement);
+      report("ARCH-002", "Módulos *InputValidation.ts só podem declarar funções puras, constantes imutáveis e tipos.", statement);
     }
   }
 }
