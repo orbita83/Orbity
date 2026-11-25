@@ -4,7 +4,7 @@
 
 ## 1. Referência e limites
 
-Código e lockfile de referência: `61daeb136d64c970236cc85354a7c092c1757582`, da `development`. Aplicativo declarado como versão `0.1.0`, Android versionCode `1`. O número de versão não demonstra equivalência com o AAB histórico: seu commit de origem ainda precisa ser identificado. Este inventário complementa a [auditoria](./auditoria-google-play.md), principalmente GP16, GP19 e GP20; não reclassifica a conformidade integral do artefato.
+Código e lockfile de referência: `8de4d221af25b35c355d707d429d97adf00778a4`, integrado à `development` pelo [PR #246](https://github.com/orbita83/Orbity/pull/246). A referência foi atualizada em 25/11/2026 após conferir o diff desde o recorte inicial `61daeb136d64c970236cc85354a7c092c1757582`: os modelos de dados, a persistência, o perfil e as notificações descritos abaixo permanecem aplicáveis nesse recorte; o lockfile atualiza o SQLite. Este é um inventário datado desse commit, não uma certificação de alterações posteriores na `development`. Aplicativo declarado como versão `0.1.0`, Android versionCode `1`. O número de versão não demonstra equivalência com o AAB histórico: seu commit de origem ainda precisa ser identificado. Este inventário complementa a [auditoria](./auditoria-google-play.md), principalmente GP16, GP19 e GP20; não reclassifica a conformidade integral do artefato.
 
 Foram inspecionados modelos, migrações, composição de dependências, adapters SQLite, perfil em memória, notificações locais, casos de uso, configuração Expo/EAS e lockfile. Buscas em `src/` por chamadas de rede, URLs, tokens push, analytics, autenticação, armazenamento, exclusão e criptografia foram confrontadas com os arquivos relevantes. Testes, histórias e fixtures não são tratados como comportamento de produção; a fixture de perfil é explicitamente incluída porque o container de produção a instancia.
 
@@ -55,7 +55,7 @@ Todas as dependências diretas de execução de `package.json` estão na tabela 
 | `expo-notifications` | `57.0.25` | Adapter local ativo; conferir manifesto, módulos e comportamento nativo. |
 | `expo-router` | `57.0.28` | Entrada e navegação ativas; conferir integrações transitivas. |
 | `expo-splash-screen` | `57.0.10` | Interface, renderização, gestos ou suporte de plataforma; sem integração de envio de dados de produto identificada na busca. Inclusão e comportamento nativo não certificados. |
-| `expo-sqlite` | `57.0.5` | Persistência local utilizada pelo executor; conferir backup e proteção do banco. |
+| `expo-sqlite` | `57.0.7` | Persistência local utilizada pelo executor; conferir backup e proteção do banco. Atualização integrada pelo [PR #246](https://github.com/orbita83/Orbity/pull/246), que registra a correção dos binários para as quatro ABIs; não comprova a versão incluída no AAB histórico. |
 | `expo-status-bar` | `57.0.1` | Interface, renderização, gestos ou suporte de plataforma; sem integração de envio de dados de produto identificada na busca. Inclusão e comportamento nativo não certificados. |
 | `expo-symbols` | `57.0.3` | Interface, renderização, gestos ou suporte de plataforma; sem integração de envio de dados de produto identificada na busca. Inclusão e comportamento nativo não certificados. |
 | `expo-system-ui` | `57.0.4` | Interface, renderização, gestos ou suporte de plataforma; sem integração de envio de dados de produto identificada na busca. Inclusão e comportamento nativo não certificados. |
@@ -104,9 +104,9 @@ Evidências locais adicionais: [composição](../../src/di/container.ts), [persi
 
 Revisão humana e aprovação pendentes. Nenhuma prática de dados, biblioteca, permissão ou configuração foi alterada nesta entrega.
 
-## 8. Verificação complementar de artefato, backup e SDKs
+## 8. Registro de trabalho local — não serve como evidência de produção
 
-Verificação de 25/11/2026, sem executar build, instalação ou geração nativa. Os achados abaixo não alteram o recorte versionado da Seção 1: arquivos locais ignorados podem ser anteriores e não representam automaticamente esse commit.
+Verificação de 25/11/2026, sem executar build, instalação ou geração nativa. V04 a V08 registram observações do ambiente local e de fontes de biblioteca, sem proveniência comprovada do artefato de produção. Não usar esses itens como evidência de produção, para concluir GP16/GP19 ou para preencher declarações de Segurança dos dados; primeiro reproduzir e verificar no artefato identificado. Os achados abaixo não alteram o recorte versionado da Seção 1: arquivos locais ignorados podem ser anteriores e não representam automaticamente esse commit.
 
 | ID | Verificação | Resultado e limite |
 | --- | --- | --- |
