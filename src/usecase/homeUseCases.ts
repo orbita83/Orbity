@@ -1,9 +1,11 @@
 import { DEFAULT_FOCUS_DURATION, FOCUS_DURATIONS } from "@/model/entities/focusDuration";
+import { computeTotalFocusedMinutes } from "@/model/entities/focusSession";
 import type { HomeSummary } from "@/model/entities/homeSummary";
 import { createProgress } from "@/model/entities/progress";
 import { calculateStreak } from "@/model/entities/streak";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IFocusSessionDataSource } from "@/model/datasources/iFocusSessionDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { DayChangeListener, IDayChangeService } from "@/model/services/iDayChangeService";
@@ -17,6 +19,7 @@ export class HomeUseCases implements IHomeUseCases {
     private readonly clock: IClockService,
     private readonly dayChangeService?: IDayChangeService,
     private readonly stars?: IStarDataSource,
+    private readonly focusSessions?: IFocusSessionDataSource,
   ) {}
 
   subscribeDayChange(listener: DayChangeListener): () => void {
@@ -25,11 +28,13 @@ export class HomeUseCases implements IHomeUseCases {
 
   async loadHome(): Promise<HomeSummary> {
     const today = this.clock.todayLocal();
-    const [days, counts, hasFocusTargets, starList] = await Promise.all([
+    const [days, counts, hasFocusTargets, starList, activeSession, lastEnded] = await Promise.all([
       this.dailyActivity.listDays(),
       this.activities.getProgressCounts(today),
       this.activities.hasFocusTargets(),
       this.stars?.listAll(),
+      this.focusSessions?.getActive(),
+      this.focusSessions?.getLatestEnded(),
     ]);
     const streak = calculateStreak(days, today);
     const starsSummary = starList
@@ -42,6 +47,29 @@ export class HomeUseCases implements IHomeUseCases {
           earnedToday: days.some((day) => day.equals(today)),
         };
 
+    const focusExtras = this.focusSessions
+      ? {
+          activeSession:
+            activeSession && activeSession.status !== "ended"
+              ? {
+                  id: activeSession.id,
+                  targetTitle: activeSession.targetTitle,
+                  phase: activeSession.phase,
+                  status: activeSession.status,
+                }
+              : null,
+          lastSession:
+            lastEnded && lastEnded.endedAt
+              ? {
+                  targetTitle: lastEnded.targetTitle,
+                  focusedMinutes: computeTotalFocusedMinutes(lastEnded, lastEnded.endedAt),
+                  completedCycles: lastEnded.completedFocusCycles,
+                  endedAt: lastEnded.endedAt,
+                }
+              : null,
+        }
+      : {};
+
     return {
       streak,
       progress: createProgress(counts.completed, counts.total),
@@ -50,6 +78,7 @@ export class HomeUseCases implements IHomeUseCases {
         reason: hasFocusTargets ? null : "no-targets",
         durations: FOCUS_DURATIONS,
         defaultDuration: DEFAULT_FOCUS_DURATION,
+        ...focusExtras,
       },
       stars: starsSummary,
     };

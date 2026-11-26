@@ -1,4 +1,7 @@
+import { MemoryFocusSessionDataSource } from "@/infra/datasources/memoryFocusSessionDataSource";
 import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
+import { createFocusSessionFixture } from "@/model/__fixtures__/focusSession.fixture";
+import { endFocusSession } from "@/model/entities/focusSession";
 import { LocalDate } from "@/model/entities/localDate";
 import { createStreakStar } from "@/model/entities/star";
 import { DataSourceError } from "@/model/errors";
@@ -116,5 +119,49 @@ describe("HomeUseCases", () => {
 
     unsubscribe();
     expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("issue #217: expõe sessão ativa e resumo da última sessão encerrada quando focusSessions está presente", async () => {
+    const focusSessions = new MemoryFocusSessionDataSource([
+      endFocusSession(
+        createFocusSessionFixture({
+          id: "f-ended",
+          targetTitle: "Estudar Cálculo",
+          startedAt: "2026-11-14T08:00:00-03:00",
+          cycleStartedAt: "2026-11-14T08:00:00-03:00",
+          cycleEndsAt: "2026-11-14T08:15:00-03:00",
+          completedFocusCycles: 1,
+        }),
+        "2026-11-14T08:12:00-03:00",
+      ),
+      createFocusSessionFixture({
+        id: "f-active",
+        targetTitle: "Revisar Física",
+        status: "running",
+      }),
+    ]);
+
+    const useCases = new HomeUseCases(
+      dataSourceWith([]),
+      activitiesWith({ completed: 0, total: 1 }, true),
+      clock,
+      undefined,
+      undefined,
+      focusSessions,
+    );
+
+    const summary = await useCases.loadHome();
+    expect(summary.focus.activeSession).toEqual({
+      id: "f-active",
+      targetTitle: "Revisar Física",
+      phase: "focus",
+      status: "running",
+    });
+    expect(summary.focus.lastSession).toEqual({
+      targetTitle: "Estudar Cálculo",
+      focusedMinutes: 12,
+      completedCycles: 1,
+      endedAt: "2026-11-14T08:12:00-03:00",
+    });
   });
 });

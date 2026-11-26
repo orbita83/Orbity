@@ -1,8 +1,10 @@
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AppState } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
 import type { HomeSummary } from "@/model/entities/homeSummary";
 import { SchemaVersionError } from "@/model/errors";
+import type { IFocusUseCases } from "@/usecase/iFocusUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
 
 /** Estágio do painel de foco da Home: recolhido, intermediário ou aberto. */
@@ -27,6 +29,7 @@ export type HomeActions = {
   handleExpandSheet: () => void;
   handleReduceSheet: () => void;
   handleSetSheetStage: (stage: FocusSheetStage) => void;
+  handleOpenFocus: () => void;
 };
 
 const NEXT_STAGE: Record<FocusSheetStage, FocusSheetStage> = {
@@ -47,8 +50,13 @@ const toErrorState = (error: unknown): NonNullable<HomeState["error"]> => {
  * Um recálculo em segundo plano não volta para "carregando", e uma falha depois de pronto
  * não apaga o que já está na tela.
  */
-export const useHomeViewModel = (homeUseCases?: IHomeUseCases): [HomeState, HomeActions] => {
+export const useHomeViewModel = (
+  homeUseCases?: IHomeUseCases,
+  focusUseCases?: IFocusUseCases,
+): [HomeState, HomeActions] => {
   const useCases = resolveUseCase(homeUseCases, container.useCases.home);
+  const resolvedFocus =
+    homeUseCases && !focusUseCases ? undefined : resolveUseCase(focusUseCases, container.useCases.focus);
   const [status, setStatus] = useState<HomeState["status"]>("loading");
   const [error, setError] = useState<HomeState["error"]>(null);
   const [summary, setSummary] = useState<HomeSummary | null>(null);
@@ -56,6 +64,10 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): [HomeState, Home
   const hasSummary = useRef(false);
   const latestRequest = useRef(0);
   const mounted = useRef(true);
+
+  const handleOpenFocus = useCallback(() => {
+    router.navigate("/focus-session");
+  }, []);
 
   // Os setState ficam só nos callbacks da promessa, nunca de forma síncrona no efeito.
   const fetchHome = useCallback((): Promise<void> => {
@@ -82,14 +94,24 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): [HomeState, Home
     mounted.current = true;
     // O estado inicial já é "carregando".
     void fetchHome();
-    const unsubscribe = useCases.subscribeDayChange?.(() => {
+    const unsubscribeDay = useCases.subscribeDayChange?.(() => {
       void fetchHome();
+    });
+    const appStateSubscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") {
+        void fetchHome();
+      }
+    });
+    const unsubscribeNotification = resolvedFocus?.onCycleNotificationPress(() => {
+      handleOpenFocus();
     });
     return () => {
       mounted.current = false;
-      unsubscribe?.();
+      unsubscribeDay?.();
+      appStateSubscription.remove();
+      unsubscribeNotification?.();
     };
-  }, [fetchHome, useCases]);
+  }, [fetchHome, handleOpenFocus, resolvedFocus, useCases]);
 
   // Recalcula ao voltar para a aba, para refletir o que mudou em Tarefas e Rotinas.
   useFocusEffect(
@@ -133,6 +155,7 @@ export const useHomeViewModel = (homeUseCases?: IHomeUseCases): [HomeState, Home
       handleExpandSheet,
       handleReduceSheet,
       handleSetSheetStage,
+      handleOpenFocus,
     },
   ];
 };

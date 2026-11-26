@@ -45,8 +45,13 @@ describe("MainTabBar", () => {
     expect(navigate).toHaveBeenCalledTimes(1);
   });
 
-  it("some nas telas empilhadas, como Nova rotina", async () => {
+  it("some nas telas empilhadas, como Nova rotina e Modo Foco", async () => {
     await render(<MainTabBar {...createProps(5).props} />);
+    expect(screen.queryByRole("tab")).toBeNull();
+
+    const { props } = createProps(0);
+    const focusRoutes = [...routes, { key: "focus-session-key", name: "focus-session" }];
+    await render(<MainTabBar {...props} state={{ ...props.state, routes: focusRoutes, index: focusRoutes.length - 1 }} />);
     expect(screen.queryByRole("tab")).toBeNull();
   });
 

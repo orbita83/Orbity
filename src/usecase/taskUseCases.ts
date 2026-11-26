@@ -1,4 +1,5 @@
 import { createDefaultCategories, type Category } from "@/model/entities/category";
+import { FOCUS_CYCLE_NOTIFICATION_ID } from "@/model/entities/focusSession";
 import type { LocalDate } from "@/model/entities/localDate";
 import { createStreakStar } from "@/model/entities/star";
 import {
@@ -14,6 +15,7 @@ import {
 import { ValidationError } from "@/model/errors";
 import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IFocusSessionDataSource } from "@/model/datasources/iFocusSessionDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
@@ -85,6 +87,7 @@ export class TaskUseCases implements ITaskUseCases {
     private readonly starDataSource?: IStarDataSource,
     private readonly categoryDataSource?: ICategoryDataSource,
     private readonly notificationService?: INotificationService,
+    private readonly focusSessionDataSource?: IFocusSessionDataSource,
   ) {}
 
   /**
@@ -267,12 +270,23 @@ export class TaskUseCases implements ITaskUseCases {
       return;
     }
     await this.taskDataSource.deleteMany(uniqueIds);
+    const nowIso = this.clock.now();
+    let endedActiveFocus = false;
+    if (this.focusSessionDataSource) {
+      const results = await Promise.all(
+        uniqueIds.map((id) => this.focusSessionDataSource!.endActiveByTarget("standalone-task", id, nowIso)),
+      );
+      endedActiveFocus = results.some(Boolean);
+    }
     if (this.notificationService) {
-      await Promise.all(
-        uniqueIds.map((id) =>
+      await Promise.all([
+        ...uniqueIds.map((id) =>
           this.notificationService!.cancel(buildTaskReminderId(id)).catch(() => undefined),
         ),
-      );
+        ...(endedActiveFocus
+          ? [this.notificationService.cancel(FOCUS_CYCLE_NOTIFICATION_ID).catch(() => undefined)]
+          : []),
+      ]);
     }
   }
 

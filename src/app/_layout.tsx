@@ -29,6 +29,7 @@ const RootLayout = () => (
       <Tabs.Screen name="new-task" options={{ title: "Nova tarefa", href: null }} />
       <Tabs.Screen name="new-routine" options={{ title: "Nova rotina", href: null }} />
       <Tabs.Screen name="routine-details" options={{ title: "Rotina", href: null }} />
+      <Tabs.Screen name="focus-session" options={{ title: "Modo Foco", href: null }} />
     </Tabs>
   </>
 );

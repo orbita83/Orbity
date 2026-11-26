@@ -1,3 +1,4 @@
+import type { FocusTarget } from "@/model/entities/focusSession";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
 
 /**
@@ -11,5 +12,9 @@ export class EmptyActivityDataSource implements IActivityDataSource {
 
   async hasFocusTargets(): Promise<boolean> {
     return false;
+  }
+
+  async listFocusTargets(): Promise<FocusTarget[]> {
+    return [];
   }
 }

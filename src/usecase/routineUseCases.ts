@@ -1,3 +1,4 @@
+import { FOCUS_CYCLE_NOTIFICATION_ID } from "@/model/entities/focusSession";
 import type { LocalDate } from "@/model/entities/localDate";
 import {
   type CreateRoutineInput,
@@ -15,11 +16,13 @@ import type { Task } from "@/model/entities/task";
 import { ValidationError } from "@/model/errors";
 import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
+import type { IFocusSessionDataSource } from "@/model/datasources/iFocusSessionDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
 import type { IClockService } from "@/model/services/iClockService";
 import type { DayChangeListener, IDayChangeService } from "@/model/services/iDayChangeService";
+import type { INotificationService } from "@/model/services/iNotificationService";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 import { validateCreateRoutineInput, validateUpdateRoutineInput } from "@/usecase/routineInputValidation";
 
@@ -45,6 +48,8 @@ export class RoutineUseCases implements IRoutineUseCases {
     private readonly dayChangeService?: IDayChangeService,
     private readonly starDataSource?: IStarDataSource,
     private readonly categoryDataSource?: ICategoryDataSource,
+    private readonly focusSessionDataSource?: IFocusSessionDataSource,
+    private readonly notificationService?: INotificationService,
   ) {}
 
   /**
@@ -158,7 +163,14 @@ export class RoutineUseCases implements IRoutineUseCases {
   }
 
   async deleteRoutine(id: string): Promise<void> {
-    await this.routineDataSource.markDeleted(id, this.clock.now());
+    const nowIso = this.clock.now();
+    await this.routineDataSource.markDeleted(id, nowIso);
+    if (this.focusSessionDataSource) {
+      const ended = await this.focusSessionDataSource.endActiveByTarget("routine", id, nowIso);
+      if (ended && this.notificationService) {
+        await this.notificationService.cancel(FOCUS_CYCLE_NOTIFICATION_ID).catch(() => undefined);
+      }
+    }
   }
 
   async restoreRoutine(id: string): Promise<void> {

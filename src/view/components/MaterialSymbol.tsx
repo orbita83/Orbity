@@ -16,6 +16,9 @@ export type MaterialSymbolName =
   | "settings"
   | "timer"
   | "play_arrow"
+  | "pause"
+  | "skip_next"
+  | "stop"
   | "chevron_right"
   | "local_fire_department"
   | "track_changes"
@@ -132,6 +135,18 @@ const SYMBOL_PATHS: Record<
   play_arrow: {
     outlined: "M10 8.64L15.27 12 10 15.36V8.64M8 5v14l11-7L8 5z",
     filled: "M8 5v14l11-7L8 5z",
+  },
+  pause: {
+    outlined: "M6 19h4V5H6v14zm8-14v14h4V5h-4z",
+    filled: "M6 19h4V5H6v14zm8-14v14h4V5h-4z",
+  },
+  skip_next: {
+    outlined: "M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z",
+    filled: "M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z",
+  },
+  stop: {
+    outlined: "M16 8v8H8V8h8m2-2H6v12h12V6z",
+    filled: "M6 6h12v12H6z",
   },
   chevron_right: {
     outlined: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z",
