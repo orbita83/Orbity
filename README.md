@@ -110,7 +110,7 @@ Cabeçalho do estudante com nome editável, cards de métricas e atalhos para Co
 | **Plataforma e rotas** | Expo SDK · Expo Router | `~57.0.30` · `~57.0.28` |
 | **Linguagem** | TypeScript (`"strict": true`) | `~6.0.3` |
 | **Animações e gestos** | Reanimated · Gesture Handler · SVG | `4.5.1` · `~2.32.0` · `15.15.4` |
-| **Persistência local** | `expo-sqlite` (Android) · `node:sqlite` (testes, embutido no Node.js) | `57.0.7` · Node.js 22.15+ |
+| **Persistência local** | `expo-sqlite` (Android) · `node:sqlite` (testes, embutido no Node.js) | `57.0.7` · Node.js 24 |
 | **Catálogo de componentes** | Storybook (`react-native-web-vite`) · Vite | `10.6.2` · `6.4.4` |
 | **Testes** | Jest · `jest-expo` · Testing Library | `~29.7.0` · `~57.0.6` · `^14.1.0` |
 | **Qualidade** | ESLint · Husky · lint-staged · Commitlint | `^9` · `^9.1.7` · `^16.4.0` · `^21.2.3` |
@@ -124,8 +124,8 @@ Cabeçalho do estudante com nome editável, cards de métricas e atalhos para Co
 
 | Ferramenta | Versão | Observação |
 | :--- | :--- | :--- |
-| **Node.js** | 22 LTS (22.15+) | Mesma versão do runner do [CI](./.github/workflows/ci.yml). Os testes usam o `node:sqlite`, embutido no Node.js. |
-| **npm** | 10+ | Distribuído com o Node.js 22. |
+| **Node.js** | 24 LTS | Fixado no [`.nvmrc`](./.nvmrc), lido também pelo [CI](./.github/workflows/ci.yml). Os testes usam o `node:sqlite`, embutido no Node.js. |
+| **npm** | 11 (`11.19.1`) | Fixado no campo `packageManager` do `package.json` e distribuído com o Node.js 24.22.3. O `package-lock.json` só pode ser gerado com o npm 11 ([`CONTRIBUTING.md` — Seção 2.2](./CONTRIBUTING.md#22-preparação-da-branch)). |
 | **Git** | 2.38+ | Com suporte a `git switch`. |
 | **Android** *(opcional)* | — | Aparelho com **Expo Go** (SDK 57) ou *development build*, **ou** emulador do Android Studio com `adb`. |
 
@@ -143,7 +143,10 @@ cd Orbity
 git switch development
 git pull --ff-only origin development
 
-# 3. Instale as dependências (também ativa os hooks do Husky)
+# 3. Use a versão do Node.js do projeto (lida do .nvmrc)
+nvm use
+
+# 4. Instale as dependências (também ativa os hooks do Husky)
 npm ci
 ```
 

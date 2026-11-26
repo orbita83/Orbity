@@ -84,8 +84,11 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .nvmrc
           cache: npm
+
+      - name: Configurar npm do packageManager
+        run: npm install --global "$(node -p "require('./package.json').packageManager")"
 
       - name: Instalar dependências
         run: npm ci

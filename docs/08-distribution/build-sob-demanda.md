@@ -30,7 +30,7 @@ Decisões técnicas:
 - **Plataforma:** fixa em Android (`--platform android`).
 - **Referências permitidas:** `development` e `main`. Outras branches e tags são recusadas pelo job `authorize`.
 - **Permissões do GitHub:** somente `contents: read`; o checkout não guarda credenciais (`persist-credentials: false`).
-- **EAS CLI:** a versão local fixada no `package.json` (`npx --no-install eas-cli`), instalada por `npm ci` a partir do lockfile, em Node.js 22 (mesmo do CI).
+- **EAS CLI:** a versão local fixada no `package.json` (`npx --no-install eas-cli`), instalada por `npm ci` a partir do lockfile, no Node.js do `.nvmrc` e no npm do `packageManager` (os mesmos do CI). O build no servidor do EAS usa o Node.js fixado no perfil `base` do `eas.json`, herdado pelos três perfis.
 - **Assinatura:** `--freeze-credentials` impede que o build crie ou altere credenciais. O build usa o keystore remoto da T0012 e falha se ele não estiver disponível.
 - **Versão:** `versionName` (`expo.version`) continua lido manualmente do `app.json` sem alteração pelo workflow. Já o `versionCode` é gerenciado remotamente pelo EAS (`appVersionSource: remote`): builds `production` incrementam automaticamente `+1` (`autoIncrement: true`), enquanto `development` e `preview` reutilizam o `versionCode` remoto atual. Os valores efetivos (`appVersion` e `appBuildVersion`) são registrados no resumo da execução.
 - **Concorrência:** execuções com a mesma referência e o mesmo perfil entram em fila, em vez de rodar em paralelo.
@@ -153,7 +153,7 @@ Se um environment não existir, o GitHub o cria **sem proteções** na primeira 
 | Atualizar o EAS CLI | Atualizar `eas-cli` no `package.json` e o lockfile em um PR próprio; se necessário, ajustar `cli.version` do `eas.json` ([`eas-build.md`](./eas-build.md#eas-cli)). O workflow usa a versão do lockfile automaticamente. |
 | Adicionar ou alterar perfil | Após aprovação da equipe, alterar o `eas.json` e a lista `options` e o `case` do job `authorize` no mesmo PR, atualizando a tabela da [Seção 4.1](#41-escolher-o-perfil). |
 | Alterar referências permitidas | Alterar o `case` do job `authorize` e as *deployment branches* dos environments em conjunto. |
-| Atualizar Node.js ou actions | Manter alinhado ao [`ci.yml`](../../.github/workflows/ci.yml). |
+| Atualizar Node.js ou actions | Manter alinhado ao [`ci.yml`](../../.github/workflows/ci.yml). O Node.js e o npm vêm do `.nvmrc` e do `packageManager`; ao trocar de versão, atualizar também o `node` do perfil `base` do `eas.json` ([`CONTRIBUTING.md` — Seção 2.2](../../CONTRIBUTING.md#22-preparação-da-branch)). |
 | Rotacionar o token | [Seção 6.2](#62-expo_token). |
 
 Alterações neste workflow passam por Pull Request revisado, como qualquer mudança de CI ([`CONTRIBUTING.md` — Seção 3.4](../../CONTRIBUTING.md#34-integração-contínua-ci)).

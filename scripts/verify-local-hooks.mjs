@@ -1,16 +1,16 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const fixture = mkdtempSync(join(projectRoot, '.hook-check-'));
 const hookPath = join(projectRoot, '.husky', '_');
 
-function run(command, args, expectedStatus, label) {
+function run(command, args, expectedStatus, label, env = {}) {
   const result = spawnSync(command, args, {
     cwd: fixture,
     encoding: 'utf8',
-    env: { ...process.env, npm_config_offline: 'true' },
+    env: { ...process.env, npm_config_offline: 'true', ...env },
   });
   if (result.error || result.status !== expectedStatus) {
     throw new Error(`${label}: esperado ${expectedStatus}, obtido ${result.status}\n${result.error ?? ''}\n${result.stdout}\n${result.stderr}`);
@@ -28,7 +28,7 @@ try {
   for (const file of ['package.json', 'eslint.config.js', 'commitlint.config.cjs', 'lint-staged.config.mjs']) {
     copyFileSync(join(projectRoot, file), join(fixture, file));
   }
-  for (const file of ['conventions.cjs', 'validate-branch.mjs', 'lint-architecture.cjs', 'lint-architecture.mjs']) {
+  for (const file of ['conventions.cjs', 'validate-branch.mjs', 'check-package-manager.mjs', 'lint-architecture.cjs', 'lint-architecture.mjs']) {
     copyFileSync(join(projectRoot, 'scripts', file), join(fixture, 'scripts', file));
   }
   // tsconfig mínimo para o linter de arquitetura, com o alias @/* do projeto.
@@ -75,8 +75,8 @@ try {
   writeFileSync(messagePath, 'feat: Adiciona validacao\n');
   run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'commit-msg', '--', messagePath], 1, 'mensagem inválida rejeitada');
 
-  const preCommit = (expectedStatus, label) =>
-    run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], expectedStatus, label);
+  const preCommit = (expectedStatus, label, env) =>
+    run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], expectedStatus, label, env);
 
   // ESLint (fora de src/, para não acionar o linter de arquitetura).
   writeFileSync(join(fixture, 'lib', 'valid.ts'), 'export const valid = 1;\n');
@@ -111,6 +111,16 @@ try {
   if (!output(archFailure).includes('ARCH-001')) {
     throw new Error('A falha do pre-commit não veio do linter de arquitetura (ARCH-001)');
   }
+  run('git', ['reset', '-q'], 0, 'área de preparação limpa antes do lockfile');
+
+  // The lockfile check reads the npm version from the user agent that npx keeps from the environment.
+  const expectedMajor = /^npm@(\d+)\./.exec(JSON.parse(readFileSync(join(fixture, 'package.json'), 'utf8')).packageManager)[1];
+  const fakeNpm = (version) => ({ npm_config_user_agent: `npm/${version} node/${process.version}` });
+  writeFileSync(join(fixture, 'package-lock.json'), '{}\n');
+  run('git', ['add', 'package-lock.json'], 0, 'package-lock.json preparado');
+  preCommit(0, 'lock aceito com o npm do packageManager', fakeNpm(`${expectedMajor}.0.0`));
+  const wrongNpm = preCommit(1, 'lock rejeitado com outra versão major do npm', fakeNpm(`${Number(expectedMajor) - 1}.0.0`));
+  if (!output(wrongNpm).includes('nvm use')) throw new Error('Mensagem do lock rejeitado não orienta a correção');
 } finally {
   if (!fixture.startsWith(projectRoot + '\\') && !fixture.startsWith(projectRoot + '/')) {
     throw new Error(`Caminho temporário inesperado: ${fixture}`);
