@@ -1,7 +1,7 @@
 # Base da tela Início: sequência, trava do Modo Foco e barra de progresso
 
 *   **Author:** MailsonSousa88
-*   **Status:** Approved
+*   **Status:** Implemented (PR #126; revisado com `/egm:egm-review` em 2026-11-14)
 *   **Date:** 2026-11-13 (revisado em 2026-11-14 depois da revisão EGM)
 
 --------------------------------------------------------------------------------
