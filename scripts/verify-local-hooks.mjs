@@ -1,16 +1,16 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const projectRoot = resolve(import.meta.dirname, '..');
 const fixture = mkdtempSync(join(projectRoot, '.hook-check-'));
 const hookPath = join(projectRoot, '.husky', '_');
 
-function run(command, args, expectedStatus, label) {
+function run(command, args, expectedStatus, label, env = {}) {
   const result = spawnSync(command, args, {
     cwd: fixture,
     encoding: 'utf8',
-    env: { ...process.env, npm_config_offline: 'true' },
+    env: { ...process.env, npm_config_offline: 'true', ...env },
   });
   if (result.error || result.status !== expectedStatus) {
     throw new Error(`${label}: esperado ${expectedStatus}, obtido ${result.status}\n${result.error ?? ''}\n${result.stdout}\n${result.stderr}`);
@@ -27,6 +27,7 @@ try {
   }
   copyFileSync(join(projectRoot, 'scripts', 'conventions.cjs'), join(fixture, 'scripts', 'conventions.cjs'));
   copyFileSync(join(projectRoot, 'scripts', 'validate-branch.mjs'), join(fixture, 'scripts', 'validate-branch.mjs'));
+  copyFileSync(join(projectRoot, 'scripts', 'check-package-manager.mjs'), join(fixture, 'scripts', 'check-package-manager.mjs'));
 
   run('git', ['init', '--initial-branch=feat/valid-branch'], 0, 'repositório temporário criado');
   const pushInputPath = join(fixture, 'push-refs.txt');
@@ -73,6 +74,16 @@ try {
   run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], 0, 'lint ignora arquivo não preparado');
   run('git', ['add', 'src/invalid.ts'], 0, 'arquivo inválido preparado');
   run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], 1, 'erro de lint impede commit');
+  run('git', ['rm', '--cached', '--quiet', 'src/invalid.ts'], 0, 'arquivo inválido retirado do commit');
+
+  // The lockfile check reads the npm version from the user agent that npx keeps from the environment.
+  const expectedMajor = /^npm@(\d+)\./.exec(JSON.parse(readFileSync(join(fixture, 'package.json'), 'utf8')).packageManager)[1];
+  const fakeNpm = (version) => ({ npm_config_user_agent: `npm/${version} node/${process.version}` });
+  writeFileSync(join(fixture, 'package-lock.json'), '{}\n');
+  run('git', ['add', 'package-lock.json'], 0, 'package-lock.json preparado');
+  run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], 0, 'lock aceito com o npm do packageManager', fakeNpm(`${expectedMajor}.0.0`));
+  const wrongNpm = run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], 1, 'lock rejeitado com outra versão major do npm', fakeNpm(`${Number(expectedMajor) - 1}.0.0`));
+  if (!`${wrongNpm.stdout}${wrongNpm.stderr}`.includes('nvm use')) throw new Error('Mensagem do lock rejeitado não orienta a correção');
 } finally {
   if (!fixture.startsWith(projectRoot + '\\') && !fixture.startsWith(projectRoot + '/')) {
     throw new Error(`Caminho temporário inesperado: ${fixture}`);

@@ -334,6 +334,25 @@ O prefixo da nova branch deve ser adaptado ao tipo de contribuição.
 
 O objetivo desse procedimento é garantir que novas implementações utilizem a base de integração mais atualizada disponível.
 
+**Versões de Node.js e npm:**
+
+O projeto fixa as versões em três lugares, que devem andar juntos:
+
+| Arquivo | Valor | Quem usa |
+| :--- | :--- | :--- |
+| `.nvmrc` | versão major do Node.js (`24`) | ambiente local (`nvm use`) e workflows do GitHub Actions (`node-version-file`) |
+| `package.json` → `packageManager` | versão exata do npm (`npm@11.19.1`) | workflows do GitHub Actions, que instalam essa versão, e o hook de `pre-commit` |
+| `eas.json` → perfil `base` → `node` | versão exata do Node.js (`24.22.3`, que traz o npm `11.19.1`) | build no servidor do EAS |
+
+O campo `engines` do `package.json` aceita o Node.js 24 e o npm 11. Fora dessas versões, o `npm install` apenas avisa (`EBADENGINE`).
+
+O `package-lock.json` deve ser gerado com o npm da mesma versão major do `packageManager`. Um lock gerado por outra versão major do npm produz entradas diferentes, e o `npm ci` do CI pode recusá-lo ([#240](https://github.com/orbita83/Orbity/issues/240)). Por isso:
+
+- o `pre-commit` bloqueia o commit do `package-lock.json` quando a versão major do npm em uso difere da do `packageManager`;
+- o CI regenera o lock com o npm do `packageManager` e falha se o resultado divergir do commitado.
+
+Se um desses bloqueios ocorrer, rode `nvm use`, regenere o lock com `npm install --package-lock-only` e faça o commit dele.
+
 ### 2.3. Implementação e commits
 
 Durante a implementação, o contribuidor deve manter as alterações relacionadas ao objetivo da atividade.
@@ -371,7 +390,7 @@ O contribuidor deve informar no Pull Request quais validações foram executadas
 
 A validação local não substitui as verificações obrigatórias executadas pelo CI.
 
-Após `npm install` ou `npm ci`, com as dependências de desenvolvimento e os scripts de instalação habilitados, o script `prepare` configura os hooks locais do Husky. O `pre-commit` executa ESLint apenas nos arquivos de código preparados para commit. O `commit-msg` exige um prefixo permitido, escopo, descrição e inicial minúscula na descrição; o idioma e a pertinência do escopo devem ser conferidos na revisão.
+Após `npm install` ou `npm ci`, com as dependências de desenvolvimento e os scripts de instalação habilitados, o script `prepare` configura os hooks locais do Husky. O `pre-commit` executa ESLint apenas nos arquivos de código preparados para commit e, quando o `package-lock.json` está entre eles, confere a versão do npm (Seção 2.2). O `commit-msg` exige um prefixo permitido, escopo, descrição e inicial minúscula na descrição; o idioma e a pertinência do escopo devem ser conferidos na revisão.
 
 O `pre-push` valida o nome de cada branch remota que será criada ou atualizada, conforme a Seção 1.2. Tags e exclusões de referências não passam por essa validação. As branches `main` e `development` são exceções de nomenclatura, sem autorização para pushes diretos. Os hooks não executam testes, compilação ou análise de tipos completa.
 
@@ -552,12 +571,14 @@ As ferramentas, comandos e jobs específicos serão definidos na configuração 
 
 Nos Pull Requests direcionados à branch `development`, o workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) (`CI development` / job `validate`) executa automaticamente:
 
-1. Instalação reproduzível de dependências (`npm ci`).
-2. Verificação de lint (`npm run lint`).
-3. Verificação estrita de tipos com regeneração das rotas tipadas do Expo Router (`npm run typecheck`).
-4. Geração do Storybook (`npm run build-storybook`). Uma história quebrada falha o CI mesmo com os testes passando.
-5. Execução não interativa dos testes automatizados (`npm test`).
-6. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
+1. Instalação do Node.js do `.nvmrc` e do npm do `packageManager` (Seção 2.2).
+2. Instalação reproduzível de dependências (`npm ci`).
+3. Conferência do `package-lock.json`, regenerado com `npm install --package-lock-only` e comparado com o commitado.
+4. Verificação de lint (`npm run lint`).
+5. Verificação estrita de tipos com regeneração das rotas tipadas do Expo Router (`npm run typecheck`).
+6. Geração do Storybook (`npm run build-storybook`). Uma história quebrada falha o CI mesmo com os testes passando.
+7. Execução não interativa dos testes automatizados (`npm test`).
+8. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
 Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npm run typecheck`, `npm run build-storybook`, `npm test` e `node tests/ods-theme.test.cjs`. O `npm run lint:architecture` ainda não faz parte do CI. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
 

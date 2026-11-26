@@ -20,11 +20,22 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .nvmrc
           cache: npm
+
+      - name: Configurar npm do packageManager
+        run: npm install --global "$(node -p "require('./package.json').packageManager")"
 
       - name: Instalar dependências
         run: npm ci
+
+      - name: Conferir sincronia do package-lock.json
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          if ! git diff --exit-code --stat package-lock.json; then
+            echo "::error file=package-lock.json::O package-lock.json não corresponde ao gerado pelo npm do packageManager. Rode 'nvm use' e 'npm install --package-lock-only' e faça commit do lock."
+            exit 1
+          fi
 
       - name: Verificar lint
         run: npm run lint

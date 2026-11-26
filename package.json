@@ -65,10 +65,13 @@
     "test:watch": "jest --watch"
   },
   "lint-staged": {
-    "*.{js,cjs,mjs,jsx,ts,tsx}": "eslint"
+    "*.{js,cjs,mjs,jsx,ts,tsx}": "eslint",
+    "package-lock.json": "node scripts/check-package-manager.mjs"
   },
   "private": true,
   "engines": {
-    "node": ">=22.15"
-  }
+    "node": ">=24 <25",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.19.1"
 }
