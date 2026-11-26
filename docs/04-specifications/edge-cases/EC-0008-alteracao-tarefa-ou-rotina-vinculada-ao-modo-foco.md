@@ -10,9 +10,7 @@ Enquanto uma sessão do modo foco está ativa, ocorre uma tentativa de excluir a
 
 ## 3. Comportamento esperado
 
-O sistema não deve permitir que uma sessão ativa do modo foco permaneça em execução sem tarefa ou rotina associada. Caso a exclusão seja solicitada durante uma sessão ativa, o sistema deve impedir a exclusão enquanto a sessão estiver ativa ou encerrar a sessão ativa do modo foco mediante confirmação da exclusão.
-
-*Ponto pendente de refinamento:* definir na especificação de fluxo se a ação de exclusão será bloqueada durante a sessão ativa ou se encerrará conjuntamente a sessão do modo foco após confirmação do usuário.
+O sistema não deve permitir que uma sessão ativa do modo foco permaneça em execução sem tarefa ou rotina associada. Quando o estudante confirma a exclusão de uma tarefa avulsa ou rotina que está vinculada a uma sessão ativa do modo foco, o sistema encerra conjuntamente a sessão ativa (registrando os minutos focados até aquele instante e cancelando a notificação de fim de ciclo `focus-cycle-end`) e desativa o efeito visual de foco no visualizador de sequência.
 
 ## 4. Critérios de aceite
 

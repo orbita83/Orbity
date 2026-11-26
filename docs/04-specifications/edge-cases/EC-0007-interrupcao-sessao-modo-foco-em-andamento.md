@@ -10,9 +10,7 @@ O usuário interrompe ou encerra uma sessão ativa do modo foco antes de conclui
 
 ## 3. Comportamento esperado
 
-O sistema deve encerrar a sessão ativa do modo foco e desativar o efeito visual exclusivo de sessão em andamento no visualizador de sequência, sem marcar automaticamente como concluída a tarefa ou rotina vinculada e sem aplicar qualquer penalidade ou mensagem punitiva ao estudante.
-
-*Ponto pendente de refinamento:* definir se os atributos adquiridos pelo visualizador de sequência ao longo de uma sessão interrompida são mantidos, ajustados proporcionalmente ou reiniciados para a próxima sessão.
+O sistema deve encerrar a sessão ativa do modo foco, cancelar qualquer notificação de fim de ciclo pendente, registrar apenas os minutos efetivamente focados para o card **Última sessão** e desativar o efeito visual exclusivo de sessão em andamento no visualizador de sequência (retornando o planeta ao estado normal da sequência atual para a próxima sessão), sem marcar automaticamente como concluída a tarefa ou rotina vinculada e sem aplicar qualquer penalidade ou mensagem punitiva ao estudante.
 
 ## 4. Critérios de aceite
 
