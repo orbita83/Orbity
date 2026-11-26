@@ -1,6 +1,6 @@
 # Categorias: domínio, persistência e casos de uso
 
-> **Status:** Proposed · **Autor:** MailsonSousa88 · **Data:** 2026-11-23 · **Issues:** #212, #213
+> **Status:** Implemented (PRs #229 e #243; sem `/egm:egm-review`) · **Autor:** MailsonSousa88 · **Data:** 2026-11-23 · **Issues:** #212, #213
 >
 > Continua `tarefas.md` (T3) e `rotinas.md` (R8). O domínio, a persistência e os casos de uso vieram na #212; as telas de Tarefas, Rotinas e Perfil → Categorias vêm na #213. A revisão `/egm:egm-review` não foi feita, por decisão do operador (EGM é opcional, `AGENTS.md`, Seção 4).
 

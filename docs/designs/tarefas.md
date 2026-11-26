@@ -1,8 +1,8 @@
 # Tarefas: domínio, persistência e integração com a Início
 
-> **Status:** Proposed (aguardando `/egm:egm-review` e revisão humana) · **Autores:** vitorlopes-coder, MailsonSousa88 · **Data:** 2026-11-15
+> **Status:** Implemented (PR #129; sem `/egm:egm-review`) · **Autores:** vitorlopes-coder, MailsonSousa88 · **Data:** 2026-11-15
 >
-> Este design foi escrito depois da implementação do PR #129, para cumprir o `AGENTS.md` (§4) e registrar as decisões já tomadas (issue #131). Onde o código e este texto divergirem, a revisão decide qual dos dois muda.
+> Este design foi escrito depois da implementação do PR #129, para cumprir o `AGENTS.md` (§4) e registrar as decisões já tomadas (issue #131). O código entregue é a referência do comportamento atual. Uma mudança que diverja deste texto atualiza o design no mesmo PR (`CONTRIBUTING.md`, Seção 2.6).
 
 ## Overview
 
