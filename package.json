@@ -64,9 +64,6 @@
     "test": "jest --watchAll=false",
     "test:watch": "jest --watch"
   },
-  "lint-staged": {
-    "*.{js,cjs,mjs,jsx,ts,tsx}": "eslint"
-  },
   "private": true,
   "engines": {
     "node": ">=22.15"

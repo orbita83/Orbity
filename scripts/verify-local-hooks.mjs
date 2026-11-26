@@ -21,12 +21,20 @@ function run(command, args, expectedStatus, label) {
 
 try {
   mkdirSync(join(fixture, 'scripts'));
-  mkdirSync(join(fixture, 'src'));
-  for (const file of ['package.json', 'eslint.config.js', 'commitlint.config.cjs']) {
+  mkdirSync(join(fixture, 'lib'));
+  mkdirSync(join(fixture, 'docs'));
+  mkdirSync(join(fixture, 'src', 'model'), { recursive: true });
+  mkdirSync(join(fixture, 'src', 'view'), { recursive: true });
+  for (const file of ['package.json', 'eslint.config.js', 'commitlint.config.cjs', 'lint-staged.config.mjs']) {
     copyFileSync(join(projectRoot, file), join(fixture, file));
   }
-  copyFileSync(join(projectRoot, 'scripts', 'conventions.cjs'), join(fixture, 'scripts', 'conventions.cjs'));
-  copyFileSync(join(projectRoot, 'scripts', 'validate-branch.mjs'), join(fixture, 'scripts', 'validate-branch.mjs'));
+  for (const file of ['conventions.cjs', 'validate-branch.mjs', 'lint-architecture.cjs', 'lint-architecture.mjs']) {
+    copyFileSync(join(projectRoot, 'scripts', file), join(fixture, 'scripts', file));
+  }
+  // tsconfig mínimo para o linter de arquitetura, com o alias @/* do projeto.
+  writeFileSync(join(fixture, 'tsconfig.json'), JSON.stringify({
+    compilerOptions: { paths: { '@/*': ['./src/*'] }, jsx: 'preserve', types: [] },
+  }));
 
   run('git', ['init', '--initial-branch=feat/valid-branch'], 0, 'repositório temporário criado');
   const pushInputPath = join(fixture, 'push-refs.txt');
@@ -67,12 +75,42 @@ try {
   writeFileSync(messagePath, 'feat: Adiciona validacao\n');
   run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'commit-msg', '--', messagePath], 1, 'mensagem inválida rejeitada');
 
-  writeFileSync(join(fixture, 'src', 'valid.ts'), 'export const valid = 1;\n');
-  writeFileSync(join(fixture, 'src', 'invalid.ts'), 'export const invalid = ;\n');
-  run('git', ['add', 'src/valid.ts'], 0, 'arquivo válido preparado');
-  run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], 0, 'lint ignora arquivo não preparado');
-  run('git', ['add', 'src/invalid.ts'], 0, 'arquivo inválido preparado');
-  run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], 1, 'erro de lint impede commit');
+  const preCommit = (expectedStatus, label) =>
+    run('git', ['-c', `core.hooksPath=${hookPath}`, 'hook', 'run', 'pre-commit'], expectedStatus, label);
+
+  // ESLint (fora de src/, para não acionar o linter de arquitetura).
+  writeFileSync(join(fixture, 'lib', 'valid.ts'), 'export const valid = 1;\n');
+  writeFileSync(join(fixture, 'lib', 'invalid.ts'), 'export const invalid = ;\n');
+  run('git', ['add', 'lib/valid.ts'], 0, 'arquivo válido preparado');
+  preCommit(0, 'lint ignora arquivo não preparado');
+  run('git', ['add', 'lib/invalid.ts'], 0, 'arquivo inválido preparado');
+  preCommit(1, 'erro de lint impede commit');
+  run('git', ['reset', '-q'], 0, 'área de preparação limpa');
+  rmSync(join(fixture, 'lib', 'invalid.ts'));
+
+  // Linter de arquitetura (#205): roda só quando o commit inclui arquivos de src/.
+  writeFileSync(join(fixture, 'src', 'view', 'screen.ts'), 'export const screen = "tela";\n');
+  writeFileSync(join(fixture, 'src', 'model', 'entity.ts'), 'export type Entity = { id: string };\n');
+  run('git', ['add', 'src/model/entity.ts', 'src/view/screen.ts'], 0, 'código com arquitetura válida preparado');
+  const output = (result) => `${result.stdout}${result.stderr}`;
+  const validArchitecture = preCommit(0, 'arquitetura válida aceita');
+  if (!output(validArchitecture).includes('lint:architecture')) {
+    throw new Error('O pre-commit não executou o linter de arquitetura com arquivos de src/ preparados');
+  }
+  run('git', ['reset', '-q'], 0, 'área de preparação limpa de novo');
+
+  writeFileSync(join(fixture, 'src', 'model', 'wrong.ts'), 'import { screen } from "@/view/screen";\nexport const wrong = screen;\n');
+  writeFileSync(join(fixture, 'docs', 'nota.md'), '# Nota\n');
+  run('git', ['add', 'docs/nota.md'], 0, 'só documentação preparada, com violação fora do commit');
+  const docsOnly = preCommit(0, 'linter de arquitetura não roda sem arquivos de src/');
+  if (output(docsOnly).includes('lint:architecture')) {
+    throw new Error('O pre-commit executou o linter de arquitetura sem arquivos de src/ preparados');
+  }
+  run('git', ['add', 'src/model/wrong.ts'], 0, 'violação de arquitetura preparada');
+  const archFailure = preCommit(1, 'violação de arquitetura impede commit');
+  if (!output(archFailure).includes('ARCH-001')) {
+    throw new Error('A falha do pre-commit não veio do linter de arquitetura (ARCH-001)');
+  }
 } finally {
   if (!fixture.startsWith(projectRoot + '\\') && !fixture.startsWith(projectRoot + '/')) {
     throw new Error(`Caminho temporário inesperado: ${fixture}`);

@@ -29,6 +29,9 @@ jobs:
       - name: Verificar lint
         run: npm run lint
 
+      - name: Verificar arquitetura
+        run: npm run lint:architecture
+
       - name: Verificar tipos
         run: npm run typecheck
 
