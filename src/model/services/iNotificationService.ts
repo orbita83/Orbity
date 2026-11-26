@@ -34,6 +34,11 @@ export interface INotificationService {
   cancel(id: string): Promise<void>;
   /** Lista todos os lembretes atualmente agendados para reconciliação. */
   listScheduled(): Promise<ScheduledNotification[]>;
+  /**
+   * Faz os lembretes aparecerem (banner e central de notificações) também com o app em primeiro plano.
+   * Chamado na inicialização do app; idempotente.
+   */
+  configureForegroundPresentation?(): void;
   /** Escuta o toque do estudante em uma notificação entregue, repassando seus metadados puros (`data`). */
   onNotificationResponse?(listener: (data: Readonly<Record<string, string>>) => void): () => void;
 }

@@ -33,9 +33,11 @@ import { HomeUseCases } from "@/usecase/homeUseCases";
 import type { ICategoryUseCases } from "@/usecase/iCategoryUseCases";
 import type { IFocusUseCases } from "@/usecase/iFocusUseCases";
 import type { IHomeUseCases } from "@/usecase/iHomeUseCases";
+import type { INotificationUseCases } from "@/usecase/iNotificationUseCases";
 import type { IRoutineUseCases } from "@/usecase/iRoutineUseCases";
 import type { IStreakUseCases } from "@/usecase/iStreakUseCases";
 import type { ITaskUseCases } from "@/usecase/iTaskUseCases";
+import { NotificationUseCases } from "@/usecase/notificationUseCases";
 import { RoutineUseCases } from "@/usecase/routineUseCases";
 import { StreakUseCases } from "@/usecase/streakUseCases";
 import { TaskUseCases } from "@/usecase/taskUseCases";
@@ -210,6 +212,7 @@ export type AppUseCases = {
   profile: IProfileUseCases;
   routines: IRoutineUseCases;
   categories: ICategoryUseCases;
+  notifications: INotificationUseCases;
 };
 
 /**
@@ -369,6 +372,10 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
         (deps: { categories: ICategoryDataSource; clock: IClockService }) =>
           new CategoryUseCases(deps.categories, deps.clock),
         { categories: dataSources.categories, clock: services.clock },
+      ),
+      notifications: composeUseCase(
+        (deps: { notifications: INotificationService }) => new NotificationUseCases(deps.notifications),
+        { notifications: services.notifications },
       ),
     }),
   });

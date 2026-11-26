@@ -2,7 +2,7 @@
 
 ## Overview
 
-Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, DataSources ou serviços.
+Componentes de UI reutilizáveis da camada `view`, construídos sobre primitivas do React Native (`View`, `Pressable`, `Text`, `ScrollView`) e estilizados exclusivamente a partir dos tokens de `../theme/tokens.ts` (`themes`, `OrbityTheme`). Todos os componentes são exportados de forma nomeada e são puramente de apresentação: recebem dados e callbacks por props e não acessam casos de uso, DataSources ou serviços. A única exceção é o `AppLifecycle`, o ponto raiz sem UI dos efeitos globais ([ADR-0003](../../../docs/05-architecture/decisions/ADR-0003.md)).
 
 Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton`, `OdsGlobal` e outros) são histórias do Storybook (`@storybook/react-native-web-vite`), não fazem parte do código de produção e não são importados pelo app. Os arquivos `*.test.tsx` contêm testes Jest.
 
@@ -12,6 +12,7 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
   - `MainTabBar({ state, navigation }: MainTabBarProps)`: barra de abas customizada para o `Tabs` do Expo Router; usada em `src/app/_layout.tsx`. Renderiza `NavBar` com `theme={themes.cosmic}` dentro de um `View` com `paddingBottom: insets.bottom` (`useSafeAreaInsets`).
   - `MainTabBarProps`: tipo derivado de `Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0]`.
   - Mapeamentos internos (não exportados) `routeByTab` / `tabByRoute`: `inicio` <-> `index`, `tarefas` <-> `tasks`, `rotinas` <-> `routines`, `cosmos` <-> `cosmos`, `perfil` <-> `profile`.
+- `AppLifecycle.tsx`: `AppLifecycle()`, componente raiz sem UI montado uma vez em `src/app/_layout.tsx`. Só chama `useAppLifecycleViewModel()` e retorna `null`. Na inicialização, faz os lembretes aparecerem com o app em primeiro plano (#269).
 - `CheckCircle.tsx`: `CheckCircle({ checked, onToggle, accessibilityLabel, disabled? })`, círculo de concluir com papel `checkbox` e alvo de 48 dp.
 - `SuccessDialog.tsx`: `SuccessDialog({ visible, title, message, actionLabel, onClose })`, variante de sucesso do Modal ("Tarefa criada!").
 - `ConfirmDialog.tsx`: `ConfirmDialog(props)`, variante Confirmação do Modal; a ação de confirmação (`confirmLabel`) recebe `PrimaryButton` (`onConfirm`) e o ✕ e a ação de cancelamento (`cancelLabel`, estilo secundário com borda) chamam `onCancel`.

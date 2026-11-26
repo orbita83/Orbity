@@ -61,6 +61,7 @@ const sanitizeData = (
  */
 export class ExpoNotificationService implements INotificationService {
   private channelInitialized = false;
+  private foregroundPresentationConfigured = false;
 
   async getPermissionStatus(): Promise<NotificationPermissionStatus> {
     try {
@@ -154,6 +155,31 @@ export class ExpoNotificationService implements INotificationService {
       });
     } catch (error) {
       throw toNotificationServiceError(error, "Não foi possível listar as notificações agendadas.");
+    }
+  }
+
+  configureForegroundPresentation(): void {
+    if (this.foregroundPresentationConfigured) return;
+    try {
+      const notifications = loadNotificationsModule();
+      if (typeof notifications.setNotificationHandler !== "function") {
+        return;
+      }
+      notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowBanner: true,
+          shouldShowList: true,
+          // No Android, sem som o banner não aparece, qualquer que seja a prioridade do canal.
+          shouldPlaySound: true,
+          shouldSetBadge: false,
+        }),
+      });
+      this.foregroundPresentationConfigured = true;
+    } catch (error) {
+      throw toNotificationServiceError(
+        error,
+        "Não foi possível configurar a exibição de lembretes com o app aberto.",
+      );
     }
   }
 
