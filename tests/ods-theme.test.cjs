@@ -20,6 +20,7 @@ assert.equal(themes.cosmic.navbar.focusColor, themes.cosmic.color.focus);
 // Versão 1.2: borda sutil na navbar, correção do texto secundário claro e novos tokens.
 assert.equal(themes.light.color['on-surface-variant'], '#5F6673');
 assert.equal(themes.cosmic.color['border-subtle'], 'rgba(250, 249, 255, 0.06)');
+assert.equal(themes.cosmic.color['border-control'], '#7A70B8');
 assert.equal(themes.cosmic.componentOverrides.navbarBorder, themes.cosmic.color['border-subtle']);
 assert.equal(themes.cosmic.navbar.indicatorRadius, 16);
 assert.equal(themes.cosmic.sheet.radius, 24);
@@ -84,6 +85,19 @@ for (const [foreground, background, minimum] of [
     [color, cosmicColors.sheet, 3],
     [color, cosmicColors.card, 3],
   ]),
+  // Issue #262 (WCAG 1.4.11): contorno de controle ≥ 3:1 contra o campo e a superfície, nos três temas.
+  ...['cosmic', 'dark', 'light'].flatMap((name) => [
+    [themes[name].color['border-control'], themes[name].color['surface-variant'], 3],
+    [themes[name].color['border-control'], themes[name].color.surface, 3],
+  ]),
+  [themes.cosmic.color['border-control'], themes.cosmic.navbar.bg, 3],
+  // Contorno da conquista bloqueada sobre o card e o painel.
+  [cosmicColors.achievementPendingBorder, cosmicColors.card, 3],
+  [cosmicColors.achievementPendingBorder, cosmicColors.sheet, 3],
+  // Cores semânticas como ícone ou contorno (3:1) sobre a superfície, em todos os temas.
+  ...['cosmic', 'dark', 'light'].flatMap((name) =>
+    ['success', 'warning', 'info', 'error'].map((role) => [themes[name].color[role], themes[name].color.surface, 3]),
+  ),
 ]) assert.ok(contrast(foreground, background) >= minimum, `${foreground} / ${background}`);
 console.log('Contratos de tema e contrastes: OK');
 

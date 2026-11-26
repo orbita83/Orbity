@@ -16,7 +16,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 ## Anatomia
 
 1. Rótulo visível acima do campo, `font.label`, `color.on-surface-variant`.
-2. Campo: fundo `color.surface-variant`, contorno de 1 dp `color.border-subtle`, cantos `radius.md`, altura mínima `target.min-size`, padding `space.md`, texto `font.body` em `color.on-surface`.
+2. Campo: fundo `color.surface-variant`, contorno de 1 dp `color.border-control` (≥ 3:1, WCAG 1.4.11), cantos `radius.md`, altura mínima `target.min-size`, padding `space.md`, texto `font.body` em `color.on-surface`.
 3. Texto de ajuda ou erro abaixo, `font.label`; erro com ícone em `color.error` e texto em `color.on-surface`.
 4. Grupos em linha (data e horários): `flex: 1` com `minWidth: 0` no app. Isso impede que campos de data e hora empurrem o formulário para fora da tela (problema visto no protótipo de Nova tarefa).
 
@@ -32,7 +32,7 @@ Referências locais: [05-padroes.md](../05-padroes.md#3-criação-de-tarefas-e-r
 
 | Estado | Aparência (tokens) | Comportamento | Acessibilidade |
 | --- | --- | --- | --- |
-| Padrão | Contorno `color.border-subtle` | Recebe digitação | Rótulo associado ao campo |
+| Padrão | Contorno `color.border-control` | Recebe digitação | Rótulo associado ao campo |
 | Pressionado | Sem mudança visual | Abre teclado ou seletor | — |
 | Foco | Contorno 2 dp `color.focus` | Indica edição | Contraste ≥ 3:1 |
 | Erro | Ícone `color.error` e mensagem | Mantém o valor digitado | Mensagem associada e anunciada |

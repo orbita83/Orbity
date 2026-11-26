@@ -26,7 +26,7 @@ Referências locais: [05-padroes.md](../05-padroes.md) (F1/F2 e F3), [modal.md](
 | Variante | Uso | Tokens |
 | --- | --- | --- |
 | Desbloqueada | Conquista obtida | Preenchimento `achievement.unlocked-bg` (`color.action-subtle`), contorno de 1 dp `achievement.unlocked-border` (`#C47EFF` no cósmico), ícone `color.on-surface` |
-| Bloqueada | Conquista a obter | Fundo `cosmicGradients.card` (fim, `#0D0E26`), contorno `achievement.locked-border` (`color.border-subtle`; cósmico pendente `#2B2654`), símbolo e selo de cadeado em `achievementPendingIcon` (`#8C7BCB`) |
+| Bloqueada | Conquista a obter | Fundo `cosmicGradients.card` (fim, `#0D0E26`), contorno `achievement.locked-border` (`color.border-subtle`; cósmico pendente `#7A70B8`, 4,14:1 sobre o card, issue #262), símbolo e selo de cadeado em `achievementPendingIcon` (`#8C7BCB`) |
 
 ## Estados
 

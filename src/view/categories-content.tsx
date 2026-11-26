@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: theme.radius.md,
     borderWidth: theme.border.widthThin,
-    borderColor: cosmicBorders.sheet,
+    borderColor: theme.color["border-control"],
     backgroundColor: theme.navbar.bg,
   },
   iconOptionSelected: {

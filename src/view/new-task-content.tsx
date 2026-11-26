@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     paddingRight: theme.space.sm,
     borderRadius: theme.radius.md,
     borderWidth: theme.border.widthThin,
-    borderColor: theme.color["border-subtle"],
+    borderColor: theme.color["border-control"],
     backgroundColor: theme.color["surface-variant"],
   },
   selectIcon: {

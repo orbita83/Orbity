@@ -15,7 +15,9 @@ export const primitives = {
   "neutral-600": "#5F6673",
   "neutral-900": "#1B1B1F",
   "success-500": "#22C55E",
+  "success-700": "#15803D",
   "warning-500": "#F59E0B",
+  "warning-700": "#B45309",
   "error-500": "#EF4444",
   "info-500": "#3B82F6",
   // Espaçamentos primitivos
@@ -37,6 +39,8 @@ export const cosmicColors = {
   text: "#FAF9FF",
   muted: "#BBB6E3",
   inactive: "#9990CB",
+  // Contorno de controles (campos, seletores, chips): 3:1 mínimo contra o card e o fundo (WCAG 1.4.11).
+  borderControl: "#7A70B8",
   action: "#7137F5",
   actionEnd: "#703BF6",
   actionHover: "#8648FA",
@@ -50,7 +54,7 @@ export const cosmicColors = {
   streakFlame: "#FFB52E",
   streakFlameCore: "#FFE48A",
   achievementPendingIcon: "#8C7BCB",
-  achievementPendingBorder: "#2B2654",
+  achievementPendingBorder: "#7A70B8",
 } as const;
 
 // Camadas da ilustração do planeta (02-tokens.md, variante cósmica). Decorativas: não carregam texto.
@@ -142,11 +146,14 @@ function createTheme(mode: ThemeMode, cosmic = false) {
     "on-surface": cosmic ? cosmicColors.text : dark ? primitives["neutral-0"] : primitives["neutral-900"],
     "on-surface-variant": cosmic ? cosmicColors.muted : dark ? primitives["neutral-200"] : primitives["neutral-600"],
     border: cosmic ? cosmicColors.focus : dark ? primitives["neutral-500"] : primitives["neutral-200"],
+    // Contorno de controles que delimitam uma área de toque ou digitação (≥ 3:1, WCAG 1.4.11).
+    "border-control": cosmic ? cosmicColors.borderControl : primitives["neutral-500"],
     "border-subtle": cosmic ? "rgba(250, 249, 255, 0.06)" : dark ? "rgba(255, 255, 255, 0.08)" : "rgba(27, 27, 31, 0.08)",
     scrim: "rgba(3, 4, 23, 0.72)",
     error: primitives["error-500"],
-    success: primitives["success-500"],
-    warning: primitives["warning-500"],
+    // No tema claro, success-500 e warning-500 ficam abaixo de 3:1 sobre branco; usa as variantes 700.
+    success: dark ? primitives["success-500"] : primitives["success-700"],
+    warning: dark ? primitives["warning-500"] : primitives["warning-700"],
     info: primitives["info-500"],
     focus: cosmic ? cosmicColors.focus : dark ? primitives["purple-400"] : primitives["blue-600"],
   };
