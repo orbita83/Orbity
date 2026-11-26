@@ -413,16 +413,18 @@ O workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) executa 
 2. Instalação determinística de dependências (`npm ci`).
 3. Conferência do `package-lock.json`, regenerado com o npm do `packageManager` e comparado com o commitado.
 4. Verificação estática de formatação e lint (`npm run lint`).
-5. Verificação rigorosa do compilador TypeScript com regeneração prévia das rotas tipadas do Expo Router (`npm run typecheck`).
-6. Geração estática do Storybook (`npm run build-storybook`).
-7. Execução completa da suíte de testes automatizados (`npm test`).
-8. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
+5. Verificação da arquitetura (`npm run lint:architecture`): camadas, dependências, contratos, nomes e ViewModels.
+6. Verificação rigorosa do compilador TypeScript com regeneração prévia das rotas tipadas do Expo Router (`npm run typecheck`).
+7. Geração estática do Storybook (`npm run build-storybook`).
+8. Execução completa da suíte de testes automatizados (`npm test`).
+9. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
 ### 9.2. Checklist Local Pré-Commit e Pré-PR
 Sempre execute localmente a sequência completa de validações antes de abrir ou atualizar seu Pull Request:
 
 ```bash
 npm run lint
+npm run lint:architecture
 npm run typecheck
 npm test
 node scripts/verify-local-hooks.mjs

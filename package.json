@@ -64,10 +64,6 @@
     "test": "jest --watchAll=false",
     "test:watch": "jest --watch"
   },
-  "lint-staged": {
-    "*.{js,cjs,mjs,jsx,ts,tsx}": "eslint",
-    "package-lock.json": "node scripts/check-package-manager.mjs"
-  },
   "private": true,
   "engines": {
     "node": ">=24 <25",

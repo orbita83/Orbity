@@ -261,16 +261,17 @@ O CI ([`ci.yml`](./.github/workflows/ci.yml)) roda em todo Pull Request para `de
 
 ```bash
 npm run lint                     # 1. ESLint
-npm run typecheck                # 2. Rotas tipadas do Expo Router + tipos TypeScript (modo estrito)
-npm run build-storybook          # 3. Build do Storybook (uma story quebrada falha o CI)
-npm test                         # 4. Jest + Testing Library
-node tests/ods-theme.test.cjs    # 5. Contratos de tema e contraste do ODS
+npm run lint:architecture        # 2. Limites entre as camadas da arquitetura
+npm run typecheck                # 3. Rotas tipadas do Expo Router + tipos TypeScript (modo estrito)
+npm run build-storybook          # 4. Build do Storybook (uma story quebrada falha o CI)
+npm test                         # 5. Jest + Testing Library
+node tests/ods-theme.test.cjs    # 6. Contratos de tema e contraste do ODS
 node scripts/verify-local-hooks.mjs  # Ao alterar .husky/, scripts/ ou commitlint.config.cjs
 ```
 
 | Hook do Husky | O que executa |
 | :--- | :--- |
-| `pre-commit` | ESLint nos arquivos preparados (lint-staged). |
+| `pre-commit` | ESLint nos arquivos preparados e, se o commit incluir arquivos de `src/`, o linter de arquitetura (lint-staged, em `lint-staged.config.mjs`). |
 | `commit-msg` | Commitlint no formato do projeto. |
 | `pre-push` | `scripts/validate-branch.mjs` (nome da branch). |
 
