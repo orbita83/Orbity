@@ -293,6 +293,26 @@ const detailsProps = (overrides: Partial<RoutineDetailsScreenContentProps> = {})
 });
 
 describe("RoutineDetailsScreenContent", () => {
+  it("#220: a largura do preenchimento da barra acompanha as tarefas concluídas, de 0% a 100%", async () => {
+    const total = PROTOTYPE_ROUTINE_DETAILS.tasks.length;
+    await inSafeArea(<RoutineDetailsScreenContent {...detailsProps({ completedCount: 0 })} />);
+    expect(screen.queryByTestId("routine-progress-fill")).toBeNull();
+
+    await screen.rerender(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <RoutineDetailsScreenContent {...detailsProps({ completedCount: 1 })} />
+      </SafeAreaProvider>,
+    );
+    expect(screen.getByTestId("routine-progress-fill")).toHaveStyle({ width: `${(1 / total) * 100}%` });
+
+    await screen.rerender(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <RoutineDetailsScreenContent {...detailsProps({ completedCount: total })} />
+      </SafeAreaProvider>,
+    );
+    expect(screen.getByTestId("routine-progress-fill")).toHaveStyle({ width: "100%" });
+  });
+
   it("3.2: resumo, progresso, tarefas e Marcar como concluída", async () => {
     const props = detailsProps();
     await inSafeArea(<RoutineDetailsScreenContent {...props} />);
