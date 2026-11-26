@@ -1,6 +1,7 @@
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialSymbol } from "./MaterialSymbol";
 import { PrimaryButton } from "./PrimaryButton";
+import { SafeInputArea } from "./SafeInputArea";
 import { TextField } from "./TextField";
 import { cosmicBorders, themes, type OrbityTheme } from "../theme/tokens";
 
@@ -37,7 +38,7 @@ export const EditProfileNameModal = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={close} statusBarTranslucent>
-      <KeyboardAvoidingView style={styles.scrim} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <SafeInputArea style={styles.scrim}>
         <View accessibilityViewIsModal aria-modal style={styles.surface}>
           <View style={styles.header}>
             <Text accessibilityRole="header" allowFontScaling style={styles.title}>
@@ -93,7 +94,7 @@ export const EditProfileNameModal = ({
             </Pressable>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </SafeInputArea>
     </Modal>
   );
 };

@@ -9,6 +9,7 @@ import type {
 } from "../viewmodel/useNewTaskViewModel";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
+import { SafeInputArea } from "./components/SafeInputArea";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SuccessDialog } from "./components/SuccessDialog";
 import { TaskPickerModal, type TaskPickerModalOption } from "./components/TaskPickerModal";
@@ -160,92 +161,94 @@ export const NewTaskScreenContent = ({
         backLabel={editing ? TASKS_COPY["form.editClose"] : TASKS_COPY["form.close"]}
         onBack={onClose}
       />
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
-        <TextField
-          label={TASKS_COPY["form.name"]}
-          requirement="required"
-          value={fields.title}
-          onChangeText={(value) => setField("title", value)}
-          placeholder={TASKS_COPY["form.name.placeholder"]}
-          error={titleError ? TASKS_COPY["form.name.error"] : null}
-        />
-        <TextField
-          label={TASKS_COPY["form.description"]}
-          requirement="optional"
-          value={fields.description}
-          onChangeText={(value) => setField("description", value)}
-          placeholder={TASKS_COPY["form.description.placeholder"]}
-          multiline
-        />
-        <DateTimeGroup
-          legend={TASKS_COPY["form.start"]}
-          dateField="startDate"
-          timeField="startTime"
-          fields={fields}
-          setField={setField}
-          openPicker={openPicker}
-        />
-        <DateTimeGroup
-          legend={TASKS_COPY["form.end"]}
-          dateField="endDate"
-          timeField="endTime"
-          fields={fields}
-          setField={setField}
-          openPicker={openPicker}
-        />
+      <SafeInputArea>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
+          <TextField
+            label={TASKS_COPY["form.name"]}
+            requirement="required"
+            value={fields.title}
+            onChangeText={(value) => setField("title", value)}
+            placeholder={TASKS_COPY["form.name.placeholder"]}
+            error={titleError ? TASKS_COPY["form.name.error"] : null}
+          />
+          <TextField
+            label={TASKS_COPY["form.description"]}
+            requirement="optional"
+            value={fields.description}
+            onChangeText={(value) => setField("description", value)}
+            placeholder={TASKS_COPY["form.description.placeholder"]}
+            multiline
+          />
+          <DateTimeGroup
+            legend={TASKS_COPY["form.start"]}
+            dateField="startDate"
+            timeField="startTime"
+            fields={fields}
+            setField={setField}
+            openPicker={openPicker}
+          />
+          <DateTimeGroup
+            legend={TASKS_COPY["form.end"]}
+            dateField="endDate"
+            timeField="endTime"
+            fields={fields}
+            setField={setField}
+            openPicker={openPicker}
+          />
 
-        <View style={styles.group}>
-          <Text allowFontScaling style={styles.legend}>
-            {TASKS_COPY["form.category"]} <Text style={styles.optional}>(opcional)</Text>
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`${TASKS_COPY["form.category"]}: ${categoryLabel}`}
-            accessibilityHint={TASKS_COPY["form.category.choose"]}
-            onPress={() => openPicker("category")}
-            style={({ pressed }) => [styles.select, pressed && styles.pressed]}
-          >
-            <View style={styles.selectIcon}>
-              <MaterialSymbol
-                name={categorySymbol}
-                filled
-                color={cosmicColors.focus}
-                size={theme.space.lg}
-              />
+          <View style={styles.group}>
+            <Text allowFontScaling style={styles.legend}>
+              {TASKS_COPY["form.category"]} <Text style={styles.optional}>(opcional)</Text>
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`${TASKS_COPY["form.category"]}: ${categoryLabel}`}
+              accessibilityHint={TASKS_COPY["form.category.choose"]}
+              onPress={() => openPicker("category")}
+              style={({ pressed }) => [styles.select, pressed && styles.pressed]}
+            >
+              <View style={styles.selectIcon}>
+                <MaterialSymbol
+                  name={categorySymbol}
+                  filled
+                  color={cosmicColors.focus}
+                  size={theme.space.lg}
+                />
+              </View>
+              <Text allowFontScaling style={styles.selectValue}>
+                {categoryLabel}
+              </Text>
+              <MaterialSymbol name="chevron_right" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+            </Pressable>
+          </View>
+
+          {formError ? (
+            <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.formError}>
+              <MaterialSymbol name="error" filled color={theme.color.error} size={theme.navbar.iconSize} />
+              <Text allowFontScaling style={styles.formErrorText}>
+                {formError}
+              </Text>
             </View>
-            <Text allowFontScaling style={styles.selectValue}>
-              {categoryLabel}
-            </Text>
-            <MaterialSymbol name="chevron_right" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
-          </Pressable>
+          ) : null}
+
+          {reminderPermissionNotice ? (
+            <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.formError}>
+              <MaterialSymbol name="schedule" filled color={cosmicColors.focus} size={theme.navbar.iconSize} />
+              <Text allowFontScaling style={styles.formErrorText}>
+                {reminderPermissionNotice}
+              </Text>
+            </View>
+          ) : null}
+        </ScrollView>
+        <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
+          <PrimaryButton
+            theme={theme}
+            label={editing ? TASKS_COPY["form.editSubmit"] : TASKS_COPY["form.submit"]}
+            onPress={submit}
+            disabled={submitting}
+          />
         </View>
-
-        {formError ? (
-          <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.formError}>
-            <MaterialSymbol name="error" filled color={theme.color.error} size={theme.navbar.iconSize} />
-            <Text allowFontScaling style={styles.formErrorText}>
-              {formError}
-            </Text>
-          </View>
-        ) : null}
-
-        {reminderPermissionNotice ? (
-          <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.formError}>
-            <MaterialSymbol name="schedule" filled color={cosmicColors.focus} size={theme.navbar.iconSize} />
-            <Text allowFontScaling style={styles.formErrorText}>
-              {reminderPermissionNotice}
-            </Text>
-          </View>
-        ) : null}
-      </ScrollView>
-      <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
-        <PrimaryButton
-          theme={theme}
-          label={editing ? TASKS_COPY["form.editSubmit"] : TASKS_COPY["form.submit"]}
-          onPress={submit}
-          disabled={submitting}
-        />
-      </View>
+      </SafeInputArea>
       <TaskPickerModal
         visible={activePicker !== null}
         title={pickerTitleOf(activePicker)}

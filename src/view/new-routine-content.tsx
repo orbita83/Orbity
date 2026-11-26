@@ -6,6 +6,7 @@ import { ConfirmDialog } from "./components/ConfirmDialog";
 import { GradientSurface } from "./components/GradientSurface";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
+import { SafeInputArea } from "./components/SafeInputArea";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { SuccessDialog } from "./components/SuccessDialog";
@@ -96,155 +97,157 @@ export const NewRoutineScreenContent = ({
         backLabel={editing ? ROUTINES_COPY["form.editBack"] : ROUTINES_COPY["form.back"]}
         onBack={leave}
       />
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
-        {/* F8, Carregando: esqueleto enquanto a rotina a editar chega. */}
-        {loading ? (
-          <SkeletonCards accessibilityLabel={ROUTINES_COPY["details.loading"]} />
-        ) : (
-          <>
-            <TextField
-              label={ROUTINES_COPY["form.name"]}
-              requirement="required"
-              value={name}
-              onChangeText={setName}
-              placeholder={ROUTINES_COPY["form.name.placeholder"]}
-              error={nameError ? ROUTINES_COPY["form.name.error"] : null}
-            />
+      <SafeInputArea>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
+          {/* F8, Carregando: esqueleto enquanto a rotina a editar chega. */}
+          {loading ? (
+            <SkeletonCards accessibilityLabel={ROUTINES_COPY["details.loading"]} />
+          ) : (
+            <>
+              <TextField
+                label={ROUTINES_COPY["form.name"]}
+                requirement="required"
+                value={name}
+                onChangeText={setName}
+                placeholder={ROUTINES_COPY["form.name.placeholder"]}
+                error={nameError ? ROUTINES_COPY["form.name.error"] : null}
+              />
 
-            <View style={styles.group}>
-              <GroupLabel label={ROUTINES_COPY["form.icon"]} requirement="opcional" />
-              <View accessibilityRole="radiogroup" accessibilityLabel={ROUTINES_COPY["form.icon"]} style={styles.iconGrid}>
-                {iconOptions.map((option) => {
-                  const selected = option === icon;
-                  return (
-                    <Pressable
-                      key={option}
-                      accessibilityRole="radio"
-                      accessibilityLabel={getRoutineIconLabel(option, categories)}
-                      accessibilityState={{ checked: selected }}
-                      aria-checked={selected}
-                      onPress={() => setIcon(option)}
-                      style={({ pressed }) => [styles.iconOption, selected && styles.optionOn, pressed && styles.pressed]}
-                    >
-                      <MaterialSymbol
-                        name={getRoutineIconSymbol(option, categories)}
-                        filled
-                        color={selected ? theme.color["on-action"] : cosmicColors.focus}
-                        size={theme.navbar.iconSize}
-                      />
-                    </Pressable>
-                  );
-                })}
+              <View style={styles.group}>
+                <GroupLabel label={ROUTINES_COPY["form.icon"]} requirement="opcional" />
+                <View accessibilityRole="radiogroup" accessibilityLabel={ROUTINES_COPY["form.icon"]} style={styles.iconGrid}>
+                  {iconOptions.map((option) => {
+                    const selected = option === icon;
+                    return (
+                      <Pressable
+                        key={option}
+                        accessibilityRole="radio"
+                        accessibilityLabel={getRoutineIconLabel(option, categories)}
+                        accessibilityState={{ checked: selected }}
+                        aria-checked={selected}
+                        onPress={() => setIcon(option)}
+                        style={({ pressed }) => [styles.iconOption, selected && styles.optionOn, pressed && styles.pressed]}
+                      >
+                        <MaterialSymbol
+                          name={getRoutineIconSymbol(option, categories)}
+                          filled
+                          color={selected ? theme.color["on-action"] : cosmicColors.focus}
+                          size={theme.navbar.iconSize}
+                        />
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                <Text allowFontScaling style={styles.helper}>
+                  {ROUTINES_COPY["form.icon.helper"]}
+                </Text>
               </View>
-              <Text allowFontScaling style={styles.helper}>
-                {ROUTINES_COPY["form.icon.helper"]}
-              </Text>
-            </View>
 
-            <TextField
-              label={ROUTINES_COPY["form.description"]}
-              requirement="optional"
-              value={description}
-              onChangeText={setDescription}
-              placeholder={ROUTINES_COPY["form.description.placeholder"]}
-              multiline
-            />
+              <TextField
+                label={ROUTINES_COPY["form.description"]}
+                requirement="optional"
+                value={description}
+                onChangeText={setDescription}
+                placeholder={ROUTINES_COPY["form.description.placeholder"]}
+                multiline
+              />
 
-            <View style={styles.group}>
-              <GroupLabel label={ROUTINES_COPY["form.days"]} requirement="obrigatório" />
-              <View style={styles.grid}>
-                {WEEK.map((day) => {
-                  const on = days.includes(day);
-                  return (
-                    <Pressable
-                      key={day}
-                      accessibilityRole="checkbox"
-                      accessibilityLabel={weekdayLong(day)}
-                      accessibilityState={{ checked: on }}
-                      aria-checked={on}
-                      onPress={() => toggleDay(day)}
-                      style={({ pressed }) => [styles.option, on && styles.optionOn, pressed && styles.pressed]}
-                    >
-                      <Text allowFontScaling style={[styles.dayLabel, on && styles.dayLabelOn]}>
-                        {weekdayShort(day)}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+              <View style={styles.group}>
+                <GroupLabel label={ROUTINES_COPY["form.days"]} requirement="obrigatório" />
+                <View style={styles.grid}>
+                  {WEEK.map((day) => {
+                    const on = days.includes(day);
+                    return (
+                      <Pressable
+                        key={day}
+                        accessibilityRole="checkbox"
+                        accessibilityLabel={weekdayLong(day)}
+                        accessibilityState={{ checked: on }}
+                        aria-checked={on}
+                        onPress={() => toggleDay(day)}
+                        style={({ pressed }) => [styles.option, on && styles.optionOn, pressed && styles.pressed]}
+                      >
+                        <Text allowFontScaling style={[styles.dayLabel, on && styles.dayLabelOn]}>
+                          {weekdayShort(day)}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                <Text allowFontScaling style={styles.helper}>
+                  {days.length > 0 ? formatDays(days) : ROUTINES_COPY["form.days.helper"]}
+                </Text>
+                {daysError ? <FieldError message={ROUTINES_COPY["form.days.error"]} /> : null}
               </View>
-              <Text allowFontScaling style={styles.helper}>
-                {days.length > 0 ? formatDays(days) : ROUTINES_COPY["form.days.helper"]}
-              </Text>
-              {daysError ? <FieldError message={ROUTINES_COPY["form.days.error"]} /> : null}
-            </View>
 
-            <View style={styles.group}>
-              <GroupLabel label={`${ROUTINES_COPY["form.tasks"]}`} requirement="opcional" />
-              {tasks.map((title, index) => (
-                <View key={`${title}-${index}`} style={styles.task}>
-                  <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={formatRoutinesCopy(index === 0 ? "task.first" : "task.moveUp", { name: title })}
-                    onPress={() => moveTaskUp(index)}
-                    style={styles.iconButton}
-                  >
-                    <MaterialSymbol name="drag_indicator" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
-                  </Pressable>
-                  <Text allowFontScaling numberOfLines={1} style={styles.taskTitle}>
-                    <Text style={styles.requirement}>{index + 1}. </Text>
-                    {title}
+              <View style={styles.group}>
+                <GroupLabel label={`${ROUTINES_COPY["form.tasks"]}`} requirement="opcional" />
+                {tasks.map((title, index) => (
+                  <View key={`${title}-${index}`} style={styles.task}>
+                    <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} />
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={formatRoutinesCopy(index === 0 ? "task.first" : "task.moveUp", { name: title })}
+                      onPress={() => moveTaskUp(index)}
+                      style={styles.iconButton}
+                    >
+                      <MaterialSymbol name="drag_indicator" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+                    </Pressable>
+                    <Text allowFontScaling numberOfLines={1} style={styles.taskTitle}>
+                      <Text style={styles.requirement}>{index + 1}. </Text>
+                      {title}
+                    </Text>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={formatRoutinesCopy("task.remove", { name: title })}
+                      onPress={() => removeTask(index)}
+                      style={styles.iconButton}
+                    >
+                      <MaterialSymbol name="close" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+                    </Pressable>
+                  </View>
+                ))}
+                {tasks.length === 0 ? (
+                  <Text allowFontScaling style={styles.helper}>
+                    {ROUTINES_COPY["form.tasks.empty"]}
                   </Text>
+                ) : null}
+                <View style={styles.addRow}>
+                  <TextInput
+                    accessibilityLabel={ROUTINES_COPY["form.tasks.draftLabel"]}
+                    allowFontScaling
+                    value={draft}
+                    onChangeText={setDraft}
+                    onSubmitEditing={addTask}
+                    placeholder={ROUTINES_COPY["form.tasks.add"]}
+                    placeholderTextColor={cosmicColors.inactive}
+                    returnKeyType="done"
+                    style={styles.addInput}
+                  />
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel={formatRoutinesCopy("task.remove", { name: title })}
-                    onPress={() => removeTask(index)}
-                    style={styles.iconButton}
+                    accessibilityLabel={ROUTINES_COPY["form.tasks.addLabel"]}
+                    onPress={addTask}
+                    style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
                   >
-                    <MaterialSymbol name="close" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
+                    <MaterialSymbol name="add" color={theme.color["on-surface"]} size={theme.navbar.iconSize} />
                   </Pressable>
                 </View>
-              ))}
-              {tasks.length === 0 ? (
-                <Text allowFontScaling style={styles.helper}>
-                  {ROUTINES_COPY["form.tasks.empty"]}
-                </Text>
-              ) : null}
-              <View style={styles.addRow}>
-                <TextInput
-                  accessibilityLabel={ROUTINES_COPY["form.tasks.draftLabel"]}
-                  allowFontScaling
-                  value={draft}
-                  onChangeText={setDraft}
-                  onSubmitEditing={addTask}
-                  placeholder={ROUTINES_COPY["form.tasks.add"]}
-                  placeholderTextColor={cosmicColors.inactive}
-                  returnKeyType="done"
-                  style={styles.addInput}
-                />
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={ROUTINES_COPY["form.tasks.addLabel"]}
-                  onPress={addTask}
-                  style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
-                >
-                  <MaterialSymbol name="add" color={theme.color["on-surface"]} size={theme.navbar.iconSize} />
-                </Pressable>
               </View>
-            </View>
-          </>
-        )}
-      </ScrollView>
-      <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
-        {/* Falha ao salvar: texto e ícone, e o formulário continua preenchido (05-padroes.md, F7). */}
-        {formError ? <FieldError message={formError} /> : null}
-        <PrimaryButton
-          theme={theme}
-          label={editing ? ROUTINES_COPY["form.editSubmit"] : ROUTINES_COPY["form.submit"]}
-          onPress={submit}
-          disabled={submitting || loading}
-        />
-      </View>
+            </>
+          )}
+        </ScrollView>
+        <View style={[styles.footer, { paddingBottom: insets.bottom + theme.space.md }]}>
+          {/* Falha ao salvar: texto e ícone, e o formulário continua preenchido (05-padroes.md, F7). */}
+          {formError ? <FieldError message={formError} /> : null}
+          <PrimaryButton
+            theme={theme}
+            label={editing ? ROUTINES_COPY["form.editSubmit"] : ROUTINES_COPY["form.submit"]}
+            onPress={submit}
+            disabled={submitting || loading}
+          />
+        </View>
+      </SafeInputArea>
       {/* Variante Sucesso do Modal (modal.md), como o "Tarefa criada!" de Tarefas. */}
       <SuccessDialog
         visible={created}
