@@ -18,6 +18,7 @@ Os arquivos `*.stories.tsx` (`TaskCard`, `FilterChips`, `NavBar`, `PrimaryButton
 - `ContextualActionBar.tsx`: `ContextualHeader({ countLabel, onCancel })` e `ContextualActionBar({ actions })` para a seleção múltipla; `ContextualAction` = `{ id, label, icon, onPress, destructive?, disabled? }`.
 - `IconTile.tsx`: `IconTile({ icon })`, quadro decorativo com o ícone de uma rotina.
 - `CategoryTag.tsx`: `CategoryTag({ label, symbol, theme? })`, tag informativa e não interativa da categoria de estudo, anunciada como "Categoria: <rótulo>" (`design-system/04-componentes/tag-categoria.md`).
+- `SafeInputArea.tsx`: `SafeInputArea({ children, style? })`, área de formulário que sobe com o teclado para o campo em edição não ficar escondido (#263).
 - `ScreenHeader.tsx`: `ScreenHeader({ title, onBack, variant?, backLabel })`, cabeçalho das telas empilhadas (seta ou ✕).
 - `SkeletonCards.tsx`: `SkeletonCards({ count?, accessibilityLabel })`, esqueleto estático dos cards enquanto os dados carregam (padrões F5 e F8), com os tokens do esqueleto da Início.
 - `Snackbar.tsx`: `Snackbar({ message, actionLabel?, onAction? })`, aviso curto com ação opcional.

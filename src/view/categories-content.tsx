@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Category, CategoryIconId } from "@/model/entities/category";
 import {
@@ -20,6 +20,7 @@ import { GradientSurface } from "./components/GradientSurface";
 import { IconTile } from "./components/IconTile";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
+import { SafeInputArea } from "./components/SafeInputArea";
 import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { TextField } from "./components/TextField";
@@ -180,7 +181,7 @@ export const CategoriesScreenContent = ({
         onRequestClose={submitting ? () => undefined : closeForm}
         statusBarTranslucent
       >
-        <KeyboardAvoidingView style={styles.scrim} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+        <SafeInputArea style={styles.scrim}>
           <View accessibilityViewIsModal aria-modal style={styles.modalSurface}>
             <View style={styles.modalHeader}>
               <Text accessibilityRole="header" allowFontScaling style={styles.modalTitle}>
@@ -273,7 +274,7 @@ export const CategoriesScreenContent = ({
               </Pressable>
             </View>
           </View>
-        </KeyboardAvoidingView>
+        </SafeInputArea>
       </Modal>
 
       <ConfirmDialog
