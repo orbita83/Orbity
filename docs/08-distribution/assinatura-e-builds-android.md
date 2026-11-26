@@ -176,15 +176,15 @@ Gerar um AAB **não** equivale a aprová-lo ou publicá-lo na Google Play. Como 
 
 ## 9. Identidade e versionamento
 
-Os builds usam os valores da [T0010](./versionamento-do-app.md), lidos do `app.json` (`cli.appVersionSource: local`):
+Os builds usam os valores descritos em [`versionamento-do-app.md`](./versionamento-do-app.md): `versionName` (`expo.version`) lido manualmente do `app.json`, e `versionCode` gerenciado remotamente pelo EAS (`cli.appVersionSource: "remote"`, com `"autoIncrement": true` no perfil `production` desde a [#247](https://github.com/orbita83/Orbity/issues/247)):
 
-| Campo | Valor |
-| ----- | ----- |
-| Pacote | `io.github.orbita83.orbity` |
-| `version` | `0.1.0` |
-| `versionCode` | `1` |
+| Campo | Valor / Origem |
+| ----- | -------------- |
+| Pacote | `io.github.orbita83.orbity` (`app.json`) |
+| `version` (`versionName`) | `0.1.0` (`app.json`, manual por release) |
+| `versionCode` | Gerenciado remotamente pelo EAS (inicializado em `1`; `+1` automático em `production`) |
 
-`autoIncrement` não está habilitado. Novos envios à Google Play exigirão incrementar o `versionCode` conforme a estratégia da T0010; builds internos repetidos com o mesmo `versionCode` não causam conflito.
+Os builds `development` e `preview` reutilizam o `versionCode` remoto atual sem incrementá-lo, enquanto cada build `production` incrementa o `versionCode` remoto automaticamente sem alterar o `app.json`.
 
 ## 10. Registro de validação (T0012)
 

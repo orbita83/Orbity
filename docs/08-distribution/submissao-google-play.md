@@ -41,7 +41,7 @@ Aprovar o PR de release **não** equivale a aprovar o envio, e enviar **não** e
 | Commit | O commit da tag `vX.Y.Z` (ou o commit combinado, para testes internos) |
 | Perfil / distribuição | `production` / `STORE` |
 
-O Play Console recusa um AAB com `versionCode` já usado, mesmo que o envio anterior tenha sido descartado. Como o workflow não incrementa versões, o `versionCode` deve ser atualizado no `app.json` durante a preparação da release ([`CONTRIBUTING.md` — Seção 4.6](../../CONTRIBUTING.md#46-política-de-versionamento-e-alinhamento-com-android)).
+O Play Console recusa um AAB com `versionCode` já usado, mesmo que o envio anterior tenha sido descartado. Como `appVersionSource` está configurado como `remote` e o perfil `production` possui `autoIncrement: true`, o EAS incrementa o `versionCode` automaticamente em `+1` a cada build `production` — mantendo apenas a conferência obrigatória do `appBuildVersion` na página do build antes do envio (ou uso de `npx --no-install eas-cli build:version:set` em caso de ressincronização manual). Já o `versionName` (`expo.version`) permanece sob controle manual da equipe na preparação da release ([`CONTRIBUTING.md` — Seção 4.6](../../CONTRIBUTING.md#46-política-de-versionamento-e-alinhamento-com-android)).
 
 ## 5. Etapas gerais no Play Console
 

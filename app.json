@@ -9,7 +9,6 @@
     "userInterfaceStyle": "dark",
     "android": {
       "package": "io.github.orbita83.orbity",
-      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#030417",
         "foregroundImage": "./assets/app/icon/adaptive-foreground.png",

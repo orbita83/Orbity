@@ -671,9 +671,9 @@ Quando um componente de nível superior é incrementado, os componentes subordin
 
 **Alinhamento com versionamento Android:**
 A versão SemVer aprovada na governança reflete-se diretamente nos identificadores técnicos gerenciados pelo Expo e pelo ecossistema Android, conforme documentado em [`docs/08-distribution/identidade-e-propriedade.md`](docs/08-distribution/identidade-e-propriedade.md) e [`docs/08-distribution/versionamento-do-app.md`](docs/08-distribution/versionamento-do-app.md):
-- **`versionName` (`app.json` → `expo.version` e `package.json` → `version`):** Corresponde fielmente à versão pública `X.Y.Z` apresentada aos usuários e ao Google Play Console.
-- **`versionCode` (`app.json` → `expo.android.versionCode`):** Número inteiro estritamente incremental e monotônico crescente (ex.: `1`, `2`, `3`...), exigido pela Google Play para cada novo pacote gerado (AAB). O `versionCode` nunca retrocede, mesmo entre versões com mesmo SemVer ou correções de build.
-- **Consistência obrigatória:** Os manifestos técnicos do aplicativo somente são atualizados pela equipe no contexto da preparação da release, mantendo sincronia absoluta com a tag Git a ser gerada. Contribuidores em tarefas de desenvolvimento comuns não devem alterar os campos de versão em seus PRs individuais.
+- **`versionName` (`app.json` → `expo.version` e `package.json` → `version`):** Corresponde fielmente à versão pública `X.Y.Z` apresentada aos usuários e ao Google Play Console, atualizada manualmente pela equipe na preparação da release.
+- **`versionCode` (EAS remoto via `eas.json` → `cli.appVersionSource: "remote"`):** Número inteiro estritamente incremental e monotônico crescente (ex.: `1`, `2`, `3`...), exigido pela Google Play para cada novo pacote gerado (AAB). É gerenciado remotamente pelo EAS e incrementado automaticamente em `+1` nos builds do perfil `production` (`"autoIncrement": true`), sem alterar o `app.json`. O `versionCode` nunca retrocede, mesmo entre versões com mesmo SemVer ou correções de build.
+- **Consistência obrigatória:** Os manifestos técnicos do aplicativo (`expo.version` e `package.json` → `version`) somente são atualizados pela equipe no contexto da preparação da release, mantendo sincronia absoluta com a tag Git a ser gerada. Contribuidores em tarefas de desenvolvimento comuns não devem alterar os campos de versão em seus PRs individuais.
 - **Tratamento de exceções:** Alterações excepcionais nesses identificadores exigem justificativa fundamentada e aprovação da equipe.
 
 ### 4.7. Convenções de Git tags e GitHub Releases

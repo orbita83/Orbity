@@ -32,7 +32,7 @@
 - [ ] Alterações validadas previamente pelo CI na `development` e verificações locais (`lint`, `tsc --noEmit` e testes Jest) aprovadas com 100% de sucesso
 - [ ] Testes manuais/exploratórios executados e validados em ambiente Android (dispositivo físico ou emulador)
 - [ ] Ausência de defeitos críticos ou bloqueadores conhecidos (severidade P0)
-- [ ] Versão proposta (`versionName`) e identificadores de build (`versionCode`) conferidos e consistentes nos manifestos
+- [ ] Versão proposta (`versionName`) conferida e consistente nos manifestos (`app.json` e `package.json`), e `versionCode` remoto conferido no EAS
 
 ## Procedimentos Pós-Merge
 
