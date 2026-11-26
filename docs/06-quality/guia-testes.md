@@ -409,12 +409,14 @@ describe("PrimaryButton", () => {
 
 ### 9.1. Verificações Automáticas nos Pull Requests
 O workflow [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) executa automaticamente em todos os Pull Requests direcionados à `development`:
-1. Instalação determinística de dependências (`npm ci`).
-2. Verificação estática de formatação e lint (`npm run lint`).
-3. Verificação rigorosa do compilador TypeScript com regeneração prévia das rotas tipadas do Expo Router (`npm run typecheck`).
-4. Geração estática do Storybook (`npm run build-storybook`).
-5. Execução completa da suíte de testes automatizados (`npm test`).
-6. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
+1. Instalação do Node.js do `.nvmrc` e do npm do `packageManager` (`CONTRIBUTING.md`, Seção 2.2).
+2. Instalação determinística de dependências (`npm ci`).
+3. Conferência do `package-lock.json`, regenerado com o npm do `packageManager` e comparado com o commitado.
+4. Verificação estática de formatação e lint (`npm run lint`).
+5. Verificação rigorosa do compilador TypeScript com regeneração prévia das rotas tipadas do Expo Router (`npm run typecheck`).
+6. Geração estática do Storybook (`npm run build-storybook`).
+7. Execução completa da suíte de testes automatizados (`npm test`).
+8. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
 ### 9.2. Checklist Local Pré-Commit e Pré-PR
 Sempre execute localmente a sequência completa de validações antes de abrir ou atualizar seu Pull Request:
