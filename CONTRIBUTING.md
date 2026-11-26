@@ -114,7 +114,7 @@ As branches de trabalho devem seguir o formato:
 - Utilizar uma branch própria para cada atividade independente.
 - Não realizar alterações diretamente nas branches protegidas `main` e `development`.
 - Evitar reutilizar branches que já tiveram suas atividades concluídas.
-- Após o merge do Pull Request, a branch de trabalho remota é removida automaticamente pelo GitHub; `main` e `development` são protegidas contra exclusão.
+- Após o merge do Pull Request, a branch de trabalho remota é removida automaticamente pelo GitHub, pela opção **Automatically delete head branches** do repositório (Settings → General → Pull Requests). `main` e `development` são protegidas contra exclusão pelos rulesets e continuam no remoto mesmo quando são a origem do Pull Request (publicação, na [Seção 1.5](#15-pull-requests-de-publicação), e sincronização, na [Seção 4.8](#48-correções-urgentes-e-sincronização-de-branches)). Para remover do seu clone as referências de branches já apagadas no remoto, use `git fetch --prune` ([Seção 2.5](#25-integração-na-development)).
 
 **Branches permanentes:**
 
