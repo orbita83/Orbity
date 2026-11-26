@@ -74,5 +74,5 @@ Sempre que modificar código, tipos ou configurações, execute:
 3. `npm test` — execução não interativa dos testes automatizados (Jest).
 4. `npm run build-storybook` — obrigatório caso altere telas, componentes ou histórias (o CI falha com uma história quebrada).
 5. `node tests/ods-theme.test.cjs` — obrigatório caso altere `src/view/theme/tokens.ts` (não é coletado pelo Jest).
-6. `npm run lint:architecture` — não introduza violações além das já registradas em Issues abertas.
+6. `npm run lint:architecture` — deve terminar sem violações (roda no CI e no `pre-commit` quando o commit inclui arquivos de `src/`).
 7. `node scripts/verify-local-hooks.mjs` — obrigatório caso altere `.husky/`, `scripts/` ou `commitlint.config.cjs`.

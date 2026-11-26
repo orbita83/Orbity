@@ -362,7 +362,7 @@ A validação local deve incluir, quando aplicável:
 - Verificação de compilação ou análise estática (`npm run typecheck`, que regenera `.expo/types/router.d.ts` via `expo customize tsconfig.json` antes de rodar `tsc --noEmit`).
 - Geração do Storybook (`npm run build-storybook`) ao alterar telas, componentes ou histórias, porque o CI falha com uma história quebrada.
 - Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`) ao alterar `src/view/theme/tokens.ts`. Esse teste não é coletado pelo Jest.
-- Verificação da arquitetura (`npm run lint:architecture`), sem introduzir violações além das já registradas em Issues abertas.
+- Verificação da arquitetura (`npm run lint:architecture`), que deve terminar sem violações. Ela também roda no CI e no `pre-commit`.
 - Testes manuais dos comportamentos afetados.
 - Revisão das alterações realizadas.
 - Verificação de arquivos sensíveis ou informações que não devem ser versionadas.
@@ -371,9 +371,9 @@ O contribuidor deve informar no Pull Request quais validações foram executadas
 
 A validação local não substitui as verificações obrigatórias executadas pelo CI.
 
-Após `npm install` ou `npm ci`, com as dependências de desenvolvimento e os scripts de instalação habilitados, o script `prepare` configura os hooks locais do Husky. O `pre-commit` executa ESLint apenas nos arquivos de código preparados para commit. O `commit-msg` exige um prefixo permitido, escopo, descrição e inicial minúscula na descrição; o idioma e a pertinência do escopo devem ser conferidos na revisão.
+Após `npm install` ou `npm ci`, com as dependências de desenvolvimento e os scripts de instalação habilitados, o script `prepare` configura os hooks locais do Husky. O `pre-commit` executa ESLint apenas nos arquivos de código preparados para commit e, quando o commit inclui arquivos de `src/` ou do próprio linter (`scripts/lint-architecture.*`, `tsconfig.json`), o linter de arquitetura (`npm run lint:architecture`) no projeto inteiro, o que leva alguns segundos. O lint-staged esconde as alterações não preparadas dos arquivos já versionados, então o linter analisa o que vai ser commitado; arquivos novos ainda não adicionados ao Git continuam visíveis e também são verificados. O `commit-msg` exige um prefixo permitido, escopo, descrição e inicial minúscula na descrição; o idioma e a pertinência do escopo devem ser conferidos na revisão.
 
-O `pre-push` valida o nome de cada branch remota que será criada ou atualizada, conforme a Seção 1.2. Tags e exclusões de referências não passam por essa validação. As branches `main` e `development` são exceções de nomenclatura, sem autorização para pushes diretos. Os hooks não executam testes, compilação ou análise de tipos completa.
+O `pre-push` valida o nome de cada branch remota que será criada ou atualizada, conforme a Seção 1.2. Tags e exclusões de referências não passam por essa validação. As branches `main` e `development` são exceções de nomenclatura, sem autorização para pushes diretos. Os hooks não executam testes, compilação nem a verificação de tipos (`npm run typecheck`).
 
 ### 2.5. Integração na development
 
@@ -554,12 +554,13 @@ Nos Pull Requests direcionados à branch `development`, o workflow [`.github/wor
 
 1. Instalação reproduzível de dependências (`npm ci`).
 2. Verificação de lint (`npm run lint`).
-3. Verificação estrita de tipos com regeneração das rotas tipadas do Expo Router (`npm run typecheck`).
-4. Geração do Storybook (`npm run build-storybook`). Uma história quebrada falha o CI mesmo com os testes passando.
-5. Execução não interativa dos testes automatizados (`npm test`).
-6. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
+3. Verificação da arquitetura (`npm run lint:architecture`). Qualquer violação de camadas, dependências, contratos, nomes ou ViewModels falha o CI.
+4. Verificação estrita de tipos com regeneração das rotas tipadas do Expo Router (`npm run typecheck`).
+5. Geração do Storybook (`npm run build-storybook`). Uma história quebrada falha o CI mesmo com os testes passando.
+6. Execução não interativa dos testes automatizados (`npm test`).
+7. Verificação dos contratos e contrastes do ODS (`node tests/ods-theme.test.cjs`).
 
-Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npm run typecheck`, `npm run build-storybook`, `npm test` e `node tests/ods-theme.test.cjs`. O `npm run lint:architecture` ainda não faz parte do CI. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
+Para reproduzir localmente as mesmas validações antes de enviar alterações, execute `npm run lint`, `npm run lint:architecture`, `npm run typecheck`, `npm run build-storybook`, `npm test` e `node tests/ods-theme.test.cjs`. Caso ocorra falha no CI, os detalhes completos (etapa com erro, asserção violada e *stack trace*) podem ser consultados na aba **Checks** do Pull Request, expandindo o job `validate` nos logs do GitHub Actions (veja mais detalhes em [`docs/06-quality/guia-testes.md`](docs/06-quality/guia-testes.md)).
 
 Na configuração de proteção da branch `development` (Ruleset **Branch Protection (Development)**), o status check `validate` deve permanecer configurado como obrigatório (*Require status checks to pass*) junto às regras existentes de revisão e aprovação de Pull Requests.
 
