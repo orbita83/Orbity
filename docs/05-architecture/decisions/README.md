@@ -6,6 +6,7 @@ Este catálogo reúne os Architecture Decision Records (`ADR`) do Orbity. Cada A
 | -- | ------- | ------ | ------------- |
 | ADR-0001 | Persistência local com SQLite por meio de repositórios da infraestrutura | Accepted | [ADR-0001](ADR-0001.md) |
 | ADR-0002 | Notificações locais com expo-notifications isoladas por contrato na infraestrutura | Accepted | [ADR-0002](ADR-0002.md) |
+| ADR-0003 | Efeitos globais do app num componente raiz sem UI com ViewModel própria | Proposed | [ADR-0003](ADR-0003.md) |
 
 ## Status de uma decisão
 

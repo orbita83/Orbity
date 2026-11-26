@@ -71,6 +71,22 @@ A Figura 10.1 descreve o fluxo principal entre as cinco camadas. `app/` adapta o
 | **`infra/`** | DataSources (`datasources/`) e serviços (`services/`) concretos, adapters e mapeadores de dados externos para o domínio. | Contratos, entidades e erros de `src/model/`, SDKs/APIs externas | `app/`, `view/`, `viewmodel/`, `usecase/`, `di/` |
 | **`di/`** | Composition Root (`container.ts`). Único ponto autorizado a instanciar e conectar `infra/` e `usecase/`. | `src/infra/`, `src/usecase/`, `src/model/` | `app/`, `view/`, `viewmodel/` |
 
+### 3.2. Efeitos globais na raiz do app
+
+Comportamentos que valem para a sessão inteira, e não para uma tela, ficam num ponto raiz único ([ADR-0003](docs/05-architecture/decisions/ADR-0003.md)). Exemplos: o handler que mostra os lembretes com o app aberto (#269) e o toque num lembrete com o app fechado (#270).
+
+```
+src/app/_layout.tsx → <AppLifecycle /> (src/view/components/AppLifecycle.tsx, sem UI)
+                    → useAppLifecycleViewModel (src/viewmodel/)
+                    → I*UseCases globais, ex.: INotificationUseCases (src/usecase/)
+                    → INotificationService (src/model/services/) ← ExpoNotificationService (src/infra/services/)
+```
+
+- O `AppLifecycle` é montado uma única vez no `_layout.tsx`, ao lado do `Tabs`. Ele não recebe props, não desenha nada e só chama a ViewModel raiz.
+- A `useAppLifecycleViewModel` segue as regras de qualquer ViewModel (tupla `[state, actions]`, só `container.useCases`, navegação na ViewModel) e executa os efeitos na montagem.
+- Os efeitos globais devem ser idempotentes e não podem lançar na inicialização: o caso de uso absorve a falha técnica que não precisa chegar ao estudante.
+- Um efeito ligado a uma tela continua na ViewModel dessa tela. Só vai para a raiz o que precisa existir antes de qualquer tela montar ou independe da aba aberta.
+
 ---
 
 ## 4. Contratos, Inversão de Dependências (DIP) e Adapters
