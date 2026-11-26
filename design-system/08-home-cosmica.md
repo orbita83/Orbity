@@ -26,7 +26,7 @@ O protótipo usava `cosmicTokens`; a integração substitui esse objeto pelos to
 | Ação | Gradiente `action #7137F5` → `actionEnd #703BF6`; texto claro; hover `#8648FA` (`cosmicColors.actionHover`) e pressionado por escala e opacidade |
 | Acessibilidade | Foco `#D4A3FF`; texto escalável; nomes de controles e estados de seleção; modal nativo para detalhes |
 | Progresso | Trilha `#232052`; gradiente `#8A42FA` → `#8648FA`; altura `size.progress-height` (20 dp); preenchimento proporcional exato |
-| Conquistas | Aro ativo `#C47EFF`, ícones pendentes `#8C7BCB`, contorno pendente `#2B2654`; bloqueada mostra o símbolo esmaecido com selo de cadeado; descrição acessível |
+| Conquistas | Aro ativo `#C47EFF`, ícones pendentes `#8C7BCB`, contorno pendente `#7A70B8` (1.3, issue #262; antes `#2B2654`); bloqueada mostra o símbolo esmaecido com selo de cadeado; descrição acessível |
 | Tipografia | Marca `font.title` (24/32); sequência `font.streak` (64/64); título de card `font.card-title` (16/24, 600); descrição e texto de apoio `font.body-sm` (14/20); contador e botão `font.label`; navbar conforme `navbar.*` |
 | Forma | Botão `radius.md` (12 dp); card `radius.lg` (16 dp); painel `radius.sheet` (24 dp); medalhas em caixa arredondada `achievement.size` (60 dp, `radius.lg`) |
 | Movimento | Painel `motion.duration.medium` (300 ms) com `motion.easing.standard`; atualização instantânea com movimento reduzido |

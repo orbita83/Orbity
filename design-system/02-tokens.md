@@ -24,7 +24,9 @@
 | `neutral-600` | `#5F6673` | ![neutral-600](./images/colors/neutral-600.svg) | Novo (1.2) |
 | `neutral-900` | `#1B1B1F` | ![neutral-900](./images/colors/neutral-900.svg) | Adaptado |
 | `success-500` | `#22C55E` | ![success-500](./images/colors/success-500.svg) | Novo     |
+| `success-700` | `#15803D` | Variante escura para o tema claro (5,02:1 sobre `neutral-0`) | Novo (1.3) |
 | `warning-500` | `#F59E0B` | ![warning-500](./images/colors/warning-500.svg) | Novo     |
+| `warning-700` | `#B45309` | Variante escura para o tema claro (5,02:1 sobre `neutral-0`) | Novo (1.3) |
 | `error-500`   | `#EF4444` | ![error-500](./images/colors/error-500.svg)     | Adaptado |
 | `info-500`    | `#3B82F6` | ![info-500](./images/colors/info-500.svg)       | Novo     |
 
@@ -52,12 +54,13 @@
 | `color.on-surface`        | `neutral-900` | `neutral-0`   | Texto principal, títulos e ícones sobre superfícies        | Adaptado |
 | `color.on-surface-variant`| `neutral-600` | `neutral-200` | Textos secundários, prazos, legendas e rótulos auxiliares (claro corrigido na 1.2) | Adaptado |
 | `color.border`            | `neutral-200` | `neutral-500` | Bordas divisórias, separadores e contornos sutis           | Adaptado |
+| `color.border-control`    | `neutral-500` | `neutral-500` | Contorno de controles que delimitam uma área de toque ou digitação (campos, seletores, chips e opções); cósmico: `#7A70B8` (`cosmicTokens.color.borderControl`). Mínimo de 3:1 contra o fundo adjacente (WCAG 1.4.11) | Novo (1.3) |
 | `color.border-subtle`     | `rgba(27, 27, 31, 0.08)` | `rgba(255, 255, 255, 0.08)` | Fio de separação de barras, cabeçalhos fixos e painel (cósmico: `rgba(250, 249, 255, 0.06)`) | Novo (1.2) |
 | `color.scrim`             | `rgba(3, 4, 23, 0.72)` | `rgba(3, 4, 23, 0.72)` | Véu atrás de modais e do painel aberto | Novo (1.2) |
 | `color.focus`             | `blue-600`    | `purple-400`  | Anel indicador de foco de acessibilidade                   | Adaptado |
 | `color.error`             | `error-500`   | `error-500`   | Alertas de erro, campos inválidos e ações destrutivas      | Adaptado |
-| `color.success`           | `success-500` | `success-500` | Confirmação de metas, conclusão de rotinas e conquistas    | Novo     |
-| `color.warning`           | `warning-500` | `warning-500` | Avisos de pendência, prazo próximo e atenção               | Novo     |
+| `color.success`           | `success-700` | `success-500` | Confirmação de metas, conclusão de rotinas e conquistas    | Novo     |
+| `color.warning`           | `warning-700` | `warning-500` | Avisos de pendência, prazo próximo e atenção               | Novo     |
 | `color.info`              | `info-500`    | `info-500`    | Dicas de estudo, notas contextuais e informativos          | Novo     |
 
 ### Tipografia
@@ -173,7 +176,8 @@ Esta paleta é a direção global escura do Orbity, aplicável a qualquer tela. 
 | `cosmicTokens.color.progress`, `progressEnd` | `#8A42FA` → `#8648FA` | Preenchimento do progresso | Adaptado |
 | `cosmicTokens.color.unlocked` | `#C47EFF` | Aro de conquista ativa (`cosmicColors.unlocked` na 1.2) | Adaptado |
 | `cosmicTokens.color.achievementPendingIcon` | `#8C7BCB` | Ícone de conquista pendente | Adaptado |
-| `cosmicTokens.color.achievementPendingBorder` | `#2B2654` | Contorno de conquista pendente | Adaptado |
+| `cosmicTokens.color.achievementPendingBorder` | `#7A70B8` | Contorno de conquista pendente (antes `#2B2654`, 1,29:1; agora 4,14:1 sobre o card) | Adaptado (1.3) |
+| `cosmicTokens.color.borderControl` | `#7A70B8` | Contorno de controles (`color.border-control` no cósmico): 4,14:1 sobre o card, 4,68:1 sobre o fundo e 4,37:1 sobre o painel | Novo (1.3) |
 | `cosmicTokens.color.iconAccent` | `#A56AF4` | Ícones dos cards do painel (≥ 3:1 sobre fundo, painel e card) | Novo (1.2) |
 | `cosmicTokens.color.streakFlame` | `#FFB52E` | Chama da sequência (≥ 3:1 sobre fundo, painel e card) | Novo (1.2) |
 | `cosmicTokens.color.streakFlameCore` | `#FFE48A` | Miolo da chama, decorativo | Novo (1.2) |
@@ -267,8 +271,8 @@ Esta matriz registra os temas legados `themes.light` e `themes.dark` de 1.0. Par
 | `color.border` | `neutral-200` (`#E5E7EB`) | `neutral-500` (`#6B7280`) | Bordas divisórias de cards e separadores de listas. Delimita áreas sem criar ruído visual. |
 | `color.focus` | `blue-600` (`#4F46E5`) | `purple-400` (`#C084FC`) | **6,29:1** no claro e **6,50:1** no escuro sobre o fundo adjacente. Supera o mínimo de 3,0:1 exigido pela WCAG 2.4.11 para anéis de foco visíveis. |
 | `color.error` | `error-500` (`#EF4444`) | `error-500` (`#EF4444`) | Sinalização de falhas e erros de validação. No modo claro (3,76:1), deve sempre acompanhar ícone de alerta e mensagem textual em `color.on-surface`. No modo escuro (4,56:1), atinge conformidade total. |
-| `color.success` | `success-500` (`#22C55E`) | `success-500` (`#22C55E`) | Celebração de metas, conclusão de hábitos e feedback positivo. Aplicado a ícones e badges, sempre acompanhado de texto em `color.on-surface`. |
-| `color.warning` | `warning-500` (`#F59E0B`) | `warning-500` (`#F59E0B`) | Avisos de pendência e prazos próximos. Sempre associado a ícones semânticos de alerta. |
+| `color.success` | `success-700` (`#15803D`) | `success-500` (`#22C55E`) | Celebração de metas, conclusão de hábitos e feedback positivo. Aplicado a ícones e badges, sempre acompanhado de texto em `color.on-surface`. |
+| `color.warning` | `warning-700` (`#B45309`) | `warning-500` (`#F59E0B`) | Avisos de pendência e prazos próximos. Sempre associado a ícones semânticos de alerta. |
 | `color.info` | `info-500` (`#3B82F6`) | `info-500` (`#3B82F6`) | Dicas de estudo e mensagens informativas da jornada. |
 
 ### Regras de transição e aplicação de tema

@@ -82,10 +82,16 @@ Os valores vêm da [variante cósmica](02-tokens.md#variante-cósmica). A tabela
 | Porcentagem no meio da barra `text` / preenchimento (início e fim) | `#FAF9FF` | `#8A42FA`, `#8648FA` | 4,95:1; 4,86:1 | 4,5:1 | Aprovado |
 | Ícones da barra de seleção `on-surface-variant` / `navbar.bg` | `#BBB6E3` | `#0D0D29` | 9,4:1 | 3:1 | Aprovado |
 | Borda do card selecionado `action` / card `card` | `#7137F5` | `#141332` | 3,05:1 | 3:1 | Aprovado |
+| Contorno de controle `border-control` / card `card` | `#7A70B8` | `#141332` | 4,14:1 | 3:1 | Aprovado (#262) |
+| Contorno de controle `border-control` / fundo `background` | `#7A70B8` | `#030417` | 4,68:1 | 3:1 | Aprovado (#262) |
+| Contorno de controle `border-control` / painel `navbar.bg` | `#7A70B8` | `#0D0D29` | 4,37:1 | 3:1 | Aprovado (#262) |
+| Contorno de conquista bloqueada `achievementPendingBorder` / card `card` | `#7A70B8` | `#141332` | 4,14:1 | 3:1 | Aprovado (#262; antes 1,29:1) |
+| Contorno de controle, tema claro `border-control` / `surface`, `surface-variant` | `#6B7280` | `#FFFFFF`, `#F3F4F6` | 4,83:1; 4,39:1 | 3:1 | Aprovado (#262; antes 1,24:1 com `border`) |
+| `color.success` e `color.warning`, tema claro / `surface` | `#15803D`, `#B45309` | `#FFFFFF` | 5,02:1; 5,02:1 | 3:1 | Aprovado (#262; antes 2,28:1 e 2,15:1 com `success-500` e `warning-500`) |
 | Texto sobre o preenchimento do toque longo `text` / `action-subtle` | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
 | Prazo sobre o preenchimento do toque longo `on-surface-variant` / `action-subtle` | `#BBB6E3` | `#232052` | 7,80:1 | 4,5:1 | Aprovado |
 
-Na 1.2, a porcentagem do progresso ficava **fora da barra**, ao lado do contador. Na 1.3, ela vai para o meio da barra: o branco passa nas duas partes (trilha e preenchimento), então o texto continua legível em qualquer avanço, inclusive metade sobre cada parte. Se o preenchimento ficar mais claro que `#8648FA`, refaça essa conta. O fio `color.border-subtle` é decorativo: a separação entre camadas também vem da diferença de superfície e da sombra, e nenhum controle depende dele para ser percebido (WCAG 1.4.11). O estado pressionado por escala e opacidade não altera texto nem fundo de forma persistente; a opacidade 0,8 é momentânea, durante o toque.
+Na 1.2, a porcentagem do progresso ficava **fora da barra**, ao lado do contador. Na 1.3, ela vai para o meio da barra: o branco passa nas duas partes (trilha e preenchimento), então o texto continua legível em qualquer avanço, inclusive metade sobre cada parte. Se o preenchimento ficar mais claro que `#8648FA`, refaça essa conta. O fio `color.border-subtle` (1,16:1 sobre o card) é decorativo e só serve para separar camadas, junto com a diferença de superfície e a sombra. **Nenhum controle pode depender dele** (WCAG 1.4.11): campos, seletores, chips e opções usam `color.border-control`, com no mínimo 3:1. O estado pressionado por escala e opacidade não altera texto nem fundo de forma persistente; a opacidade 0,8 é momentânea, durante o toque.
 
 **Correções em preparação para 1.1.0:** o hover anterior `#8252FC` resultava em 4,40:1 com `text`, abaixo de 4,5:1 para texto comum. A parada final anterior `#713BF5` resultava em 2,60:1 sobre `track`, abaixo de 3:1 quando o indicador gráfico precisa ser distinguido. A nova cor `#8648FA` foi escolhida para ambos os papéis; os resultados acima não comprovam os gradientes inteiros.
 
