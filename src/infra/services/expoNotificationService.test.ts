@@ -15,6 +15,8 @@ const mockCancelScheduledNotificationAsync = jest.fn();
 const mockGetAllScheduledNotificationsAsync = jest.fn();
 const mockAddNotificationResponseReceivedListener = jest.fn();
 const mockSetNotificationHandler = jest.fn();
+const mockGetLastNotificationResponse = jest.fn();
+const mockClearLastNotificationResponse = jest.fn();
 
 jest.mock("expo-notifications", () => ({
   PermissionStatus: {
@@ -36,6 +38,8 @@ jest.mock("expo-notifications", () => ({
   getAllScheduledNotificationsAsync: (...args: unknown[]) => mockGetAllScheduledNotificationsAsync(...args),
   addNotificationResponseReceivedListener: (...args: unknown[]) => mockAddNotificationResponseReceivedListener(...args),
   setNotificationHandler: (...args: unknown[]) => mockSetNotificationHandler(...args),
+  getLastNotificationResponse: (...args: unknown[]) => mockGetLastNotificationResponse(...args),
+  clearLastNotificationResponse: (...args: unknown[]) => mockClearLastNotificationResponse(...args),
 }));
 
 beforeEach(() => {
@@ -266,7 +270,9 @@ describe("ExpoNotificationService (adaptador real na infraestrutura)", () => {
 
     const service = new ExpoNotificationService();
     const received: Readonly<Record<string, string>>[] = [];
-    const unsubscribe = service.onNotificationResponse((data) => received.push(data));
+    const unsubscribe = service.onNotificationResponse((data) => {
+      received.push(data);
+    });
 
     registeredCallback?.({
       notification: {
@@ -285,5 +291,118 @@ describe("ExpoNotificationService (adaptador real na infraestrutura)", () => {
     expect(received).toEqual([{ route: "/tasks", taskId: "42" }]);
     unsubscribe();
     expect(remove).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("ExpoNotificationService — respostas ao toque na raiz do app (#270)", () => {
+  const buildResponse = (identifier: string, data: Record<string, string>, date = 1_764_000_000_000) => ({
+    actionIdentifier: "expo.modules.notifications.actions.DEFAULT",
+    notification: { date, request: { identifier, content: { data } } },
+  });
+
+  const captureNativeListener = () => {
+    const remove = jest.fn();
+    const native: { emit?: (event: unknown) => void } = {};
+    mockAddNotificationResponseReceivedListener.mockImplementation((cb: (event: unknown) => void) => {
+      native.emit = cb;
+      return { remove };
+    });
+    return { native, remove };
+  };
+
+  beforeEach(() => {
+    mockAddNotificationResponseReceivedListener.mockReset();
+    mockGetLastNotificationResponse.mockReset();
+    mockGetLastNotificationResponse.mockReturnValue(null);
+  });
+
+  it("entrega o toque que abriu o app e o limpa no nativo (início a frio, #270)", () => {
+    captureNativeListener();
+    mockGetLastNotificationResponse.mockReturnValue(
+      buildResponse("task-reminder:1", { route: "/tasks", taskId: "1", __orbityTriggerAt: "2026-11-22T18:30:00-03:00" }),
+    );
+    const service = new ExpoNotificationService();
+    const received: Readonly<Record<string, string>>[] = [];
+
+    service.onNotificationResponse((data) => {
+      received.push(data);
+      return true;
+    });
+
+    expect(received).toEqual([{ route: "/tasks", taskId: "1" }]);
+    expect(mockGetLastNotificationResponse).toHaveBeenCalledTimes(1);
+    expect(mockClearLastNotificationResponse).toHaveBeenCalledTimes(1);
+  });
+
+  it("oferece o toque inicial a cada novo ouvinte até um deles tratá-lo, e depois não o entrega de novo", () => {
+    captureNativeListener();
+    mockGetLastNotificationResponse.mockReturnValue(buildResponse("task-reminder:1", { route: "/tasks", taskId: "1" }));
+    const service = new ExpoNotificationService();
+    const focusListener = jest.fn(() => false);
+    const tasksListener = jest.fn(() => true);
+    const lateListener = jest.fn(() => true);
+
+    service.onNotificationResponse(focusListener);
+    service.onNotificationResponse(tasksListener);
+    service.onNotificationResponse(lateListener);
+
+    expect(focusListener).toHaveBeenCalledTimes(1);
+    expect(tasksListener).toHaveBeenCalledTimes(1);
+    expect(lateListener).not.toHaveBeenCalled();
+    expect(mockGetLastNotificationResponse).toHaveBeenCalledTimes(1);
+  });
+
+  it("não entrega duas vezes a mesma resposta quando o nativo a repete depois do início a frio", () => {
+    const { native } = captureNativeListener();
+    const launch = buildResponse("task-reminder:1", { route: "/tasks", taskId: "1" });
+    mockGetLastNotificationResponse.mockReturnValue(launch);
+    const service = new ExpoNotificationService();
+    const listener = jest.fn(() => true);
+
+    service.onNotificationResponse(listener);
+    native.emit?.(launch);
+    native.emit?.(buildResponse("task-reminder:2", { route: "/tasks", taskId: "2" }));
+    native.emit?.(buildResponse("task-reminder:2", { route: "/tasks", taskId: "2" }));
+
+    expect(listener.mock.calls).toEqual([[{ route: "/tasks", taskId: "1" }], [{ route: "/tasks", taskId: "2" }]]);
+  });
+
+  it("entrega o toque com o app aberto a todos os ouvintes por uma única assinatura nativa", () => {
+    const { native, remove } = captureNativeListener();
+    const service = new ExpoNotificationService();
+    const first = jest.fn(() => false);
+    const second = jest.fn(() => true);
+
+    const unsubscribeFirst = service.onNotificationResponse(first);
+    const unsubscribeSecond = service.onNotificationResponse(second);
+    native.emit?.(buildResponse("task-reminder:3", { route: "/tasks", taskId: "3" }));
+
+    expect(mockAddNotificationResponseReceivedListener).toHaveBeenCalledTimes(1);
+    expect(first).toHaveBeenCalledWith({ route: "/tasks", taskId: "3" });
+    expect(second).toHaveBeenCalledWith({ route: "/tasks", taskId: "3" });
+
+    unsubscribeFirst();
+    unsubscribeFirst();
+    expect(remove).not.toHaveBeenCalled();
+    unsubscribeSecond();
+    expect(remove).toHaveBeenCalledTimes(1);
+
+    service.onNotificationResponse(first);
+    expect(mockAddNotificationResponseReceivedListener).toHaveBeenCalledTimes(2);
+  });
+
+  it("continua entregando aos demais ouvintes quando um deles falha", () => {
+    const { native } = captureNativeListener();
+    const service = new ExpoNotificationService();
+    const failing = jest.fn(() => {
+      throw new Error("listener error");
+    });
+    const healthy = jest.fn(() => true);
+
+    service.onNotificationResponse(failing);
+    service.onNotificationResponse(healthy);
+    native.emit?.(buildResponse("task-reminder:4", { route: "/tasks", taskId: "4" }));
+
+    expect(healthy).toHaveBeenCalledWith({ route: "/tasks", taskId: "4" });
   });
 });
