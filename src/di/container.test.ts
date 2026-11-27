@@ -153,6 +153,18 @@ describe("container da aplicação", () => {
     expect(Object.isFrozen(container.useCases)).toBe(true);
   });
 
+  it("issue #269: o caso de uso de notificações configura a apresentação no serviço injetado", () => {
+    const notifications = new FakeNotificationService("granted");
+    const isolated = createAppContainer({
+      dataSources: memoryDataSources(),
+      services: { clock: fixedClock, notifications },
+    });
+
+    isolated.useCases.notifications.startForegroundPresentation();
+
+    expect(notifications.foregroundPresentationCalls).toBe(1);
+  });
+
   it("issue #211: o caso de uso de tarefas usa o serviço de notificações injetado no container", async () => {
     const notifications = new FakeNotificationService("granted");
     const isolated = createAppContainer({

@@ -68,6 +68,13 @@ export class FakeNotificationService implements INotificationService {
     return [...this.scheduled.values()];
   }
 
+  /** Quantas vezes a apresentação em primeiro plano foi configurada. */
+  foregroundPresentationCalls = 0;
+
+  configureForegroundPresentation(): void {
+    this.foregroundPresentationCalls += 1;
+  }
+
   onNotificationResponse(listener: (data: Readonly<Record<string, string>>) => void): () => void {
     this.responseListeners.add(listener);
     return () => {

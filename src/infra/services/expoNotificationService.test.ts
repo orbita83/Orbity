@@ -14,6 +14,7 @@ const mockScheduleNotificationAsync = jest.fn();
 const mockCancelScheduledNotificationAsync = jest.fn();
 const mockGetAllScheduledNotificationsAsync = jest.fn();
 const mockAddNotificationResponseReceivedListener = jest.fn();
+const mockSetNotificationHandler = jest.fn();
 
 jest.mock("expo-notifications", () => ({
   PermissionStatus: {
@@ -34,6 +35,7 @@ jest.mock("expo-notifications", () => ({
   cancelScheduledNotificationAsync: (...args: unknown[]) => mockCancelScheduledNotificationAsync(...args),
   getAllScheduledNotificationsAsync: (...args: unknown[]) => mockGetAllScheduledNotificationsAsync(...args),
   addNotificationResponseReceivedListener: (...args: unknown[]) => mockAddNotificationResponseReceivedListener(...args),
+  setNotificationHandler: (...args: unknown[]) => mockSetNotificationHandler(...args),
 }));
 
 beforeEach(() => {
@@ -217,6 +219,41 @@ describe("ExpoNotificationService (adaptador real na infraestrutura)", () => {
 
     mockGetAllScheduledNotificationsAsync.mockRejectedValueOnce(new Error("Native list error"));
     await expect(service.listScheduled()).rejects.toBeInstanceOf(NotificationServiceError);
+  });
+
+  it("pede banner, central e som ao apresentar lembretes com o app em primeiro plano", async () => {
+    const service = new ExpoNotificationService();
+
+    service.configureForegroundPresentation();
+
+    expect(mockSetNotificationHandler).toHaveBeenCalledTimes(1);
+    const [handler] = mockSetNotificationHandler.mock.calls[0] as [
+      { handleNotification: (notification: unknown) => Promise<unknown> },
+    ];
+    await expect(handler.handleNotification({})).resolves.toEqual({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    });
+  });
+
+  it("configura o handler de apresentação uma única vez", () => {
+    const service = new ExpoNotificationService();
+
+    service.configureForegroundPresentation();
+    service.configureForegroundPresentation();
+
+    expect(mockSetNotificationHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it("converte falha ao configurar a apresentação em NotificationServiceError", () => {
+    const service = new ExpoNotificationService();
+    mockSetNotificationHandler.mockImplementationOnce(() => {
+      throw new Error("Native handler error");
+    });
+
+    expect(() => service.configureForegroundPresentation()).toThrow(NotificationServiceError);
   });
 
   it("encaminha resposta ao toque na notificação higienizando metadados internos", () => {

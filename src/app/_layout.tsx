@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
 import { themes } from "@/view/theme/tokens";
+import { AppLifecycle } from "@/view/components/AppLifecycle";
 import { MainTabBar } from "@/view/components/MainTabBar";
 
 // Fundo da janela raiz na cor da barra de abas (navbar.bg): é o que o Android mostra atrás da
@@ -11,6 +12,8 @@ void SystemUI.setBackgroundColorAsync(themes.cosmic.navbar.bg);
 const RootLayout = () => (
   <>
     <StatusBar style="light" />
+    {/* Efeitos globais da sessão, como os lembretes com o app aberto (ADR-0003). */}
+    <AppLifecycle />
     <Tabs
       initialRouteName="index"
       backBehavior="firstRoute"
