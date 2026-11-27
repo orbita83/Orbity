@@ -42,8 +42,8 @@ export interface INotificationService {
   /**
    * Escuta o toque do estudante em uma notificação entregue, repassando seus metadados puros (`data`).
    * Também entrega a resposta que abriu o app (início a frio), e cada resposta é entregue uma única vez.
-   * O ouvinte retorna `true` quando tratou a resposta; enquanto nenhum ouvinte tratar a resposta que abriu
-   * o app, ela é oferecida a cada novo ouvinte registrado.
+   * O ouvinte retorna `true` quando tratou a resposta; enquanto nenhum ouvinte tratar uma resposta (por exemplo,
+   * a que abriu o app, ou uma que chegou antes de o seu ouvinte assinar), ela é oferecida a cada novo ouvinte registrado.
    */
   onNotificationResponse?(listener: (data: Readonly<Record<string, string>>) => boolean | void): () => void;
 }

@@ -391,6 +391,26 @@ describe("ExpoNotificationService — respostas ao toque na raiz do app (#270)",
     expect(mockAddNotificationResponseReceivedListener).toHaveBeenCalledTimes(2);
   });
 
+  it("guarda a resposta que nenhum ouvinte tratou para o próximo ouvinte, em vez de descartá-la", () => {
+    // Início a frio no iOS: o aviso do Modo Foco chega pelo ouvinte nativo antes de a Tela Inicial assinar.
+    const { native } = captureNativeListener();
+    const service = new ExpoNotificationService();
+    const rootListener = jest.fn((data: Readonly<Record<string, string>>) => data.route === "/tasks");
+    const homeListener = jest.fn((data: Readonly<Record<string, string>>) => data.route === "/focus-session");
+    const lateListener = jest.fn(() => true);
+
+    service.onNotificationResponse(rootListener);
+    native.emit?.(buildResponse("focus-cycle-end", { route: "/focus-session" }));
+    service.onNotificationResponse(homeListener);
+    native.emit?.(buildResponse("focus-cycle-end", { route: "/focus-session" }));
+    service.onNotificationResponse(lateListener);
+
+    expect(rootListener).toHaveBeenCalledTimes(1);
+    expect(homeListener).toHaveBeenCalledTimes(1);
+    expect(homeListener).toHaveBeenCalledWith({ route: "/focus-session" });
+    expect(lateListener).not.toHaveBeenCalled();
+  });
+
   it("continua entregando aos demais ouvintes quando um deles falha", () => {
     const { native } = captureNativeListener();
     const service = new ExpoNotificationService();
