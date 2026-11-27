@@ -57,6 +57,20 @@ describe("FocusBottomSheet", () => {
     expect(screen.getByRole("progressbar")).not.toHaveTextContent("4%");
   });
 
+  it("#220: a largura do preenchimento acompanha a razão, de 0% a 100%", async () => {
+    const withRatio = (ratio: number | null, completed: number, total: number) =>
+      propsWith({ progressLabel: `${completed}/${total}`, progressRatio: ratio, progressCompleted: completed, progressTotal: total });
+
+    await render(<FocusBottomSheet {...withRatio(0, 0, 3)} />);
+    expect(screen.queryByTestId("progress-fill")).toBeNull();
+
+    await screen.rerender(<FocusBottomSheet {...withRatio(2 / 3, 2, 3)} />);
+    expect(screen.getByTestId("progress-fill")).toHaveStyle({ width: `${(2 / 3) * 100}%` });
+
+    await screen.rerender(<FocusBottomSheet {...withRatio(1, 3, 3)} />);
+    expect(screen.getByTestId("progress-fill")).toHaveStyle({ width: "100%" });
+  });
+
   it("estado vazio: as quatro conquistas aparecem bloqueadas", async () => {
     await render(<FocusBottomSheet {...propsWith()} />);
 

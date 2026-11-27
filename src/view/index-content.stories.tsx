@@ -63,6 +63,10 @@ export const ComSequenciaPainelAberto: Story = {
   name: "Com sequência · painel aberto",
   args: { summary: summaryWith(12, 1, 25), progressLabel: "1/25", sheetStage: "stage1_1" },
 };
+export const ProgressoCompleto: Story = {
+  name: "Progresso · 100% (25/25)",
+  args: { summary: summaryWith(12, 25, 25), progressLabel: "25/25", sheetStage: "stage1_1" },
+};
 export const Erro: Story = {
   name: "Erro · nova tentativa",
   args: { status: "error", summary: null, error: { messageKey: "error.persistence", retryable: true } },
