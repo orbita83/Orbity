@@ -106,6 +106,9 @@ export const motionTokens = {
   easingStandard: [0.2, 0, 0, 1] as const,
   scalePressed: 0.96,
   opacityPressed: 0.8,
+  // Planeta da sequência (02-tokens.md, motion.planet.*): uma volta a cada 24 s e pulso de 4 s.
+  planetRotation: 24000,
+  planetPulse: 4000,
 } as const;
 
 export const sizeTokens = {
