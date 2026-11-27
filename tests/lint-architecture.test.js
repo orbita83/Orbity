@@ -194,3 +194,11 @@ test("rejeita rota que exporta outro valor, contrato com implementação e ViewM
   });
   expect(violations.map(({ ruleId }) => ruleId)).toEqual(["ARCH-006", "ARCH-003", "ARCH-008", "ARCH-008"]);
 });
+
+test("issue #221: aceita variante por plataforma do componente e o Skia na view", () => {
+  const overrides = {
+    "src/view/components/Planet.tsx": 'import { Canvas } from "@shopify/react-native-skia"; export const Planet = () => Canvas;',
+    "src/view/components/Planet.web.tsx": 'import { WithSkiaWeb } from "@shopify/react-native-skia/lib/module/web"; export const Planet = () => WithSkiaWeb;',
+  };
+  expect(lintFixture(overrides)).toEqual({ ok: true, violations: [], checkedFiles: Object.keys(modules).length + 2 });
+});
