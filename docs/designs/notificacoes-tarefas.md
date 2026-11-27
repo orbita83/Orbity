@@ -1,6 +1,6 @@
 # Notificações de tarefas agendadas: ciclo de vida, reconciliação e navegação
 
-> **Status:** Proposed · **Autor:** AlissonSena7 · **Data:** 2026-11-23 · **Issue:** #211
+> **Status:** Implemented (PR #236; sem `/egm:egm-review`) · **Autor:** AlissonSena7 · **Data:** 2026-11-23 · **Issue:** #211
 >
 > Complementa [`tarefas.md`](tarefas.md) e apoia-se na infraestrutura de notificações locais do [`ADR-0002`](../05-architecture/decisions/ADR-0002.md) (issue #209).
 
