@@ -10,8 +10,8 @@ export type ProfileHeaderCardProps = {
   readonly theme?: OrbityTheme;
 };
 
-/** Texto exibido no lugar do nome enquanto o estudante ainda não o informou. */
-export const EMPTY_NAME_PROMPT = "Como podemos te chamar?";
+/** Texto curto exibido no lugar do nome enquanto o estudante ainda não o informou (cabe numa linha). */
+export const EMPTY_NAME_PROMPT = "Seu nome";
 
 /**
  * Cartão de identificação do Perfil (protótipo, tela 5): avatar com a inicial, nome, papel e editar.
@@ -64,7 +64,7 @@ export const ProfileHeaderCard = ({
             {name}
           </Text>
         ) : (
-          <Text allowFontScaling numberOfLines={2} style={styles.namePrompt}>
+          <Text allowFontScaling numberOfLines={1} style={styles.namePrompt}>
             {EMPTY_NAME_PROMPT}
           </Text>
         )}
