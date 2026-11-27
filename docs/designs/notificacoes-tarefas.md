@@ -37,7 +37,7 @@ As tarefas avulsas já podem ser salvas com data e horário de início e de tér
 | **D3** | Tarefas com `routineId` (`isStandaloneTask(task) === false`) nunca geram lembrete individual de tarefa ([RN-0011](../02-requirements/business-rules/RN-0011.md)). |
 | **D4** | Os textos seguem [`design-system/01-principios.md`](../../design-system/01-principios.md): título `"Hora de estudar"` e corpo `'Sua tarefa "{título}" começa agora. Bons estudos!'`, com metadados `{ route: "/tasks", taskId: task.id }`. |
 | **D5** | O cálculo puro de identificador e instante de disparo (`buildTaskReminderId`, `isTaskReminderId`, `getTaskReminderTriggerAt`) fica em `src/model/entities/task.ts` (sem textos de interface, respeitando a issue #159), e a montagem do payload de notificação (`buildTaskReminderInput`) e orquestração ficam em `src/usecase/`. |
-| **D6** | A resposta ao toque na notificação é exposta por `INotificationService.onNotificationResponse` (adaptada em `ExpoNotificationService` sem vazar tipos do Expo) e repassada por `ITaskUseCases.onTaskReminderPress` para a ViewModel acionar `router.navigate("/tasks")`. Para o lembrete aparecer também com o app em primeiro plano (#269), a raiz do app (`AppLifecycle` → `useAppLifecycleViewModel`, [ADR-0003](../05-architecture/decisions/ADR-0003.md)) chama na inicialização `INotificationUseCases.startForegroundPresentation()`, que delega para `INotificationService.configureForegroundPresentation()`. O adaptador registra uma única vez o `setNotificationHandler` com `shouldShowBanner`, `shouldShowList` e `shouldPlaySound` verdadeiros: no Android, sem som o banner não aparece. O handler vale para todos os lembretes do Orbity, inclusive o fim de ciclo do Modo Foco. Por ser configurado em toda inicialização, também cobre lembretes agendados em sessões anteriores. |
+| **D6** | A resposta ao toque na notificação é exposta por `INotificationService.onNotificationResponse` (adaptada em `ExpoNotificationService` sem vazar tipos do Expo) e repassada por `INotificationUseCases.onTaskReminderPress` para a ViewModel raiz `useAppLifecycleViewModel` acionar `router.navigate("/tasks")` a partir de qualquer tela (#270). O adaptador mantém uma única assinatura nativa e também entrega a resposta que abriu o app (`getLastNotificationResponse`, limpa logo depois com `clearLastNotificationResponse`). O ouvinte retorna `true` quando trata a resposta: a resposta de inicialização é oferecida a cada novo ouvinte até um deles tratá-la (o da raiz trata `/tasks`, e o da Tela Inicial trata `/focus-session`), e cada resposta (identificador, data e ação) é entregue uma única vez por execução do app. Para o lembrete aparecer também com o app em primeiro plano (#269), a raiz do app (`AppLifecycle` → `useAppLifecycleViewModel`, [ADR-0003](../05-architecture/decisions/ADR-0003.md)) chama na inicialização `INotificationUseCases.startForegroundPresentation()`, que delega para `INotificationService.configureForegroundPresentation()`. O adaptador registra uma única vez o `setNotificationHandler` com `shouldShowBanner`, `shouldShowList` e `shouldPlaySound` verdadeiros: no Android, sem som o banner não aparece. O handler vale para todos os lembretes do Orbity, inclusive o fim de ciclo do Modo Foco. Por ser configurado em toda inicialização, também cobre lembretes agendados em sessões anteriores. |
 
 ## Critical User Journeys
 
@@ -50,7 +50,7 @@ As tarefas avulsas já podem ser salvas com data e horário de início e de tér
 ### 1. Domínio (`src/model/`)
 
 - `entities/task.ts`: constantes e funções puras `TASK_REMINDER_PREFIX`, `buildTaskReminderId`, `isTaskReminderId` e `getTaskReminderTriggerAt(task, referenceIso)`.
-- `services/iNotificationService.ts`: método opcional `onNotificationResponse?(listener: (data: Readonly<Record<string, string>>) => void): () => void` para escutar toques em notificações sem expor tipos do `expo-notifications`, e método opcional e idempotente `configureForegroundPresentation?(): void` para os lembretes aparecerem com o app aberto (#269).
+- `services/iNotificationService.ts`: método opcional `onNotificationResponse?(listener: (data: Readonly<Record<string, string>>) => boolean | void): () => void` para escutar toques em notificações sem expor tipos do `expo-notifications`, inclusive o que abriu o app (o ouvinte retorna `true` quando trata a resposta, D6), e método opcional e idempotente `configureForegroundPresentation?(): void` para os lembretes aparecerem com o app aberto (#269).
 
 ### 2. Casos de uso (`src/usecase/`)
 
@@ -58,20 +58,21 @@ As tarefas avulsas já podem ser salvas com data e horário de início e de tér
 - `iTaskUseCases.ts` e `taskUseCases.ts`:
   - `reconcileScheduledReminders(): Promise<void>`: compara `listTasks()` com `notificationService.listScheduled()`, remove lembretes `task-reminder:*` órfãos e agenda/atualiza os lembretes das tarefas avulsas pendentes futuras.
   - `ensureReminderPermission(): Promise<NotificationPermissionStatus>`: consulta e solicita permissão sob demanda sem lançar erro bloqueante.
-  - `onTaskReminderPress(onPress: (taskId?: string) => void): () => void`: filtra cliques em notificações com `data.route === "/tasks"`.
+- `iNotificationUseCases.ts` e `notificationUseCases.ts` (ADR-0003):
+  - `onTaskReminderPress(onPress: (taskId?: string) => void): () => void`: filtra cliques em notificações com `data.route === TASK_REMINDER_ROUTE` (`"/tasks"`, em `src/model/entities/task.ts`) e indica ao serviço que tratou a resposta (#270).
 - `iNotificationUseCases.ts` e `notificationUseCases.ts` (#269): `startForegroundPresentation(): void` delega para `configureForegroundPresentation()` e absorve falhas, porque sem o handler o lembrete continua aparecendo com o app em segundo plano.
 
 ### 3. Infraestrutura e Composição (`src/infra/` e `src/di/`)
 
-- `expoNotificationService.ts` e `fakeNotificationService.ts`: suporte a `onNotificationResponse` e a `configureForegroundPresentation` (`setNotificationHandler` com banner, central e som).
+- `expoNotificationService.ts` e `fakeNotificationService.ts`: suporte a `onNotificationResponse` (assinatura nativa única, resposta de inicialização e entrega única, D6) e a `configureForegroundPresentation` (`setNotificationHandler` com banner, central e som).
 - `container.ts`: injeta `services.notifications` nas fábricas de `TaskUseCases` e de `NotificationUseCases` (`useCases.notifications`).
 
 ### 4. Apresentação (`src/viewmodel/` e `src/view/`)
 
 - `useNewTaskViewModel.ts`: ao salvar tarefa com `startDate` e `startTime`, verifica `ensureReminderPermission()` e preenche `reminderPermissionNotice` quando o status não for `"granted"`.
-- `useTasksViewModel.ts`: aciona `reconcileScheduledReminders()` ao carregar/recarregar a lista e registra `onTaskReminderPress` para navegar até `"/tasks"`.
+- `useTasksViewModel.ts`: aciona `reconcileScheduledReminders()` ao carregar/recarregar a lista. O toque no lembrete fica na raiz do app, e não nesta ViewModel, para funcionar antes de a aba Tarefas montar (#270).
 - `tasksCopy.ts`, `new-task-content.tsx` e `tasks-content.tsx`: textos acolhedores e exibição não bloqueante do aviso de permissão.
-- `useAppLifecycleViewModel.ts`, `components/AppLifecycle.tsx` e `src/app/_layout.tsx` (#269, [ADR-0003](../05-architecture/decisions/ADR-0003.md)): o componente raiz sem UI chama `startForegroundPresentation()` uma vez na inicialização.
+- `useAppLifecycleViewModel.ts`, `components/AppLifecycle.tsx` e `src/app/_layout.tsx` (#269, [ADR-0003](../05-architecture/decisions/ADR-0003.md)): o componente raiz sem UI chama `startForegroundPresentation()` uma vez na inicialização e assina `onTaskReminderPress` para navegar até `"/tasks"` (#270). Ele fica depois do `Tabs` no `_layout.tsx`, para que o navegador já exista quando o toque do início a frio navegar.
 
 ## Alternatives Considered
 
