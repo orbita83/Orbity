@@ -161,7 +161,7 @@ export const RoutineDetailsScreenContent = ({
             style={styles.track}
           >
             {percent > 0 ? (
-              <View style={[styles.fill, { width: `${percent}%` }]}>
+              <View testID="routine-progress-fill" style={[styles.fill, { width: `${percent}%` }]}>
                 <GradientSurface from={cosmicGradients.progress[0]} to={cosmicGradients.progress[1]} horizontal />
               </View>
             ) : null}

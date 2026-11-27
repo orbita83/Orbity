@@ -208,7 +208,7 @@ export const FocusBottomSheet = ({
                 style={styles.progressTrack}
               >
                 {progressRatio !== null && progressRatio > 0 ? (
-                  <View style={[styles.progressFill, { width: `${progressRatio * 100}%` }]}>
+                  <View testID="progress-fill" style={[styles.progressFill, { width: `${progressRatio * 100}%` }]}>
                     <GradientSurface from={cosmicGradients.progress[0]} to={cosmicGradients.progress[1]} horizontal />
                   </View>
                 ) : null}

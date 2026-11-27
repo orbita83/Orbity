@@ -1,6 +1,6 @@
 # Rotinas: domínio, persistência e integração com a sequência
 
-> **Status:** Proposed (aguardando revisão humana) · **Autor:** MateusARJ · **Data:** 2026-11-15 · **Issue:** #132
+> **Status:** Implemented (PR #130; sem `/egm:egm-review`) · **Autor:** MateusARJ · **Data:** 2026-11-15 · **Issue:** #132
 >
 > Continua o PR #130, que trouxe só o visual das telas 3, 3.1, 3.2, 3.3 e 3.4 do protótipo do Claude Design, e se apoia no domínio de Tarefas do PR #129 ([tarefas.md](tarefas.md)).
 

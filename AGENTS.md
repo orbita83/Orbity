@@ -62,7 +62,8 @@ O Elephant-Goldfish Model (EGM) é **opcional**: nem toda atividade tem design t
 
 - **Design final:** `docs/designs/<funcionalidade>.md`, um por funcionalidade que usa o EGM, registrado no índice `docs/designs/README.md`. É o único artefato EGM versionado.
 - **Artefatos de trabalho** (`concepts_brief.md`, `design_draft.md`, relatórios de revisão e de drift): ficam em `.dev/egm/`, fora do Git. A pasta comporta uma tarefa por vez. Limpe-a antes de iniciar outra.
-- Antes de implementar uma funcionalidade com design EGM, o design deve estar em `docs/designs/` e ter passado por `/egm:egm-review`.
+- Antes de implementar uma funcionalidade com design EGM, o design deve estar em `docs/designs/`.
+- **Revisão `/egm:egm-review`:** é recomendada, mas o operador pode dispensá-la numa atividade que usa o EGM. A dispensa é decisão do operador e fica registrada no cabeçalho do design (ex.: "A revisão `/egm:egm-review` foi dispensada pelo operador"). Sem dispensa registrada, o design deve ter passado pela revisão antes da implementação. O agente não dispensa a revisão por conta própria.
 - Se a implementação precisar divergir do design, atualize o design no mesmo PR (`CONTRIBUTING.md` Seção 2.6).
 
 ## 5. Checklist de Validação Local (Antes de Concluir ou Commitar)

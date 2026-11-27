@@ -1,6 +1,6 @@
 # Modo Foco: cronômetro pomodoro, persistência e evolução visual
 
-> **Status:** Proposed · **Autor:** AlissonSena7 · **Data:** 2026-11-25 · **Issue:** #217
+> **Status:** Implemented (PR #257; sem `/egm:egm-review`) · **Autor:** AlissonSena7 · **Data:** 2026-11-25 · **Issue:** #217
 >
 > Continua `tela-inicial-base.md` (D2, D5, D10, D11, D19 e D23) e reutiliza o serviço de notificações locais do [ADR-0002](../05-architecture/decisions/ADR-0002.md) (#209). A revisão `/egm:egm-review` é opcional (`AGENTS.md`, Seção 4).
 

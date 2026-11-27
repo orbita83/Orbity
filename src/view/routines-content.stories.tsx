@@ -141,11 +141,15 @@ const InteractiveEdit = () => {
 };
 export const EditarRotina: Story = { name: "3.1 · Editar rotina (#137)", render: () => <InteractiveEdit /> };
 
-const InteractiveDetails = ({ confirm = false, inactive = false }: { confirm?: boolean; inactive?: boolean }) => {
-  const [state, actions] = useRoutineDetailsViewModel({ ...PROTOTYPE_ROUTINE_DETAILS, activeToday: !inactive });
+const InteractiveDetails = ({ confirm = false, inactive = false, allDone = false }: { confirm?: boolean; inactive?: boolean; allDone?: boolean }) => {
+  const initial = allDone
+    ? { ...PROTOTYPE_ROUTINE_DETAILS, tasks: PROTOTYPE_ROUTINE_DETAILS.tasks.map((task) => ({ ...task, done: true })) }
+    : PROTOTYPE_ROUTINE_DETAILS;
+  const [state, actions] = useRoutineDetailsViewModel({ ...initial, activeToday: !inactive });
   return <RoutineDetailsScreenContent {...state} {...actions} confirmDeleteVisible={confirm || state.confirmDeleteVisible} onBack={noop} onEdit={noop} onDeleted={noop} />;
 };
 export const Detalhe: Story = { name: "3.2 · Detalhe da rotina (interativa)", render: () => <InteractiveDetails /> };
+export const DetalheCompleto: Story = { name: "3.2 · Detalhe com 100% concluído (#220)", render: () => <InteractiveDetails allDone /> };
 export const DetalheForaDoDia: Story = { name: "3.2 · Detalhe fora do dia (R6)", render: () => <InteractiveDetails inactive /> };
 export const ExcluirRotina: Story = { name: "3.3 · Excluir rotina", render: () => <InteractiveDetails confirm /> };
 

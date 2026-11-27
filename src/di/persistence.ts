@@ -3,6 +3,7 @@ import { ExpoSqlExecutor } from "@/infra/database/expoSqlExecutor";
 import { SqliteCategoryDataSource } from "@/infra/datasources/sqliteCategoryDataSource";
 import { SqliteDailyActivityDataSource } from "@/infra/datasources/sqliteDailyActivityDataSource";
 import { SqliteFocusSessionDataSource } from "@/infra/datasources/sqliteFocusSessionDataSource";
+import { SqliteProfileDataSource } from "@/infra/datasources/sqliteProfileDataSource";
 import { SqliteRoutineDataSource } from "@/infra/datasources/sqliteRoutineDataSource";
 import { SqliteStarDataSource } from "@/infra/datasources/sqliteStarDataSource";
 import { SqliteTaskDataSource } from "@/infra/datasources/sqliteTaskDataSource";
@@ -11,6 +12,7 @@ import type { IActivityDataSource } from "@/model/datasources/iActivityDataSourc
 import type { ICategoryDataSource } from "@/model/datasources/iCategoryDataSource";
 import type { IDailyActivityDataSource } from "@/model/datasources/iDailyActivityDataSource";
 import type { IFocusSessionDataSource } from "@/model/datasources/iFocusSessionDataSource";
+import type { IProfileDataSource } from "@/model/datasources/iProfileDataSource";
 import type { IRoutineDataSource } from "@/model/datasources/iRoutineDataSource";
 import type { IStarDataSource } from "@/model/datasources/iStarDataSource";
 import type { ITaskDataSource } from "@/model/datasources/iTaskDataSource";
@@ -23,6 +25,7 @@ export type Persistence = {
   categories: ICategoryDataSource;
   focusSessions: IFocusSessionDataSource;
   activities: IActivityDataSource;
+  profile: IProfileDataSource;
 };
 
 /**
@@ -41,5 +44,6 @@ export function createPersistence(): Persistence {
     categories: new SqliteCategoryDataSource(provider),
     focusSessions: new SqliteFocusSessionDataSource(provider),
     activities: new TaskActivityDataSource(tasks, routines),
+    profile: new SqliteProfileDataSource(provider),
   };
 }
