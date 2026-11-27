@@ -2,6 +2,7 @@ import { Canvas, Fill, Shader, Skia, useClock } from "@shopify/react-native-skia
 import { useMemo } from "react";
 import { useDerivedValue } from "react-native-reanimated";
 import { PROCEDURAL_PLANET_SKSL, proceduralPlanetPalette } from "../proceduralPlanetShader";
+import { motionTokens } from "../theme/tokens";
 
 export type ProceduralPlanetCanvasProps = {
   /** Lado do quadro, em dp. O planeta ocupa 62% do raio do quadro; o anel, o resto. */
@@ -22,7 +23,13 @@ const STILL_SECONDS = 6;
 export const ProceduralPlanetCanvas = ({ size, rotationSeconds, animate, showRing = true }: ProceduralPlanetCanvasProps) => {
   const clock = useClock();
   const base = useMemo(
-    () => ({ size: [size, size], rotationSeconds, showRing: showRing ? 1 : 0, ...proceduralPlanetPalette }),
+    () => ({
+      size: [size, size],
+      rotationSeconds,
+      ringOrbitSeconds: motionTokens.planetRingOrbit / 1000,
+      showRing: showRing ? 1 : 0,
+      ...proceduralPlanetPalette,
+    }),
     [size, rotationSeconds, showRing],
   );
   const uniforms = useDerivedValue(

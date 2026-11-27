@@ -24,7 +24,7 @@ describe("planeta procedural (#221)", () => {
   });
 
   it("declara todos os uniformes que o componente envia", () => {
-    for (const name of ["size", "t", "rotationSeconds", "showRing", ...Object.keys(proceduralPlanetPalette)]) {
+    for (const name of ["size", "t", "rotationSeconds", "ringOrbitSeconds", "showRing", ...Object.keys(proceduralPlanetPalette)]) {
       expect(PROCEDURAL_PLANET_SKSL).toContain(`uniform ${name === "size" ? "float2" : name.startsWith("c") ? "float3" : "float"} ${name};`);
     }
   });

@@ -19,6 +19,7 @@ uniform float2 size;
 uniform float t;
 uniform float rotationSeconds;
 uniform float showRing;
+uniform float ringOrbitSeconds;
 uniform float3 cNight;
 uniform float3 cShadow;
 uniform float3 cRelief;
@@ -91,7 +92,14 @@ half4 main(float2 xy) {
   float2 rp = float2(cos(tilt) * p.x - sin(tilt) * p.y, sin(tilt) * p.x + cos(tilt) * p.y);
   float rr = length(float2(rp.x, rp.y / 0.22));
   float ringBand = smoothstep(0.80, 0.83, rr) * (1.0 - smoothstep(0.95, 0.99, rr));
-  ringBand *= 0.55 + 0.45 * fbm(float3(rr * 30.0, 0.0, 1.0));
+  // Anel em movimento: aglomerados de poeira giram em volta do planeta (motion.planet.ring-orbit).
+  // Só a opacidade varia; a cor nunca passa de cRing, para não clarear atrás do contador.
+  float ringAngle = atan(rp.y / 0.22, rp.x);
+  float spin = t * 6.2831853 / ringOrbitSeconds;
+  float dust = fbm(float3(cos(ringAngle - spin) * 2.0, sin(ringAngle - spin) * 2.0, rr * 24.0));
+  float clumps = pow(0.5 + 0.5 * sin(3.0 * (ringAngle - spin)), 3.0);
+  ringBand *= 0.30 + 0.45 * dust + 0.40 * clumps;
+  ringBand = clamp(ringBand, 0.0, 1.0);
   bool ringFront = rp.y < 0.0;
 
   if (showRing > 0.5 && !ringFront) acc = over(acc, cRing * 0.55, ringBand * 0.6);

@@ -19,6 +19,7 @@ import {
 } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
 import { GradientSurface } from "./components/GradientSurface";
+import { CosmicSky } from "./components/CosmicSky";
 
 const theme = themes.cosmic;
 
@@ -109,6 +110,7 @@ export const RoutinesScreenContent = ({
 
   return (
     <View style={styles.screen}>
+      <CosmicSky />
       <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + theme.primitive["space-32"] }]}>
         <View style={styles.heading}>
           <Text accessibilityRole="header" allowFontScaling style={styles.title}>

@@ -10,6 +10,7 @@ import { PrimaryButton } from "./components/PrimaryButton";
 import { resolveCategoryDisplay } from "./categoryCopy";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicBorders, themes } from "./theme/tokens";
+import { CosmicSky } from "./components/CosmicSky";
 
 const theme = themes.cosmic;
 
@@ -63,6 +64,7 @@ export const TasksScreenContent = ({
 
   return (
     <View style={styles.screen}>
+      <CosmicSky />
       {selectionMode ? (
         <ContextualHeader
           countLabel={selectedCount === 1 ? TASKS_COPY["selection.one"] : formatTasksCopy("selection.other", { n: selectedCount })}

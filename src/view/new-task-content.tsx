@@ -17,6 +17,7 @@ import { NO_CATEGORY_SYMBOL, resolveCategoryDisplay } from "./categoryCopy";
 import { TextField } from "./components/TextField";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
 import { cosmicColors, themes } from "./theme/tokens";
+import { CosmicSky } from "./components/CosmicSky";
 
 const theme = themes.cosmic;
 
@@ -155,6 +156,7 @@ export const NewTaskScreenContent = ({
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
+      <CosmicSky />
       <ScreenHeader
         title={editing ? TASKS_COPY["form.editTitle"] : TASKS_COPY["form.title"]}
         variant="close"

@@ -21,6 +21,7 @@ import {
   weekdayShort,
 } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
+import { CosmicSky } from "./components/CosmicSky";
 
 const theme = themes.cosmic;
 const WEEK = [0, 1, 2, 3, 4, 5, 6] as const;
@@ -92,6 +93,7 @@ export const NewRoutineScreenContent = ({
   };
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
+      <CosmicSky />
       <ScreenHeader
         title={editing ? ROUTINES_COPY["form.editTitle"] : ROUTINES_COPY["form.title"]}
         backLabel={editing ? ROUTINES_COPY["form.editBack"] : ROUTINES_COPY["form.back"]}

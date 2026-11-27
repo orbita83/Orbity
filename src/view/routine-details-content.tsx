@@ -17,6 +17,7 @@ import {
   formatRoutinesCopy,
 } from "./routinesCopy";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
+import { CosmicSky } from "./components/CosmicSky";
 
 const theme = themes.cosmic;
 
@@ -63,6 +64,7 @@ export const RoutineDetailsScreenContent = ({
   if (!routine && loading) {
     return (
       <View style={[styles.screen, { paddingTop: insets.top }]}>
+        <CosmicSky />
         <ScreenHeader title={ROUTINES_COPY.title} backLabel={ROUTINES_COPY["details.back"]} onBack={onBack} />
         <View style={styles.content}>
           <SkeletonCards accessibilityLabel={ROUTINES_COPY["details.loading"]} />
@@ -74,6 +76,7 @@ export const RoutineDetailsScreenContent = ({
   if (!routine) {
     return (
       <View style={[styles.screen, { paddingTop: insets.top }]}>
+        <CosmicSky />
         <ScreenHeader title={ROUTINES_COPY.title} backLabel={ROUTINES_COPY["details.back"]} onBack={onBack} />
         <View style={styles.missing}>
           <Text accessibilityRole="header" allowFontScaling style={styles.cardTitle}>
@@ -108,6 +111,7 @@ export const RoutineDetailsScreenContent = ({
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
+      <CosmicSky />
       <ScreenHeader title={routine.title} backLabel={ROUTINES_COPY["details.back"]} onBack={onBack} />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <View style={styles.summary}>

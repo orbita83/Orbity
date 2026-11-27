@@ -25,6 +25,7 @@ import { ScreenHeader } from "./components/ScreenHeader";
 import { SkeletonCards } from "./components/SkeletonCards";
 import { TextField } from "./components/TextField";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes } from "./theme/tokens";
+import { CosmicSky } from "./components/CosmicSky";
 
 const theme = themes.cosmic;
 
@@ -114,6 +115,7 @@ export const CategoriesScreenContent = ({
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
+      <CosmicSky />
       <ScreenHeader
         title={CATEGORIES_COPY.title}
         backLabel={CATEGORIES_COPY.backLabel}

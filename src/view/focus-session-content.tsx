@@ -20,7 +20,7 @@ import {
   type FocusTarget,
 } from "../viewmodel/useFocusSessionViewModel";
 import { ConfirmDialog } from "./components/ConfirmDialog";
-import { CosmicStarfield } from "./components/CosmicStarfield";
+import { CosmicSky } from "./components/CosmicSky";
 import { GradientSurface } from "./components/GradientSurface";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PlanetStreakView } from "./components/PlanetStreakView";
@@ -169,7 +169,6 @@ export const FocusSessionScreenContent = ({
   const [frame, setFrame] = useState({ width: 0, height: 0 });
 
   const width = frame.width || window.width;
-  const height = frame.height || window.height;
   const planetSize = Math.min(width * PLANET_WIDTH_RATIO, PLANET_MAX_SIZE);
   const announcementText = formatFocusAnnouncement(announcement);
 
@@ -212,9 +211,7 @@ export const FocusSessionScreenContent = ({
       ]}
       onLayout={onLayout}
     >
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        {width > 0 ? <CosmicStarfield width={width} height={height} /> : null}
-      </View>
+      <CosmicSky glow />
 
       {/* Região separada para anúncios discretos em marcos de ciclo (nunca a cada segundo). */}
       <View

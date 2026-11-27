@@ -109,6 +109,14 @@ export const motionTokens = {
   // Planeta da sequência (02-tokens.md, motion.planet.*): uma volta a cada 24 s e pulso de 4 s.
   planetRotation: 24000,
   planetPulse: 4000,
+  // Céu animado (#286, motion.ambient.*): estrelas que cintilam e estrelas cadentes raras.
+  ambientStarCell: 36,
+  ambientTwinkleMin: 2600,
+  ambientTwinkleMax: 7000,
+  ambientShootingEvery: 7000,
+  ambientShootingDuration: 1100,
+  // Anel do planeta: os aglomerados de poeira dão uma volta a cada 9 s.
+  planetRingOrbit: 9000,
 } as const;
 
 export const sizeTokens = {
