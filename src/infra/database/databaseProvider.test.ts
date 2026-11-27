@@ -7,6 +7,9 @@ import { NodeSqliteExecutor } from "../../../tests/fixtures/node-sqlite-executor
 const userVersion = (executor: NodeSqliteExecutor) =>
   (executor.database.prepare("PRAGMA user_version").get() as { user_version: number }).user_version;
 
+/** Versão da última migração: os testes de atualização sobem o banco até ela. */
+const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;
+
 const tableExists = (executor: NodeSqliteExecutor, name: string) =>
   executor.database.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?").get(name) !==
   undefined;
@@ -22,10 +25,10 @@ describe("DatabaseProvider", () => {
     executor.close();
   });
 
-  it("aplica todas as migrações num banco novo e grava user_version = 7", async () => {
+  it("aplica todas as migrações num banco novo e grava user_version = 8", async () => {
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(7);
+    expect(userVersion(executor)).toBe(8);
     expect(tableExists(executor, "daily_activity")).toBe(true);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(tableExists(executor, "routines")).toBe(true);
@@ -34,6 +37,7 @@ describe("DatabaseProvider", () => {
     expect(tableExists(executor, "stars")).toBe(true);
     expect(tableExists(executor, "categories")).toBe(true);
     expect(tableExists(executor, "focus_sessions")).toBe(true);
+    expect(tableExists(executor, "student_profile")).toBe(true);
   });
 
   it("rotinas.md: atualiza um banco na v2 para a v3 e as tarefas existentes continuam avulsas", async () => {
@@ -47,7 +51,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(7);
+    expect(userVersion(executor)).toBe(LATEST_VERSION);
     expect(executor.database.prepare("SELECT id, completed, routine_id, position FROM tasks").all()).toEqual([
       { id: "t1", completed: 1, routine_id: null, position: null },
     ]);
@@ -68,7 +72,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(7);
+    expect(userVersion(executor)).toBe(LATEST_VERSION);
     expect(executor.database.prepare("SELECT category FROM tasks ORDER BY id").all().map((row) => (row as { category: string | null }).category)).toEqual(
       ["mathematics", "reading", "languages", "science", "programming", "music", null, "outra"],
     );
@@ -90,7 +94,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(7);
+    expect(userVersion(executor)).toBe(LATEST_VERSION);
     expect(tableExists(executor, "tasks")).toBe(true);
     expect(executor.database.prepare("SELECT local_date FROM daily_activity").all()).toEqual([
       { local_date: "2026-11-14" },
@@ -136,7 +140,7 @@ describe("DatabaseProvider", () => {
 
     await new DatabaseProvider(async () => executor).get();
 
-    expect(userVersion(executor)).toBe(7);
+    expect(userVersion(executor)).toBe(LATEST_VERSION);
     expect(tableExists(executor, "focus_sessions")).toBe(true);
     expect(executor.database.prepare("SELECT id, category FROM tasks ORDER BY id").all()).toEqual([
       { id: "t-1", category: "programming" },
@@ -150,6 +154,21 @@ describe("DatabaseProvider", () => {
     expect(
       executor.database.prepare("SELECT COUNT(*) AS total FROM categories WHERE id IN ('programming', 'music')").get(),
     ).toEqual({ total: 2 });
+  });
+
+  it("issue #280: atualiza da v7 para a v8 mantendo as tarefas e criando o perfil vazio", async () => {
+    await new DatabaseProvider(async () => executor, MIGRATIONS.filter((migration) => migration.version <= 7)).get();
+    executor.database.exec(`
+      INSERT INTO tasks (id, title, completed, pinned, created_at, updated_at) VALUES
+        ('t-1', 'Revisar', 0, 0, '2026-11-27T08:00:00-03:00', '2026-11-27T08:00:00-03:00');
+    `);
+
+    await new DatabaseProvider(async () => executor).get();
+
+    expect(userVersion(executor)).toBe(8);
+    expect(tableExists(executor, "student_profile")).toBe(true);
+    expect(executor.database.prepare("SELECT COUNT(*) AS total FROM student_profile").get()).toEqual({ total: 0 });
+    expect(executor.database.prepare("SELECT id FROM tasks").all()).toEqual([{ id: "t-1" }]);
   });
 
   it("chamar get() duas vezes roda as migrações pendentes uma vez só", async () => {

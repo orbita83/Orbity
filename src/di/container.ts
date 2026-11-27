@@ -1,4 +1,3 @@
-import { MemoryProfileDataSource } from "@/infra/datasources/memoryProfileDataSource";
 import type { IProfileDataSource } from "@/model/datasources/iProfileDataSource";
 import type { IProfileUseCases } from "@/usecase/iProfileUseCases";
 import { ProfileUseCases } from "@/usecase/profileUseCases";
@@ -221,11 +220,7 @@ export type AppUseCases = {
  */
 export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServices, AppUseCases> =
   Object.freeze({
-    dataSources: () => ({
-      ...createPersistence(),
-      // Perfil ainda sem persistência: memória em todas as plataformas.
-      profile: new MemoryProfileDataSource(),
-    }),
+    dataSources: () => createPersistence(),
     services: () => {
       const clock = new SystemClockService();
       return {
