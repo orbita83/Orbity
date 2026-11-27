@@ -18,7 +18,7 @@ A pasta de trabalho é definida pela linha `EGM artifact directory: .dev/egm` no
 
 1. `/egm:egm-brainstorm` → `.dev/egm/concepts_brief.md`.
 2. `/egm:egm-draft` → `.dev/egm/design_draft.md` → `docs/designs/<funcionalidade>.md`, mais uma linha neste índice.
-3. `/egm:egm-review docs/designs/<funcionalidade>.md` → relatórios em `.dev/egm/`, e `/egm:egm-resolve` para tratar os achados.
+3. `/egm:egm-review docs/designs/<funcionalidade>.md` → relatórios em `.dev/egm/`, e `/egm:egm-resolve` para tratar os achados. A revisão é recomendada, mas o operador pode dispensá-la; nesse caso, registre a dispensa no cabeçalho do design (`AGENTS.md`, Seção 4).
 4. Revisão humana e implementação. O PR que conclui a implementação muda o status para `Implemented`, no índice e no cabeçalho do design.
 5. Antes de começar a próxima tarefa, apagar ou mover o conteúdo de `.dev/egm/`. As decisões que importam já estão no design.
 
@@ -38,7 +38,7 @@ A pasta de trabalho é definida pela linha `EGM artifact directory: .dev/egm` no
 | Status | Significado |
 | :--- | :--- |
 | `Draft` | Em escrita no `/egm:egm-draft`. |
-| `Proposed` | Escrito e aguardando `/egm:egm-review` e revisão humana. |
+| `Proposed` | Escrito e aguardando `/egm:egm-review` (salvo dispensa do operador registrada no cabeçalho) e revisão humana. |
 | `In Review` | Revisão EGM ou humana em andamento. |
 | `Approved` | Aprovado; pode ser implementado. |
-| `Implemented` | Implementado na `development`. O design registra o que foi entregue e é a referência para mudar a funcionalidade. O cabeçalho do design diz se ele passou pelo `/egm:egm-review`. |
+| `Implemented` | Implementado na `development`. O design registra o que foi entregue e é a referência para mudar a funcionalidade. O cabeçalho do design diz se ele passou pelo `/egm:egm-review` ou se o operador dispensou a revisão (`AGENTS.md`, Seção 4). |
