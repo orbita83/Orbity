@@ -91,6 +91,10 @@ for (const [foreground, background, minimum] of [
     [themes[name].color['border-control'], themes[name].color.surface, 3],
   ]),
   [themes.cosmic.color['border-control'], themes.cosmic.navbar.bg, 3],
+  // Issue #284 (WCAG 1.4.11): botões de Rotinas. Secundário contornado sobre o próprio fundo `action-subtle`,
+  // e botão de ícone preenchido em `action` sobre o rodapé/campo em `navbar.bg`.
+  [themes.cosmic.color['border-control'], themes.cosmic.color['action-subtle'], 3],
+  [themes.cosmic.color.action, themes.cosmic.navbar.bg, 3],
   // Contorno da conquista bloqueada sobre o card e o painel.
   [cosmicColors.achievementPendingBorder, cosmicColors.card, 3],
   [cosmicColors.achievementPendingBorder, cosmicColors.sheet, 3],
