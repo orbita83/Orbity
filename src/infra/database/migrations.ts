@@ -189,4 +189,16 @@ FROM daily_activity`,
       },
     ],
   },
+  {
+    // Issue #280: identificação do estudante (id e nome) persistida; as métricas do Perfil continuam calculadas.
+    version: 8,
+    statements: [
+      {
+        sql: `CREATE TABLE student_profile (
+  id   TEXT PRIMARY KEY,
+  name TEXT NOT NULL
+)`,
+      },
+    ],
+  },
 ];

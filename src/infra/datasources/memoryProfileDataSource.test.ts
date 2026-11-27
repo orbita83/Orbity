@@ -1,4 +1,9 @@
 import { initialStudentIdentity, MemoryProfileDataSource } from "./memoryProfileDataSource";
+import { describeProfileDataSourceContract } from "./profileDataSource.contract";
+
+describeProfileDataSourceContract("MemoryProfileDataSource", async () => ({
+  dataSource: new MemoryProfileDataSource(),
+}));
 
 describe("MemoryProfileDataSource", () => {
   it("deve começar sem nome quando nenhuma identificação inicial for passada", async () => {

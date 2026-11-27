@@ -3,6 +3,7 @@ import { DatabaseProvider } from "@/infra/database/databaseProvider";
 import { MemoryCategoryDataSource } from "@/infra/datasources/memoryCategoryDataSource";
 import { MemoryDailyActivityDataSource } from "@/infra/datasources/memoryDailyActivityDataSource";
 import { MemoryFocusSessionDataSource } from "@/infra/datasources/memoryFocusSessionDataSource";
+import { MemoryProfileDataSource } from "@/infra/datasources/memoryProfileDataSource";
 import { MemoryRoutineDataSource } from "@/infra/datasources/memoryRoutineDataSource";
 import { MemoryStarDataSource } from "@/infra/datasources/memoryStarDataSource";
 import { MemoryTaskDataSource } from "@/infra/datasources/memoryTaskDataSource";
@@ -27,6 +28,7 @@ const memoryDataSources = () => {
     categories: new MemoryCategoryDataSource(tasks, routines),
     focusSessions: new MemoryFocusSessionDataSource(),
     activities: new TaskActivityDataSource(tasks, routines),
+    profile: new MemoryProfileDataSource(),
   };
 };
 
