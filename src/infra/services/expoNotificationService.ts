@@ -55,6 +55,38 @@ const sanitizeData = (
   return entries.length > 0 ? Object.freeze(Object.fromEntries(entries)) : undefined;
 };
 
+type ResponseListener = (data: Readonly<Record<string, string>>) => boolean | void;
+
+/** Cada registro tem a sua entrada, para que o mesmo ouvinte registrado duas vezes saia de forma independente. */
+type ResponseListenerEntry = { readonly listener: ResponseListener };
+
+type ParsedResponse = {
+  /** Identifica a resposta para não tratá-la duas vezes; ausente quando a notificação não tem identificador. */
+  readonly key?: string;
+  readonly data: Readonly<Record<string, string>>;
+};
+
+const parseResponse = (response: Notifications.NotificationResponse | null | undefined): ParsedResponse | undefined => {
+  const notification = response?.notification;
+  const content = notification?.request?.content;
+  const rawData =
+    content?.data && typeof content.data === "object" ? (content.data as Record<string, unknown>) : undefined;
+  const data = sanitizeData(rawData);
+  if (!data) return undefined;
+  const identifier = notification?.request?.identifier;
+  if (typeof identifier !== "string" || !identifier) return { data };
+  return { key: `${identifier}|${String(notification?.date ?? "")}|${String(response?.actionIdentifier ?? "")}`, data };
+};
+
+const notifyListener = (entry: ResponseListenerEntry, data: Readonly<Record<string, string>>): boolean => {
+  try {
+    return entry.listener(data) === true;
+  } catch {
+    // Uma falha num ouvinte não impede que os demais recebam a resposta.
+    return false;
+  }
+};
+
 /**
  * Adaptador concreto de notificações locais sobre `expo-notifications` (ADR-0002).
  * Único arquivo do repositório autorizado a importar `expo-notifications`.
@@ -62,6 +94,13 @@ const sanitizeData = (
 export class ExpoNotificationService implements INotificationService {
   private channelInitialized = false;
   private foregroundPresentationConfigured = false;
+  private readonly responseListeners = new Set<ResponseListenerEntry>();
+  /** Chaves das respostas já tratadas nesta execução do app (o container é único por processo). */
+  private readonly handledResponseKeys = new Set<string>();
+  private responseSubscription: { remove?: () => void } | undefined;
+  private launchResponseChecked = false;
+  /** Última resposta que nenhum ouvinte tratou ainda (a que abriu o app, ou uma que chegou antes do seu ouvinte). */
+  private pendingResponse: ParsedResponse | undefined;
 
   async getPermissionStatus(): Promise<NotificationPermissionStatus> {
     try {
@@ -183,28 +222,92 @@ export class ExpoNotificationService implements INotificationService {
     }
   }
 
-  onNotificationResponse(listener: (data: Readonly<Record<string, string>>) => void): () => void {
+  onNotificationResponse(listener: ResponseListener): () => void {
     try {
       const notifications = loadNotificationsModule();
       if (typeof notifications.addNotificationResponseReceivedListener !== "function") {
         return () => undefined;
       }
-      const subscription = notifications.addNotificationResponseReceivedListener((response) => {
-        const rawData =
-          response?.notification?.request?.content?.data &&
-          typeof response.notification.request.content.data === "object"
-            ? (response.notification.request.content.data as Record<string, unknown>)
-            : undefined;
-        const data = sanitizeData(rawData);
-        if (data) {
-          listener(data);
-        }
-      });
+      const entry: ResponseListenerEntry = { listener };
+      this.responseListeners.add(entry);
+      if (!this.responseSubscription) {
+        this.responseSubscription = notifications.addNotificationResponseReceivedListener((response) => {
+          this.dispatchLiveResponse(parseResponse(response));
+        });
+      }
+      this.readLaunchResponse(notifications);
+      this.offerPendingResponse(entry);
       return () => {
-        subscription?.remove?.();
+        if (!this.responseListeners.delete(entry)) return;
+        if (this.responseListeners.size === 0) {
+          this.responseSubscription?.remove?.();
+          this.responseSubscription = undefined;
+        }
       };
     } catch {
       return () => undefined;
+    }
+  }
+
+  /** Lê uma única vez a resposta que abriu o app e a limpa no nativo, para que não seja tratada de novo. */
+  private readLaunchResponse(notifications: ExpoNotificationsModule): void {
+    if (this.launchResponseChecked) return;
+    this.launchResponseChecked = true;
+    try {
+      if (typeof notifications.getLastNotificationResponse !== "function") return;
+      const launch = parseResponse(notifications.getLastNotificationResponse());
+      notifications.clearLastNotificationResponse?.();
+      if (launch && !this.isHandled(launch)) {
+        this.pendingResponse = launch;
+      }
+    } catch {
+      // Sem a resposta de inicialização, os toques seguintes continuam chegando pelo ouvinte nativo.
+    }
+  }
+
+  /** Oferece a resposta pendente ao novo ouvinte; ela é descartada quando algum ouvinte a trata. */
+  private offerPendingResponse(entry: ResponseListenerEntry): void {
+    const pending = this.pendingResponse;
+    if (!pending) return;
+    if (this.isHandled(pending)) {
+      this.pendingResponse = undefined;
+      return;
+    }
+    if (notifyListener(entry, pending.data)) {
+      this.markHandled(pending);
+      this.pendingResponse = undefined;
+    }
+  }
+
+  /**
+   * Entrega a resposta a todos os ouvintes atuais. Se nenhum a tratar (ex.: no início a frio, o aviso do Modo
+   * Foco chega antes de a Tela Inicial assinar), ela fica pendente para os próximos ouvintes, em vez de se perder.
+   */
+  private dispatchLiveResponse(response: ParsedResponse | undefined): void {
+    if (!response || this.isHandled(response)) return;
+    let handled = false;
+    for (const entry of [...this.responseListeners]) {
+      if (notifyListener(entry, response.data)) {
+        handled = true;
+      }
+    }
+    if (handled) {
+      this.markHandled(response);
+      if (response.key !== undefined && this.pendingResponse?.key === response.key) {
+        this.pendingResponse = undefined;
+      }
+      return;
+    }
+    this.pendingResponse = response;
+  }
+
+  private isHandled(response: ParsedResponse): boolean {
+    return response.key !== undefined && this.handledResponseKeys.has(response.key);
+  }
+
+  private markHandled(response: ParsedResponse): void {
+    if (response.key !== undefined) {
+      this.handledResponseKeys.add(response.key);
     }
   }
 

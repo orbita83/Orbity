@@ -6,6 +6,7 @@ import {
   type CreateTaskInput,
   type Task,
   type UpdateTaskInput,
+  TASK_REMINDER_ROUTE,
   buildTaskReminderId,
   getTaskReminderTriggerAt,
   isStandaloneTask,
@@ -71,7 +72,7 @@ export function buildTaskReminderInput(
     body: `Sua tarefa "${task.title}" começa agora. Bons estudos!`,
     triggerAt,
     data: Object.freeze({
-      route: "/tasks",
+      route: TASK_REMINDER_ROUTE,
       taskId: task.id,
     }),
   });
@@ -350,17 +351,6 @@ export class TaskUseCases implements ITaskUseCases {
     } catch {
       return "denied";
     }
-  }
-
-  onTaskReminderPress(onPress: (taskId?: string) => void): () => void {
-    if (!this.notificationService?.onNotificationResponse) {
-      return () => undefined;
-    }
-    return this.notificationService.onNotificationResponse((data) => {
-      if (data.route === "/tasks") {
-        onPress(data.taskId);
-      }
-    });
   }
 
   private async syncTaskReminder(task: Task, isNew = false): Promise<void> {

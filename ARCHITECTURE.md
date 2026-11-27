@@ -82,7 +82,8 @@ src/app/_layout.tsx → <AppLifecycle /> (src/view/components/AppLifecycle.tsx, 
                     → INotificationService (src/model/services/) ← ExpoNotificationService (src/infra/services/)
 ```
 
-- O `AppLifecycle` é montado uma única vez no `_layout.tsx`, ao lado do `Tabs`. Ele não recebe props, não desenha nada e só chama a ViewModel raiz.
+- O `AppLifecycle` é montado uma única vez no `_layout.tsx`, depois do `Tabs`, para que o navegador já exista quando um efeito da raiz navegar (ex.: o toque que abriu o app). Ele não recebe props, não desenha nada e só chama a ViewModel raiz.
+- Uma tela não repete um efeito que já é da raiz. Se repetir, o mesmo evento é tratado duas vezes (ex.: o toque no lembrete saiu do `useTasksViewModel` na #270).
 - A `useAppLifecycleViewModel` segue as regras de qualquer ViewModel (tupla `[state, actions]`, só `container.useCases`, navegação na ViewModel) e executa os efeitos na montagem.
 - Os efeitos globais devem ser idempotentes e não podem lançar na inicialização: o caso de uso absorve a falha técnica que não precisa chegar ao estudante.
 - Um efeito ligado a uma tela continua na ViewModel dessa tela. Só vai para a raiz o que precisa existir antes de qualquer tela montar ou independe da aba aberta.

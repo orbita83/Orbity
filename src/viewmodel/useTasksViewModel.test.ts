@@ -273,8 +273,7 @@ describe("useTasksViewModel (navegação)", () => {
     expect(mockSetOptions).toHaveBeenLastCalledWith({ tabBarStyle: undefined });
   });
 
-  it("recarrega a lista, reconcilia os lembretes quando a aba ganha foco e navega para /tasks ao tocar na notificação", async () => {
-    let reminderPressHandler: ((taskId?: string) => void) | undefined;
+  it("recarrega a lista e reconcilia os lembretes quando a aba ganha foco", async () => {
     const useCases: ITaskUseCases = {
       listTasks: jest.fn(async () => []),
       listCategories: jest.fn(async () => []),
@@ -286,12 +285,6 @@ describe("useTasksViewModel (navegação)", () => {
       togglePinTasks: jest.fn(),
       deleteTasks: jest.fn(),
       reconcileScheduledReminders: jest.fn(async () => undefined),
-      onTaskReminderPress: jest.fn((onPress) => {
-        reminderPressHandler = onPress;
-        return () => {
-          reminderPressHandler = undefined;
-        };
-      }),
     };
     const { result } = await renderHook(() => useTasksViewModel(useCases));
     await waitFor(() => expect(result.current[0].loading).toBe(false));
@@ -301,11 +294,6 @@ describe("useTasksViewModel (navegação)", () => {
     });
     expect(useCases.listTasks).toHaveBeenCalledTimes(callsBefore + 1);
     expect(useCases.reconcileScheduledReminders).toHaveBeenCalled();
-
-    act(() => {
-      reminderPressHandler?.("t1");
-    });
-    expect(mockNavigate).toHaveBeenLastCalledWith("/tasks");
   });
 });
 

@@ -27,6 +27,4 @@ export interface ITaskUseCases {
   reconcileScheduledReminders?(): Promise<void>;
   /** Consulta ou solicita permissão de notificações sem bloquear o salvamento da tarefa (RF-0021 CA-05). */
   ensureReminderPermission?(): Promise<NotificationPermissionStatus>;
-  /** Escuta o toque do estudante em uma notificação de tarefa para a ViewModel navegar até a aba Tarefas (RF-0021 CA-06). */
-  onTaskReminderPress?(onPress: (taskId?: string) => void): () => void;
 }

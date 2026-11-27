@@ -95,6 +95,9 @@ export function filterAndSortTasks<T extends { readonly completed: boolean; read
 
 export const TASK_REMINDER_PREFIX = "task-reminder:";
 
+/** Rota gravada nos metadados (`data.route`) do lembrete de tarefa; o toque no lembrete abre essa aba. */
+export const TASK_REMINDER_ROUTE = "/tasks";
+
 /** Monta o identificador determinístico do lembrete local de uma tarefa avulsa (RN-0011). */
 export function buildTaskReminderId(taskId: string): string {
   return `${TASK_REMINDER_PREFIX}${taskId}`;

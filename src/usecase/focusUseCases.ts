@@ -218,9 +218,11 @@ export class FocusUseCases implements IFocusUseCases {
       return () => undefined;
     }
     return this.notificationService.onNotificationResponse((data) => {
-      if (data.route === "/focus-session") {
-        onPress();
+      if (data.route !== "/focus-session") {
+        return false;
       }
+      onPress();
+      return true;
     });
   }
 

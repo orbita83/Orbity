@@ -68,7 +68,7 @@ Em `tela-inicial-base.md`, o motor da sessão de foco foi adiado porque Tarefas,
 ### 4. Apresentação (`src/viewmodel/`, `src/view/` e `src/app/`)
 
 - `useFocusSessionViewModel.ts`: estado da tela `/focus-session`, atualização visual de segundo em primeiro plano via `IClockService`, reconciliação em `AppState` e `useFocusEffect`, ocultação da `MainTabBar` enquanto houver ciclo ativo e anúncios acessíveis discretos.
-- `useHomeViewModel.ts`: expõe `handleOpenFocus()` e navega para `/focus-session` ao tocar na notificação de fim de ciclo.
+- `useHomeViewModel.ts`: expõe `handleOpenFocus()` e navega para `/focus-session` ao tocar na notificação de fim de ciclo, inclusive quando o toque abriu o app (resposta de inicialização entregue pelo `INotificationService`, D6 de [`notificacoes-tarefas.md`](notificacoes-tarefas.md)).
 - `PlanetIllustration.tsx` e `PlanetStreakView.tsx`: suporte a `focusActive`, `focusStage` (`0..4`) e `reduceMotion` para cumprir o RN-0006 sem afetar a aparência fora do foco.
 - `src/app/focus-session.tsx`, `src/view/focus-session.tsx`, `src/view/focus-session-content.tsx` e `src/view/focusCopy.ts`: tela de seleção e condução do pomodoro com tokens de `themes.cosmic`, histórias do Storybook e testes de componente.
 

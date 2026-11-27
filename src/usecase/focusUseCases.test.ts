@@ -191,4 +191,19 @@ describe("FocusUseCases (issue #217)", () => {
 
     expect(pressedCount).toBe(1);
   });
+
+  it("abre a sessão de foco quando o toque no aviso de fim de ciclo abriu o app (início a frio)", () => {
+    const { focusUseCases, notifications } = setup("granted");
+    notifications.setLaunchResponse({ route: "/focus-session" });
+
+    let pressedCount = 0;
+    focusUseCases.onCycleNotificationPress(() => {
+      pressedCount += 1;
+    })();
+    focusUseCases.onCycleNotificationPress(() => {
+      pressedCount += 1;
+    })();
+
+    expect(pressedCount).toBe(1);
+  });
 });

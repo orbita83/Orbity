@@ -6,6 +6,8 @@ import type {
   ScheduledNotification,
 } from "@/model/services/iNotificationService";
 
+type ResponseListener = (data: Readonly<Record<string, string>>) => boolean | void;
+
 /**
  * Implementação Fake em memória de `INotificationService` para testes automatizados
  * (`docs/06-quality/guia-testes.md`, ADR-0002).
@@ -14,7 +16,8 @@ export class FakeNotificationService implements INotificationService {
   private permissionStatus: NotificationPermissionStatus;
   private nextRequestedStatus: NotificationPermissionStatus;
   private readonly scheduled = new Map<string, ScheduledNotification>();
-  private readonly responseListeners = new Set<(data: Readonly<Record<string, string>>) => void>();
+  private readonly responseListeners = new Set<ResponseListener>();
+  private pendingLaunchResponse: Readonly<Record<string, string>> | undefined;
 
   constructor(
     initialStatus: NotificationPermissionStatus = "granted",
@@ -75,8 +78,16 @@ export class FakeNotificationService implements INotificationService {
     this.foregroundPresentationCalls += 1;
   }
 
-  onNotificationResponse(listener: (data: Readonly<Record<string, string>>) => void): () => void {
+  /** Simula a resposta que abriu o app (início a frio), oferecida a cada novo ouvinte até um deles tratá-la. */
+  setLaunchResponse(data: Readonly<Record<string, string>> | undefined): void {
+    this.pendingLaunchResponse = data ? Object.freeze({ ...data }) : undefined;
+  }
+
+  onNotificationResponse(listener: ResponseListener): () => void {
     this.responseListeners.add(listener);
+    if (this.pendingLaunchResponse && listener(this.pendingLaunchResponse) === true) {
+      this.pendingLaunchResponse = undefined;
+    }
     return () => {
       this.responseListeners.delete(listener);
     };
@@ -84,7 +95,7 @@ export class FakeNotificationService implements INotificationService {
 
   emitNotificationResponse(data: Readonly<Record<string, string>>): void {
     const frozen = Object.freeze({ ...data });
-    for (const listener of this.responseListeners) {
+    for (const listener of [...this.responseListeners]) {
       listener(frozen);
     }
   }

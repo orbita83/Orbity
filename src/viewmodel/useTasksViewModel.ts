@@ -200,15 +200,6 @@ export const useTasksViewModel = (
     };
   }, [isPrototypeMode, useCases]);
 
-  useEffect(() => {
-    if (isPrototypeMode || !useCases.onTaskReminderPress) {
-      return;
-    }
-    return useCases.onTaskReminderPress(() => {
-      router.navigate("/tasks");
-    });
-  }, [isPrototypeMode, useCases]);
-
   const visibleTasks = useMemo(() => filterAndSortTasks(items, filter), [filter, items]);
 
   const allSelectedPinned = useMemo(() => {

@@ -12,8 +12,6 @@ void SystemUI.setBackgroundColorAsync(themes.cosmic.navbar.bg);
 const RootLayout = () => (
   <>
     <StatusBar style="light" />
-    {/* Efeitos globais da sessão, como os lembretes com o app aberto (ADR-0003). */}
-    <AppLifecycle />
     <Tabs
       initialRouteName="index"
       backBehavior="firstRoute"
@@ -34,6 +32,11 @@ const RootLayout = () => (
       <Tabs.Screen name="routine-details" options={{ title: "Rotina", href: null }} />
       <Tabs.Screen name="focus-session" options={{ title: "Modo Foco", href: null }} />
     </Tabs>
+    {/*
+      Efeitos globais da sessão (ADR-0003): lembretes com o app aberto e toque no lembrete.
+      Fica depois das abas para que o navegador já exista quando o toque do início a frio navegar (#270).
+    */}
+    <AppLifecycle />
   </>
 );
 
