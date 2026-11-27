@@ -230,7 +230,7 @@ export const NewRoutineScreenContent = ({
                     onPress={addTask}
                     style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
                   >
-                    <MaterialSymbol name="add" color={theme.color["on-surface"]} size={theme.navbar.iconSize} />
+                    <MaterialSymbol name="add" color={theme.color["on-action"]} size={theme.navbar.iconSize} />
                   </Pressable>
                 </View>
               </View>
@@ -351,9 +351,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: theme.radius.md,
-    borderWidth: theme.border.widthThin,
-    borderColor: theme.color.action,
-    backgroundColor: theme.color["action-subtle"],
+    // Botão de ícone preenchido (#284): o fundo `action` separa o botão com ≥ 3:1 do fundo, do card e do `navbar.bg`.
+    backgroundColor: theme.color.action,
   },
   footer: {
     gap: theme.space.sm,

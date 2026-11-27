@@ -90,6 +90,9 @@ Os valores vêm da [variante cósmica](02-tokens.md#variante-cósmica). A tabela
 | `color.success` e `color.warning`, tema claro / `surface` | `#15803D`, `#B45309` | `#FFFFFF` | 5,02:1; 5,02:1 | 3:1 | Aprovado (#262; antes 2,28:1 e 2,15:1 com `success-500` e `warning-500`) |
 | Texto sobre o preenchimento do toque longo `text` / `action-subtle` | `#FAF9FF` | `#232052` | 14,33:1 | 4,5:1 | Aprovado |
 | Prazo sobre o preenchimento do toque longo `on-surface-variant` / `action-subtle` | `#BBB6E3` | `#232052` | 7,80:1 | 4,5:1 | Aprovado |
+| Botão secundário de Rotinas: contorno `border-control` / fundo `action-subtle` | `#7A70B8` | `#232052` | 3,46:1 | 3:1 | Aprovado (#284; antes 2,55:1 com `action`) |
+| Botão de ícone "+" de Rotinas: fundo `action` / rodapé e campo `navbar.bg` | `#7137F5` | `#0D0D29` | 3,22:1 | 3:1 | Aprovado (#284; antes 1,26:1 com `action-subtle`) |
+| Ícone do botão "+" `on-action` / `action` | `#FAF9FF` | `#7137F5` | 5,62:1 | 3:1 | Aprovado (#284) |
 
 Na 1.2, a porcentagem do progresso ficava **fora da barra**, ao lado do contador. Na 1.3, ela vai para o meio da barra: o branco passa nas duas partes (trilha e preenchimento), então o texto continua legível em qualquer avanço, inclusive metade sobre cada parte. Se o preenchimento ficar mais claro que `#8648FA`, refaça essa conta. O fio `color.border-subtle` (1,16:1 sobre o card) é decorativo e só serve para separar camadas, junto com a diferença de superfície e a sombra. **Nenhum controle pode depender dele** (WCAG 1.4.11): campos, seletores, chips e opções usam `color.border-control`, com no mínimo 3:1. O estado pressionado por escala e opacidade não altera texto nem fundo de forma persistente; a opacidade 0,8 é momentânea, durante o toque.
 

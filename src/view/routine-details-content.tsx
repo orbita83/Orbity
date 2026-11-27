@@ -330,7 +330,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.space.md,
     borderRadius: theme.radius.md,
     borderWidth: theme.border.widthThin,
-    borderColor: theme.color.action,
+    // Contorno de controle (#284): ≥ 3:1 contra o próprio fundo, o card e o `navbar.bg`.
+    borderColor: theme.color["border-control"],
     backgroundColor: theme.color["action-subtle"],
   },
   emptyTasks: { alignItems: "flex-start", gap: theme.space.sm },
@@ -407,7 +408,8 @@ const styles = StyleSheet.create({
     gap: theme.space.sm,
     borderRadius: theme.radius.md,
     borderWidth: theme.border.widthThin,
-    borderColor: theme.color.action,
+    // Contorno de controle (#284): ≥ 3:1 contra o próprio fundo e o rodapé em `navbar.bg`.
+    borderColor: theme.color["border-control"],
     backgroundColor: theme.color["action-subtle"],
   },
   secondaryLabel: { ...theme.font.label, color: theme.color["on-surface"] },
