@@ -21,4 +21,5 @@ module.exports = {
   // CI, pode passar dos 5 s padrão do Jest sem nenhuma falha real (ex.: tasks-content.test.tsx).
   testTimeout: 15000,
   globalSetup: '<rootDir>/tests/setup/timezone.cjs',
+  setupFiles: ['<rootDir>/tests/setup/skia.cjs'],
 };

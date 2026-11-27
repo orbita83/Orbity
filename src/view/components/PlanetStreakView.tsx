@@ -3,7 +3,9 @@ import { Animated, StyleSheet, Text, View } from "react-native";
 import type { PlanetFocusStage } from "../../viewmodel/useFocusSessionViewModel";
 import { HOME_COPY, formatCopy, streakUnit } from "../homeCopy";
 import { planetColors, themes } from "../theme/tokens";
+import { PLANET_SPHERE_RATIO } from "../proceduralPlanetShader";
 import { PLANET_ARTBOARD, PLANET_SPHERE, PlanetIllustration } from "./PlanetIllustration";
+import { ProceduralPlanet } from "./ProceduralPlanet";
 
 const theme = themes.cosmic;
 const FOCUS_PULSE_DURATION = theme.motion.durationMedium * 4;
@@ -85,7 +87,15 @@ export const PlanetStreakView = ({
           },
         ]}
       >
-        <PlanetIllustration focusActive={focusActive} focusStage={activeStage} />
+        {activeStage > 0 ? (
+          // A evolução do Modo Foco (RN-0006) ainda só existe no SVG.
+          <PlanetIllustration focusActive={focusActive} focusStage={activeStage} />
+        ) : (
+          // Teste da #221: planeta procedural em shader no lugar do SVG, com a esfera do mesmo tamanho.
+          <View pointerEvents="none" style={styles.procedural}>
+            <ProceduralPlanet size={proceduralSide} still={reduceMotion} />
+          </View>
+        )}
         <View pointerEvents="none" style={styles.sequence}>
           <Text allowFontScaling style={styles.count}>
             {days}
@@ -102,9 +112,16 @@ export const PlanetStreakView = ({
 // A sombra escura em volta do texto garante leitura sobre as áreas claras do planeta.
 const textHalo = { textShadowColor: planetColors.night, textShadowOffset: { width: 0, height: 2 } } as const;
 const sphereSide = PLANET_SPHERE.r * 2;
+// O shader desenha a esfera com 62% do meio-lado do quadro; o quadro cresce para a esfera ficar igual à do SVG.
+const proceduralSide = Math.round(sphereSide / PLANET_SPHERE_RATIO);
 
 const styles = StyleSheet.create({
   artboard: { position: "absolute", width: PLANET_ARTBOARD, height: PLANET_ARTBOARD },
+  procedural: {
+    position: "absolute",
+    left: PLANET_SPHERE.cx - proceduralSide / 2,
+    top: PLANET_SPHERE.cy - proceduralSide / 2,
+  },
   sequence: {
     position: "absolute",
     left: PLANET_SPHERE.cx - PLANET_SPHERE.r,

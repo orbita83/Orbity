@@ -11,6 +11,9 @@ import { planetColors } from "./theme/tokens";
  * da esfera. O centro do disco tem um teto de claridade para o contador em branco manter
  * ≥ 4,5:1 no rótulo e ≥ 3:1 no número (medido no teste em WebGL).
  */
+/** Raio da esfera no shader, em fração do meio-lado do quadro (o anel ocupa o resto). */
+export const PLANET_SPHERE_RATIO = 0.62;
+
 export const PROCEDURAL_PLANET_SKSL = `
 uniform float2 size;
 uniform float t;
@@ -81,7 +84,7 @@ half4 main(float2 xy) {
   float side = min(size.x, size.y);
   float2 p = (xy - size * 0.5) / (side * 0.5);
   p.y = -p.y;
-  float R = 0.62;
+  float R = ${PLANET_SPHERE_RATIO.toFixed(2)};
   half4 acc = half4(0.0);
 
   float tilt = -0.28;
