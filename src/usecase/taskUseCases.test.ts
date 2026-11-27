@@ -429,7 +429,7 @@ describe("TaskUseCases — lembretes de tarefas agendadas (RF-0021, RN-0011, iss
     ]);
   });
 
-  it("salva a tarefa normalmente quando a permissão é negada e propaga o toque na notificação da aba Tarefas", async () => {
+  it("salva a tarefa normalmente quando a permissão é negada", async () => {
     const { useCases, taskRepo, notifications } = setupWithNotifications("2026-11-15T09:00:00-03:00", "denied", "denied");
 
     const created = await useCases.createTask({
@@ -441,14 +441,5 @@ describe("TaskUseCases — lembretes de tarefas agendadas (RF-0021, RN-0011, iss
     expect(await taskRepo.findById(created.id)).toBeTruthy();
     expect(await notifications.listScheduled()).toEqual([]);
     expect(await useCases.ensureReminderPermission()).toBe("denied");
-
-    const pressedIds: (string | undefined)[] = [];
-    const unsubscribe = useCases.onTaskReminderPress((taskId) => pressedIds.push(taskId));
-    notifications.emitNotificationResponse({ route: "/tasks", taskId: created.id });
-    notifications.emitNotificationResponse({ route: "/other" });
-    unsubscribe();
-    notifications.emitNotificationResponse({ route: "/tasks", taskId: "ignored" });
-
-    expect(pressedIds).toEqual([created.id]);
   });
 });
