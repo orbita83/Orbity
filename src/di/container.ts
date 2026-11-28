@@ -14,6 +14,10 @@ import { ProfileUseCases } from "@/usecase/profileUseCases";
  */
 
 import { ExpoNotificationService } from "@/infra/services/expoNotificationService";
+import { NativeExternalLinkService } from "@/infra/services/nativeExternalLinkService";
+import type { IExternalLinkService } from "@/model/services/iExternalLinkService";
+import type { IPrivacyUseCases } from "@/usecase/iPrivacyUseCases";
+import { PrivacyUseCases } from "@/usecase/privacyUseCases";
 import { SystemClockService } from "@/infra/services/systemClockService";
 import { SystemDayChangeService } from "@/infra/services/systemDayChangeService";
 import type { IActivityDataSource } from "@/model/datasources/iActivityDataSource";
@@ -197,6 +201,7 @@ export type AppDataSources = {
 
 /** Serviços da aplicação. */
 export type AppServices = {
+  externalLinks: IExternalLinkService;
   clock: IClockService;
   dayChange: IDayChangeService;
   notifications: INotificationService;
@@ -204,6 +209,7 @@ export type AppServices = {
 
 /** Casos de uso expostos às ViewModels. */
 export type AppUseCases = {
+  privacy: IPrivacyUseCases;
   streak: IStreakUseCases;
   home: IHomeUseCases;
   focus: IFocusUseCases;
@@ -224,12 +230,17 @@ export const appContainerDefinition: ContainerDefinition<AppDataSources, AppServ
     services: () => {
       const clock = new SystemClockService();
       return {
+        externalLinks: new NativeExternalLinkService(),
         clock,
         dayChange: new SystemDayChangeService(clock),
         notifications: new ExpoNotificationService(),
       };
     },
     useCases: ({ dataSources, services }: InfrastructureDependencies<AppDataSources, AppServices>) => ({
+      privacy: composeUseCase(
+        (externalLinks: IExternalLinkService) => new PrivacyUseCases(externalLinks),
+        services.externalLinks,
+      ),
       streak: composeUseCase(
         ({
           dailyActivity,

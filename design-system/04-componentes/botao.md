@@ -60,6 +60,8 @@ Prioridade dos fundos: desabilitado, pressionado, hover, padrão. O foco é inde
 
 ## Acessibilidade
 
+- Em uma ação que abre um endereço externo, como a política de privacidade (#176), use `accessibilityRole="link"` e uma dica que informe a saída para o navegador. O componente mantém os mesmos tokens, foco e estados; o papel padrão das demais ações continua `button`.
+
 - Alvo de toque mínimo: 48 × 48 dp, formalizado por `target.min-size`, `button.min-height` e `button.min-width`.
 - Contraste padrão: `button.label` sobre `button.bg` resulta em **6,29:1 no modo claro** e **6,50:1 no escuro**, acima do mínimo de 4,5:1 para `font.label`.
 - Foco: use anel sólido de 2 dp, afastamento de 2 dp e `button.focus-color`. Não remova o indicador sem alternativa equivalente.

@@ -10,6 +10,14 @@ export class DomainError extends Error {
   }
 }
 
+/** Falha ao solicitar ao sistema a abertura de um endereço externo. */
+export class ExternalLinkServiceError extends DomainError {
+  constructor() {
+    super("Não foi possível abrir a política de privacidade. Tente novamente ou copie o endereço abaixo para o navegador.");
+    this.name = "ExternalLinkServiceError";
+  }
+}
+
 /**
  * Entrada que viola uma regra de negócio. A mensagem já é a que a tela mostra.
  * `field` indica o campo da entrada que falhou, quando a regra é de um campo só,

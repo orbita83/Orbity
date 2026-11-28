@@ -1,0 +1,20 @@
+/* Valores fornecidos por tokens.css, gerado do ODS em src/view/theme/tokens.ts. */
+:root { color-scheme: dark; }
+html { font-size: 100%; }
+body {
+  margin: 0;
+  padding: var(--space-md);
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-family), sans-serif;
+  font-size: var(--body-size);
+  line-height: var(--body-line-height);
+}
+main { max-width: calc(var(--space-lg) * 32); margin-inline: auto; overflow-wrap: anywhere; }
+header, section { margin-block: var(--space-lg); }
+h1, h2 { font-size: var(--title-size); line-height: var(--title-line-height); font-weight: var(--title-weight); }
+p, ul { margin-block: var(--space-md); }
+ul { padding-inline-start: var(--space-lg); }
+li + li { margin-block-start: var(--space-sm); }
+a { color: var(--on-surface); text-decoration: underline; text-underline-offset: var(--focus-offset); }
+a:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
