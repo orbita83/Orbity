@@ -1,5 +1,6 @@
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { BackHandler } from "react-native";
 import { container, resolveUseCase } from "@/di/container";
 import { createDefaultCategories, type Category } from "@/model/entities/category";
 import { ROUTINE_ICONS, type NextActiveDay, type RoutineIcon, type RoutineOverview } from "@/model/entities/routine";
@@ -40,6 +41,11 @@ export type RoutinesState = {
   categories?: readonly Category[];
   loading: boolean;
   errorKey: RoutinesErrorKey | null;
+  /** Seleção múltipla aberta pelo toque longo (protótipo 3.5). */
+  selectionMode: boolean;
+  selectedIds: string[];
+  /** Rotinas que a confirmação vai excluir, com o total de tarefas que saem junto; `null` sem confirmação aberta. */
+  pendingDelete: { ids: string[]; title: string; taskCount: number } | null;
 };
 
 export type RoutinesActions = {
@@ -49,6 +55,16 @@ export type RoutinesActions = {
   undoDelete: () => void;
   dismissDeleted: () => void;
   reload: () => Promise<void>;
+  startSelection: (id: string) => void;
+  toggleSelected: (id: string) => void;
+  cancelSelection: () => void;
+  selectAll: () => void;
+  /** "•••" → Excluir uma rotina, ou Excluir (n) na seleção: abre a confirmação. */
+  requestDelete: (ids?: readonly string[]) => void;
+  cancelDelete: () => void;
+  confirmDelete: () => void;
+  /** "•••" → Editar: abre o formulário da rotina. */
+  handleEditRoutine: (id: string) => void;
   /** Abre o formulário de Nova rotina. */
   handleCreateRoutine: () => void;
   /** Abre o detalhe da rotina. */
@@ -87,6 +103,8 @@ export const useRoutinesViewModel = (
   const [lastDeleted, setLastDeleted] = useState<{ item: RoutineListItem; index: number } | null>(null);
   const [loading, setLoading] = useState(!isPrototypeMode);
   const [errorKey, setErrorKey] = useState<RoutinesErrorKey | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
+  const [deleteIds, setDeleteIds] = useState<string[] | null>(null);
   const mounted = useRef(true);
   const latestRequest = useRef(0);
 
@@ -217,6 +235,74 @@ export const useRoutinesViewModel = (
     }, [deleteRoutine, deleted]),
   );
 
+  const selectionMode = selectedIds !== null;
+  const startSelection = useCallback((id: string) => setSelectedIds([id]), []);
+  const toggleSelected = useCallback((id: string) => {
+    setSelectedIds((current) => {
+      const ids = current ?? [];
+      return ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id];
+    });
+  }, []);
+  const cancelSelection = useCallback(() => {
+    setSelectedIds(null);
+    setDeleteIds(null);
+  }, []);
+  const selectAll = useCallback(() => setSelectedIds(visibleRoutines.map((routine) => routine.id)), [visibleRoutines]);
+
+  const requestDelete = useCallback(
+    (ids?: readonly string[]) => {
+      const targets = [...(ids ?? selectedIds ?? [])];
+      if (targets.length > 0) setDeleteIds(targets);
+    },
+    [selectedIds],
+  );
+  const cancelDelete = useCallback(() => setDeleteIds(null), []);
+  const confirmDelete = useCallback(() => {
+    const ids = deleteIds ?? [];
+    setDeleteIds(null);
+    setSelectedIds(null);
+    if (ids.length === 0) return;
+    if (ids.length === 1) {
+      // Uma rotina: mantém o "Desfazer" do protótipo 3.4.
+      deleteRoutine(ids[0]);
+      return;
+    }
+    setLastDeleted(null);
+    setRoutines((current) => current.filter((routine) => !ids.includes(routine.id)));
+    if (isPrototypeMode) return;
+    runAction(() => Promise.all(ids.map((id) => useCases.deleteRoutine(id))));
+  }, [deleteIds, deleteRoutine, isPrototypeMode, runAction, useCases]);
+
+  const pendingDelete = useMemo(() => {
+    if (!deleteIds) return null;
+    const targets = routines.filter((routine) => deleteIds.includes(routine.id));
+    return {
+      ids: deleteIds,
+      title: targets.length === 1 ? targets[0].title : "",
+      taskCount: targets.reduce((sum, routine) => sum + routine.taskCount, 0),
+    };
+  }, [deleteIds, routines]);
+
+  // A barra de abas some durante a seleção, para dar lugar à barra de ações (como em Tarefas).
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({ tabBarStyle: selectionMode ? { display: "none" } : undefined });
+  }, [navigation, selectionMode]);
+
+  // No Android, o voltar do sistema sai da seleção antes de sair da tela.
+  useEffect(() => {
+    if (!selectionMode) return;
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      cancelSelection();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [cancelSelection, selectionMode]);
+
+  const handleEditRoutine = useCallback((id: string) => {
+    router.navigate({ pathname: "/new-routine", params: { id } });
+  }, []);
+
   const handleCreateRoutine = useCallback(() => {
     router.navigate("/new-routine");
   }, []);
@@ -236,6 +322,9 @@ export const useRoutinesViewModel = (
       categories,
       loading,
       errorKey,
+      selectionMode,
+      selectedIds: selectedIds ?? [],
+      pendingDelete,
     },
     {
       setQuery,
@@ -244,6 +333,14 @@ export const useRoutinesViewModel = (
       undoDelete,
       dismissDeleted,
       reload,
+      startSelection,
+      toggleSelected,
+      cancelSelection,
+      selectAll,
+      requestDelete,
+      cancelDelete,
+      confirmDelete,
+      handleEditRoutine,
       handleCreateRoutine,
       handleOpenRoutine,
     },

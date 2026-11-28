@@ -15,10 +15,13 @@ import { FakeDayChangeService } from "../../tests/fixtures/fakeDayChangeService"
 
 // Navegação do Expo Router isolada: o foco é disparado pelo teste com `focusScreen()`.
 const mockNavigate = jest.fn();
+const mockSetOptions = jest.fn();
+const mockNavigation = { setOptions: mockSetOptions };
 const mockSetParams = jest.fn();
 let mockParams: Record<string, string | undefined> = {};
 const mockFocusCallbacks = new Set<() => void>();
 jest.mock("expo-router", () => ({
+  useNavigation: () => mockNavigation,
   router: {
     navigate: (...args: unknown[]) => mockNavigate(...args),
     setParams: (...args: unknown[]) => mockSetParams(...args),
@@ -265,5 +268,41 @@ describe("useRoutinesViewModel (navegação)", () => {
       focusScreen();
     });
     await waitFor(() => expect(result.current[0].visibleRoutines.map((routine) => routine.title)).toEqual(["Inglês"]));
+  });
+});
+
+describe("useRoutinesViewModel (ODS 1.3, seleção e menu)", () => {
+  it("3.5: seleciona, marca todas e exclui várias rotinas de uma vez, escondendo a barra de abas", async () => {
+    const { result } = await renderHook(() => useRoutinesViewModel([...PROTOTYPE_ROUTINES]));
+
+    await act(async () => result.current[1].startSelection("mat"));
+    expect(result.current[0].selectionMode).toBe(true);
+    expect(mockSetOptions).toHaveBeenLastCalledWith({ tabBarStyle: { display: "none" } });
+
+    await act(async () => result.current[1].selectAll());
+    expect(result.current[0].selectedIds).toHaveLength(PROTOTYPE_ROUTINES.length);
+
+    await act(async () => result.current[1].requestDelete());
+    expect(result.current[0].pendingDelete?.ids).toHaveLength(PROTOTYPE_ROUTINES.length);
+    expect(result.current[0].pendingDelete?.taskCount).toBe(PROTOTYPE_ROUTINES.reduce((sum, routine) => sum + routine.taskCount, 0));
+
+    await act(async () => result.current[1].confirmDelete());
+    expect(result.current[0].visibleRoutines).toHaveLength(0);
+    expect(result.current[0].selectionMode).toBe(false);
+  });
+
+  it("\"•••\" → Excluir uma rotina mantém o Desfazer", async () => {
+    const { result } = await renderHook(() => useRoutinesViewModel([...PROTOTYPE_ROUTINES]));
+
+    await act(async () => result.current[1].requestDelete(["ing"]));
+    expect(result.current[0].pendingDelete).toMatchObject({ ids: ["ing"], title: "Inglês", taskCount: 2 });
+    await act(async () => result.current[1].confirmDelete());
+    expect(result.current[0].lastDeleted?.id).toBe("ing");
+  });
+
+  it("\"•••\" → Editar abre o formulário da rotina", async () => {
+    const { result } = await renderHook(() => useRoutinesViewModel([...PROTOTYPE_ROUTINES]));
+    result.current[1].handleEditRoutine("mat");
+    expect(mockNavigate).toHaveBeenCalledWith({ pathname: "/new-routine", params: { id: "mat" } });
   });
 });

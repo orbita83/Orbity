@@ -14,6 +14,7 @@ const RoutinesScreen = () => {
       {...actions}
       onCreateRoutine={actions.handleCreateRoutine}
       onOpenRoutine={actions.handleOpenRoutine}
+      onEditRoutine={actions.handleEditRoutine}
     />
   );
 };

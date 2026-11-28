@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { Animated, Easing, type GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, type GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
-import { useReduceMotion } from "../theme/useReduceMotion";
+import { useHoldFill } from "../useHoldFill";
 import { CheckCircle } from "./CheckCircle";
 import { CategoryTag } from "./CategoryTag";
 import { GradientSurface } from "./GradientSurface";
@@ -53,22 +52,7 @@ export const TaskCard = ({
 }: TaskCardProps) => {
   const styles = createStyles(theme, completed);
   const cosmic = Boolean(theme.componentOverrides?.cardSurface);
-  const reduceMotion = useReduceMotion();
-  // Preenchimento do toque longo (ODS 1.3, fill-on-hold): cresce da esquerda para a direita
-  // durante motion.duration.hold; ao soltar antes, volta em motion.duration.short.
-  const [hold] = useState(() => new Animated.Value(0));
-  const [holding, setHolding] = useState(false);
-  const [width, setWidth] = useState(0);
-  const startHold = () => {
-    setHolding(true);
-    if (reduceMotion) return;
-    Animated.timing(hold, { toValue: 1, duration: theme.motion.durationHold, easing: Easing.linear, useNativeDriver: true }).start();
-  };
-  const endHold = () => {
-    setHolding(false);
-    if (reduceMotion) return;
-    Animated.timing(hold, { toValue: 0, duration: theme.motion.durationShort, useNativeDriver: true }).start();
-  };
+  const hold = useHoldFill();
 
   // Com toque longo, o conteúdo vira um único elemento acessível e o VoiceOver
   // ignora o rótulo próprio da tag; por isso o rótulo do grupo repete "Categoria: …".
@@ -115,13 +99,11 @@ export const TaskCard = ({
     );
   }
 
-  const fillTranslate = hold.interpolate({ inputRange: [0, 1], outputRange: [-width, 0] });
-
   return (
-    <View style={[styles.card, holding && styles.cardHolding]} onLayout={(event) => setWidth(event.nativeEvent.layout.width)}>
+    <View style={[styles.card, hold.holding && styles.cardHolding]} onLayout={hold.onLayout}>
       {cosmic ? <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} /> : null}
-      {width > 0 ? (
-        <Animated.View pointerEvents="none" style={[styles.holdFill, { transform: [{ translateX: fillTranslate }] }]} />
+      {hold.ready ? (
+        <Animated.View pointerEvents="none" style={[styles.holdFill, { transform: [{ translateX: hold.translateX }] }]} />
       ) : null}
       <CheckCircle
         checked={completed}
@@ -141,8 +123,8 @@ export const TaskCard = ({
         }
         onPress={onPress}
         onLongPress={onLongPress}
-        onPressIn={onLongPress ? startHold : undefined}
-        onPressOut={onLongPress ? endHold : undefined}
+        onPressIn={onLongPress ? hold.start : undefined}
+        onPressOut={onLongPress ? hold.end : undefined}
         delayLongPress={theme.motion.durationHold}
         disabled={!onPress && !onLongPress}
         style={styles.contentPressable}
