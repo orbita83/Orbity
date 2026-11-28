@@ -1,0 +1,55 @@
+name: Política de privacidade no Pages
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'site/**'
+      - 'scripts/build-privacy-site.mjs'
+      - 'scripts/verify-privacy-site.py'
+      - 'src/view/theme/tokens.ts'
+      - '.github/workflows/privacy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: privacy-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Publica apenas a base revisada. Nenhum PR nem branch de trabalho dispara publicação.
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Configurar npm
+        run: npm install --global "$(node -p "require('./package.json').packageManager")"
+      - name: Instalar dependências sem scripts de instalação
+        run: npm ci --ignore-scripts
+      - name: Gerar somente o site da política
+        run: node scripts/build-privacy-site.mjs
+      - name: Conferir HTML, assets e URL do app
+        run: python3 scripts/verify-privacy-site.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .dev/privacy-site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

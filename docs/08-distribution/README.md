@@ -4,6 +4,7 @@ Esta pasta reúne a documentação de build, assinatura e distribuição Android
 
 | Documento | Conteúdo | Origem |
 | --------- | -------- | ------ |
+| [`politica-de-privacidade.md`](./politica-de-privacidade.md) | Conteúdo, evidências, manutenção, configuração manual do Pages e limites da validação da política. | [#176](https://github.com/orbita83/Orbity/issues/176) |
 | [`auditoria-google-play.md`](./auditoria-google-play.md) | Auditoria datada de prontidão técnica e administrativa, fontes oficiais, checklist, evidências e pendências do AAB e do Play Console. | T0013 — [#79](https://github.com/orbita83/Orbity/issues/79) |
 | [`identidade-e-propriedade.md`](./identidade-e-propriedade.md) | Identidade de distribuição do aplicativo, propriedade das contas Expo/EAS e Google Play Console, responsáveis, controle de acesso e continuidade administrativa. | T0009 — [#75](https://github.com/orbita83/Orbity/issues/75) |
 | [`versionamento-do-app.md`](./versionamento-do-app.md) | Identidade técnica configurada no `app.json`, finalidade dos campos de versão, estratégia do `versionCode` e como atualizar as versões. | T0010 — [#76](https://github.com/orbita83/Orbity/issues/76) |

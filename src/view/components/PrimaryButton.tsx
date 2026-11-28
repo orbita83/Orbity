@@ -7,6 +7,8 @@ export type PrimaryButtonProps = {
   label: string;
   onPress: () => void;
   accessibilityHint?: string;
+  /** Link externo mantém o mesmo visual, com semântica de link para leitores de tela. */
+  accessibilityRole?: "button" | "link";
   disabled?: boolean;
   /** Ação em andamento (ex.: "Salvando..."): anuncia `busy` ao leitor de tela. */
   busy?: boolean;
@@ -19,6 +21,7 @@ export const PrimaryButton = ({
   label,
   onPress,
   accessibilityHint,
+  accessibilityRole = "button",
   disabled = false,
   busy = false,
   theme = themes.light,
@@ -31,7 +34,7 @@ export const PrimaryButton = ({
   return (
     <View style={styles.focusContainer}>
       <Pressable
-        accessibilityRole="button"
+        accessibilityRole={accessibilityRole}
         accessibilityLabel={label}
         accessibilityHint={accessibilityHint}
         accessibilityState={{ disabled, busy }}

@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react-native";
+import { act, renderHook } from "@testing-library/react-native";
 import { BackHandler, Platform } from "react-native";
 import { useSettingsViewModel } from "@/viewmodel/useSettingsViewModel";
 
@@ -12,6 +12,34 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("useSettingsViewModel", () => {
+  it("impede abertura duplicada e libera nova tentativa ao terminar", async () => {
+    let finish!: () => void;
+    const openPolicy = jest.fn(() => new Promise<void>((resolve) => { finish = resolve; }));
+    const { result } = await renderHook(() => useSettingsViewModel({ openPolicy }));
+    let pending!: Promise<void>;
+    await act(async () => {
+      pending = result.current[1].handleOpenPrivacyPolicy();
+      await result.current[1].handleOpenPrivacyPolicy();
+    });
+    expect(openPolicy).toHaveBeenCalledTimes(1);
+    expect(result.current[0].openingPolicy).toBe(true);
+    await act(async () => { finish(); await pending; });
+    expect(result.current[0].openingPolicy).toBe(false);
+    expect(result.current[0].error).toBeNull();
+  });
+
+  it("mostra falha sem detalhes técnicos e permite tentar novamente", async () => {
+    const openPolicy = jest.fn().mockRejectedValueOnce(new Error("native detail")).mockResolvedValue(undefined);
+    const { result } = await renderHook(() => useSettingsViewModel({ openPolicy }));
+    await act(async () => { await result.current[1].handleOpenPrivacyPolicy(); });
+    expect(result.current[0].error).toContain("Não foi possível abrir");
+    expect(result.current[0].error).not.toContain("native detail");
+    expect(result.current[0].openingPolicy).toBe(false);
+    await act(async () => { await result.current[1].handleOpenPrivacyPolicy(); });
+    expect(result.current[0].error).toBeNull();
+    expect(openPolicy).toHaveBeenCalledTimes(2);
+  });
+
   it("volta para Meu perfil pela ação da tela", async () => {
     const { result } = await renderHook(() => useSettingsViewModel());
     result.current[1].handleReturnToProfile();
