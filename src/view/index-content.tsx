@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { HomeSummary } from "../model/entities/homeSummary";
 import type { FocusSheetStage, HomeState } from "../viewmodel/useHomeViewModel";
-import { CosmicStarfield } from "./components/CosmicStarfield";
+import { CosmicSky } from "./components/CosmicSky";
 import { FocusBottomSheet } from "./components/FocusBottomSheet";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PlanetStreakView } from "./components/PlanetStreakView";
@@ -111,20 +111,15 @@ export const HomeScreenContent = ({
 
   return (
     <View style={styles.screen} onLayout={onLayout}>
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        {width > 0 ? <CosmicStarfield width={width} height={sceneHeight} /> : null}
-      </View>
+      <CosmicSky glow />
 
       {ready ? (
         <View testID="home-hero" {...heroPan.panHandlers} style={StyleSheet.absoluteFill}>
           <Animated.View
             style={[
               styles.planet,
-              {
-                top: planetTop,
-                opacity: sheetMotion.artworkOpacity,
-                transform: [{ translateY: sheetMotion.artworkShift }, { scale: sheetMotion.artworkScale }],
-              },
+              // O planeta fica fixo no lugar: o painel desliza por cima sem mover nem encolher o planeta.
+              { top: planetTop },
             ]}
           >
             {width > 0 ? (

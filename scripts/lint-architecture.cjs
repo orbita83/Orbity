@@ -14,7 +14,7 @@ const LAYERS = {
 
 const PRESENTATION_PACKAGES = [
   "react", "react-native", "react-native-safe-area-context", "react-native-svg",
-  "react-native-reanimated", "react-native-gesture-handler", "@expo/ui",
+  "react-native-reanimated", "react-native-gesture-handler", "@shopify/react-native-skia", "@expo/ui",
   "expo-font", "expo-image", "expo-glass-effect", "expo-symbols",
 ];
 const LAYOUT_PACKAGES = ["react", "expo-router", "expo-status-bar", "expo-system-ui"];
@@ -22,6 +22,8 @@ const VIEWMODEL_PACKAGES = ["react", "react-native", "expo-router"];
 const SQLITE_EXECUTOR = "src/infra/database/expoSqlExecutor.ts";
 const NOTIFICATION_SERVICE = "src/infra/services/expoNotificationService.ts";
 const SUPPORT_SUFFIX = /\.(?:test|spec|stories|contract|fixture|factory)$/;
+// Variante por plataforma do React Native (ex.: ProceduralPlanet.web.tsx ao lado de ProceduralPlanet.tsx).
+const PLATFORM_SUFFIX = /\.(?:web|native|android|ios)$/;
 const CODE_EXTENSION = /\.[cm]?[jt]sx?$/;
 const CAMEL_CASE = /^[a-z][a-zA-Z0-9]*$/;
 const PASCAL_CASE = /^[A-Z][a-zA-Z0-9]*$/;
@@ -237,7 +239,7 @@ function checkDependency({ node, specifier, target, layer, file, support, checke
 }
 
 function validFileName(file, layer) {
-  const name = path.basename(withoutExtension(file)).replace(SUPPORT_SUFFIX, "");
+  const name = path.basename(withoutExtension(file)).replace(SUPPORT_SUFFIX, "").replace(PLATFORM_SUFFIX, "");
   if (layer === "app") return file.endsWith(".tsx") && (KEBAB_CASE.test(name) || ROUTE_NAME.test(name));
   if (file.startsWith("src/view/components/")) return file.endsWith(".tsx") && PASCAL_CASE.test(name);
   if (layer === "view" && file.endsWith(".tsx")) return KEBAB_CASE.test(name) || ROUTE_NAME.test(name);

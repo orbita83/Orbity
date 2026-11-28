@@ -17,6 +17,7 @@ import {
   type ProfileActions,
   type ProfileState,
 } from "@/viewmodel/useProfileViewModel";
+import { CosmicSky } from "./components/CosmicSky";
 
 export type ProfileScreenProps = {
   readonly theme?: OrbityTheme;
@@ -52,6 +53,7 @@ const ProfileContent = ({
     <SafeAreaView
       style={styles.screen}
     >
+      <CosmicSky />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

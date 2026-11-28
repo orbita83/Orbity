@@ -137,8 +137,13 @@ Os temas exportam `divider.width` e `feedback.pressedOpacity`. Validar o contras
 | `motion.opacity-pressed` | `0.8`                        | Opacidade aplicada junto da escala ao toque     | Novo (1.2) |
 | `motion.planet.rotation` | 24 s, linear, contínua       | Volta das crateras do planeta | Novo (1.2) |
 | `motion.planet.pulse`    | 4 s, `ease-in-out`, alternada | Pulso do brilho do planeta   | Novo (1.2) |
+| `motion.planet.ring-orbit` | 9 s, linear, contínua      | Volta dos aglomerados de poeira do anel do planeta procedural (#221) | Novo (1.4, proposta) |
+| `motion.ambient.star-cell` | 36 dp                      | Célula da grade do céu animado: no máximo uma estrela por célula (#286) | Novo (1.4, proposta) |
+| `motion.ambient.twinkle-min` / `twinkle-max` | 2,6 s a 7 s | Ritmo do cintilar de cada estrela, sorteado por estrela | Novo (1.4, proposta) |
+| `motion.ambient.shooting-every` | 7 s                   | Intervalo entre estrelas cadentes no fundo | Novo (1.4, proposta) |
+| `motion.ambient.shooting-duration` | 1,1 s              | Tempo de uma estrela cadente atravessar a tela | Novo (1.4, proposta) |
 
-O estado pressionado combina `scale-pressed` e `opacity-pressed` em `motion.duration.short` com `motion.easing.standard`. Isso resolve a lacuna de cor do estado pressionado sem inventar uma cor nova. Com movimento reduzido, a escala, a rotação e o pulso são desligados; a opacidade continua como feedback.
+O estado pressionado combina `scale-pressed` e `opacity-pressed` em `motion.duration.short` com `motion.easing.standard`. Isso resolve a lacuna de cor do estado pressionado sem inventar uma cor nova. Com movimento reduzido, a escala, a rotação e o pulso são desligados; a opacidade continua como feedback. O céu animado (`motion.ambient.*`) também para, e a estrela cadente não aparece. O céu é decorativo: usa só `on-surface`, `on-surface-variant` e `focus`, fica fora do leitor de tela e nunca fica atrás de texto solto.
 
 ### Variante cósmica
 
