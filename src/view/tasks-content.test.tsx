@@ -78,10 +78,15 @@ describe("TasksScreenContent", () => {
     expect(screen.getByLabelText("Estudar para IHC, 20/10 · 14:00–15:00")).toBeTruthy();
   });
 
-  it("sem tarefas, mostra o estado vazio acolhedor", async () => {
+  it("sem tarefas, mostra o planeta com o estado vazio e esconde o resumo redundante (ODS 1.3)", async () => {
     await renderInSafeArea(<TasksScreenContent {...listProps({ visibleTasks: [], pendingCount: 0, totalCount: 0 })} />);
     expect(screen.getByText(TASKS_COPY["empty.title"])).toBeTruthy();
-    expect(screen.getByText(TASKS_COPY["summary.empty"])).toBeTruthy();
+    expect(screen.queryByText(TASKS_COPY["summary.empty"])).toBeNull();
+  });
+
+  it("com o filtro Pendentes vazio, mostra a mensagem própria do filtro", async () => {
+    await renderInSafeArea(<TasksScreenContent {...listProps({ visibleTasks: [], filter: "pending", pendingCount: 0, totalCount: 2 })} />);
+    expect(screen.getByText(TASKS_COPY["empty.pending.title"])).toBeTruthy();
   });
 
   it("com erro, exibe alerta e aciona reload ao tentar novamente", async () => {

@@ -5,6 +5,7 @@ import type { Category } from "@/model/entities/category";
 import type { RoutineListItem, RoutinesActions, RoutinesState } from "../viewmodel/useRoutinesViewModel";
 import { CheckCircle } from "./components/CheckCircle";
 import { IconTile } from "./components/IconTile";
+import { EmptyOrbitState } from "./components/EmptyOrbitState";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { SkeletonCards } from "./components/SkeletonCards";
@@ -28,11 +29,8 @@ export type RoutinesScreenContentProps = RoutinesState &
     onOpenRoutine: (id: string) => void;
   };
 
-/** Resumo do dia: conta só as rotinas de hoje (rotinas.md, R6). */
-const summaryOf = (done: number, total: number, hasRoutines: boolean) => {
-  if (total === 0) return hasRoutines ? ROUTINES_COPY["summary.noneToday"] : ROUTINES_COPY["summary.empty"];
-  return done === total ? ROUTINES_COPY["summary.allDone"] : formatRoutinesCopy("summary.progress", { done, total });
-};
+// ODS 1.3: o resumo ao lado de "Hoje" sai; o CheckCircle de cada card já mostra o que foi feito
+// e o progresso do dia fica no painel da Tela Inicial.
 
 type RoutineCardProps = {
   routine: RoutineListItem;
@@ -147,9 +145,6 @@ export const RoutinesScreenContent = ({
             <Text accessibilityRole="header" allowFontScaling style={styles.sectionTitle}>
               {ROUTINES_COPY.today}
             </Text>
-            <Text allowFontScaling style={styles.muted}>
-              {summaryOf(doneTodayCount, totalCount, visibleRoutines.length > 0 || searching)}
-            </Text>
           </View>
           {errorKey ? (
             <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.alert}>
@@ -170,14 +165,10 @@ export const RoutinesScreenContent = ({
             />
           ))}
           {visibleRoutines.length === 0 && !loading ? (
-            <View style={styles.empty}>
-              <Text allowFontScaling style={styles.emptyTitle}>
-                {searching ? ROUTINES_COPY["noResults.title"] : ROUTINES_COPY["empty.title"]}
-              </Text>
-              <Text allowFontScaling style={[styles.muted, styles.centered]}>
-                {searching ? ROUTINES_COPY["noResults.message"] : ROUTINES_COPY["empty.message"]}
-              </Text>
-            </View>
+            <EmptyOrbitState
+              title={searching ? ROUTINES_COPY["noResults.title"] : ROUTINES_COPY["empty.title"]}
+              message={searching ? ROUTINES_COPY["noResults.message"] : ROUTINES_COPY["empty.message"]}
+            />
           ) : null}
         </View>
       </ScrollView>
@@ -236,17 +227,6 @@ const styles = StyleSheet.create({
   cardTitle: { ...theme.font["card-title"], color: theme.color["on-surface"] },
   done: { textDecorationLine: "line-through" },
   pressed: { opacity: theme.motion.opacityPressed },
-  empty: {
-    alignItems: "center",
-    gap: theme.primitive["space-4"],
-    paddingVertical: theme.primitive["space-32"],
-    paddingHorizontal: theme.space.md,
-    borderRadius: theme.radius.lg,
-    borderWidth: theme.border.widthThin,
-    borderStyle: "dashed",
-    borderColor: cosmicBorders.sheet,
-  },
-  emptyTitle: { ...theme.font["card-title"], color: theme.color["on-surface"], textAlign: "center" },
   snackbar: { position: "absolute", left: theme.space.md, right: theme.space.md, bottom: theme.space.md },
   // Erro com ícone em color.error e texto em color.on-surface (05-padroes.md, F4/F7; WCAG 1.4.1).
   alert: { flexDirection: "row", alignItems: "center", gap: theme.space.sm },

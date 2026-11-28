@@ -38,7 +38,8 @@ describe("RoutinesScreenContent", () => {
     await inSafeArea(<RoutinesScreenContent {...props} />);
 
     expect(screen.getByRole("header", { name: ROUTINES_COPY.title })).toBeTruthy();
-    expect(screen.getByText("1 de 3 concluídas")).toBeTruthy();
+    // ODS 1.3: sem o resumo "1 de 3 concluídas" ao lado de "Hoje".
+    expect(screen.queryByText("1 de 3 concluídas")).toBeNull();
     expect(screen.getByText("2 tarefas · Seg, Qua e Sex")).toBeTruthy();
 
     await fireEvent.changeText(screen.getByLabelText(ROUTINES_COPY.search), "ing");
@@ -79,7 +80,8 @@ describe("RoutinesScreenContent", () => {
     await inSafeArea(<RoutinesScreenContent {...props} />);
 
     expect(screen.getByText(ROUTINES_COPY["inactive.today"])).toBeTruthy();
-    expect(screen.getByText(ROUTINES_COPY["summary.noneToday"])).toBeTruthy();
+    // ODS 1.3: sem resumo ao lado de "Hoje"; o motivo fica no próprio card.
+    expect(screen.queryByText(ROUTINES_COPY["summary.noneToday"])).toBeNull();
     const circle = screen.getByRole("checkbox", { name: "Concluir rotina Revisão de fim de semana hoje" });
     expect(circle.props.accessibilityState).toMatchObject({ disabled: true });
     await fireEvent.press(circle);

@@ -4,12 +4,13 @@ import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/useTasks
 import { TaskCard } from "./components/TaskCard";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "./components/ContextualActionBar";
+import { EmptyOrbitState } from "./components/EmptyOrbitState";
 import { FilterChips, type FilterChipOption } from "./components/FilterChips";
 import { MaterialSymbol } from "./components/MaterialSymbol";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { resolveCategoryDisplay } from "./categoryCopy";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
-import { cosmicBorders, themes } from "./theme/tokens";
+import { themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
 
@@ -24,6 +25,14 @@ export type TasksScreenContentProps = TasksState &
     onCreateTask: () => void;
     onEditTask?: (id: string) => void;
   };
+
+// Estado vazio por filtro (ODS 1.3): sem registros, só pendentes ou só concluídas.
+const emptyCopyOf = (filter: TaskFilter, totalCount: number) => {
+  if (totalCount === 0 || filter === "all") return { title: TASKS_COPY["empty.title"], message: TASKS_COPY["empty.message"] };
+  return filter === "pending"
+    ? { title: TASKS_COPY["empty.pending.title"], message: TASKS_COPY["empty.pending.message"] }
+    : { title: TASKS_COPY["empty.completed.title"], message: TASKS_COPY["empty.completed.message"] };
+};
 
 const summaryOf = (pendingCount: number, totalCount: number) => {
   if (totalCount === 0) return TASKS_COPY["summary.empty"];
@@ -84,9 +93,12 @@ export const TasksScreenContent = ({
               <Text accessibilityRole="header" allowFontScaling style={styles.title}>
                 {TASKS_COPY.title}
               </Text>
-              <Text allowFontScaling style={styles.summary}>
-                {summaryOf(pendingCount, totalCount)}
-              </Text>
+              {/* ODS 1.3: com a lista vazia, o resumo some; a mensagem do planeta já diz o mesmo. */}
+              {totalCount > 0 ? (
+                <Text allowFontScaling style={styles.summary}>
+                  {summaryOf(pendingCount, totalCount)}
+                </Text>
+              ) : null}
             </View>
             <FilterChips
               theme={theme}
@@ -140,14 +152,7 @@ export const TasksScreenContent = ({
             />
           ))}
           {!loading && visibleTasks.length === 0 && !errorKey ? (
-            <View style={styles.empty}>
-              <Text allowFontScaling style={styles.emptyTitle}>
-                {TASKS_COPY["empty.title"]}
-              </Text>
-              <Text allowFontScaling style={styles.summary}>
-                {TASKS_COPY["empty.message"]}
-              </Text>
-            </View>
+            <EmptyOrbitState {...emptyCopyOf(filter, totalCount)} />
           ) : null}
         </View>
       </ScrollView>
@@ -202,17 +207,6 @@ const styles = StyleSheet.create({
   title: { ...theme.font.title, color: theme.color["on-surface"] },
   summary: { ...theme.font["body-sm"], color: theme.color["on-surface-variant"] },
   list: { gap: theme.space.sm },
-  empty: {
-    alignItems: "center",
-    gap: theme.primitive["space-4"],
-    paddingVertical: theme.primitive["space-32"],
-    paddingHorizontal: theme.space.md,
-    borderRadius: theme.radius.lg,
-    borderWidth: theme.border.widthThin,
-    borderStyle: "dashed",
-    borderColor: cosmicBorders.sheet,
-  },
-  emptyTitle: { ...theme.font["card-title"], color: theme.color["on-surface"], textAlign: "center" },
   errorCard: {
     gap: theme.space.md,
     padding: theme.space.md,
