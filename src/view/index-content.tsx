@@ -118,11 +118,8 @@ export const HomeScreenContent = ({
           <Animated.View
             style={[
               styles.planet,
-              {
-                top: planetTop,
-                opacity: sheetMotion.artworkOpacity,
-                transform: [{ translateY: sheetMotion.artworkShift }, { scale: sheetMotion.artworkScale }],
-              },
+              // O planeta fica fixo no lugar: o painel desliza por cima sem mover nem encolher o planeta.
+              { top: planetTop },
             ]}
           >
             {width > 0 ? (
