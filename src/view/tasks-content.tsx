@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/useTasksViewModel";
@@ -7,6 +8,7 @@ import { ContextualActionBar, ContextualHeader } from "./components/ContextualAc
 import { EmptyOrbitState } from "./components/EmptyOrbitState";
 import { FilterChips, type FilterChipOption } from "./components/FilterChips";
 import { MaterialSymbol } from "./components/MaterialSymbol";
+import { OptionsMenu, type OptionsMenuAnchor } from "./components/OptionsMenu";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { resolveCategoryDisplay } from "./categoryCopy";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
@@ -21,9 +23,11 @@ const FILTERS: readonly FilterChipOption<TaskFilter>[] = [
 ];
 
 export type TasksScreenContentProps = TasksState &
-  Omit<TasksActions, "handleCreateTask" | "handleEditTask"> & {
+  Omit<TasksActions, "handleCreateTask" | "handleEditTask" | "handleOpenTask"> & {
     onCreateTask: () => void;
     onEditTask?: (id: string) => void;
+    /** Toque no card: abre o detalhe da tarefa (protótipo 2.4). */
+    onOpenTask?: (id: string) => void;
   };
 
 // Estado vazio por filtro (ODS 1.3): sem registros, só pendentes ou só concluídas.
@@ -50,6 +54,7 @@ export const TasksScreenContent = ({
   selectedIds,
   allSelectedPinned,
   confirmDeleteVisible,
+  deleteCount,
   categories,
   loading,
   errorKey,
@@ -60,15 +65,22 @@ export const TasksScreenContent = ({
   cancelSelection,
   selectAll,
   pinSelected,
+  togglePinTask,
   requestDelete,
+  requestDeleteTask,
   cancelDelete,
   confirmDelete,
   reload,
   onCreateTask,
   onEditTask,
+  onOpenTask,
 }: TasksScreenContentProps) => {
   const insets = useSafeAreaInsets();
   const selectedCount = selectedIds.length;
+  // Menu do "•••" (menu-opcoes.md): uma tarefa por vez; a âncora é só posição na tela.
+  const [menu, setMenu] = useState<{ id: string; anchor: OptionsMenuAnchor | null } | null>(null);
+  const menuTask = menu ? visibleTasks.find((task) => task.id === menu.id) : undefined;
+  const closeMenu = () => setMenu(null);
 
   return (
     <View style={styles.screen}>
@@ -142,10 +154,10 @@ export const TasksScreenContent = ({
               completed={task.completed}
               pinned={task.pinned}
               onToggleCompleted={() => toggleCompleted(task.id)}
+              onPress={onOpenTask ? () => onOpenTask(task.id) : undefined}
               onLongPress={() => startSelection(task.id)}
-              // O "•••" do protótipo abre as mesmas ações da seleção (Fixar, Excluir) para esta tarefa;
-              // é também a alternativa acessível ao toque longo.
-              onOptionsPress={() => startSelection(task.id)}
+              // ODS 1.3: uma tarefa, pelo "•••"; várias, pelo toque longo. O menu é também a alternativa acessível.
+              onOptionsPress={(anchor) => setMenu({ id: task.id, anchor })}
               selectionMode={selectionMode}
               selected={selectedIds.includes(task.id)}
               onToggleSelected={() => toggleSelected(task.id)}
@@ -180,10 +192,37 @@ export const TasksScreenContent = ({
         />
       ) : null}
 
+      <OptionsMenu
+        visible={menuTask !== undefined}
+        anchor={menu?.anchor ?? null}
+        accessibilityLabel={menuTask ? `Opções da tarefa: ${menuTask.title}` : ""}
+        onClose={closeMenu}
+        items={
+          menuTask
+            ? [
+                { id: "edit", label: TASKS_COPY["action.edit"], icon: "edit", onPress: () => onEditTask?.(menuTask.id) },
+                {
+                  id: "pin",
+                  label: menuTask.pinned ? TASKS_COPY["action.unpin"] : TASKS_COPY["action.pin"],
+                  icon: "push_pin",
+                  onPress: () => togglePinTask(menuTask.id),
+                },
+                {
+                  id: "delete",
+                  label: TASKS_COPY["menu.delete"],
+                  icon: "delete_outline",
+                  destructive: true,
+                  onPress: () => requestDeleteTask(menuTask.id),
+                },
+              ]
+            : []
+        }
+      />
+
       <ConfirmDialog
         visible={confirmDeleteVisible}
         icon="delete_outline"
-        title={selectedCount === 1 ? TASKS_COPY["delete.title.one"] : formatTasksCopy("delete.title.other", { n: selectedCount })}
+        title={deleteCount === 1 ? TASKS_COPY["delete.title.one"] : formatTasksCopy("delete.title.other", { n: deleteCount })}
         message={TASKS_COPY["delete.message"]}
         cancelLabel={TASKS_COPY["delete.cancel"]}
         confirmLabel={TASKS_COPY["delete.confirm"]}

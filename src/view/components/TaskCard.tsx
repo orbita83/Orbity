@@ -1,9 +1,12 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Animated, Easing, type GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
 import { cosmicBorders, cosmicColors, cosmicGradients, themes, type OrbityTheme } from "../theme/tokens";
+import { useReduceMotion } from "../theme/useReduceMotion";
 import { CheckCircle } from "./CheckCircle";
 import { CategoryTag } from "./CategoryTag";
 import { GradientSurface } from "./GradientSurface";
 import { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
+import type { OptionsMenuAnchor } from "./OptionsMenu";
 
 /** Categoria já pronta para exibir: o chamador converte o id em rótulo e ícone. */
 export type TaskCardCategory = {
@@ -18,8 +21,11 @@ export type TaskCardProps = {
   category?: TaskCardCategory;
   completed: boolean;
   onToggleCompleted: () => void;
-  onOptionsPress?: () => void;
-  /** Toque longo no texto da tarefa: abre a seleção múltipla (padrão F6). */
+  /** "•••": abre o menu de opções da tarefa (menu-opcoes.md), ancorado ao ponto tocado. */
+  onOptionsPress?: (anchor: OptionsMenuAnchor | null) => void;
+  /** Toque simples no card: abre o detalhe da tarefa (protótipo 2.4). */
+  onPress?: () => void;
+  /** Toque longo no card: abre a seleção múltipla (padrão F6). */
   onLongPress?: () => void;
   /** Tarefa fixada no topo da lista. */
   pinned?: boolean;
@@ -37,6 +43,7 @@ export const TaskCard = ({
   completed,
   onToggleCompleted,
   onOptionsPress,
+  onPress,
   onLongPress,
   pinned = false,
   selectionMode = false,
@@ -46,6 +53,23 @@ export const TaskCard = ({
 }: TaskCardProps) => {
   const styles = createStyles(theme, completed);
   const cosmic = Boolean(theme.componentOverrides?.cardSurface);
+  const reduceMotion = useReduceMotion();
+  // Preenchimento do toque longo (ODS 1.3, fill-on-hold): cresce da esquerda para a direita
+  // durante motion.duration.hold; ao soltar antes, volta em motion.duration.short.
+  const [hold] = useState(() => new Animated.Value(0));
+  const [holding, setHolding] = useState(false);
+  const [width, setWidth] = useState(0);
+  const startHold = () => {
+    setHolding(true);
+    if (reduceMotion) return;
+    Animated.timing(hold, { toValue: 1, duration: theme.motion.durationHold, easing: Easing.linear, useNativeDriver: true }).start();
+  };
+  const endHold = () => {
+    setHolding(false);
+    if (reduceMotion) return;
+    Animated.timing(hold, { toValue: 0, duration: theme.motion.durationShort, useNativeDriver: true }).start();
+  };
+
   // Com toque longo, o conteúdo vira um único elemento acessível e o VoiceOver
   // ignora o rótulo próprio da tag; por isso o rótulo do grupo repete "Categoria: …".
   const contentLabel = [title, category ? `Categoria: ${category.label}` : null, dueDate ?? null]
@@ -53,12 +77,9 @@ export const TaskCard = ({
     .join(", ");
   const content = (
     <View style={styles.content}>
-      <View style={styles.titleRow}>
-        {pinned ? <MaterialSymbol name="push_pin" filled color={cosmicColors.focus} size={theme.space.md} /> : null}
-        <Text allowFontScaling style={styles.title}>
-          {title}
-        </Text>
-      </View>
+      <Text allowFontScaling style={styles.title}>
+        {title}
+      </Text>
       {category || dueDate ? (
         <View style={styles.meta}>
           {category ? <CategoryTag label={category.label} symbol={category.symbol} theme={theme} /> : null}
@@ -82,10 +103,11 @@ export const TaskCard = ({
         onPress={onToggleSelected}
         style={({ pressed }) => [styles.card, selected && styles.cardSelected, pressed && styles.pressed]}
       >
-        {cosmic && !selected ? <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} /> : null}
+        {/* ODS 1.3: o card selecionado mantém o fundo normal; o destaque é a borda de 2 dp em color.action. */}
+        {cosmic ? <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} /> : null}
         <View style={styles.selectionTarget}>
           <View style={[styles.selectionMark, selected && styles.selectionMarkOn]}>
-            {selected ? <MaterialSymbol name="check" color={theme.color.surface} size={theme.space.md} /> : null}
+            {selected ? <MaterialSymbol name="check" color={theme.color["on-action"]} size={theme.space.md} /> : null}
           </View>
         </View>
         {content}
@@ -93,29 +115,52 @@ export const TaskCard = ({
     );
   }
 
+  const fillTranslate = hold.interpolate({ inputRange: [0, 1], outputRange: [-width, 0] });
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, holding && styles.cardHolding]} onLayout={(event) => setWidth(event.nativeEvent.layout.width)}>
       {cosmic ? <GradientSurface from={cosmicGradients.card[0]} to={cosmicGradients.card[1]} /> : null}
+      {width > 0 ? (
+        <Animated.View pointerEvents="none" style={[styles.holdFill, { transform: [{ translateX: fillTranslate }] }]} />
+      ) : null}
       <CheckCircle
         checked={completed}
         onToggle={onToggleCompleted}
         accessibilityLabel={`${completed ? "Desmarcar" : "Concluir"} tarefa: ${title}`}
       />
       <Pressable
-        accessible={Boolean(onLongPress)}
-        accessibilityLabel={onLongPress ? contentLabel : undefined}
-        accessibilityHint={onLongPress ? "Toque longo para selecionar várias tarefas" : undefined}
+        accessible={Boolean(onPress || onLongPress)}
+        accessibilityRole={onPress ? "button" : undefined}
+        accessibilityLabel={onPress || onLongPress ? contentLabel : undefined}
+        accessibilityHint={
+          onPress
+            ? "Abre a tarefa. Toque longo para selecionar várias tarefas"
+            : onLongPress
+              ? "Toque longo para selecionar várias tarefas"
+              : undefined
+        }
+        onPress={onPress}
         onLongPress={onLongPress}
-        disabled={!onLongPress}
+        onPressIn={onLongPress ? startHold : undefined}
+        onPressOut={onLongPress ? endHold : undefined}
+        delayLongPress={theme.motion.durationHold}
+        disabled={!onPress && !onLongPress}
         style={styles.contentPressable}
       >
         {content}
       </Pressable>
+      {/* ODS 1.3: o alfinete fica no fim do card, antes do "•••", sem empurrar o título. */}
+      {pinned ? (
+        <View accessible accessibilityRole="image" accessibilityLabel="Fixada" style={styles.pin}>
+          <MaterialSymbol name="push_pin" filled color={theme.color["on-surface-variant"]} size={theme.space.md} />
+        </View>
+      ) : null}
       {onOptionsPress ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Opções da tarefa: ${title}`}
-          onPress={onOptionsPress}
+          accessibilityHint="Abre o menu com Editar, Fixar e Excluir"
+          onPress={(event?: GestureResponderEvent) => onOptionsPress(anchorOf(event, theme.target.minSize))}
           style={({ pressed }) => [styles.optionsButton, pressed && styles.pressed]}
         >
           <MaterialSymbol name="more_horiz" color={cosmicColors.inactive} size={theme.navbar.iconSize} />
@@ -123,6 +168,13 @@ export const TaskCard = ({
       ) : null}
     </View>
   );
+};
+
+/** Área do "•••" na janela, a partir do ponto tocado (o alvo tem 48 dp). */
+const anchorOf = (event: GestureResponderEvent | undefined, target: number): OptionsMenuAnchor | null => {
+  const native = event?.nativeEvent;
+  if (!native || typeof native.pageX !== "number") return null;
+  return { x: native.pageX - target / 2, y: native.pageY - target / 2, width: target, height: target };
 };
 
 const createStyles = (theme: OrbityTheme, completed: boolean) =>
@@ -140,9 +192,17 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
       paddingVertical: theme.space.sm,
     },
     cardSelected: {
-      backgroundColor: theme.color["action-subtle"],
-      borderColor: theme.color.focus,
+      borderColor: theme.color.action,
       borderWidth: theme.focus.ringWidth,
+    },
+    cardHolding: { borderColor: theme.color.action },
+    holdFill: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      backgroundColor: theme.color["action-subtle"],
     },
     pressed: { opacity: theme.motion.opacityPressed },
     contentPressable: { flex: 1, minWidth: 0 },
@@ -155,7 +215,6 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
       flexWrap: "wrap",
       rowGap: theme.primitive["space-4"],
     },
-    titleRow: { flexDirection: "row", alignItems: "center", gap: theme.primitive["space-4"] },
     title: {
       ...theme.font.body,
       color: theme.color["on-surface"],
@@ -163,6 +222,7 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
       textDecorationLine: completed ? "line-through" : "none",
     },
     dueDate: { ...theme.font.label, color: theme.color["on-surface-variant"] },
+    pin: { justifyContent: "center", minHeight: theme.target.minSize },
     optionsButton: {
       alignItems: "center",
       justifyContent: "center",
@@ -176,14 +236,15 @@ const createStyles = (theme: OrbityTheme, completed: boolean) =>
       alignItems: "center",
       justifyContent: "center",
     },
+    // Marca igual ao CheckCircle (circulo-concluir.md, "Marca de seleção").
     selectionMark: {
       width: theme.navbar.iconSize,
       height: theme.navbar.iconSize,
       borderRadius: theme.navbar.iconSize / 2,
       borderWidth: theme.focus.ringWidth,
-      borderColor: cosmicColors.inactive,
+      borderColor: theme.color.action,
       alignItems: "center",
       justifyContent: "center",
     },
-    selectionMarkOn: { backgroundColor: theme.color.focus, borderColor: theme.color.focus },
+    selectionMarkOn: { backgroundColor: theme.color.action },
   });

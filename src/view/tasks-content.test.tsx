@@ -22,6 +22,7 @@ const listProps = (overrides: Partial<TasksScreenContentProps> = {}): TasksScree
   selectedIds: [],
   allSelectedPinned: false,
   confirmDeleteVisible: false,
+  deleteCount: 0,
   loading: false,
   errorKey: null,
   selectFilter: jest.fn(),
@@ -31,6 +32,8 @@ const listProps = (overrides: Partial<TasksScreenContentProps> = {}): TasksScree
   cancelSelection: jest.fn(),
   selectAll: jest.fn(),
   pinSelected: jest.fn(),
+  togglePinTask: jest.fn(),
+  requestDeleteTask: jest.fn(),
   requestDelete: jest.fn(),
   cancelDelete: jest.fn(),
   confirmDelete: jest.fn(),
@@ -124,7 +127,7 @@ describe("TasksScreenContent", () => {
   });
 
   it("a confirmação de exclusão individual e múltipla destaca Excluir como primário e Cancelar como secundário", async () => {
-    const singleProps = listProps({ selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true });
+    const singleProps = listProps({ selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true, deleteCount: 1 });
     const view = await renderInSafeArea(<TasksScreenContent {...singleProps} />);
 
     expect(screen.getByRole("header", { name: TASKS_COPY["delete.title.one"] })).toBeTruthy();
@@ -134,7 +137,7 @@ describe("TasksScreenContent", () => {
     expect(StyleSheet.flatten(singleCancel.props.style).backgroundColor).toBeUndefined();
     expect(StyleSheet.flatten(singleCancel.props.style).borderColor).toBe(cosmicBorders.sheet);
 
-    const props = listProps({ selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true });
+    const props = listProps({ selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true, deleteCount: 2 });
     await view.rerender(
       <SafeAreaProvider initialMetrics={metrics}>
         <TasksScreenContent {...props} />
@@ -171,6 +174,29 @@ describe("TasksScreenContent", () => {
     expect(screen.getByLabelText("Categoria: Cálculo I")).toBeTruthy();
     expect(screen.getByLabelText("Categoria: Física")).toBeTruthy();
   });
+
+  it("ODS 1.3: o toque no card abre o detalhe e o \"•••\" abre o menu com Editar, Fixar e Excluir", async () => {
+    const onOpenTask = jest.fn();
+    const onEditTask = jest.fn();
+    const props = listProps({ onOpenTask, onEditTask });
+    await renderInSafeArea(<TasksScreenContent {...props} />);
+
+    await fireEvent.press(screen.getByLabelText("Estudar para IHC, 20/10 · 14:00–15:00"));
+    expect(onOpenTask).toHaveBeenCalledWith("c");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da tarefa: Estudar para IHC" }));
+    expect(screen.getByRole("menuitem", { name: TASKS_COPY["action.edit"] })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("menuitem", { name: TASKS_COPY["action.pin"] }));
+    expect(props.togglePinTask).toHaveBeenCalledWith("c");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da tarefa: Estudar para IHC" }));
+    await fireEvent.press(screen.getByRole("menuitem", { name: TASKS_COPY["menu.delete"] }));
+    expect(props.requestDeleteTask).toHaveBeenCalledWith("c");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da tarefa: Estudar para IHC" }));
+    await fireEvent.press(screen.getByRole("menuitem", { name: TASKS_COPY["action.edit"] }));
+    expect(onEditTask).toHaveBeenCalledWith("c");
+  });
 });
 
 const sampleDateOptions = buildDatePickerOptions(LocalDate.parse("2026-11-15"));
@@ -202,6 +228,7 @@ const formProps = (overrides: Partial<NewTaskScreenContentProps> = {}): NewTaskS
   onClose: jest.fn(),
   onFinish: jest.fn(),
   ...overrides,
+
 });
 
 describe("NewTaskScreenContent", () => {

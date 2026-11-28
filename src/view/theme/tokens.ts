@@ -106,6 +106,8 @@ export const motionTokens = {
   easingStandard: [0.2, 0, 0, 1] as const,
   scalePressed: 0.96,
   opacityPressed: 0.8,
+  // Toque longo (02-tokens.md, motion.duration.hold): tempo para ativar e duração do preenchimento.
+  durationHold: 500,
 } as const;
 
 export const sizeTokens = {
