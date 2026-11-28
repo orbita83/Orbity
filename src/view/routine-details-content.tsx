@@ -89,12 +89,9 @@ export const RoutineDetailsScreenContent = ({
 
   const total = routine.tasks.length;
   const percent = total === 0 ? 0 : (completedCount / total) * 100;
-  // barra-progresso.md: contador e porcentagem em texto, fora da barra; sem tarefas, sem porcentagem.
+  // ODS 1.3 (protótipo 3.2): contador "1/3" em chip ao lado do título e porcentagem no meio da barra.
   const percentLabel = total === 0 ? null : Math.round(percent);
-  const counterLabel =
-    percentLabel === null
-      ? formatRoutinesCopy("details.progress.counter", { done: completedCount, total })
-      : formatRoutinesCopy("details.progress.counterPercent", { done: completedCount, total, percent: percentLabel });
+  const counterLabel = formatRoutinesCopy("details.progress.counter", { done: completedCount, total });
   const progressText =
     percentLabel === null
       ? formatRoutinesCopy("details.progress", { done: completedCount, total })
@@ -149,9 +146,11 @@ export const RoutineDetailsScreenContent = ({
             <Text accessibilityRole="header" allowFontScaling style={styles.sectionTitle}>
               {ROUTINES_COPY["details.tasks"]}
             </Text>
-            <Text allowFontScaling style={styles.counter}>
-              {counterLabel}
-            </Text>
+            <View style={styles.counterChip}>
+              <Text allowFontScaling style={styles.counter}>
+                {counterLabel}
+              </Text>
+            </View>
           </View>
           <View
             accessible
@@ -163,6 +162,13 @@ export const RoutineDetailsScreenContent = ({
             {percent > 0 ? (
               <View testID="routine-progress-fill" style={[styles.fill, { width: `${percent}%` }]}>
                 <GradientSurface from={cosmicGradients.progress[0]} to={cosmicGradients.progress[1]} horizontal />
+              </View>
+            ) : null}
+            {percentLabel !== null ? (
+              <View pointerEvents="none" style={styles.percent}>
+                <Text allowFontScaling maxFontSizeMultiplier={1.2} style={styles.percentLabel}>
+                  {formatRoutinesCopy("details.progress.percent", { percent: percentLabel })}
+                </Text>
               </View>
             ) : null}
           </View>
@@ -349,7 +355,17 @@ const styles = StyleSheet.create({
   },
   chipLabel: { ...theme.font.label, color: theme.color["on-surface"] },
   section: { gap: theme.space.sm },
-  sectionHeading: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", gap: theme.space.sm },
+  sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: theme.space.sm },
+  counterChip: {
+    borderWidth: theme.border.widthThin,
+    borderColor: theme.color.action,
+    backgroundColor: theme.progress.track,
+    borderRadius: theme.radius.md,
+    paddingVertical: theme.primitive["space-4"],
+    paddingHorizontal: theme.space.sm,
+  },
+  percent: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, alignItems: "center", justifyContent: "center" },
+  percentLabel: { ...theme.font.label, color: theme.color["on-surface"] },
   sectionTitle: { ...theme.font["card-title"], color: theme.color["on-surface"] },
   counter: { ...theme.font.label, color: theme.color["on-surface"] },
   track: { height: theme.progress.height, borderRadius: theme.progress.height / 2, backgroundColor: theme.progress.track, overflow: "hidden" },

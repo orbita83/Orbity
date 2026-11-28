@@ -319,7 +319,8 @@ describe("RoutineDetailsScreenContent", () => {
 
     expect(screen.getByRole("header", { name: "Matemática" })).toBeTruthy();
     // barra-progresso.md: contador e porcentagem em texto, fora da barra.
-    expect(screen.getByText("1 / 3 · 33%")).toBeTruthy();
+    expect(screen.getByText("1/3")).toBeTruthy();
+    expect(screen.getByText("33%")).toBeTruthy();
     expect(screen.getByRole("progressbar").props.accessibilityValue).toMatchObject({
       now: 1,
       max: 3,
@@ -388,7 +389,7 @@ describe("RoutineDetailsScreenContent", () => {
     await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["details.tasks.add"] }));
     expect(props.onEdit).toHaveBeenCalledWith("mat");
     // Sem tarefas não há porcentagem (barra-progresso.md, estado Vazio).
-    expect(screen.getByText("0 / 0")).toBeTruthy();
+    expect(screen.getByText("0/0")).toBeTruthy();
   });
 
   it("F8: carregando a rotina mostra o esqueleto", async () => {

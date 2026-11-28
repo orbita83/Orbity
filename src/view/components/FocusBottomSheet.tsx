@@ -186,12 +186,6 @@ export const FocusBottomSheet = ({
                         {progressLabel}
                       </Text>
                     </View>
-                    {/* ODS 1.2: a porcentagem fica fora da barra; RN-0007: sem atividades não há porcentagem. */}
-                    {percent !== null ? (
-                      <Text allowFontScaling style={styles.badgeLabel}>
-                        {formatCopy("progress.percent", { percent })}
-                      </Text>
-                    ) : null}
                   </View>
                 }
               />
@@ -203,13 +197,24 @@ export const FocusBottomSheet = ({
                   min: 0,
                   max: progressTotal,
                   now: progressCompleted,
-                  text: formatCopy("progress.value", { completed: progressCompleted, total: progressTotal }),
+                  text:
+                    percent !== null
+                      ? `${formatCopy("progress.value", { completed: progressCompleted, total: progressTotal })}, ${formatCopy("progress.percent", { percent })}`
+                      : formatCopy("progress.value", { completed: progressCompleted, total: progressTotal }),
                 }}
                 style={styles.progressTrack}
               >
                 {progressRatio !== null && progressRatio > 0 ? (
                   <View testID="progress-fill" style={[styles.progressFill, { width: `${progressRatio * 100}%` }]}>
                     <GradientSurface from={cosmicGradients.progress[0]} to={cosmicGradients.progress[1]} horizontal />
+                  </View>
+                ) : null}
+                {/* ODS 1.3: porcentagem no meio da barra (branco passa sobre a trilha e o preenchimento). RN-0007: sem atividades, sem porcentagem. */}
+                {percent !== null ? (
+                  <View pointerEvents="none" style={styles.progressPercent}>
+                    <Text allowFontScaling maxFontSizeMultiplier={1.2} style={styles.progressPercentLabel}>
+                      {formatCopy("progress.percent", { percent })}
+                    </Text>
                   </View>
                 ) : null}
               </View>
@@ -339,6 +344,8 @@ const styles = StyleSheet.create({
   },
   progressFill: { height: "100%", borderRadius: theme.progress.height / 2, overflow: "hidden" },
   progressCounter: { flexDirection: "row", alignItems: "center", gap: theme.space.sm },
+  progressPercent: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, alignItems: "center", justifyContent: "center" },
+  progressPercentLabel: { ...theme.font.label, color: theme.color["on-surface"] },
   badges: { flexDirection: "row", gap: theme.space.sm },
   badgeSlot: { flex: 1, alignItems: "center", paddingVertical: theme.primitive["space-4"] },
   badge: {

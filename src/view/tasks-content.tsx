@@ -156,18 +156,6 @@ export const TasksScreenContent = ({
         <ContextualActionBar
           actions={[
             {
-              id: "edit",
-              label: TASKS_COPY["action.edit"],
-              icon: "edit",
-              onPress: () => {
-                if (selectedIds.length === 1) {
-                  cancelSelection();
-                  onEditTask?.(selectedIds[0]);
-                }
-              },
-              disabled: selectedCount !== 1,
-            },
-            {
               id: "pin",
               label: allSelectedPinned ? TASKS_COPY["action.unpin"] : TASKS_COPY["action.pin"],
               icon: "push_pin",

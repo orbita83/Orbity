@@ -102,11 +102,8 @@ describe("TasksScreenContent", () => {
     expect(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para a prova de Cálculo" }).props.accessibilityState.checked).toBe(true);
     expect(screen.getByRole("button", { name: TASKS_COPY["action.pin"] })).toBeTruthy();
 
-    const editButton = screen.getByRole("button", { name: TASKS_COPY["action.edit"] });
-    expect(editButton.props.accessibilityState.disabled).toBe(false);
-    await fireEvent.press(editButton);
-    expect(props.cancelSelection).toHaveBeenCalledTimes(1);
-    expect(props.onEditTask).toHaveBeenCalledWith("a");
+    // ODS 1.3: editar é sempre de uma tarefa só; sai da barra de seleção e fica no "•••" e no detalhe.
+    expect(screen.queryByRole("button", { name: TASKS_COPY["action.edit"] })).toBeNull();
 
     await fireEvent.press(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para PDM" }));
     expect(props.toggleSelected).toHaveBeenCalledWith("b");
@@ -114,13 +111,11 @@ describe("TasksScreenContent", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Excluir (1)" }));
     expect(props.requestDelete).toHaveBeenCalledTimes(1);
     await fireEvent.press(screen.getByRole("button", { name: "Cancelar seleção" }));
-    expect(props.cancelSelection).toHaveBeenCalledTimes(2);
+    expect(props.cancelSelection).toHaveBeenCalledTimes(1);
 
     await renderInSafeArea(<TasksScreenContent {...listProps({ selectionMode: true, selectedIds: ["a"], allSelectedPinned: true })} />);
     expect(screen.getByRole("button", { name: TASKS_COPY["action.unpin"] })).toBeTruthy();
 
-    await renderInSafeArea(<TasksScreenContent {...listProps({ selectionMode: true, selectedIds: ["a", "b"] })} />);
-    expect(screen.getByRole("button", { name: TASKS_COPY["action.edit"] }).props.accessibilityState.disabled).toBe(true);
   });
 
   it("a confirmação de exclusão individual e múltipla destaca Excluir como primário e Cancelar como secundário", async () => {
