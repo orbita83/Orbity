@@ -27,6 +27,16 @@ const listProps = (overrides: Partial<RoutinesScreenContentProps> = {}): Routine
   deleteRoutine: jest.fn(),
   undoDelete: jest.fn(),
   dismissDeleted: jest.fn(),
+  selectionMode: false,
+  selectedIds: [],
+  pendingDelete: null,
+  startSelection: jest.fn(),
+  toggleSelected: jest.fn(),
+  cancelSelection: jest.fn(),
+  selectAll: jest.fn(),
+  requestDelete: jest.fn(),
+  cancelDelete: jest.fn(),
+  confirmDelete: jest.fn(),
   onCreateRoutine: jest.fn(),
   onOpenRoutine: jest.fn(),
   ...overrides,
@@ -38,7 +48,8 @@ describe("RoutinesScreenContent", () => {
     await inSafeArea(<RoutinesScreenContent {...props} />);
 
     expect(screen.getByRole("header", { name: ROUTINES_COPY.title })).toBeTruthy();
-    expect(screen.getByText("1 de 3 concluídas")).toBeTruthy();
+    // ODS 1.3: sem o resumo "1 de 3 concluídas" ao lado de "Hoje".
+    expect(screen.queryByText("1 de 3 concluídas")).toBeNull();
     expect(screen.getByText("2 tarefas · Seg, Qua e Sex")).toBeTruthy();
 
     await fireEvent.changeText(screen.getByLabelText(ROUTINES_COPY.search), "ing");
@@ -79,7 +90,8 @@ describe("RoutinesScreenContent", () => {
     await inSafeArea(<RoutinesScreenContent {...props} />);
 
     expect(screen.getByText(ROUTINES_COPY["inactive.today"])).toBeTruthy();
-    expect(screen.getByText(ROUTINES_COPY["summary.noneToday"])).toBeTruthy();
+    // ODS 1.3: sem resumo ao lado de "Hoje"; o motivo fica no próprio card.
+    expect(screen.queryByText(ROUTINES_COPY["summary.noneToday"])).toBeNull();
     const circle = screen.getByRole("checkbox", { name: "Concluir rotina Revisão de fim de semana hoje" });
     expect(circle.props.accessibilityState).toMatchObject({ disabled: true });
     await fireEvent.press(circle);
@@ -132,6 +144,50 @@ describe("RoutinesScreenContent", () => {
     expect(
       screen.getByRole("link", { name: "Abrir rotina Revisão de fim de semana, 2 tarefas · Dom e Sáb, Volta no sábado" }),
     ).toBeTruthy();
+  });
+
+  it("ODS 1.3: o \"•••\" abre Editar e Excluir, e o toque longo abre a seleção", async () => {
+    const onEditRoutine = jest.fn();
+    const props = listProps({ onEditRoutine });
+    await inSafeArea(<RoutinesScreenContent {...props} />);
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da rotina Inglês" }));
+    await fireEvent.press(screen.getByRole("menuitem", { name: ROUTINES_COPY["menu.edit"] }));
+    expect(onEditRoutine).toHaveBeenCalledWith("ing");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da rotina Inglês" }));
+    await fireEvent.press(screen.getByRole("menuitem", { name: ROUTINES_COPY["menu.delete"] }));
+    expect(props.requestDelete).toHaveBeenCalledWith(["ing"]);
+
+    await fireEvent(screen.getByRole("link", { name: /^Abrir rotina Inglês/ }), "longPress");
+    expect(props.startSelection).toHaveBeenCalledWith("ing");
+  });
+
+  it("3.5: na seleção, mostra o contador, Marcar todas e Excluir (n)", async () => {
+    const props = listProps({ selectionMode: true, selectedIds: ["mat", "ing"] });
+    await inSafeArea(<RoutinesScreenContent {...props} />);
+
+    expect(screen.getByText("2 selecionadas")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: ROUTINES_COPY.new })).toBeNull();
+    expect(screen.getByRole("checkbox", { name: "Selecionar rotina Matemática" }).props.accessibilityState.checked).toBe(true);
+
+    await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["selection.selectAll"] }));
+    expect(props.selectAll).toHaveBeenCalledTimes(1);
+    await fireEvent.press(screen.getByRole("button", { name: "Excluir (2)" }));
+    expect(props.requestDelete).toHaveBeenCalledTimes(1);
+  });
+
+  it("3.5: a confirmação de várias rotinas soma as tarefas que saem junto", async () => {
+    const props = listProps({
+      selectionMode: true,
+      selectedIds: ["mat", "ing"],
+      pendingDelete: { ids: ["mat", "ing"], title: "", taskCount: 5 },
+    });
+    await inSafeArea(<RoutinesScreenContent {...props} />);
+
+    expect(screen.getByText("Excluir 2 rotinas?")).toBeTruthy();
+    expect(screen.getByText(/As 5 tarefas delas também serão excluídas/)).toBeTruthy();
+    expect(screen.getByText(ROUTINES_COPY["delete.note"])).toBeTruthy();
   });
 });
 
@@ -319,7 +375,8 @@ describe("RoutineDetailsScreenContent", () => {
 
     expect(screen.getByRole("header", { name: "Matemática" })).toBeTruthy();
     // barra-progresso.md: contador e porcentagem em texto, fora da barra.
-    expect(screen.getByText("1 / 3 · 33%")).toBeTruthy();
+    expect(screen.getByText("1/3")).toBeTruthy();
+    expect(screen.getByText("33%")).toBeTruthy();
     expect(screen.getByRole("progressbar").props.accessibilityValue).toMatchObject({
       now: 1,
       max: 3,
@@ -388,7 +445,7 @@ describe("RoutineDetailsScreenContent", () => {
     await fireEvent.press(screen.getByRole("button", { name: ROUTINES_COPY["details.tasks.add"] }));
     expect(props.onEdit).toHaveBeenCalledWith("mat");
     // Sem tarefas não há porcentagem (barra-progresso.md, estado Vazio).
-    expect(screen.getByText("0 / 0")).toBeTruthy();
+    expect(screen.getByText("0/0")).toBeTruthy();
   });
 
   it("F8: carregando a rotina mostra o esqueleto", async () => {

@@ -74,6 +74,7 @@ const baseArgs: TasksScreenContentProps = {
   selectedIds: [],
   allSelectedPinned: false,
   confirmDeleteVisible: false,
+  deleteCount: 0,
   loading: false,
   errorKey: null,
   selectFilter: fn(),
@@ -83,6 +84,8 @@ const baseArgs: TasksScreenContentProps = {
   cancelSelection: fn(),
   selectAll: fn(),
   pinSelected: fn(),
+  togglePinTask: fn(),
+  requestDeleteTask: fn(),
   requestDelete: fn(),
   cancelDelete: fn(),
   confirmDelete: fn(),
@@ -121,11 +124,11 @@ export const Selecao: Story = {
 };
 export const ConfirmarExclusaoIndividual: Story = {
   name: "2.3 · Confirmar exclusão individual",
-  args: { selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true },
+  args: { selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true, deleteCount: 1 },
 };
 export const ConfirmarExclusao: Story = {
   name: "2.3 · Confirmar exclusão múltipla",
-  args: { selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true },
+  args: { selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true, deleteCount: 2 },
 };
 
 const InteractiveList = () => {

@@ -61,7 +61,8 @@ export const ContextualActionBar = ({ actions }: ContextualActionBarProps) => {
         >
           <MaterialSymbol
             name={action.icon}
-            color={action.destructive ? theme.color.error : theme.color.focus}
+            // ODS 1.3: só Excluir tem cor de destaque; os demais ícones ficam em on-surface-variant (9,4:1).
+            color={action.destructive ? theme.color.error : theme.color["on-surface-variant"]}
             size={theme.navbar.iconSize}
           />
           <Text allowFontScaling style={styles.actionLabel}>
@@ -92,7 +93,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: theme.radius.md,
   },
-  count: { ...theme.font.label, color: theme.color["on-surface"], flex: 1 },
+  // ODS 1.3: o contador é o título da tela durante a seleção (font.title, 24/32).
+  count: { ...theme.font.title, color: theme.color["on-surface"], flex: 1 },
   bar: {
     flexDirection: "row",
     gap: theme.space.sm,

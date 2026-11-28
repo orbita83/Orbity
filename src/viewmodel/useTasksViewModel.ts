@@ -37,6 +37,8 @@ export type TasksState = {
   /** Verdadeiro quando todas as selecionadas estão fixadas; a ação passa a desafixar. */
   allSelectedPinned: boolean;
   confirmDeleteVisible: boolean;
+  /** Quantas tarefas a confirmação vai excluir (uma, pelo "•••", ou as selecionadas). */
+  deleteCount: number;
   /** Categorias salvas no DataSource para exibir nome e ícone atualizados nos cards (issue #213). */
   categories?: readonly Category[];
   loading: boolean;
@@ -51,7 +53,11 @@ export type TasksActions = {
   cancelSelection: () => void;
   selectAll: () => void;
   pinSelected: () => void;
+  /** "•••" → Fixar ou Desafixar uma tarefa (menu-opcoes.md). */
+  togglePinTask: (id: string) => void;
   requestDelete: () => void;
+  /** "•••" → Excluir uma tarefa: abre a mesma confirmação da seleção. */
+  requestDeleteTask: (id: string) => void;
   cancelDelete: () => void;
   confirmDelete: () => void;
   reload: () => Promise<void>;
@@ -59,6 +65,8 @@ export type TasksActions = {
   handleCreateTask: () => void;
   /** Abre o formulário de edição da tarefa. */
   handleEditTask: (id: string) => void;
+  /** Toque no card: abre o detalhe da tarefa (protótipo 2.4). */
+  handleOpenTask: (id: string) => void;
 };
 
 const shortDisplayDate = (displayDate: string): string => displayDate.slice(0, 5);
@@ -133,6 +141,8 @@ export const useTasksViewModel = (
   const [filter, setFilter] = useState<TaskFilter>("all");
   const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+  // Exclusão de uma tarefa só, aberta pelo "•••" fora da seleção múltipla.
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [loading, setLoading] = useState(!isPrototypeMode);
   const [errorKey, setErrorKey] = useState<"error.load" | "error.save" | null>(null);
   const mountedRef = useRef(true);
@@ -279,14 +289,49 @@ export const useTasksViewModel = (
     })();
   }, [isPrototypeMode, selectedIds, useCases]);
 
+  const togglePinTask = useCallback(
+    (id: string) => {
+      if (isPrototypeMode) {
+        setItems((current) => current.map((task) => (task.id === id ? { ...task, pinned: !task.pinned } : task)));
+        return;
+      }
+      void (async () => {
+        setErrorKey(null);
+        try {
+          await useCases.togglePinTasks([id]);
+          const loaded = await useCases.listTasks();
+          if (mountedRef.current) {
+            setItems(loaded.map(toTaskListItem));
+          }
+        } catch (caught) {
+          if (mountedRef.current) {
+            setErrorKey(resolveErrorKey(caught, "error.save"));
+          }
+        }
+      })();
+    },
+    [isPrototypeMode, useCases],
+  );
+
   const requestDelete = useCallback(() => {
-    if ((selectedIds ?? []).length > 0) setConfirmDeleteVisible(true);
+    if ((selectedIds ?? []).length > 0) {
+      setDeleteTargetId(null);
+      setConfirmDeleteVisible(true);
+    }
   }, [selectedIds]);
-  const cancelDelete = useCallback(() => setConfirmDeleteVisible(false), []);
+  const requestDeleteTask = useCallback((id: string) => {
+    setDeleteTargetId(id);
+    setConfirmDeleteVisible(true);
+  }, []);
+  const cancelDelete = useCallback(() => {
+    setConfirmDeleteVisible(false);
+    setDeleteTargetId(null);
+  }, []);
 
   const confirmDelete = useCallback(() => {
-    const ids = selectedIds ?? [];
+    const ids = deleteTargetId ? [deleteTargetId] : (selectedIds ?? []);
     setConfirmDeleteVisible(false);
+    setDeleteTargetId(null);
     setSelectedIds(null);
     if (ids.length === 0) {
       return;
@@ -309,7 +354,7 @@ export const useTasksViewModel = (
         }
       }
     })();
-  }, [isPrototypeMode, selectedIds, useCases]);
+  }, [deleteTargetId, isPrototypeMode, selectedIds, useCases]);
 
   const selectionMode = selectedIds !== null;
   const navigation = useNavigation();
@@ -344,6 +389,10 @@ export const useTasksViewModel = (
     router.navigate({ pathname: "/new-task", params: { id } });
   }, []);
 
+  const handleOpenTask = useCallback((id: string) => {
+    router.navigate({ pathname: "/task-details", params: { id } });
+  }, []);
+
   return [
     {
       visibleTasks,
@@ -354,6 +403,7 @@ export const useTasksViewModel = (
       selectedIds: selectedIds ?? [],
       allSelectedPinned,
       confirmDeleteVisible,
+      deleteCount: deleteTargetId ? 1 : (selectedIds ?? []).length,
       categories,
       loading,
       errorKey,
@@ -366,12 +416,15 @@ export const useTasksViewModel = (
       cancelSelection,
       selectAll,
       pinSelected,
+      togglePinTask,
       requestDelete,
+      requestDeleteTask,
       cancelDelete,
       confirmDelete,
       reload,
       handleCreateTask,
       handleEditTask,
+      handleOpenTask,
     },
   ];
 };

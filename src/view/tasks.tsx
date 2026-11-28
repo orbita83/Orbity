@@ -5,7 +5,7 @@ import { TasksScreenContent } from "./tasks-content";
 const TasksScreen = () => {
   const [state, actions] = useTasksViewModel();
 
-  return <TasksScreenContent {...state} {...actions} onCreateTask={actions.handleCreateTask} onEditTask={actions.handleEditTask} />;
+  return <TasksScreenContent {...state} {...actions} onCreateTask={actions.handleCreateTask} onEditTask={actions.handleEditTask} onOpenTask={actions.handleOpenTask} />;
 };
 
 export default TasksScreen;

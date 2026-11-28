@@ -22,6 +22,7 @@ const listProps = (overrides: Partial<TasksScreenContentProps> = {}): TasksScree
   selectedIds: [],
   allSelectedPinned: false,
   confirmDeleteVisible: false,
+  deleteCount: 0,
   loading: false,
   errorKey: null,
   selectFilter: jest.fn(),
@@ -31,6 +32,8 @@ const listProps = (overrides: Partial<TasksScreenContentProps> = {}): TasksScree
   cancelSelection: jest.fn(),
   selectAll: jest.fn(),
   pinSelected: jest.fn(),
+  togglePinTask: jest.fn(),
+  requestDeleteTask: jest.fn(),
   requestDelete: jest.fn(),
   cancelDelete: jest.fn(),
   confirmDelete: jest.fn(),
@@ -78,10 +81,15 @@ describe("TasksScreenContent", () => {
     expect(screen.getByLabelText("Estudar para IHC, 20/10 · 14:00–15:00")).toBeTruthy();
   });
 
-  it("sem tarefas, mostra o estado vazio acolhedor", async () => {
+  it("sem tarefas, mostra o planeta com o estado vazio e esconde o resumo redundante (ODS 1.3)", async () => {
     await renderInSafeArea(<TasksScreenContent {...listProps({ visibleTasks: [], pendingCount: 0, totalCount: 0 })} />);
     expect(screen.getByText(TASKS_COPY["empty.title"])).toBeTruthy();
-    expect(screen.getByText(TASKS_COPY["summary.empty"])).toBeTruthy();
+    expect(screen.queryByText(TASKS_COPY["summary.empty"])).toBeNull();
+  });
+
+  it("com o filtro Pendentes vazio, mostra a mensagem própria do filtro", async () => {
+    await renderInSafeArea(<TasksScreenContent {...listProps({ visibleTasks: [], filter: "pending", pendingCount: 0, totalCount: 2 })} />);
+    expect(screen.getByText(TASKS_COPY["empty.pending.title"])).toBeTruthy();
   });
 
   it("com erro, exibe alerta e aciona reload ao tentar novamente", async () => {
@@ -102,11 +110,8 @@ describe("TasksScreenContent", () => {
     expect(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para a prova de Cálculo" }).props.accessibilityState.checked).toBe(true);
     expect(screen.getByRole("button", { name: TASKS_COPY["action.pin"] })).toBeTruthy();
 
-    const editButton = screen.getByRole("button", { name: TASKS_COPY["action.edit"] });
-    expect(editButton.props.accessibilityState.disabled).toBe(false);
-    await fireEvent.press(editButton);
-    expect(props.cancelSelection).toHaveBeenCalledTimes(1);
-    expect(props.onEditTask).toHaveBeenCalledWith("a");
+    // ODS 1.3: editar é sempre de uma tarefa só; sai da barra de seleção e fica no "•••" e no detalhe.
+    expect(screen.queryByRole("button", { name: TASKS_COPY["action.edit"] })).toBeNull();
 
     await fireEvent.press(screen.getByRole("checkbox", { name: "Selecionar tarefa: Estudar para PDM" }));
     expect(props.toggleSelected).toHaveBeenCalledWith("b");
@@ -114,17 +119,15 @@ describe("TasksScreenContent", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Excluir (1)" }));
     expect(props.requestDelete).toHaveBeenCalledTimes(1);
     await fireEvent.press(screen.getByRole("button", { name: "Cancelar seleção" }));
-    expect(props.cancelSelection).toHaveBeenCalledTimes(2);
+    expect(props.cancelSelection).toHaveBeenCalledTimes(1);
 
     await renderInSafeArea(<TasksScreenContent {...listProps({ selectionMode: true, selectedIds: ["a"], allSelectedPinned: true })} />);
     expect(screen.getByRole("button", { name: TASKS_COPY["action.unpin"] })).toBeTruthy();
 
-    await renderInSafeArea(<TasksScreenContent {...listProps({ selectionMode: true, selectedIds: ["a", "b"] })} />);
-    expect(screen.getByRole("button", { name: TASKS_COPY["action.edit"] }).props.accessibilityState.disabled).toBe(true);
   });
 
   it("a confirmação de exclusão individual e múltipla destaca Excluir como primário e Cancelar como secundário", async () => {
-    const singleProps = listProps({ selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true });
+    const singleProps = listProps({ selectionMode: true, selectedIds: ["a"], confirmDeleteVisible: true, deleteCount: 1 });
     const view = await renderInSafeArea(<TasksScreenContent {...singleProps} />);
 
     expect(screen.getByRole("header", { name: TASKS_COPY["delete.title.one"] })).toBeTruthy();
@@ -134,7 +137,7 @@ describe("TasksScreenContent", () => {
     expect(StyleSheet.flatten(singleCancel.props.style).backgroundColor).toBeUndefined();
     expect(StyleSheet.flatten(singleCancel.props.style).borderColor).toBe(cosmicBorders.sheet);
 
-    const props = listProps({ selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true });
+    const props = listProps({ selectionMode: true, selectedIds: ["a", "b"], confirmDeleteVisible: true, deleteCount: 2 });
     await view.rerender(
       <SafeAreaProvider initialMetrics={metrics}>
         <TasksScreenContent {...props} />
@@ -171,6 +174,29 @@ describe("TasksScreenContent", () => {
     expect(screen.getByLabelText("Categoria: Cálculo I")).toBeTruthy();
     expect(screen.getByLabelText("Categoria: Física")).toBeTruthy();
   });
+
+  it("ODS 1.3: o toque no card abre o detalhe e o \"•••\" abre o menu com Editar, Fixar e Excluir", async () => {
+    const onOpenTask = jest.fn();
+    const onEditTask = jest.fn();
+    const props = listProps({ onOpenTask, onEditTask });
+    await renderInSafeArea(<TasksScreenContent {...props} />);
+
+    await fireEvent.press(screen.getByLabelText("Estudar para IHC, 20/10 · 14:00–15:00"));
+    expect(onOpenTask).toHaveBeenCalledWith("c");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da tarefa: Estudar para IHC" }));
+    expect(screen.getByRole("menuitem", { name: TASKS_COPY["action.edit"] })).toBeTruthy();
+    await fireEvent.press(screen.getByRole("menuitem", { name: TASKS_COPY["action.pin"] }));
+    expect(props.togglePinTask).toHaveBeenCalledWith("c");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da tarefa: Estudar para IHC" }));
+    await fireEvent.press(screen.getByRole("menuitem", { name: TASKS_COPY["menu.delete"] }));
+    expect(props.requestDeleteTask).toHaveBeenCalledWith("c");
+
+    await fireEvent.press(screen.getByRole("button", { name: "Opções da tarefa: Estudar para IHC" }));
+    await fireEvent.press(screen.getByRole("menuitem", { name: TASKS_COPY["action.edit"] }));
+    expect(onEditTask).toHaveBeenCalledWith("c");
+  });
 });
 
 const sampleDateOptions = buildDatePickerOptions(LocalDate.parse("2026-11-15"));
@@ -202,6 +228,7 @@ const formProps = (overrides: Partial<NewTaskScreenContentProps> = {}): NewTaskS
   onClose: jest.fn(),
   onFinish: jest.fn(),
   ...overrides,
+
 });
 
 describe("NewTaskScreenContent", () => {

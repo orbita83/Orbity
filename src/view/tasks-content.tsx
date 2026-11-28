@@ -1,15 +1,18 @@
+import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { TaskFilter, TasksActions, TasksState } from "../viewmodel/useTasksViewModel";
 import { TaskCard } from "./components/TaskCard";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ContextualActionBar, ContextualHeader } from "./components/ContextualActionBar";
+import { EmptyOrbitState } from "./components/EmptyOrbitState";
 import { FilterChips, type FilterChipOption } from "./components/FilterChips";
 import { MaterialSymbol } from "./components/MaterialSymbol";
+import { OptionsMenu, type OptionsMenuAnchor } from "./components/OptionsMenu";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { resolveCategoryDisplay } from "./categoryCopy";
 import { TASKS_COPY, formatTasksCopy } from "./tasksCopy";
-import { cosmicBorders, themes } from "./theme/tokens";
+import { themes } from "./theme/tokens";
 
 const theme = themes.cosmic;
 
@@ -20,10 +23,20 @@ const FILTERS: readonly FilterChipOption<TaskFilter>[] = [
 ];
 
 export type TasksScreenContentProps = TasksState &
-  Omit<TasksActions, "handleCreateTask" | "handleEditTask"> & {
+  Omit<TasksActions, "handleCreateTask" | "handleEditTask" | "handleOpenTask"> & {
     onCreateTask: () => void;
     onEditTask?: (id: string) => void;
+    /** Toque no card: abre o detalhe da tarefa (protótipo 2.4). */
+    onOpenTask?: (id: string) => void;
   };
+
+// Estado vazio por filtro (ODS 1.3): sem registros, só pendentes ou só concluídas.
+const emptyCopyOf = (filter: TaskFilter, totalCount: number) => {
+  if (totalCount === 0 || filter === "all") return { title: TASKS_COPY["empty.title"], message: TASKS_COPY["empty.message"] };
+  return filter === "pending"
+    ? { title: TASKS_COPY["empty.pending.title"], message: TASKS_COPY["empty.pending.message"] }
+    : { title: TASKS_COPY["empty.completed.title"], message: TASKS_COPY["empty.completed.message"] };
+};
 
 const summaryOf = (pendingCount: number, totalCount: number) => {
   if (totalCount === 0) return TASKS_COPY["summary.empty"];
@@ -41,6 +54,7 @@ export const TasksScreenContent = ({
   selectedIds,
   allSelectedPinned,
   confirmDeleteVisible,
+  deleteCount,
   categories,
   loading,
   errorKey,
@@ -51,15 +65,22 @@ export const TasksScreenContent = ({
   cancelSelection,
   selectAll,
   pinSelected,
+  togglePinTask,
   requestDelete,
+  requestDeleteTask,
   cancelDelete,
   confirmDelete,
   reload,
   onCreateTask,
   onEditTask,
+  onOpenTask,
 }: TasksScreenContentProps) => {
   const insets = useSafeAreaInsets();
   const selectedCount = selectedIds.length;
+  // Menu do "•••" (menu-opcoes.md): uma tarefa por vez; a âncora é só posição na tela.
+  const [menu, setMenu] = useState<{ id: string; anchor: OptionsMenuAnchor | null } | null>(null);
+  const menuTask = menu ? visibleTasks.find((task) => task.id === menu.id) : undefined;
+  const closeMenu = () => setMenu(null);
 
   return (
     <View style={styles.screen}>
@@ -84,9 +105,12 @@ export const TasksScreenContent = ({
               <Text accessibilityRole="header" allowFontScaling style={styles.title}>
                 {TASKS_COPY.title}
               </Text>
-              <Text allowFontScaling style={styles.summary}>
-                {summaryOf(pendingCount, totalCount)}
-              </Text>
+              {/* ODS 1.3: com a lista vazia, o resumo some; a mensagem do planeta já diz o mesmo. */}
+              {totalCount > 0 ? (
+                <Text allowFontScaling style={styles.summary}>
+                  {summaryOf(pendingCount, totalCount)}
+                </Text>
+              ) : null}
             </View>
             <FilterChips
               theme={theme}
@@ -130,24 +154,17 @@ export const TasksScreenContent = ({
               completed={task.completed}
               pinned={task.pinned}
               onToggleCompleted={() => toggleCompleted(task.id)}
+              onPress={onOpenTask ? () => onOpenTask(task.id) : undefined}
               onLongPress={() => startSelection(task.id)}
-              // O "•••" do protótipo abre as mesmas ações da seleção (Fixar, Excluir) para esta tarefa;
-              // é também a alternativa acessível ao toque longo.
-              onOptionsPress={() => startSelection(task.id)}
+              // ODS 1.3: uma tarefa, pelo "•••"; várias, pelo toque longo. O menu é também a alternativa acessível.
+              onOptionsPress={(anchor) => setMenu({ id: task.id, anchor })}
               selectionMode={selectionMode}
               selected={selectedIds.includes(task.id)}
               onToggleSelected={() => toggleSelected(task.id)}
             />
           ))}
           {!loading && visibleTasks.length === 0 && !errorKey ? (
-            <View style={styles.empty}>
-              <Text allowFontScaling style={styles.emptyTitle}>
-                {TASKS_COPY["empty.title"]}
-              </Text>
-              <Text allowFontScaling style={styles.summary}>
-                {TASKS_COPY["empty.message"]}
-              </Text>
-            </View>
+            <EmptyOrbitState {...emptyCopyOf(filter, totalCount)} />
           ) : null}
         </View>
       </ScrollView>
@@ -155,18 +172,6 @@ export const TasksScreenContent = ({
       {selectionMode ? (
         <ContextualActionBar
           actions={[
-            {
-              id: "edit",
-              label: TASKS_COPY["action.edit"],
-              icon: "edit",
-              onPress: () => {
-                if (selectedIds.length === 1) {
-                  cancelSelection();
-                  onEditTask?.(selectedIds[0]);
-                }
-              },
-              disabled: selectedCount !== 1,
-            },
             {
               id: "pin",
               label: allSelectedPinned ? TASKS_COPY["action.unpin"] : TASKS_COPY["action.pin"],
@@ -187,10 +192,37 @@ export const TasksScreenContent = ({
         />
       ) : null}
 
+      <OptionsMenu
+        visible={menuTask !== undefined}
+        anchor={menu?.anchor ?? null}
+        accessibilityLabel={menuTask ? `Opções da tarefa: ${menuTask.title}` : ""}
+        onClose={closeMenu}
+        items={
+          menuTask
+            ? [
+                { id: "edit", label: TASKS_COPY["action.edit"], icon: "edit", onPress: () => onEditTask?.(menuTask.id) },
+                {
+                  id: "pin",
+                  label: menuTask.pinned ? TASKS_COPY["action.unpin"] : TASKS_COPY["action.pin"],
+                  icon: "push_pin",
+                  onPress: () => togglePinTask(menuTask.id),
+                },
+                {
+                  id: "delete",
+                  label: TASKS_COPY["menu.delete"],
+                  icon: "delete_outline",
+                  destructive: true,
+                  onPress: () => requestDeleteTask(menuTask.id),
+                },
+              ]
+            : []
+        }
+      />
+
       <ConfirmDialog
         visible={confirmDeleteVisible}
         icon="delete_outline"
-        title={selectedCount === 1 ? TASKS_COPY["delete.title.one"] : formatTasksCopy("delete.title.other", { n: selectedCount })}
+        title={deleteCount === 1 ? TASKS_COPY["delete.title.one"] : formatTasksCopy("delete.title.other", { n: deleteCount })}
         message={TASKS_COPY["delete.message"]}
         cancelLabel={TASKS_COPY["delete.cancel"]}
         confirmLabel={TASKS_COPY["delete.confirm"]}
@@ -214,17 +246,6 @@ const styles = StyleSheet.create({
   title: { ...theme.font.title, color: theme.color["on-surface"] },
   summary: { ...theme.font["body-sm"], color: theme.color["on-surface-variant"] },
   list: { gap: theme.space.sm },
-  empty: {
-    alignItems: "center",
-    gap: theme.primitive["space-4"],
-    paddingVertical: theme.primitive["space-32"],
-    paddingHorizontal: theme.space.md,
-    borderRadius: theme.radius.lg,
-    borderWidth: theme.border.widthThin,
-    borderStyle: "dashed",
-    borderColor: cosmicBorders.sheet,
-  },
-  emptyTitle: { ...theme.font["card-title"], color: theme.color["on-surface"], textAlign: "center" },
   errorCard: {
     gap: theme.space.md,
     padding: theme.space.md,
